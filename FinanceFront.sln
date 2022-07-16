@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "FinanceFront", "FinanceFront\FinanceFront.esproj", "{D7538B43-AF11-4AA9-B837-59F2B5A96F81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceBack", "..\FinanceBack\FinanceBack.csproj", "{B8E5A7FF-3B54-4884-B009-0EA90AF61B2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceBack", "FinanceBack\FinanceBack.csproj", "{B8E5A7FF-3B54-4884-B009-0EA90AF61B2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
