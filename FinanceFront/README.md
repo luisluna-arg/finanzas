@@ -1,4 +1,4 @@
-# financefront
+# financeui
 
 ## Project setup
 ```
