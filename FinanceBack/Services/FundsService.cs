@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace FinanceBack.Services
 {
-    public class FundMovementService
+    public class FundMovementService : IMongoDBAsyncService<FundMovement>
     {
         private readonly IMongoCollection<FundMovement> _fundsMovementsCollection;
 

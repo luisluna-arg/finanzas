@@ -3,12 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace FinanceBack.Models
 {
-    public class FundMovement
+    public class FundMovement : BsonDomain
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
-
         [BsonElement("date")]
         public DateTime Date { get; set; }
 
