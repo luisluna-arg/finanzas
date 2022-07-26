@@ -2,9 +2,9 @@
     <div>
         <h1>Fondos</h1>    
         <ImportButtonComponent :UploadType="FundsUploadType"></ImportButtonComponent>
+        <FondosChartComponent></FondosChartComponent>
         <FondosGridComponent></FondosGridComponent>
         <FondosTotalComponent></FondosTotalComponent>
-        <FondosChartComponent></FondosChartComponent>
     </div>
 </template>
 
