@@ -5,7 +5,7 @@
     <!-- <FondosChartComponent></FondosChartComponent> -->
     <FondosGridComponent></FondosGridComponent>
     <FondosTotalComponent></FondosTotalComponent>
-    <CRUDPopUp :EditorSettings="CRUDPopUpSettings" />
+    <CRUDPopUp :editorSettings="CRUDPopUpSettings" formId="fundsForm" />
   </div>
 </template>
 

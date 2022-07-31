@@ -11,9 +11,11 @@
     "ag-grid-community": "^28.0.2",
     "ag-grid-vue3": "^28.0.0",
     "axios": "^0.27.2",
+    "bootstrap": "^5.2.0",
+    "bootstrap-vue-3": "^0.1.21",
     "core-js": "^3.8.3",
     "echarts": "^5.3.3",
-    "vue": "^3.2.13",
+    "vue-echarts": "^6.2.3",
     "vue-router": "^4.0.3"
   },
   "devDependencies": {
