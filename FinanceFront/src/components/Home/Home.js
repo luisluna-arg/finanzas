@@ -1,0 +1,19 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import styles from './Home.module.css';
+
+const Home = () => (
+  <div className={styles.Home}>
+    <h1>Este es el Home</h1>
+  </div>
+);
+
+Home.propTypes = {
+  msg: PropTypes.string
+};
+
+Home.defaultProps = {
+  msg: 'Este es el Home'
+};
+
+export default Home;
