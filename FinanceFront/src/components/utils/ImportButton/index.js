@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { UploadUrls } from '../../../utils/commons'
+// import { UploadUrls } from '../../../utils/commons'
 
 const sendFile = function (uploadType, file) {
-  let uri = UploadUrls[uploadType];
-
-  console.log(uploadType, uri, file, file.buffer);
-
+  console.log(`uploadType ${uploadType}`);
+  console.log(`file ${file}`);
+  // let uri = UploadUrls[uploadType];
   // axios.
   //     put(uri, file, { 
   //         headers: { 'Content-Type': file.type } 
@@ -20,8 +19,6 @@ const sendFile = function (uploadType, file) {
 function ImportButton(props) {
   const UploadContent = () => {
     let fileDom = document.getElementById("excelfile");
-
-    console.log("fileDom", fileDom);
 
     if (fileDom != null) {
       for (let i = 0; i < fileDom.files.length; i++) {

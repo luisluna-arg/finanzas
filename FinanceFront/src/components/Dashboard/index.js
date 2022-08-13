@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './Dashboard.module.css';
+import styles from './styles.css';
 
 const Dashboard = () => (
   <div className={styles.Dashboard}>

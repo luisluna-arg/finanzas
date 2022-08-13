@@ -1,6 +1,6 @@
 import React/*, { useState }*/ from 'react';
 // import PropTypes from 'prop-types';
-import styles from './FundsGrid.module.css';
+import styles from './styles.css';
 // import ReactDataGrid from '@inovua/reactdatagrid-community'
 // import '@inovua/reactdatagrid-community/index.css'
 
@@ -44,7 +44,5 @@ const FundsGrid = () => {
 };
 
 FundsGrid.propTypes = {};
-
-FundsGrid.defaultProps = {};
 
 export default FundsGrid;

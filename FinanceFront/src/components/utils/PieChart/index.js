@@ -1,6 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './PieChart.module.css';
+// import PropTypes from 'prop-types';
+// import styles from './styles.css';
 // import the core library.
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 // Import the echarts core module, which provides the necessary interfaces for using echarts.

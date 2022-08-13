@@ -1,11 +1,11 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
-import styles from './Funds.module.css';
+import styles from './styles.css';
 
-import ImportButton from '../../utils/ImportButton/ImportButton';
-import CRUDPopUp from '../../utils/CRUDPopUp/CRUDPopUp';
-import FundsGrid from '../FundsGrid/FundsGrid';
-import FundsTotal from '../FundsTotal/FundsTotal';
+import ImportButton from '../../utils/ImportButton';
+import CRUDPopUp from '../../utils/CRUDPopUp';
+import FundsGrid from '../FundsGrid';
+import FundsTotal from '../FundsTotal';
 
 import { UploadTypes } from '../../../utils/commons';
 
@@ -23,7 +23,7 @@ function Funds() {
   return (
     <div className={"page " + styles.Funds}>
       <ImportButton UploadType={FundsUploadType} id="fundImport" />
-      <CRUDPopUp editorSettings={CRUDPopUpSettings} formId="fundsForm" />
+      <CRUDPopUp editorSettings={CRUDPopUpSettings} formId="fundsForm" title="Alta de movimiento" />
       {/* <FondosChart /> */}
       <FundsGrid />
       <FundsTotal />
@@ -34,7 +34,5 @@ function Funds() {
 };
 
 Funds.propTypes = {};
-
-Funds.defaultProps = {};
 
 export default Funds;

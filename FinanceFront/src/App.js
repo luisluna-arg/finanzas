@@ -10,9 +10,9 @@ import {
 
 import { URLs } from "./router/urls";
 
-import Home from './components/Home/Home';
-import Dashboard from './components/Dashboard/Dashboard';
-import Funds from './components/funds/Funds/Funds';
+import Home from './components/Home';
+import Dashboard from './components/Dashboard';
+import Funds from './components/funds/Funds';
 
 
 function App() {
@@ -27,10 +27,10 @@ function App() {
             <NavLink to={URLs.Home} className={changeClass}>Inicio</NavLink>
           </li>
           <li className="nav-item">
-            <NavLink to={URLs.Dashboard} className={changeClass}>Dashboard</NavLink>
+            <NavLink to={URLs.Funds} className={changeClass}>Fondos</NavLink>
           </li>
           <li className="nav-item">
-            <NavLink to={URLs.Funds} className={changeClass}>Fondos</NavLink>
+            <NavLink to={URLs.Dashboard} className={changeClass}>Dashboard</NavLink>
           </li>
           <li className="nav-item">
             <NavLink to={URLs.FCIFBARentaPesos} className={changeClass}>FCI FBA Renta Pesos</NavLink>
@@ -53,8 +53,8 @@ function App() {
         </ul>
         <Routes>
           <Route path={URLs.Home} element={<Home />} />
-          <Route path={URLs.Dashboard} element={<Dashboard />} />
           <Route path={URLs.Funds} element={<Funds />} />
+          <Route path={URLs.Dashboard} element={<Dashboard />} />
           {/* 
         <Route path='/about' element={<About />} />
         <Route path='/dolar' element={<Dolar />} />

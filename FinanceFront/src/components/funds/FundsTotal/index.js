@@ -1,6 +1,6 @@
 import React from 'react';
 //import PropTypes from 'prop-types';
-import styles from './FundsTotal.module.css';
+import styles from './styles.css';
 
 const FundsTotal = () => (
   <div className={styles.FundsTotal}>
@@ -8,8 +8,6 @@ const FundsTotal = () => (
   </div>
 );
 
-FundsTotal.propTypes = {};
-
-FundsTotal.defaultProps = {};
+// FundsTotal.propTypes = {};
 
 export default FundsTotal;
