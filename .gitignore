@@ -1,5 +1,4 @@
-FinanceBack/bin
-FinanceBack/obj
-.vs
-.vscode/launch.json
-.vscode/tasks.json
+**/bin
+**/obj
+**/.vs
+**/.vscode

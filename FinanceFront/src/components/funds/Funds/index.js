@@ -27,7 +27,6 @@ function Funds() {
       {/* <FondosChart /> */}
       <FundsGrid />
       <FundsTotal />
-
       <Outlet />
     </div>
   );
