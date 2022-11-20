@@ -1,0 +1,28 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+charset = utf-8
+trim_trailing_whitespace = false
+insert_final_newline = false
+# Move 'X' into a named namespace.
+dotnet_diagnostic.S3903.severity = None
+# XML comment analysis is disabled due to project configuration
+dotnet_diagnostic.SA0001.severity = None
+# Braces should not be omitted
+dotnet_diagnostic.SA1503.severity = None
+# Elements should be separated by blank line
+dotnet_diagnostic.SA1516.severity = None
+# File may not end with a newline character
+dotnet_diagnostic.SA1518.severity = None
+#  The file header is missing or not located at the top of the file.
+dotnet_diagnostic.SA1633.severity = None
+#  Using directive should appear within a namespace declaration
+dotnet_diagnostic.SA1200.severity = None
+# Use trailing comma in multi-line initializers
+dotnet_diagnostic.SA1413.severity = None
