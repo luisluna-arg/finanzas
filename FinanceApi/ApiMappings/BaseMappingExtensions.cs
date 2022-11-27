@@ -12,7 +12,7 @@ internal static class BaseMappingExtensions
             await dbSetMapper(db).ToListAsync())
             .WithOpenApi();
 
-        app.MapGet(route + "/single/{id}", async (int id, FinanceDb db) =>
+        app.MapGet(route + "/single/{id}", async (Guid id, FinanceDb db) =>
             await dbSetMapper(db).FindAsync(id) is TEntity entity ? Results.Ok(entity) : Results.NotFound())
             .WithOpenApi();
 
@@ -24,7 +24,7 @@ internal static class BaseMappingExtensions
             return Results.Created($"" + route + "/{bank.Id}", entity);
         }).WithOpenApi();
 
-        app.MapPut(route + "/{id}", async (int id, TEntity inputEntity, FinanceDb db) =>
+        app.MapPut(route + "/{id}", async (Guid id, TEntity inputEntity, FinanceDb db) =>
         {
             var bank = await dbSetMapper(db).FindAsync(id);
 
@@ -37,7 +37,7 @@ internal static class BaseMappingExtensions
             return Results.NoContent();
         }).WithOpenApi();
 
-        app.MapDelete(route + "/{id}", async (int id, FinanceDb db) =>
+        app.MapDelete(route + "/{id}", async (Guid id, FinanceDb db) =>
         {
             var dbSet = dbSetMapper(db);
             if (await dbSet.FindAsync(id) is TEntity entity)
