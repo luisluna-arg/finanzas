@@ -26,3 +26,5 @@ dotnet_diagnostic.SA1633.severity = None
 dotnet_diagnostic.SA1200.severity = None
 # Use trailing comma in multi-line initializers
 dotnet_diagnostic.SA1413.severity = None
+# 'System.Exception' should not be thrown by user code
+dotnet_diagnostic.S112.severity = None
