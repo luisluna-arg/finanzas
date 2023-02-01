@@ -15,7 +15,7 @@ namespace FinanceApi.Migrations
                 table: "Movement",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: string.Empty);
 
             migrationBuilder.AddColumn<string>(
                 name: "Concept2",

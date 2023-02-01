@@ -17,5 +17,14 @@ internal class FinanceDb : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseSerialColumns();
+        modelBuilder.Entity<Module>()
+            .HasMany(c => c.Movements)
+            .WithOne(e => e.Module)
+            .IsRequired();
+
+        modelBuilder
+            .Entity<Movement>()
+            .Property(o => o.TimeStamp)
+            .HasConversion(o => o.ToUniversalTime(), o => o);
     }
 }

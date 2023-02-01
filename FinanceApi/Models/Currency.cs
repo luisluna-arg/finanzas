@@ -2,7 +2,8 @@ namespace FinanceApi.Models;
 
 internal class Currency : Entity
 {
-    public Currency() : base()
+    public Currency()
+        : base()
     {
     }
 

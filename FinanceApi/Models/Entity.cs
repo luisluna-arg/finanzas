@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 public abstract class Entity : IEntity
 {
-    public Entity()
+    protected Entity()
     {
     }
 
