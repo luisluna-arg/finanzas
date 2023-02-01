@@ -1,68 +1,70 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { UploadUrls } from '../../../utils/commons'
+import axios from 'axios';
 
-// import { UploadUrls } from '../../../utils/commons'
+const sendFile = function (uploadType, form, callback = null) {
+    let uri = UploadUrls[uploadType] + "?dateKind=Local";
+    let formData = new FormData(form);
+    let config = { headers: { 'Content-Type': 'multipart/form-data', } };
 
-const sendFile = function (uploadType, file) {
-  console.log(`uploadType ${uploadType}`);
-  console.log(`file ${file}`);
-  // let uri = UploadUrls[uploadType];
-  // axios.
-  //     put(uri, file, { 
-  //         headers: { 'Content-Type': file.type } 
-  //         }).
-  //     then(response => { 
-  //         console.log('response:', response);
-  //         });
+    axios.
+        post(uri, formData, config).
+        then(response => {
+            if (callback != null) callback();
+        }).
+        catch((...errors) => {
+            console.log("Couldn't upload file");
+            console.log(errors);
+        });
 }
 
 function ImportButton(props) {
-  const UploadContent = () => {
-    let fileDom = document.getElementById("excelfile");
+    const UploadContent = () => {
+        const form = document.querySelector("form");
 
-    if (fileDom != null) {
-      for (let i = 0; i < fileDom.files.length; i++) {
-        sendFile(props.UploadType, fileDom.files[i]);
-      }
-    }
-    else {
-      alert("Debe seleccionar un archivo válido");
-    }
-  };
+        if (form != null) {
+            sendFile(props.UploadType, form);
+        }
+        else {
+            alert("Ha ocurrido un error inesperado");
+        }
+    };
 
-  return (
-    <div>
-      <div className="row">
-        <div className="col-sm-3"></div>
-        <div className="col-sm-5">
-          {/* <label for="formFile" className="form-label">Default file input example</label> */}
-          <input id={props.id + '-upload'} className="form-control" type="file" accept={props.acceptedFileTypes} />
+    return (
+        <div>
+            <div className="row">
+                <div className="col-sm-3"></div>
+                <div className="col-sm-5">
+                    <form action="/update-profile" method="post">
+                        <input id="files" name={props.id + '-upload'} className="form-control" type="file" accept={props.acceptedFileTypes} />
+                    </form>
+                </div>
+                <div className="col-sm-1">
+                    <input id={props.id + '-button'} className="btn btn-primary" type="button" value={props.buttonText} onClick={UploadContent} />
+                </div>
+                <div className="col-sm-3"></div>
+            </div>
+
+            <br />
+            <br />
+            <table id={props.id + '-exceltable'}>
+            </table>
         </div>
-        <div className="col-sm-1">
-          <input id={props.id + '-button'} className="btn btn-primary" type="button" value={props.buttonText} onClick={UploadContent} />
-        </div>
-        <div className="col-sm-3"></div>
-      </div>
-
-      <br />
-      <br />
-      <table id={props.id + '-exceltable'}>
-      </table>
-    </div>
-  );
+    );
 };
 
 ImportButton.propTypes = {
-  UploadType: PropTypes.symbol,
-  id: PropTypes.string,
-  buttonText: PropTypes.string
+    UploadType: PropTypes.symbol,
+    id: PropTypes.string,
+    buttonText: PropTypes.string
 };
 
 ImportButton.defaultProps = {
-  UploadType: Symbol,
-  id: "excel-file",
-  buttonText: "Importar",
-  acceptedFileTypes: ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+    UploadType: Symbol,
+    id: "excel-file",
+    buttonText: "Importar",
+    acceptedFileTypes: ".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
 };
 
 export default ImportButton;
