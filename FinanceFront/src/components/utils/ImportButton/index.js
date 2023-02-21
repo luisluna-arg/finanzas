@@ -8,12 +8,12 @@ const sendFile = function (uploadType, form, callback = null) {
     let formData = new FormData(form);
     let config = { headers: { 'Content-Type': 'multipart/form-data', } };
 
-    axios.
-        post(uri, formData, config).
-        then(response => {
+    axios
+        .post(uri, formData, config)
+        .then(response => {
             if (callback != null) callback();
-        }).
-        catch((...errors) => {
+        })
+        .catch((...errors) => {
             console.log("Couldn't upload file");
             console.log(errors);
         });
@@ -32,24 +32,17 @@ function ImportButton(props) {
     };
 
     return (
-        <div>
-            <div className="row">
-                <div className="col-sm-3"></div>
-                <div className="col-sm-5">
-                    <form action="/update-profile" method="post">
-                        <input id="files" name={props.id + '-upload'} className="form-control" type="file" accept={props.acceptedFileTypes} />
-                    </form>
-                </div>
-                <div className="col-sm-1">
-                    <input id={props.id + '-button'} className="btn btn-primary" type="button" value={props.buttonText} onClick={UploadContent} />
-                </div>
-                <div className="col-sm-3"></div>
+        <div className="row">
+            <div className="col-sm-3"></div>
+            <div className="col-sm-5">
+                <form action="/update-profile" method="post">
+                    <input id="files" name={props.id + '-upload'} className="form-control" type="file" accept={props.acceptedFileTypes} />
+                </form>
             </div>
-
-            <br />
-            <br />
-            <table id={props.id + '-exceltable'}>
-            </table>
+            <div className="col-sm-1">
+                <input id={props.id + '-button'} className="btn btn-primary" type="button" value={props.buttonText} onClick={UploadContent} />
+            </div>
+            <div className="col-sm-3"></div>
         </div>
     );
 };

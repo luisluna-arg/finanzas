@@ -1,0 +1,63 @@
+/* ************************************************** */
+/* MUI GRID STYLES */
+/* ************************************************** */
+.MuiDataGrid-root {
+    color: white !important;
+}
+
+.MuiDataGrid-root svg {
+    color: white !important;
+}
+
+.MuiDataGrid-root>div>div {
+    /* This removes padding from empty divs at the top of grid */
+    padding: 0 !important;
+}
+
+.MuiDataGrid-footerContainer {
+    min-height: 40px !important;
+    height: 40px !important;
+    line-height: 40px !important;
+    background-color: green !important;
+}
+
+.MuiTablePagination-root {
+    max-height: 35px !important;
+    color: white;
+}
+
+.MuiTablePagination-displayedRows {
+    color: white;
+}
+
+.MuiTablePagination-actions {
+    margin-top: -10px;
+    line-height: 30px;
+}
+
+.MuiButtonBase-root.Mui-disabled.MuiIconButton-root.Mui-disabled.MuiIconButton-colorInherit.MuiIconButton-sizeMedium,
+.MuiButtonBase-root.MuiIconButton-root.MuiIconButton-colorInherit.MuiIconButton-sizeMedium {
+    padding: 0;
+    line-height: 20px;
+}
+
+.MuiToolbar-root.MuiToolbar-gutters.MuiToolbar-regular.MuiTablePagination-toolbar {
+    min-height: 0px !important;
+    max-height: 35px !important;
+    height: 35px !important;
+    line-height: 35px !important;
+    /* background-color: blueviolet; */
+    vertical-align: middle;
+}
+
+.MuiTablePagination-actions {
+    /* border: 1px solid red !important; */
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.MuiTablePagination-displayedRows {
+    /* border: 1px solid red !important; */
+    padding: 0 !important;
+    margin: 0 !important;
+}
