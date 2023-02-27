@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace FinanceApi.Models;
 
 internal class Currency : Entity
@@ -8,4 +10,5 @@ internal class Currency : Entity
     }
 
     required public string Name { get; set; } = string.Empty;
+    required public string ShortName { get; set; } = string.Empty;
 }

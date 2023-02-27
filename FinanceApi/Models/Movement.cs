@@ -12,6 +12,7 @@ internal class Movement : Entity, IEquatable<Movement>
     [ForeignKey("ModuleId")]
     public Guid ModuleId { get; set; }
     required public Module Module { get; set; }
+    required public Currency? Currency { get; set; }
     required public DateTime TimeStamp { get; set; }
     required public decimal Ammount { get; set; }
     required public decimal? Total { get; set; }

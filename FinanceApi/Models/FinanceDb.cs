@@ -9,10 +9,11 @@ internal class FinanceDb : DbContext
     }
 
     public DbSet<Bank> Bank => this.Set<Bank>();
-    public DbSet<ModuleEntry> Fund => this.Set<ModuleEntry>();
-    public DbSet<Module> Module => this.Set<Module>();
-    public DbSet<Movement> Movement => this.Set<Movement>();
     public DbSet<Currency> Currency => this.Set<Currency>();
+    public DbSet<CurrencyConversion> CurrencyConversion => this.Set<CurrencyConversion>();
+    public DbSet<Module> Module => this.Set<Module>();
+    public DbSet<ModuleEntry> ModuleEntry => this.Set<ModuleEntry>();
+    public DbSet<Movement> Movement => this.Set<Movement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,5 +27,12 @@ internal class FinanceDb : DbContext
             .Entity<Movement>()
             .Property(o => o.TimeStamp)
             .HasConversion(o => o.ToUniversalTime(), o => o);
+
+        modelBuilder
+            .Entity<Currency>(entity =>
+            {
+                entity.HasIndex(o => o.Name).IsUnique();
+                entity.HasIndex(o => o.ShortName).IsUnique();
+            });
     }
 }

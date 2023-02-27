@@ -40,7 +40,8 @@ public class ExcelHelper
                         Concept1 = StringHelper.ValueOrEmpty(sheet.Rows[r][1]),
                         Concept2 = StringHelper.ValueOrEmpty(sheet.Rows[r][2]),
                         Ammount = ParsingHelper.ParseDecimal(sheet.Rows[r][3]),
-                        Total = ParsingHelper.ParseDecimal(sheet.Rows[r][4])
+                        Total = ParsingHelper.ParseDecimal(sheet.Rows[r][4]),
+                        Currency = module.Currency
                     });
                 }
             }
