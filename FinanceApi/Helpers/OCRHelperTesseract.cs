@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Text;
 using System.Text.RegularExpressions;
 using FinanceApi.Extensions;
 using FinanceApi.Models;
@@ -84,6 +85,75 @@ internal class OCRHelper
         return (movements.ToArray(), currencyConversions.ToArray());
     }
 
+    internal string[] CitricCaptureToImage(IEnumerable<IFormFile> files)
+    {
+        this.DocumentProcessGuard();
+
+        List<string> result = new List<string>();
+
+        using (var engine = new TesseractEngine(_languageFilePath, "spa", EngineMode.Default))
+        {
+            engine.SetVariable("user_defined_dpi", "300");
+
+            foreach (var file in files)
+            {
+                result.Add(file.FileName);
+                result.Add("");
+                using (var imageStream = new MemoryStream())
+                {
+                    file.CopyTo(imageStream);
+
+                    using (var adjustedImageStream = this.AdjustImage(imageStream))
+                    {
+                        using (var image = Tesseract.Pix.LoadFromMemory(adjustedImageStream.ToArray()))
+                        {
+                            using (var page = engine.Process(image))
+                            {
+                                if (page == null) continue;
+
+                                var imageText = page.GetText();
+                                var entries = imageText.Split("\n\n").Skip(4).ToArray();
+
+                                int index = Array.IndexOf(entries, entries.FirstOrDefault(s => new char[] { '+', '-' }.Any(c => s.StartsWith(c))));
+
+                                var concepts = entries.Take(index).SelectMany(s => s.Split("\n")).ToArray();
+                                var values = entries.Skip(index).SelectMany(s => s.Split("\n")).ToArray();
+
+                                var stringBuilder = new StringBuilder();
+                                var iConcept = 0;
+                                var iVal = 0;
+
+                                Func<string, string> numberFormatter = (str) => str.Replace("+ ", "").Replace("- ", "-").Replace(".", "").Replace(",", ".").Replace("= ", "").Replace(" ", "\t");
+
+                                while (iConcept < concepts.Length && iVal < values.Length)
+                                {
+                                    var concept = concepts[iConcept];
+                                    var dateStr = concepts[iConcept + 1];
+                                    // TODO: How to set year when the entry is from previous year, also how determine if it's from the immediate year or older
+                                    var date = DateTime.Parse(dateStr);
+                                    dateStr = date.ToString("MM/dd/yyyy");
+                                    var value = values[iVal];
+                                    stringBuilder.Append(dateStr).Append("\t");
+                                    stringBuilder.Append(concept).Append("\t");
+                                    stringBuilder.Append(numberFormatter(value)).Append("\t");
+                                    if (!value.Contains("ARS")) stringBuilder.Append(numberFormatter(values[++iVal]));
+                                    iConcept += 2;
+                                    iVal++;
+                                    result.Add(stringBuilder.ToString());
+                                    stringBuilder.Clear();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                result.Add("\n============================\n");
+            }
+        }
+
+        return result.ToArray();
+    }
+
     private (Movement, CurrencyConversion?) BuildMovement(Module module, string content, string dateAndConversion, DateTime referenceDate, Currency[] currencies)
     {
         string pattern = @"(.+\s+)([\+\-]*\s*[\d\,\.]*\s+)([a-zA-Z]+)";
@@ -156,28 +226,35 @@ internal class OCRHelper
 
     public MemoryStream AdjustImage(MemoryStream stream)
     {
-        return RGBToGrayScale(stream);
-    }
-
-    private MemoryStream RGBToGrayScale(MemoryStream stream)
-    {
-        using (Bitmap image = new Bitmap(stream))
+        try
         {
-            var mostUsedColor = GetMostUsedColor(image);
-            for (int x = 0; x < image.Width; x++)
+            using (Bitmap image = new Bitmap(stream))
             {
-                for (int y = 0; y < image.Height; y++)
-                {
-                    Color originalColor = image.GetPixel(x, y);
-                    var newColor = ApplyHighContrast(originalColor, mostUsedColor);
-                    // newColor = ApplyGreyScale(newColor);
-                    image.SetPixel(x, y, newColor);
-                }
-            }
+                var colorsToReplace = new Color[] {
+                    GetMostUsedColor(image)
+                };
 
-            var result = new MemoryStream();
-            image.Save(result, System.Drawing.Imaging.ImageFormat.Png);
-            return result;
+                for (int x = 0; x < image.Width; x++)
+                {
+                    for (int y = 0; y < image.Height; y++)
+                    {
+                        Color originalColor = image.GetPixel(x, y);
+                        var newColor = ApplyHighContrast(originalColor, colorsToReplace);
+                        newColor = ApplyGreyScale(newColor);
+                        image.SetPixel(x, y, newColor);
+                    }
+                }
+
+                var result = new MemoryStream();
+                image.Save(result, System.Drawing.Imaging.ImageFormat.Png);
+                return result;
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            // Manejar la excepción
+            Console.WriteLine($"Se produjo una excepción al crear la imagen Bitmap: {ex.Message}");
+            throw; // Opcional: volver a lanzar la excepción
         }
     }
 
@@ -208,12 +285,11 @@ internal class OCRHelper
         return Color.FromArgb(red + green + blue, red + green + blue, red + green + blue);
     }
 
-    private Color ApplyHighContrast(Color color, Color mostUsedColor)
+    private Color ApplyHighContrast(Color color, Color[] colorsToReplace)
     {
-        /* R 29,V 38, A 50 */
-        if (color.R == mostUsedColor.R && color.G == mostUsedColor.G && color.B == mostUsedColor.B) return Color.FromArgb(255, 255, 0);
+        // if (colorsToReplace.Any(c => color.R == c.R && color.G == c.G && color.B == c.B)) return Color.FromArgb(255, 255, 0);
+        if (color.B < 90 && color.B > 45 && color.G < color.B && color.R < color.G) return Color.FromArgb(255, 255, 0);
 
         return Color.FromArgb(0, 0, 0);
     }
-
 }
