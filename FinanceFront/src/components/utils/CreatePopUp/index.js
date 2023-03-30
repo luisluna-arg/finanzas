@@ -1,4 +1,4 @@
-import styles from './styles.module.css';
+// import styles from './styles.module.css';
 
 import React, { useState } from 'react'
 
@@ -91,15 +91,15 @@ const CreatePopUp = (props) => {
     }
 
     return (
-        <div class="d-inline pb-1 pr-1">
-            <Button id="show-btn" onClick={handleShow} class="btn btn-primary p-1 mr-1">
+        <div className="d-inline pb-1 pr-1">
+            <Button id="show-btn" onClick={handleShow} className="btn btn-primary p-1 mr-1">
                 Registrar
             </Button>
             <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
+                <Modal.Header className='bg-dark' closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className='bg-dark'>
                     <Form id={formId} onSubmit={accept} onReset={cancel}>
                         {editorSettings.map((fieldSettings, index) => (
                             <CreatePopUpInput
@@ -108,12 +108,14 @@ const CreatePopUp = (props) => {
                                 key={fieldSettings.id + '-' + index}
                             />
                         ))}
-                        <Button type="submit" variant="primary">
-                            Aceptar
-                        </Button>
-                        <Button type="reset" variant="danger">
-                            Cancelar
-                        </Button>
+                        <div class='mt-1'>
+                            <Button className="btn btn-primary mr-1" type="submit" variant="primary">
+                                Aceptar
+                            </Button>
+                            <Button className="btn btn-danger" type="reset" variant="danger">
+                                Cancelar
+                            </Button>
+                        </div>
                     </Form>
                 </Modal.Body>
             </Modal>
@@ -123,7 +125,7 @@ const CreatePopUp = (props) => {
 
 CreatePopUp.propTypes = {
     formId: PropTypes.string,
-    editorSettings: PropTypes.array,
+    editorSettings: PropTypes.any,
     form: PropTypes.any,
     title: PropTypes.string,
 }

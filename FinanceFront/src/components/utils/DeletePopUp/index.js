@@ -1,3 +1,5 @@
+// import styles from './index.module.css';
+
 import React, { useState } from 'react'
 
 import PropTypes from 'prop-types'
@@ -11,54 +13,55 @@ const DEFAULTS = {
     title: 'DefaultTitle',
     editorSettings: [],
     form: {},
+    setReloadGrid: null
 }
 
 const setPropsDefaults = (originalProps) => {
-    let fullProps = Object.assign({}, DEFAULTS, originalProps)
+    let fullProps = Object.assign({}, DEFAULTS, originalProps);
 
-    if (
-        typeof originalProps.editorSettings == 'undefined' ||
-        originalProps.editorSettings == null
-    ) {
-        fullProps.editorSettings = DEFAULTS.editorSettings
+    if (typeof originalProps.editorSettings == 'undefined' ||
+        originalProps.editorSettings == null) {
+        fullProps.editorSettings = DEFAULTS.editorSettings;
     }
 
     if (typeof originalProps.form == 'undefined' || originalProps.form == null) {
-        fullProps.form = DEFAULTS.form
+        fullProps.form = DEFAULTS.form;
     }
 
-    if (
-        typeof originalProps.title == 'undefined' ||
-        originalProps.title == null
-    ) {
-        fullProps.title = DEFAULTS.title
+    if (typeof originalProps.title == 'undefined' ||
+        originalProps.title == null) {
+        fullProps.title = DEFAULTS.title;
+    }
+
+    if (typeof originalProps.setReloadGrid == 'undefined' ||
+        originalProps.setReloadGrid == null) {
+        fullProps.setReloadGrid = DEFAULTS.setReloadGrid;
     }
 
     for (let i = 0; i < fullProps.editorSettings.length; i++) {
-        const fieldSettings = fullProps.editorSettings[i]
+        const fieldSettings = fullProps.editorSettings[i];
 
-        if (
-            !(fieldSettings.id in fullProps.form) ||
+        if (!(fieldSettings.id in fullProps.form) ||
             (typeof fullProps.form[fieldSettings.id] == 'undefined' &&
-                fullProps.form[fieldSettings.id] == null)
-        )
-            fullProps.form[fieldSettings.id] = ''
+                fullProps.form[fieldSettings.id] == null))
+            fullProps.form[fieldSettings.id] = '';
     }
 
-    return fullProps
+    return fullProps;
 }
 
 const DeletePopUp = (props) => {
-    let { title, formId, editorSettings, form } = setPropsDefaults(props)
+    let { title, formId, /*editorSettings,*/ form, actions } = setPropsDefaults(props)
 
-    const [show, setShow] = useState(false)
+    const [show, setShow] = useState(false);
 
-    const handleClose = () => setShow(false)
-    const handleShow = () => setShow(true)
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     const sendForm = function (formValues, callback) {
+        console.log("formValues", formValues);
         if (typeof callback == 'function') {
-            callback()
+            callback();
         }
     }
 
@@ -78,32 +81,34 @@ const DeletePopUp = (props) => {
         resetForm()
     }
 
-    const accept = () => {
+    const accept = (e) => {
+        e.preventDefault();
         let showModalCallback = showModal
         let resetFormCallback = resetForm
         sendForm(form, function () {
-            showModalCallback(false)
-            resetFormCallback()
+            showModalCallback(false);
+            resetFormCallback();
+            actions.confirmCallback();
         })
     }
 
     return (
-        <div class="d-inline pb-1 pr-1">
-            <Button id="show-btn" onClick={handleShow} class="btn btn-danger p-1 mr-1">
+        <div className="d-inline pb-1 pr-1">
+            <Button id="show-btn" onClick={handleShow} className="btn btn-danger p-1 mr-1">
                 Eliminar
             </Button>
 
             <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{title}</Modal.Title>
+                <Modal.Header closeButton className="bg-dark">
+                    <Modal.Title className="fs-5">{title}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <Form id={formId} onSubmit={accept} onReset={cancel}>
+                <Modal.Body className="bg-dark">
+                    <Form id={formId} onSubmit={accept} onReset={cancel} >
                         <div>¿Desea eliminar los elementos seleccionados?</div>
-                        <Button type="submit" variant="primary">
+                        <Button type="submit" variant="primary" className='mt-2 mr-2'>
                             Aceptar
                         </Button>
-                        <Button type="reset" variant="danger">
+                        <Button type="reset" variant="danger" className='mt-2'>
                             Cancelar
                         </Button>
                     </Form>
@@ -115,9 +120,10 @@ const DeletePopUp = (props) => {
 
 DeletePopUp.propTypes = {
     formId: PropTypes.string,
-    editorSettings: PropTypes.array,
+    editorSettings: PropTypes.any,
     form: PropTypes.any,
     title: PropTypes.string,
+    actions: PropTypes.any,
 }
 
 export default DeletePopUp
