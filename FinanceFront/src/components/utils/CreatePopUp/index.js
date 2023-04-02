@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
-import CreatePopUpInput from '../CreatePopUpInput'
+import CreatePopUpInput from '../PopUpInput'
 
 const DEFAULTS = {
     formId: 'DefaultForm',
@@ -96,7 +96,7 @@ const CreatePopUp = (props) => {
                 Registrar
             </Button>
             <Modal show={show} onHide={handleClose}>
-                <Modal.Header className='bg-dark' closeButton>
+                <Modal.Header className={["text-light", "bg-success"]} closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className='bg-dark'>
@@ -108,8 +108,8 @@ const CreatePopUp = (props) => {
                                 key={fieldSettings.id + '-' + index}
                             />
                         ))}
-                        <div class='mt-1'>
-                            <Button className="btn btn-primary mr-1" type="submit" variant="primary">
+                        <div className={['mt-3']}>
+                            <Button className="btn btn-primary mr-2" type="submit" variant="primary">
                                 Aceptar
                             </Button>
                             <Button className="btn btn-danger" type="reset" variant="danger">

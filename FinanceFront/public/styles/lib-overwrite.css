@@ -1,0 +1,18 @@
+.TextLightForced {
+    background-color: white !important;
+    border-radius: 4px !important;
+}
+
+.TextLightForced input {
+    /* padding: 0.375rem 0.75rem; */
+}
+
+.MuiFormControl-root.MuiTextField-root>.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl.MuiInputBase-adornedEnd {
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    background-color: white;
+}
+
+.MuiFormControl-root.MuiTextField-root>.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl.MuiInputBase-adornedEnd input {
+    padding: 0;
+}

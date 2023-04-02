@@ -1,38 +1,50 @@
 import create from 'zustand';
 import apiCall from '../../api';
 
+const DEFAULTS = {
+    all: [],
+    single: {},
+    isLoading: false,
+}
+
 const useStore = create((set, get) => ({
     getAll: async (url) => {
         try {
-            set({ isLoading: false, errorMessage: "", hasError: false });
-            set({ results: await apiCall({ url: url }) });
+            set({ isLoading: DEFAULTS.isLoading, errorMessage: "", hasError: false });
+            set({ all: await apiCall({ url: url }) });
         }
         catch (error) {
             console.error(error);
-            set({ results: [], hasError: true, errorMessage: "Algo ha pasado, verifica tu conexión" });
+            set({ all: DEFAULTS.all, hasError: true, errorMessage: "Algo ha pasado, verifica tu conexión" });
         }
         finally {
-            set({ isLoading: false });
+            set({ isLoading: DEFAULTS.isLoading });
         }
     },
-    results: [],
+    all: [],
+    clearAll: async () => {
+        set({ all: DEFAULTS.all });
+    },
     getSingle: async (url, id) => {
         if (!id) return;
 
         try {
-            set({ isLoading: false, errorMessage: "", hasError: false });
-            set({ result: await apiCall({ url: url + `${id}` }) });
+            set({ isLoading: DEFAULTS.isLoading, errorMessage: "", hasError: false });
+            set({ single: await apiCall({ url: url + `${id}` }) });
         }
         catch (error) {
             console.error(error);
-            set({ hasError: true, errorMessage: "Algo ha pasado, verifica tu conexión", single: {} });
+            set({ single: DEFAULTS.single, hasError: true, errorMessage: "Algo ha pasado, verifica tu conexión" });
         }
         finally {
-            set({ isLoading: false });
+            set({ isLoading: DEFAULTS.isLoading });
         }
     },
-    single: [],
-    isLoading: false,
+    single: DEFAULTS.single,
+    clearSingle: async () => {
+        set({ single: DEFAULTS.single });
+    },
+    isLoading: DEFAULTS.isLoading,
     errorMessage: "",
     hasError: false
 }));

@@ -3,7 +3,6 @@ import './index.css';
 import './mui-grid.css';
 import './popup.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-themes/dist/cable/index.min.css';
 
 import {
     BrowserRouter,
@@ -24,7 +23,7 @@ function App() {
     const changeClass = ({ isActive }) => navLinkClass + (isActive ? 'active' : 'nav-link inactive');
 
     return (
-        <div className="main">
+        <div className="main bg-dark">
             <Provider>
                 <BrowserRouter>
                     <nav className="navbar navbar-expand-sm navbar-dark bg-success mb-3">
@@ -42,20 +41,22 @@ function App() {
                             </div>
                         </div>
                     </nav>
-                    <Routes>
-                        <Route path={URLs.Home} element={<Home />} />
-                        <Route path={URLs.Funds} element={<Funds />} />
-                        <Route path={URLs.Dashboard} element={<Dashboard />} />
-                        {/*
-        <Route path='/about' element={<About />} />
-        <Route path='/dolar' element={<Dolar />} />
-        <Route path='/fciRentaPesos' element={<FCIRentaPesos />} />
-        <Route path='/iol' element={<IOL />} />
-        <Route path='/lemon' element={<Lemon />} />
-        <Route path='/mercadoPago' element={<MercadoPago />} />
-        <Route path='/plazosFijos' element={<PlazosFijos />} />
-        */}
-                    </Routes>
+                    <div className="tab-content pl-3 pr-3">
+                        <Routes>
+                            <Route path={URLs.Home} element={<Home />} />
+                            <Route path={URLs.Funds} element={<Funds />} />
+                            <Route path={URLs.Dashboard} element={<Dashboard />} />
+                            {/*
+                            <Route path='/about' element={<About />} />
+                            <Route path='/dolar' element={<Dolar />} />
+                            <Route path='/fciRentaPesos' element={<FCIRentaPesos />} />
+                            <Route path='/iol' element={<IOL />} />
+                            <Route path='/lemon' element={<Lemon />} />
+                            <Route path='/mercadoPago' element={<MercadoPago />} />
+                            <Route path='/plazosFijos' element={<PlazosFijos />} />
+                            */}
+                        </Routes>
+                    </div>
                 </BrowserRouter>
             </Provider>
         </div >
