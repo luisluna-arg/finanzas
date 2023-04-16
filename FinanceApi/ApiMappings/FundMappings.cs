@@ -51,7 +51,7 @@ internal static class FundMappingExtensions
         var module = db.Module.FirstOrDefault(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
 
-        var ocrHelper = new OCRHelper();
+        var ocrHelper = new OcrHelper();
 
         if (dateKind == null || dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
         var (newMovements, newCurrencyConversions) = ocrHelper.Process(files, db, module, dateReference ?? DateTime.Now, dateKind.Value);
@@ -61,7 +61,7 @@ internal static class FundMappingExtensions
 
     internal static async void ProcessImage(HttpContext httpContext, IFormFileCollection files, FinanceDb db, DateTimeKind? dateKind)
     {
-        var ocrHelper = new OCRHelper();
+        var ocrHelper = new OcrHelper();
 
         var file = files[0];
         MemoryStream ms = new MemoryStream();
@@ -79,7 +79,7 @@ internal static class FundMappingExtensions
 
     internal static async void ProcessImageToText(HttpContext httpContext, IFormFileCollection files, FinanceDb db, DateTimeKind? dateKind)
     {
-        var ocrHelper = new OCRHelper();
+        var ocrHelper = new OcrHelper();
 
         var textFromFiles = ocrHelper.CitricCaptureToImage(files);
 

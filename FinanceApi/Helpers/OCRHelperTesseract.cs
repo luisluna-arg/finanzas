@@ -7,9 +7,9 @@ using Tesseract;
 
 namespace FinanceApi.Helpers;
 
-internal class OCRHelper
+internal class OcrHelper
 {
-    private const string _languageFilePath = @"./Assets/tessdata";
+    private const string languageFilePath = @"./Assets/tessdata";
 
     internal (Movement[], CurrencyConversion[]) Process(IEnumerable<IFormFile> files, FinanceDb db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
@@ -54,7 +54,7 @@ internal class OCRHelper
 
         using (var image = Tesseract.Pix.LoadFromMemory(bytes))
         {
-            using (var engine = new TesseractEngine(_languageFilePath, "spa", EngineMode.Default))
+            using (var engine = new TesseractEngine(languageFilePath, "spa", EngineMode.Default))
             {
                 engine.SetVariable("user_defined_dpi", "300");
                 using (var page = engine.Process(image))
@@ -91,7 +91,7 @@ internal class OCRHelper
 
         List<string> result = new List<string>();
 
-        using (var engine = new TesseractEngine(_languageFilePath, "spa", EngineMode.Default))
+        using (var engine = new TesseractEngine(languageFilePath, "spa", EngineMode.Default))
         {
             engine.SetVariable("user_defined_dpi", "300");
 
@@ -123,7 +123,7 @@ internal class OCRHelper
                                 var iConcept = 0;
                                 var iVal = 0;
 
-                                Func<string, string> numberFormatter = (str) => str.Replace("+ ", "").Replace("- ", "-").Replace(".", "").Replace(",", ".").Replace("= ", "").Replace(" ", "\t");
+                                Func<string, string> numberFormatter = (str) => str.Replace("+ ", string.Empty).Replace("- ", "-").Replace(".", string.Empty).Replace(",", ".").Replace("= ", string.Empty).Replace(" ", "\t");
 
                                 while (iConcept < concepts.Length && iVal < values.Length)
                                 {
@@ -191,7 +191,7 @@ internal class OCRHelper
         var amountLocalCurrencyStr = match.Groups[7].Value.Trim();
         string localCurrencyName = match.Groups[8].Value.Trim();
 
-        CurrencyConversion currencyConversion = null;
+        CurrencyConversion? currencyConversion = null;
         if (!string.IsNullOrWhiteSpace(amountLocalCurrencyStr) && !string.IsNullOrWhiteSpace(localCurrencyName))
         {
             decimal amountLocalCurrency = 0;
@@ -207,8 +207,6 @@ internal class OCRHelper
                 Currency = conversionCurrency
             };
         }
-
-
         return (movement, currencyConversion);
     }
 
@@ -221,7 +219,7 @@ internal class OCRHelper
 
     private void DocumentProcessGuard()
     {
-        if (!System.IO.Directory.Exists(_languageFilePath)) throw new FileNotFoundException("Language file not found");
+        if (!System.IO.Directory.Exists(languageFilePath)) throw new FileNotFoundException("Language file not found");
     }
 
     public MemoryStream AdjustImage(MemoryStream stream)

@@ -11,7 +11,6 @@ internal static class DateExtensions
                         referenceDate.Hour,
                         referenceDate.Minute,
                         referenceDate.Second,
-                        referenceDate.Kind
-                        );
+                        referenceDate.Kind);
     }
 }

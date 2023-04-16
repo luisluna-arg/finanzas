@@ -11,7 +11,7 @@ internal class CurrencyConversion : Entity
 
     [ForeignKey("MovementId")]
     public Guid MovementId { get; set; }
-    public Movement Movement { get; internal set; }
+    public Movement? Movement { get; internal set; }
     public decimal Amount { get; internal set; }
-    public Currency Currency { get; internal set; }
+    public Currency? Currency { get; internal set; }
 }
