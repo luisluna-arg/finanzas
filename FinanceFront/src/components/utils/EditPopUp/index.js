@@ -1,22 +1,19 @@
 // import styles from './styles.module.css';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import PropTypes from 'prop-types'
 
 import Button from 'react-bootstrap/Button'
 import PopUpModal from '../PopUpModal'
-import { ApiUrls, APIs } from '../../../utils/commons';
 import { useStateContext/*, Provider*/ } from '../../../context';
-import { shallow } from 'zustand/shallow';
-import useMovementsStore from "../../../zustand/stores/generic";
 
 const EditPopUp = (props) => {
 
     const stateContext = useStateContext();
 
     const [visible, setVisible] = useState(false)
-    const [movementId, setMovementId] = useState(null)
+    const [, setMovementId] = useState(null)
 
     const handleVisible = () => {
         if (!stateContext.context.selectedIds || stateContext.context.selectedIds.length === 0) {

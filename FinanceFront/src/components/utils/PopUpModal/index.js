@@ -1,6 +1,6 @@
 // import styles from './styles.module.css';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import PropTypes from 'prop-types'
 
@@ -8,8 +8,6 @@ import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
 import PopUpInput from '../PopUpInput'
-import { ApiUrls, APIs } from '../../../utils/commons';
-import { useStateContext/*, Provider*/ } from '../../../context';
 import { shallow } from 'zustand/shallow';
 import useMovementsStore from "../../../zustand/stores/generic";
 
@@ -58,18 +56,14 @@ const setPropsDefaults = (originalProps) => {
 const PopUpModal = (props) => {
     let { title, formId, editorSettings, form } = setPropsDefaults(props)
 
-    const stateContext = useStateContext();
-
     const [show, setShow] = useState(props.visible)
-    const [reloadSingle, setReloadSingle] = useState(false)
-    const [movementId, setMovementId] = useState(null)
 
     const handleClose = () => {
         setShow(false);
         clearSingle();
     }
 
-    const { getSingle, single, clearSingle, isLoading } = useMovementsStore(state => ({
+    const { single, clearSingle } = useMovementsStore(state => ({
         getSingle: state.getSingle,
         single: state.single,
         isLoading: state.isLoading,
@@ -77,7 +71,7 @@ const PopUpModal = (props) => {
     }), shallow); // Using zustand
 
 
-    const sendForm = function (formValues, callback) {
+    const sendForm = function (callback) {
         if (typeof callback == 'function') {
             callback()
         }
