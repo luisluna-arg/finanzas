@@ -1,8 +1,9 @@
 import React from 'react';
-import './index.css';
-import './mui-grid.css';
-import './popup.css';
+import './index.scss';
+import './mui-grid.scss';
+import './popup.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../../styles/lib-overwrite.scss'; // assuming a styles directory under src/
 
 import {
     BrowserRouter,
