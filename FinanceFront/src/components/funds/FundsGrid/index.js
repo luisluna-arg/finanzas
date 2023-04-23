@@ -37,7 +37,6 @@ const FundsGrid = (props) => {
     }), shallow); // Using zustand
 
     const stateContext = useStateContext();
-    // console.log("stateContext2-C", stateContext.context);
 
     useEffect(() => {
         getAll(ApiUrls[APIs.Movement].all).catch((a) => {
@@ -46,11 +45,7 @@ const FundsGrid = (props) => {
         //eslint-disable-next-line
 
         if (props.reloadGridOn) {
-            console.log("Reload");
             props.disableReload();
-        }
-        else {
-            console.log("No reload");
         }
     }, [getAll, props]);
 

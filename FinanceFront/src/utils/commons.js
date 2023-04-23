@@ -16,6 +16,7 @@ ApiUrls[APIs.Movement] = {};
 ApiUrls[APIs.Movement]['base'] = BASE_SERVICES_URL + "/movement";
 ApiUrls[APIs.Movement]['all'] = ApiUrls[APIs.Movement].base + "/all";
 ApiUrls[APIs.Movement]['single'] = ApiUrls[APIs.Movement].base + "/single/";
+ApiUrls[APIs.Movement]['totals'] = ApiUrls[APIs.Movement].base + "/totals/";
 
 export {
     APIs,

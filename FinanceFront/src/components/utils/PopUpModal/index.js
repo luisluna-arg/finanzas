@@ -1,5 +1,3 @@
-// import styles from './styles.module.css';
-
 import React, { useState } from 'react';
 
 import PropTypes from 'prop-types'
@@ -89,8 +87,6 @@ const PopUpModal = (props) => {
     }
 
     const getFieldValue = (formValueId, record) => {
-        // console.log("formValueId", formValueId);
-        // console.log("record", record);
         switch (formValueId) {
             case "date": return record.timeStamp;
             case "concept1": return record.concept1;

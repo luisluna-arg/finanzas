@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-// import PropTypes from 'prop-types';
-// import styles from './styles.css';
 
 import ImportButton from '../../utils/ImportButton';
 import CreatePopUp from '../../utils/CreatePopUp';
@@ -18,7 +16,8 @@ const CreateEditPopUpSettings = [
     { id: "date", type: "DateInput", label: "Fecha" },
     { id: "concept1", type: "TextInput", label: "Concepto 1" },
     { id: "concept2", type: "TextInput", label: "Concepto 2" },
-    { id: "movement", type: "DecimalInput", label: "Movimiento" }
+    { id: "movement", type: "DecimalInput", label: "Movimiento" },
+    { id: "total", type: "DecimalInput", label: "Fondos" }
 ];
 const DeletePopUpSettings = [];
 const DeletePopUpActions = {
@@ -33,12 +32,8 @@ function Funds() {
 
     const stateContext = useStateContext();
 
-    const selected = stateContext.context;
-
     DeletePopUpActions.confirmCallback = function () {
         enableReload();
-
-        console.log("stateContext2-C", selected);
     }
 
     return (

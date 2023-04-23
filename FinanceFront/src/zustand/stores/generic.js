@@ -4,6 +4,7 @@ import apiCall from '../../api';
 const DEFAULTS = {
     all: [],
     single: {},
+    totals: {},
     isLoading: false,
 }
 
@@ -14,14 +15,14 @@ const useStore = create((set, get) => ({
             set({ all: await apiCall({ url: url }) });
         }
         catch (error) {
-            console.error(error);
+            console.error(error.json());
             set({ all: DEFAULTS.all, hasError: true, errorMessage: "Algo ha pasado, verifica tu conexión" });
         }
         finally {
             set({ isLoading: DEFAULTS.isLoading });
         }
     },
-    all: [],
+    all: DEFAULTS.all,
     clearAll: async () => {
         set({ all: DEFAULTS.all });
     },
@@ -44,6 +45,19 @@ const useStore = create((set, get) => ({
     clearSingle: async () => {
         set({ single: DEFAULTS.single });
     },
+    getTotals: async (url) => {
+        try {
+            set({ isLoading: DEFAULTS.isLoading, errorMessage: "", hasError: false });
+            set({ totals: await apiCall({ url: url }) });
+        }
+        catch (error) {
+            set({ totals: DEFAULTS.totals, hasError: true, errorMessage: "Algo ha pasado, verifica tu conexión" });
+        }
+        finally {
+            set({ isLoading: DEFAULTS.isLoading });
+        }
+    },
+    totals: DEFAULTS.totals,
     isLoading: DEFAULTS.isLoading,
     errorMessage: "",
     hasError: false

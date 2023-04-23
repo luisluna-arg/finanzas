@@ -27,7 +27,7 @@ const PieChart = () => {
       theme={"theme_name"}
       onChartReady={this.onChartReadyCallback}
       onEvents={EventsDict}
-      opts={ }
+      // opts=null
     />
   );
 };

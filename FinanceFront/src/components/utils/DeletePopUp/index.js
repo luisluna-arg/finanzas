@@ -1,5 +1,3 @@
-// import styles from './index.module.css';
-
 import React, { useState } from 'react'
 
 import PropTypes from 'prop-types'
@@ -59,7 +57,6 @@ const DeletePopUp = (props) => {
     const handleShow = () => setShow(true);
 
     const sendForm = function (formValues, callback) {
-        console.log("formValues", formValues);
         if (typeof callback == 'function') {
             callback();
         }

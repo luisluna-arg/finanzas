@@ -14,8 +14,8 @@ const sendFile = function (uploadType, form, callback = null) {
             if (callback != null) callback();
         })
         .catch((...errors) => {
-            console.log("Couldn't upload file");
-            console.log(errors);
+            console.error("Couldn't upload file");
+            console.error(errors);
         });
 }
 

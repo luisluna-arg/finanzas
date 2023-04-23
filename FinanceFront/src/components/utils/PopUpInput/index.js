@@ -34,16 +34,27 @@ const setPropsDefaults = (originalProps) => {
 const DateTimeInputControl = () => {
     return <div className='mb-2 text-light'>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDateTimePicker defaultValue={dayjs('2022-04-17T15:30')} />
+            <DesktopDateTimePicker defaultValue={dayjs('2022-04-17T15:30')} format='DD/MM/YYYY hh:mm A' />
         </LocalizationProvider>
     </div>;
 };
 
+const DecimalInputControl = () => {
+    return <div className='mb-2 text-light'>
+        <input
+            class="mb-2 form-control"
+            type="number"
+            step="0.01"
+        />
+    </div>;
+}
+
 const InputControl = (props) => {
-    console.log("InputControl.props", props);
     switch (props.settings.type) {
         case "DateInput":
             return DateTimeInputControl(props);
+        case "DecimalInput":
+            return DecimalInputControl(props);
         default: {
             return <Form.Control
                 className="mb-2"
