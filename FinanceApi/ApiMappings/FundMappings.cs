@@ -37,7 +37,7 @@ internal static class FundMappingExtensions
         newRecords = newRecords.Where(o => existingRecords.All(x =>
             x.ModuleId != o.ModuleId ||
                 x.TimeStamp != o.TimeStamp ||
-                x.Ammount != o.Ammount ||
+                x.Amount != o.Amount ||
                 x.Total != o.Total ||
                 x.Concept1 != o.Concept1 ||
                 x.Concept2 != o.Concept2)).ToArray();

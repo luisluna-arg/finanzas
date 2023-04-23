@@ -16,7 +16,7 @@ internal class Movement : Entity, IEquatable<Movement>
     required public DateTime TimeStamp { get; set; }
     required public string Concept1 { get; set; }
     required public string? Concept2 { get; set; }
-    required public decimal Ammount { get; set; }
+    required public decimal Amount { get; set; }
     required public decimal? Total { get; set; }
 
     public override bool Equals(object? obj)
@@ -31,7 +31,7 @@ internal class Movement : Entity, IEquatable<Movement>
         var result =
             this.ModuleId == movement2.ModuleId &&
             this.TimeStamp == movement2.TimeStamp &&
-            this.Ammount == movement2.Ammount &&
+            this.Amount == movement2.Amount &&
             this.Total == movement2.Total &&
             this.Concept1 == movement2.Concept1 &&
             this.Concept2 == movement2.Concept2;
@@ -42,7 +42,7 @@ internal class Movement : Entity, IEquatable<Movement>
     public override int GetHashCode() => (
         this.ModuleId,
         this.TimeStamp,
-        this.Ammount,
+        this.Amount,
         this.Total,
         this.Concept1,
         this.Concept2).GetHashCode();

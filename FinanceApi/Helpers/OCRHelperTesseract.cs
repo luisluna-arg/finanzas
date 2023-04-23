@@ -181,7 +181,7 @@ internal class OcrHelper
             TimeStamp = date,
             Concept1 = entity,
             Concept2 = string.Empty,
-            Ammount = amount,
+            Amount = amount,
             Total = null,
             Currency = movementCurrency
         };
