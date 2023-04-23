@@ -14,10 +14,10 @@ internal class Movement : Entity, IEquatable<Movement>
     required public Module Module { get; set; }
     required public Currency? Currency { get; set; }
     required public DateTime TimeStamp { get; set; }
-    required public decimal Ammount { get; set; }
-    required public decimal? Total { get; set; }
     required public string Concept1 { get; set; }
     required public string? Concept2 { get; set; }
+    required public decimal Ammount { get; set; }
+    required public decimal? Total { get; set; }
 
     public override bool Equals(object? obj)
     {
