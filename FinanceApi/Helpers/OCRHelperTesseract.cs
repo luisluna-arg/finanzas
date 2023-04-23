@@ -9,7 +9,7 @@ namespace FinanceApi.Helpers;
 
 internal class OcrHelper
 {
-    private const string languageFilePath = @"./Assets/tessdata";
+    private const string LanguageFilePath = @"./Assets/tessdata";
 
     internal (Movement[], CurrencyConversion[]) Process(IEnumerable<IFormFile> files, FinanceDb db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
@@ -54,7 +54,7 @@ internal class OcrHelper
 
         using (var image = Tesseract.Pix.LoadFromMemory(bytes))
         {
-            using (var engine = new TesseractEngine(languageFilePath, "spa", EngineMode.Default))
+            using (var engine = new TesseractEngine(LanguageFilePath, "spa", EngineMode.Default))
             {
                 engine.SetVariable("user_defined_dpi", "300");
                 using (var page = engine.Process(image))
@@ -65,7 +65,6 @@ internal class OcrHelper
                         .ToArray();
 
                     text = text.Skip(2).ToArray();
-                    DateTime localReferenceDate = referenceDate.Duplicate();
                     var currencies = db.Currency.ToArray();
 
                     for (var i = 0; i + 1 < text.Length; i = i + 2)
@@ -91,14 +90,14 @@ internal class OcrHelper
 
         List<string> result = new List<string>();
 
-        using (var engine = new TesseractEngine(languageFilePath, "spa", EngineMode.Default))
+        using (var engine = new TesseractEngine(LanguageFilePath, "spa", EngineMode.Default))
         {
             engine.SetVariable("user_defined_dpi", "300");
 
             foreach (var file in files)
             {
                 result.Add(file.FileName);
-                result.Add("");
+                result.Add(string.Empty);
                 using (var imageStream = new MemoryStream())
                 {
                     file.CopyTo(imageStream);
@@ -167,7 +166,6 @@ internal class OcrHelper
         string localPattern = @"(\d+)(\sde\s)([a-zA-Z]+)(\s*)([\=z\s]*)(\s*)([\d,\s]*)([a-zA-Z]*)";
         match = Regex.Match(dateAndConversion, localPattern);
 
-        string[] dateValues = match.Groups[1].Value.Trim().TrimStart('.').Trim().Split(" de ");
         short dateDay;
         short.TryParse(match.Groups[1].Value.Trim(), out dateDay);
         int dateMonth = DateHelpers.GetMonthNumber(match.Groups[3].Value);
@@ -195,8 +193,7 @@ internal class OcrHelper
         if (!string.IsNullOrWhiteSpace(amountLocalCurrencyStr) && !string.IsNullOrWhiteSpace(localCurrencyName))
         {
             decimal amountLocalCurrency = 0;
-            if (!string.IsNullOrWhiteSpace(amountLocalCurrencyStr))
-                decimal.TryParse(amountLocalCurrencyStr, out amountLocalCurrency);
+            decimal.TryParse(amountLocalCurrencyStr, out amountLocalCurrency);
 
             var conversionCurrency = this.GetCurrency(currencies, localCurrencyName);
 
@@ -219,7 +216,7 @@ internal class OcrHelper
 
     private void DocumentProcessGuard()
     {
-        if (!System.IO.Directory.Exists(languageFilePath)) throw new FileNotFoundException("Language file not found");
+        if (!System.IO.Directory.Exists(LanguageFilePath)) throw new FileNotFoundException("Language file not found");
     }
 
     public MemoryStream AdjustImage(MemoryStream stream)
@@ -228,8 +225,9 @@ internal class OcrHelper
         {
             using (Bitmap image = new Bitmap(stream))
             {
-                var colorsToReplace = new Color[] {
-                    GetMostUsedColor(image)
+                var colorsToReplace = new Color[] 
+                {
+                    this.GetMostUsedColor(image)
                 };
 
                 for (int x = 0; x < image.Width; x++)
@@ -237,8 +235,8 @@ internal class OcrHelper
                     for (int y = 0; y < image.Height; y++)
                     {
                         Color originalColor = image.GetPixel(x, y);
-                        var newColor = ApplyHighContrast(originalColor, colorsToReplace);
-                        newColor = ApplyGreyScale(newColor);
+                        var newColor = this.ApplyHighContrast(originalColor, colorsToReplace);
+                        newColor = this.ApplyGreyScale(newColor);
                         image.SetPixel(x, y, newColor);
                     }
                 }

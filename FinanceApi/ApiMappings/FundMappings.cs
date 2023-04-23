@@ -46,7 +46,7 @@ internal static class FundMappingExtensions
         await db.SaveChangesAsync();
     }
 
-    internal static async void UploadImage(IFormFileCollection files, FinanceDb db, DateTime? dateReference, DateTimeKind? dateKind)
+    internal static void UploadImage(IFormFileCollection files, FinanceDb db, DateTime? dateReference, DateTimeKind? dateKind)
     {
         var module = db.Module.FirstOrDefault(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
@@ -59,7 +59,7 @@ internal static class FundMappingExtensions
         if (newMovements == null || newMovements.Length == 0) return;
     }
 
-    internal static async void ProcessImage(HttpContext httpContext, IFormFileCollection files, FinanceDb db, DateTimeKind? dateKind)
+    internal static async Task ProcessImage(HttpContext httpContext, IFormFileCollection files, FinanceDb db, DateTimeKind? dateKind)
     {
         var ocrHelper = new OcrHelper();
 
@@ -77,7 +77,7 @@ internal static class FundMappingExtensions
         await stream.CopyToAsync(response.Body);
     }
 
-    internal static async void ProcessImageToText(HttpContext httpContext, IFormFileCollection files, FinanceDb db, DateTimeKind? dateKind)
+    internal static async Task ProcessImageToText(HttpContext httpContext, IFormFileCollection files, FinanceDb db, DateTimeKind? dateKind)
     {
         var ocrHelper = new OcrHelper();
 

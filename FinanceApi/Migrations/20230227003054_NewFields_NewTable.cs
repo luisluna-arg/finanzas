@@ -30,7 +30,7 @@ namespace FinanceApi.Migrations
                 table: "Currency",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: string.Empty);
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_ModuleEntry",

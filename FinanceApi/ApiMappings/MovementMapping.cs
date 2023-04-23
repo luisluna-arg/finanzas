@@ -15,12 +15,8 @@ internal static class MovementMappingExtensions
     {
         var latestMovement = db.Movement.OrderByDescending(o => o.TimeStamp).FirstOrDefault();
 
-        if (latestMovement == null) return Results.BadRequest<string>("No funds available"); ;
-
-        return Results.Ok<TotalsDto>(new TotalsDto()
-        {
-            TimeStamp = DateTime.Now,
-            Total = 0
-        });
+        if (latestMovement == null) return Results.BadRequest<string>("No funds available");
+        
+        return Results.Ok<TotalsDto>(new TotalsDto());
     }
 }
