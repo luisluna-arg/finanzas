@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
+import moment from 'moment';
 import dayjs from 'dayjs';
 
 const DEFAULTS = {
@@ -30,19 +31,28 @@ const setPropsDefaults = (originalProps) => {
     return fullProps
 }
 
-
-const DateTimeInputControl = () => {
+const DateTimeInputControl = (props) => {
     return <div className='mb-2 text-light'>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDateTimePicker defaultValue={dayjs('2022-04-17T15:30')} format='DD/MM/YYYY hh:mm A' />
+            <DesktopDateTimePicker
+                defaultValue={dayjs(moment().format())}
+                format='DD/MM/YYYY hh:mm A'
+                slotProps={{
+                    textField: {
+                        //required: true,
+                        id: props.settings.id ?? ""
+                    }
+                }}
+            />
         </LocalizationProvider>
     </div>;
 };
 
-const DecimalInputControl = () => {
+const DecimalInputControl = (props) => {
     return <div className='mb-2 text-light'>
         <input
-            class="mb-2 form-control"
+            id={props.settings.id ?? ""}
+            className="mb-2 form-control"
             type="number"
             step="0.01"
         />
@@ -57,7 +67,7 @@ const InputControl = (props) => {
             return DecimalInputControl(props);
         default: {
             return <Form.Control
-                className="mb-2"
+                className={"mb-2"}
                 id={props.settings.id}
                 type={props.settings.type}
                 placeholder={props.settings.placeholder}

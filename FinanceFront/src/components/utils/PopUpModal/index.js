@@ -125,7 +125,7 @@ const PopUpModal = (props) => {
                         />
                     ))}
                     <div className={['mt-3']}>
-                        <Button className="btn btn-primary mr-2" type="submit" variant="primary">
+                        <Button className="btn btn-primary me-2" type="submit" variant="primary">
                             Aceptar
                         </Button>
                         <Button className="btn btn-danger" type="reset" variant="danger">

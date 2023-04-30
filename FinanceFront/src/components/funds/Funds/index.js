@@ -9,15 +9,14 @@ import FundsTotal from '../FundsTotal';
 
 import { UploadTypes } from '../../../utils/commons';
 import { Outlet } from 'react-router-dom'
-import { useStateContext/*, Provider*/ } from '../../../context';
 
 const FundsUploadType = UploadTypes.Funds;
 const CreateEditPopUpSettings = [
-    { id: "date", type: "DateInput", label: "Fecha" },
-    { id: "concept1", type: "TextInput", label: "Concepto 1" },
-    { id: "concept2", type: "TextInput", label: "Concepto 2" },
-    { id: "movement", type: "DecimalInput", label: "Movimiento" },
-    { id: "total", type: "DecimalInput", label: "Fondos" }
+    { id: "TimeStamp", type: "DateInput", label: "Fecha" },
+    { id: "Concept1", type: "TextInput", label: "Concepto 1" },
+    { id: "Concept2", type: "TextInput", label: "Concepto 2" },
+    { id: "Amount", type: "DecimalInput", label: "Movimiento" },
+    { id: "Total", type: "DecimalInput", label: "Fondos" }
 ];
 const DeletePopUpSettings = [];
 const DeletePopUpActions = {
@@ -30,27 +29,34 @@ function Funds() {
     const enableReload = function () { setReloadGridOn(true); }
     const disableReload = function () { setReloadGridOn(false); }
 
-    const stateContext = useStateContext();
-
     DeletePopUpActions.confirmCallback = function () {
         enableReload();
     }
 
+    const create = (data) => {
+        alert("Funciona");
+
+        // movementsApi
+        console.log("data", data);
+    }
+
+    const cancel = () => { }
+
     return (
-        <>
+        <div className='ps-3 pe-3'>
             <ImportButton UploadType={FundsUploadType} id="fundImport" />
+            <FundsTotal />
             <div className="input-group mb-3">
                 <div className="input-group-prepend">
-                    <CreatePopUp editorSettings={CreateEditPopUpSettings} formId="fundsForm" title="Alta de movimiento" />
+                    <CreatePopUp editorSettings={CreateEditPopUpSettings} formId="fundsForm" title="Alta de movimiento" accept={create} cancel={cancel} />
                     <EditPopUp editorSettings={CreateEditPopUpSettings} formId="fundsForm" title="Edición de movimiento" />
                     <DeletePopUp editorSettings={DeletePopUpSettings} actions={DeletePopUpActions} formId="fundsForm" title="Eliminar registros" />
                 </div>
             </div>
             {/* <FondosChart /> */}
             <FundsGrid reloadGridOn={reloadGridOn} disableReload={disableReload} />
-            <FundsTotal />
             <Outlet />
-        </>
+        </div>
     );
 };
 

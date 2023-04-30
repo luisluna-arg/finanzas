@@ -1,7 +1,6 @@
 const URLs = {
-    Home: "/",
+    Funds: "/",
     Dashboard: "/dashboard",
-    Funds: "/funds",
     FCIFBARentaPesos: "/fciRentaPesos",
     PlazosFijos: "/plazosFijos",
     MercadoPago: "/mercadoPago",

@@ -90,8 +90,8 @@ const DeletePopUp = (props) => {
     }
 
     return (
-        <div className="d-inline pb-1 pr-1">
-            <Button id="show-btn" onClick={handleShow} className="btn btn-danger p-1 mr-1">
+        <div className="d-inline pb-1 pe-1">
+            <Button id="show-btn" onClick={handleShow} className="btn btn-danger p-1 me-1">
                 Eliminar
             </Button>
 
@@ -102,7 +102,7 @@ const DeletePopUp = (props) => {
                 <Modal.Body className="bg-dark">
                     <Form id={formId} onSubmit={accept} onReset={cancel} >
                         <div>¿Desea eliminar los elementos seleccionados?</div>
-                        <Button type="submit" variant="primary" className='mt-2 mr-2'>
+                        <Button type="submit" variant="primary" className='mt-2 me-2'>
                             Aceptar
                         </Button>
                         <Button type="reset" variant="danger" className='mt-2'>

@@ -1,5 +1,16 @@
 /* ************************************************** */
-/* MUI GRID STYLES */
+/* MUI STYLES                                         */
+/* ************************************************** */
+.MuiInputBase-root.MuiOutlinedInput-root {
+    background-color: white;
+}
+
+.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedEnd {
+    padding: 6px;
+}
+
+/* ************************************************** */
+/* MUI GRID STYLES                                    */
 /* ************************************************** */
 .MuiDataGrid-root {
     color: white !important;
@@ -18,7 +29,7 @@
     min-height: 40px !important;
     height: 40px !important;
     line-height: 40px !important;
-    background-color: green !important;
+    background-color: rgba(var(--bs-success-rgb),var(--bs-bg-opacity))!important;
 }
 
 .MuiTablePagination-root {
@@ -60,4 +71,8 @@
     /* border: 1px solid red !important; */
     padding: 0 !important;
     margin: 0 !important;
+}
+
+.MuiDataGrid-root.MuiDataGrid-root--densityStandard.css-1e2bxag-MuiDataGrid-root {
+    padding: 0;
 }

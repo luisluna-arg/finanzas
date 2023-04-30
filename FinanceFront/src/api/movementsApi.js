@@ -22,8 +22,13 @@ const totals = (successCallback, catchCallback, finallyCallback) => {
     makeCall(methods.get, ApiUrls[APIs.Movement].totals, successCallback, catchCallback, finallyCallback);
 }
 
+const create = (data, successCallback, catchCallback, finallyCallback) => {
+    makeCall(methods.put, ApiUrls[APIs.Movement].create, successCallback, catchCallback, finallyCallback);
+}
+
 const movementsApi = {
     totals,
+    create
 };
 
 export default movementsApi;

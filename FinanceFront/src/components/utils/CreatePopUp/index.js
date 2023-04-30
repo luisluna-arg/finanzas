@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
 import CreatePopUpInput from '../PopUpInput'
+import movementsApi from '../../../api/movementsApi'
 
 const DEFAULTS = {
     formId: 'DefaultForm',
@@ -55,12 +56,9 @@ const CreatePopUp = (props) => {
     const [show, setShow] = useState(false)
 
     const handleClose = () => setShow(false)
-    const handleShow = () => setShow(true)
-
-    const sendForm = function (formValues, callback) {
-        if (typeof callback == 'function') {
-            callback()
-        }
+    const handleShow = (e) => {
+        e.preventDefault();
+        setShow(true);
     }
 
     const resetForm = () => {
@@ -79,18 +77,27 @@ const CreatePopUp = (props) => {
         resetForm()
     }
 
-    const accept = () => {
-        let showModalCallback = showModal
-        let resetFormCallback = resetForm
-        sendForm(form, function () {
-            showModalCallback(false)
-            resetFormCallback()
-        })
+    const accept = (event) => {
+        event.preventDefault();
+
+        let data = {};
+
+        editorSettings.forEach((item) => {
+            data[item.id] = event.target[item.id].value;
+        });
+
+        props.accept(data);
+
+        console.log(movementsApi);
+
+        movementsApi.create(data, (result) => {
+            console.log("Result", result);
+        });
     }
 
     return (
-        <div className="d-inline pb-1 pr-1">
-            <Button id="show-btn" onClick={handleShow} className="btn btn-primary p-1 mr-1">
+        <div className="d-inline pb-1 pe-1">
+            <Button id="show-btn" onClick={handleShow} className="btn btn-primary p-1 me-1">
                 Registrar
             </Button>
             <Modal show={show} onHide={handleClose}>
@@ -107,7 +114,7 @@ const CreatePopUp = (props) => {
                             />
                         ))}
                         <div className={['mt-3']}>
-                            <Button className="btn btn-primary mr-2" type="submit" variant="primary">
+                            <Button className="btn btn-primary me-2" type="submit" variant="primary">
                                 Aceptar
                             </Button>
                             <Button className="btn btn-danger" type="reset" variant="danger">
@@ -126,6 +133,8 @@ CreatePopUp.propTypes = {
     editorSettings: PropTypes.any,
     form: PropTypes.any,
     title: PropTypes.string,
+    accept: PropTypes.any,
+    cancel: PropTypes.any,
 }
 
 export default CreatePopUp

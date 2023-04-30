@@ -27,8 +27,8 @@ const EditPopUp = (props) => {
     }
 
     return (
-        <div className="d-inline pb-1 pr-1">
-            <Button id="show-btn" onClick={handleVisible} className="btn btn-primary p-1 mr-1">
+        <div className="d-inline pb-1 pe-1">
+            <Button id="show-btn" onClick={handleVisible} className="btn btn-primary p-1 me-1">
                 Editar
             </Button>
             <PopUpModal visible={visible} />
