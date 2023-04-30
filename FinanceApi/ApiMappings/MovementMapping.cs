@@ -1,3 +1,4 @@
+using FinanceApi.Commons;
 using FinanceApi.Dtos;
 
 namespace FinanceApi.ApiMappings;
@@ -15,7 +16,8 @@ internal static class MovementMappingExtensions
     {
         var latestMovement = db.Movement.OrderByDescending(o => o.TimeStamp).FirstOrDefault();
 
-        if (latestMovement == null) return Results.BadRequest<string>("No funds available");
+        if (latestMovement == null) 
+            return Results.Ok<OkResponse>(new OkResponse("No funds available", false));
         
         return Results.Ok<TotalsDto>(new TotalsDto());
     }
