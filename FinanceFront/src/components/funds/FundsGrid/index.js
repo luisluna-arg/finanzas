@@ -3,23 +3,13 @@ import { DataGrid } from '@mui/x-data-grid';
 import { shallow } from 'zustand/shallow';
 import { ApiUrls, APIs } from '../../../utils/commons';
 import { useStateContext/*, Provider*/ } from '../../../context';
-import moment from 'moment';
-import 'moment-timezone';
 import useMovementsStore from "../../../zustand/stores/generic";
+import dateFormat from '../../../utils/dates';
 import PropTypes from 'prop-types';
-
-const Format = {
-    Date: "DD/MM/yyyy",
-    DateTime: "dd/MM/yyyy, HH:mm"
-}
-
-const formatDate = (params) => {
-    return moment.utc(params.row.timeStamp).format(Format.Date);
-}
 
 const columns = [
     { field: 'id', headerName: 'ID', width: 70, hide: true },
-    { field: 'timeStamp', headerName: 'Fecha', width: 200, valueGetter: formatDate },
+    { field: 'timeStamp', headerName: 'Fecha', width: 200, valueGetter: dateFormat.toUtcDisplay },
     { field: 'concept1', headerName: 'Concepto 1', width: 400 },
     { field: 'concept2', headerName: 'Concepto 2', width: 400 },
     { field: 'ammount', headerName: 'Movimiento', width: 160 },

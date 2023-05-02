@@ -105,7 +105,7 @@ const CreatePopUp = (props) => {
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className='bg-dark'>
-                    <Form id={formId} onSubmit={accept} onReset={cancel}>
+                    <Form id={formId} onSubmit={(event) => { accept(event) }} onReset={(event) => { cancel(event) }}>
                         {editorSettings.map((fieldSettings, index) => (
                             <CreatePopUpInput
                                 settings={fieldSettings}

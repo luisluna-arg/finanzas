@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
 import "./styles.scss";
-import { dateHelpers } from '../../../utils/commons';
+import React, { useEffect, useState } from 'react';
+
+import dateFormat from '../../../utils/dates';
 import movementsApi from '../../../api/movementsApi';
-import moment from 'moment';
 
 const componentBaseClass = `card border-info mb-3 mt-3 text-dark FundsTotal`;
 
 const defaultTotals = {
-  timeStamp: moment(new Date()).format(),
+  timeStamp: dateFormat.toRequest(new Date()),
   income: 0.0,
   funds: 0.0,
   lastDeposit: 0.0
@@ -85,7 +85,7 @@ const FundsTotal = () => {
               </thead>
               <tbody>
                 <tr>
-                  <th scope="row">{dateHelpers.format(totals.timeStamp)}</th>
+                  <th scope="row">{dateFormat.toDisplay(totals.timeStamp)}</th>
                   <td>{totals.income}</td>
                   <td>{totals.funds}</td>
                   <td>{totals.lastDeposit}</td>

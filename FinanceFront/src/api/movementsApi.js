@@ -8,22 +8,26 @@ const methods = {
     put: "PUT"
 }
 
-const makeCall = (method = methods.get, url, successCallback, catchCallback, finallyCallback) => {
-    axios({
+const makeCall = (method = methods.get, url, data, successCallback, catchCallback, finallyCallback) => {
+    const requestSettings = {
         method: method,
         url: url
-      })
-      .then(successCallback)
-      .catch(catchCallback)
-      .finally(finallyCallback);
+    };
+
+    if (data) requestSettings["data"] = data;
+
+    axios(requestSettings)
+        .then(successCallback)
+        .catch(catchCallback)
+        .finally(finallyCallback);
 }
 
 const totals = (successCallback, catchCallback, finallyCallback) => {
-    makeCall(methods.get, ApiUrls[APIs.Movement].totals, successCallback, catchCallback, finallyCallback);
+    makeCall(methods.get, ApiUrls[APIs.Movement].totals, null, successCallback, catchCallback, finallyCallback);
 }
 
 const create = (data, successCallback, catchCallback, finallyCallback) => {
-    makeCall(methods.put, ApiUrls[APIs.Movement].create, successCallback, catchCallback, finallyCallback);
+    makeCall(methods.post, ApiUrls[APIs.Movement].base, data, successCallback, catchCallback, finallyCallback);
 }
 
 const movementsApi = {

@@ -9,14 +9,16 @@ import FundsTotal from '../FundsTotal';
 
 import { UploadTypes } from '../../../utils/commons';
 import { Outlet } from 'react-router-dom'
+import dateFormat from './../../../utils/dates.js';
+import MovementsService from '../../../services/movementsService';
 
 const FundsUploadType = UploadTypes.Funds;
 const CreateEditPopUpSettings = [
-    { id: "TimeStamp", type: "DateInput", label: "Fecha" },
-    { id: "Concept1", type: "TextInput", label: "Concepto 1" },
-    { id: "Concept2", type: "TextInput", label: "Concepto 2" },
-    { id: "Amount", type: "DecimalInput", label: "Movimiento" },
-    { id: "Total", type: "DecimalInput", label: "Fondos" }
+    { id: "timeStamp", type: "DateInput", label: "Fecha" },
+    { id: "concept1", type: "TextInput", label: "Concepto 1" },
+    { id: "concept2", type: "TextInput", label: "Concepto 2" },
+    { id: "amount", type: "DecimalInput", label: "Movimiento" },
+    { id: "total", type: "DecimalInput", label: "Fondos" }
 ];
 const DeletePopUpSettings = [];
 const DeletePopUpActions = {
@@ -34,10 +36,9 @@ function Funds() {
     }
 
     const create = (data) => {
-        alert("Funciona");
-
-        // movementsApi
+        data.timeStamp = dateFormat.fromInputToRequest(data.timeStamp);
         console.log("data", data);
+        MovementsService.create(data);
     }
 
     const cancel = () => { }

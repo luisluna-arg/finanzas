@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
-import moment from 'moment';
+import dateFormat from '../../../utils/dates';
 import dayjs from 'dayjs';
 
 const DEFAULTS = {
@@ -35,7 +35,7 @@ const DateTimeInputControl = (props) => {
     return <div className='mb-2 text-light'>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DesktopDateTimePicker
-                defaultValue={dayjs(moment().format())}
+                defaultValue={dayjs(dateFormat.toRequest())}
                 format='DD/MM/YYYY hh:mm A'
                 slotProps={{
                     textField: {
