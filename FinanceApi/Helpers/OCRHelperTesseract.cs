@@ -7,11 +7,11 @@ using Tesseract;
 
 namespace FinanceApi.Helpers;
 
-internal class OcrHelper
+public class OcrHelper
 {
     private const string LanguageFilePath = @"./Assets/tessdata";
 
-    internal (Movement[], CurrencyConversion[]) Process(IEnumerable<IFormFile> files, FinanceDb db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[], CurrencyConversion[]) Process(IEnumerable<IFormFile> files, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         var movementResults = new List<Movement>();
         var currencyConversionResults = new List<CurrencyConversion>();
@@ -26,7 +26,7 @@ internal class OcrHelper
         return (movementResults.ToArray(), currencyConversionResults.ToArray());
     }
 
-    internal (Movement[], CurrencyConversion[]) Process(IFormFile file, FinanceDb db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[], CurrencyConversion[]) Process(IFormFile file, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         this.DocumentProcessGuard();
 
@@ -45,7 +45,7 @@ internal class OcrHelper
         }
     }
 
-    internal (Movement[], CurrencyConversion[]) Process(byte[] bytes, FinanceDb db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[], CurrencyConversion[]) Process(byte[] bytes, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         this.DocumentProcessGuard();
 
@@ -84,7 +84,7 @@ internal class OcrHelper
         return (movements.ToArray(), currencyConversions.ToArray());
     }
 
-    internal string[] CitricCaptureToImage(IEnumerable<IFormFile> files)
+    public string[] CitricCaptureToImage(IEnumerable<IFormFile> files)
     {
         this.DocumentProcessGuard();
 
@@ -128,6 +128,7 @@ internal class OcrHelper
                                 {
                                     var concept = concepts[iConcept];
                                     var dateStr = concepts[iConcept + 1];
+
                                     // TODO: How to set year when the entry is from previous year, also how determine if it's from the immediate year or older
                                     var date = DateTime.Parse(dateStr);
                                     dateStr = date.ToString("MM/dd/yyyy");
@@ -204,6 +205,7 @@ internal class OcrHelper
                 Currency = conversionCurrency
             };
         }
+
         return (movement, currencyConversion);
     }
 
@@ -225,7 +227,7 @@ internal class OcrHelper
         {
             using (Bitmap image = new Bitmap(stream))
             {
-                var colorsToReplace = new Color[] 
+                var colorsToReplace = new Color[]
                 {
                     this.GetMostUsedColor(image)
                 };

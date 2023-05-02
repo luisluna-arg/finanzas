@@ -1,6 +1,6 @@
 namespace FinanceApi.Models;
 
-internal class ModuleEntry : Entity
+public class ModuleEntry : Entity
 {
     public ModuleEntry()
         : base()

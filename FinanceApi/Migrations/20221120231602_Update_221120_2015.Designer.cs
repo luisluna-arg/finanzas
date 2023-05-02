@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FinanceApi.Migrations
 {
-    [DbContext(typeof(FinanceDb))]
+    [DbContext(typeof(FinanceDbContext))]
     [Migration("20221120231602_Update_221120_2015")]
     partial class Update2211202015
     {

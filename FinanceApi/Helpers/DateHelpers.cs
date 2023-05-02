@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace FinanceApi.Extensions;
 
-internal static class DateHelpers
+public static class DateHelpers
 {
     public static int GetMonthNumber(string monthName, CultureInfo? culture = null)
     {

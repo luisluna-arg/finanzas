@@ -6,7 +6,7 @@ internal static class FundMappingExtensions
     private static string route = "/fund";
     internal static void FundMapping(this WebApplication app)
     {
-        app.BaseMapping(route, (FinanceDb db) => db.ModuleEntry);
+        app.BaseMapping(route, (FinanceDbContext db) => db.ModuleEntry);
 
         app.MapPost(route + "/upload", Upload);
 
@@ -17,7 +17,7 @@ internal static class FundMappingExtensions
         app.MapPost(route + "/read-image", ProcessImageToText);
     }
 
-    internal static async void Upload(IFormFileCollection files, FinanceDb db, DateTimeKind dateKind)
+    internal static async void Upload(IFormFileCollection files, FinanceDbContext db, DateTimeKind dateKind)
     {
         var module = db.Module.FirstOrDefault(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
@@ -46,7 +46,7 @@ internal static class FundMappingExtensions
         await db.SaveChangesAsync();
     }
 
-    internal static void UploadImage(IFormFileCollection files, FinanceDb db, DateTime? dateReference, DateTimeKind? dateKind)
+    internal static void UploadImage(IFormFileCollection files, FinanceDbContext db, DateTime? dateReference, DateTimeKind? dateKind)
     {
         var module = db.Module.FirstOrDefault(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
@@ -55,11 +55,9 @@ internal static class FundMappingExtensions
 
         if (dateKind == null || dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
         var (newMovements, newCurrencyConversions) = ocrHelper.Process(files, db, module, dateReference ?? DateTime.Now, dateKind.Value);
-
-        if (newMovements == null || newMovements.Length == 0) return;
     }
 
-    internal static async Task ProcessImage(HttpContext httpContext, IFormFileCollection files, FinanceDb db, DateTimeKind? dateKind)
+    internal static async Task ProcessImage(HttpContext httpContext, IFormFileCollection files, FinanceDbContext db, DateTimeKind? dateKind)
     {
         var ocrHelper = new OcrHelper();
 
@@ -77,7 +75,7 @@ internal static class FundMappingExtensions
         await stream.CopyToAsync(response.Body);
     }
 
-    internal static async Task ProcessImageToText(HttpContext httpContext, IFormFileCollection files, FinanceDb db, DateTimeKind? dateKind)
+    internal static async Task ProcessImageToText(HttpContext httpContext, IFormFileCollection files, FinanceDbContext db, DateTimeKind? dateKind)
     {
         var ocrHelper = new OcrHelper();
 

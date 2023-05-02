@@ -1,6 +1,6 @@
 namespace FinanceApi.Extensions;
 
-internal static class DateExtensions
+public static class DateExtensions
 {
     public static DateTime Duplicate(this DateTime referenceDate)
     {

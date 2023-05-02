@@ -7,6 +7,5 @@ internal static class MappingExtensions
         app.CurrencyMapping();
         app.FundMapping();
         app.ModuleMapping();
-        app.MovementMapping();
     }
 }

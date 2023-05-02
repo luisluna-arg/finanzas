@@ -1,6 +1,6 @@
 namespace FinanceApi.Extensions;
 
-internal static class DictionaryExtensions
+public static class DictionaryExtensions
 {
     public static void Accumulate<TKey, TValue>(this Dictionary<TKey, List<TValue>> dictionary, TKey key, TValue value) where TKey : notnull
     {

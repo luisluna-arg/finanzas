@@ -1,9 +1,9 @@
 using FinanceApi.Models;
 using Microsoft.EntityFrameworkCore;
 
-internal class FinanceDb : DbContext
+public class FinanceDbContext : DbContext
 {
-    public FinanceDb(DbContextOptions<FinanceDb> options)
+    public FinanceDbContext(DbContextOptions<FinanceDbContext> options)
         : base(options)
     {
     }

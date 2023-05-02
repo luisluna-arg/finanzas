@@ -5,18 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 internal static class BaseMappingExtensions
 {
-    internal static void BaseMapping<TEntity>(this WebApplication app, string route, Func<FinanceDb, DbSet<TEntity>> dbSetMapper)
+    internal static void BaseMapping<TEntity>(this WebApplication app, string route, Func<FinanceDbContext, DbSet<TEntity>> dbSetMapper)
         where TEntity : Entity
     {
-        app.MapGet(route + "/all", async (FinanceDb db) =>
+        app.MapGet(route + "/all", async (FinanceDbContext db) =>
             await dbSetMapper(db).ToListAsync())
             .WithOpenApi();
 
-        app.MapGet(route + "/single/{id}", async (Guid id, FinanceDb db) =>
+        app.MapGet(route + "/single/{id}", async (Guid id, FinanceDbContext db) =>
             await dbSetMapper(db).FindAsync(id) is TEntity entity ? Results.Ok(entity) : Results.NotFound())
             .WithOpenApi();
 
-        app.MapPost(route, async (TEntity entity, FinanceDb db) =>
+        app.MapPost(route, async (TEntity entity, FinanceDbContext db) =>
         {
             dbSetMapper(db).Add(entity);
             await db.SaveChangesAsync();
@@ -24,7 +24,7 @@ internal static class BaseMappingExtensions
             return Results.Created($"" + route + "/{bank.Id}", entity);
         }).WithOpenApi();
 
-        app.MapPut(route + "/{id}", async (Guid id, TEntity inputEntity, FinanceDb db) =>
+        app.MapPut(route + "/{id}", async (Guid id, TEntity inputEntity, FinanceDbContext db) =>
         {
             var bank = await dbSetMapper(db).FindAsync(id);
 
@@ -37,7 +37,7 @@ internal static class BaseMappingExtensions
             return Results.NoContent();
         }).WithOpenApi();
 
-        app.MapDelete(route + "/{id}", async (Guid id, FinanceDb db) =>
+        app.MapDelete(route + "/{id}", async (Guid id, FinanceDbContext db) =>
         {
             var dbSet = dbSetMapper(db);
             if (await dbSet.FindAsync(id) is TEntity entity)

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FinanceApi.Migrations
 {
-    [DbContext(typeof(FinanceDb))]
+    [DbContext(typeof(FinanceDbContext))]
     [Migration("20230423100833_2304230707_RenameMovementColumn")]
     partial class _2304230707RenameMovementColumn
     {

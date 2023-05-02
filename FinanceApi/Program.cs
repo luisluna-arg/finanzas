@@ -1,18 +1,22 @@
 // Based on Microsoft Minimal API tutorial
 using FinanceApi.ApiMappings;
+using FinanceApi.Core.Config;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 const string allowOriginsForCORSPolicy = "_allowOriginsForCORSPolicy";
 
 // Add Context to dependency injection
-builder.Services.AddDbContext<FinanceDb>(opt => opt
+builder.Services.AddDbContextPool<FinanceDbContext>(opt => opt
     .UseNpgsql(builder.Configuration.GetConnectionString("PostgresDb")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.MainServices();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -22,6 +26,9 @@ builder.Services.AddCors(options =>
             policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         });
 });
+
+// Add the DatabaseSeeder as a hosted service
+builder.Services.AddHostedService<DatabaseSeeder>();
 
 var app = builder.Build();
 app.UseCors(allowOriginsForCORSPolicy);
@@ -33,6 +40,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.Mappings();
+
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthorization();
+app.UseEndpoints(e =>
+{
+    e.MapControllers();
+});
 
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 

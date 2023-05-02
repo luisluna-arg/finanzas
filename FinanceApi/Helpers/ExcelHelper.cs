@@ -8,12 +8,12 @@ namespace FinanceApi.Helpers;
 
 public class ExcelHelper
 {
-    internal Movement[] ReadAsync(IEnumerable<IFormFile> files, Module module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public Movement[] ReadAsync(IEnumerable<IFormFile> files, Module module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         return files.SelectMany(o => this.ReadAsync(o, module, dateTimeKind)).ToArray();
     }
 
-    internal Movement[] ReadAsync(IFormFile file, Module module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public Movement[] ReadAsync(IFormFile file, Module module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         List<Movement> records = new List<Movement>();
 

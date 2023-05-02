@@ -2,17 +2,13 @@ namespace FinanceApi.Models;
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-internal class Movement : Entity, IEquatable<Movement>
+public sealed class Movement : Entity, IEquatable<Movement>
 {
-    public Movement()
-        : base()
-    {
-    }
-
     [ForeignKey("ModuleId")]
     public Guid ModuleId { get; set; }
-    required public Module Module { get; set; }
-    required public Currency? Currency { get; set; }
+    public Module Module { get; set; } = Module.Default();
+    public Currency? Currency { get; set; }
+    public Guid? CurrencyId { get; set; } = null;
     required public DateTime TimeStamp { get; set; }
     required public string Concept1 { get; set; }
     required public string? Concept2 { get; set; }
