@@ -1,8 +1,5 @@
-using System.Data;
-using System.Globalization;
 using ExcelDataReader;
 using FinanceApi.Models;
-using OfficeOpenXml;
 
 namespace FinanceApi.Helpers;
 
@@ -10,7 +7,7 @@ public class ExcelHelper
 {
     public Movement[] ReadAsync(IEnumerable<IFormFile> files, Module module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        return files.SelectMany(o => this.ReadAsync(o, module, dateTimeKind)).ToArray();
+        return files.SelectMany(o => ReadAsync(o, module, dateTimeKind)).ToArray();
     }
 
     public Movement[] ReadAsync(IFormFile file, Module module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)

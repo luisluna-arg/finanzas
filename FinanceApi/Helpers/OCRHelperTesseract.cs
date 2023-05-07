@@ -11,14 +11,14 @@ public class OcrHelper
 {
     private const string LanguageFilePath = @"./Assets/tessdata";
 
-    public (Movement[], CurrencyConversion[]) Process(IEnumerable<IFormFile> files, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(IEnumerable<IFormFile> files, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         var movementResults = new List<Movement>();
         var currencyConversionResults = new List<CurrencyConversion>();
 
         foreach (var file in files)
         {
-            var (movements, currencyConversions) = this.Process(file, db, module, referenceDate, dateTimeKind);
+            var (movements, currencyConversions) = Process(file, db, module, referenceDate, dateTimeKind);
             movementResults.AddRange(movements);
             currencyConversionResults.AddRange(currencyConversions);
         }
@@ -26,28 +26,26 @@ public class OcrHelper
         return (movementResults.ToArray(), currencyConversionResults.ToArray());
     }
 
-    public (Movement[], CurrencyConversion[]) Process(IFormFile file, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversion) Process(IFormFile file, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        this.DocumentProcessGuard();
+        DocumentProcessGuard();
 
-        byte[] byteArray = new byte[0];
+        byte[] byteArray;
         using (var imageStream = new MemoryStream())
         {
             file.CopyTo(imageStream);
 
-            var testArray = imageStream.ToArray();
-
-            using (var adjustedImageStream = this.AdjustImage(imageStream))
+            using (var adjustedImageStream = AdjustImage(imageStream))
             {
                 byteArray = adjustedImageStream.ToArray();
-                return this.Process(byteArray, db, module, referenceDate, dateTimeKind);
+                return Process(byteArray, db, module, referenceDate, dateTimeKind);
             }
         }
     }
 
-    public (Movement[], CurrencyConversion[]) Process(byte[] bytes, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(byte[] bytes, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        this.DocumentProcessGuard();
+        DocumentProcessGuard();
 
         var movements = new List<Movement>();
         var currencyConversions = new List<CurrencyConversion>();
@@ -71,7 +69,7 @@ public class OcrHelper
                     {
                         string entry = text[i];
                         string dateAndConversion = text[i + 1];
-                        var (movement, currencyConversion) = this.BuildMovement(module, entry, dateAndConversion, referenceDate, currencies);
+                        var (movement, currencyConversion) = BuildMovement(module, entry, dateAndConversion, referenceDate, currencies);
                         movements.Add(movement);
                         if (currencyConversion != null) currencyConversions.Add(currencyConversion);
                     }
@@ -86,7 +84,7 @@ public class OcrHelper
 
     public string[] CitricCaptureToImage(IEnumerable<IFormFile> files)
     {
-        this.DocumentProcessGuard();
+        DocumentProcessGuard();
 
         List<string> result = new List<string>();
 
@@ -102,7 +100,7 @@ public class OcrHelper
                 {
                     file.CopyTo(imageStream);
 
-                    using (var adjustedImageStream = this.AdjustImage(imageStream))
+                    using (var adjustedImageStream = AdjustImage(imageStream))
                     {
                         using (var image = Tesseract.Pix.LoadFromMemory(adjustedImageStream.ToArray()))
                         {
@@ -154,7 +152,42 @@ public class OcrHelper
         return result.ToArray();
     }
 
-    private (Movement, CurrencyConversion?) BuildMovement(Module module, string content, string dateAndConversion, DateTime referenceDate, Currency[] currencies)
+    public MemoryStream AdjustImage(MemoryStream stream)
+    {
+        try
+        {
+            using (Bitmap image = new Bitmap(stream))
+            {
+                var colorsToReplace = new Color[]
+                {
+                    GetMostUsedColor(image)
+                };
+
+                for (int x = 0; x < image.Width; x++)
+                {
+                    for (int y = 0; y < image.Height; y++)
+                    {
+                        Color originalColor = image.GetPixel(x, y);
+                        var newColor = ApplyHighContrast(originalColor, colorsToReplace);
+                        newColor = ApplyGreyScale(newColor);
+                        image.SetPixel(x, y, newColor);
+                    }
+                }
+
+                var result = new MemoryStream();
+                image.Save(result, System.Drawing.Imaging.ImageFormat.Png);
+                return result;
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            // Manejar la excepción
+            Console.WriteLine($"Se produjo una excepción al crear la imagen Bitmap: {ex.Message}");
+            throw; // Opcional: volver a lanzar la excepción
+        }
+    }
+
+    private (Movement Movement, CurrencyConversion? CurrencyConversion) BuildMovement(Module module, string content, string dateAndConversion, DateTime referenceDate, Currency[] currencies)
     {
         string pattern = @"(.+\s+)([\+\-]*\s*[\d\,\.]*\s+)([a-zA-Z]+)";
         Match match = Regex.Match(content, pattern);
@@ -173,7 +206,7 @@ public class OcrHelper
         int dateYear = referenceDate.Year + (referenceDate > DateTime.Now ? -1 : 0);
         var date = new DateTime(dateYear, dateMonth, dateDay, 0, 0, 0, referenceDate.Kind);
 
-        var movementCurrency = this.GetCurrency(currencies, currencyName);
+        var movementCurrency = GetCurrency(currencies, currencyName);
 
         var movement = new Movement()
         {
@@ -196,7 +229,7 @@ public class OcrHelper
             decimal amountLocalCurrency = 0;
             decimal.TryParse(amountLocalCurrencyStr, out amountLocalCurrency);
 
-            var conversionCurrency = this.GetCurrency(currencies, localCurrencyName);
+            var conversionCurrency = GetCurrency(currencies, localCurrencyName);
 
             currencyConversion = new CurrencyConversion()
             {
@@ -219,41 +252,6 @@ public class OcrHelper
     private void DocumentProcessGuard()
     {
         if (!System.IO.Directory.Exists(LanguageFilePath)) throw new FileNotFoundException("Language file not found");
-    }
-
-    public MemoryStream AdjustImage(MemoryStream stream)
-    {
-        try
-        {
-            using (Bitmap image = new Bitmap(stream))
-            {
-                var colorsToReplace = new Color[]
-                {
-                    this.GetMostUsedColor(image)
-                };
-
-                for (int x = 0; x < image.Width; x++)
-                {
-                    for (int y = 0; y < image.Height; y++)
-                    {
-                        Color originalColor = image.GetPixel(x, y);
-                        var newColor = this.ApplyHighContrast(originalColor, colorsToReplace);
-                        newColor = this.ApplyGreyScale(newColor);
-                        image.SetPixel(x, y, newColor);
-                    }
-                }
-
-                var result = new MemoryStream();
-                image.Save(result, System.Drawing.Imaging.ImageFormat.Png);
-                return result;
-            }
-        }
-        catch (ArgumentException ex)
-        {
-            // Manejar la excepción
-            Console.WriteLine($"Se produjo una excepción al crear la imagen Bitmap: {ex.Message}");
-            throw; // Opcional: volver a lanzar la excepción
-        }
     }
 
     private Color GetMostUsedColor(Bitmap image)
@@ -285,7 +283,7 @@ public class OcrHelper
 
     private Color ApplyHighContrast(Color color, Color[] colorsToReplace)
     {
-        // if (colorsToReplace.Any(c => color.R == c.R && color.G == c.G && color.B == c.B)) return Color.FromArgb(255, 255, 0);
+        if (colorsToReplace.Any(c => color.R == c.R && color.G == c.G && color.B == c.B)) return Color.FromArgb(255, 255, 0);
         if (color.B < 90 && color.B > 45 && color.G < color.B && color.R < color.G) return Color.FromArgb(255, 255, 0);
 
         return Color.FromArgb(0, 0, 0);

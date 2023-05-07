@@ -4,8 +4,8 @@ public class OkResponse
 {
     public OkResponse(string message, bool isSuccess = true)
     {
-        this.Message = message;
-        this.Success = isSuccess;
+        Message = message;
+        Success = isSuccess;
     }
 
     public string Message { get; set; }

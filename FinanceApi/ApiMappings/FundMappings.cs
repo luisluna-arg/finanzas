@@ -1,6 +1,7 @@
 using FinanceApi.Helpers;
 
 namespace FinanceApi.ApiMappings;
+
 internal static class FundMappingExtensions
 {
     private static string route = "/fund";
@@ -51,10 +52,9 @@ internal static class FundMappingExtensions
         var module = db.Module.FirstOrDefault(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
 
-        var ocrHelper = new OcrHelper();
-
-        if (dateKind == null || dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
-        var (newMovements, newCurrencyConversions) = ocrHelper.Process(files, db, module, dateReference ?? DateTime.Now, dateKind.Value);
+        // if (dateKind == null || dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
+        // var ocrHelper = new OcrHelper();
+        // var (newMovements, newCurrencyConversions) = ocrHelper.Process(files, db, module, dateReference ?? DateTime.Now, dateKind.Value);
     }
 
     internal static async Task ProcessImage(HttpContext httpContext, IFormFileCollection files, FinanceDbContext db, DateTimeKind? dateKind)

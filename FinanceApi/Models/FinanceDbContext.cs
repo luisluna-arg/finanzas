@@ -8,12 +8,12 @@ public class FinanceDbContext : DbContext
     {
     }
 
-    public DbSet<Bank> Bank => this.Set<Bank>();
-    public DbSet<Currency> Currency => this.Set<Currency>();
-    public DbSet<CurrencyConversion> CurrencyConversion => this.Set<CurrencyConversion>();
-    public DbSet<Module> Module => this.Set<Module>();
-    public DbSet<ModuleEntry> ModuleEntry => this.Set<ModuleEntry>();
-    public DbSet<Movement> Movement => this.Set<Movement>();
+    public DbSet<Bank> Bank => Set<Bank>();
+    public DbSet<Currency> Currency => Set<Currency>();
+    public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
+    public DbSet<Module> Module => Set<Module>();
+    public DbSet<ModuleEntry> ModuleEntry => Set<ModuleEntry>();
+    public DbSet<Movement> Movement => Set<Movement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

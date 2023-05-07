@@ -44,10 +44,7 @@ app.Mappings();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
-app.UseEndpoints(e =>
-{
-    e.MapControllers();
-});
+app.MapControllers();
 
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 

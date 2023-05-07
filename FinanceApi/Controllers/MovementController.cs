@@ -9,23 +9,23 @@ namespace FinanceApi.Controllers;
 [Route("movements")]
 public class MovementController : ControllerBase
 {
-    private readonly IMovementsService movementService;
+    private readonly IMovementsService service;
 
     public MovementController(IMovementsService movementService)
     {
-        this.movementService = movementService;
+        service = movementService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MovementDto>>> Get()
     {
-        return await this.movementService.GetAll();
+        return await service.GetAll();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<MovementDto>> GetById(Guid id)
     {
-        var movement = await this.movementService.GetById(id);
+        var movement = await service.GetById(id);
 
         if (movement == null) return NotFound();
 
@@ -35,7 +35,7 @@ public class MovementController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateMovementDto movement)
     {
-        await this.movementService.Create(movement);
+        await service.Create(movement);
 
         return Ok();
     }
@@ -43,9 +43,9 @@ public class MovementController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Update(MovementDto movement)
     {
-        if (!await this.movementService.Exists(movement.Id)) return NotFound();
+        if (!await service.Exists(movement.Id)) return NotFound();
 
-        await this.movementService.Update(movement);
+        await service.Update(movement);
 
         return Ok();
     }
@@ -53,9 +53,9 @@ public class MovementController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        if (!await this.movementService.Exists(id)) return NotFound();
+        if (!await service.Exists(id)) return NotFound();
 
-        await this.movementService.Delete(id);
+        await service.Delete(id);
 
         return Ok();
     }
@@ -63,7 +63,7 @@ public class MovementController : ControllerBase
     [HttpGet("totals")]
     public async Task<IActionResult> Totals()
     {
-        var totals = await this.movementService.GetTotals();
+        var totals = await service.GetTotals();
 
         if (totals == null) return Ok(new OkResponse("No funds available", false));
 

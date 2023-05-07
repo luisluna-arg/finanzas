@@ -11,15 +11,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinanceApi.Migrations
 {
     [DbContext(typeof(FinanceDbContext))]
-    [Migration("20221127065315_ModelUpdate_2211270353")]
-    partial class ModelUpdate2211270353
+    [Migration("20230507005506_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
@@ -48,9 +48,43 @@ namespace FinanceApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("ShortName")
+                        .IsUnique();
+
                     b.ToTable("Currency");
+                });
+
+            modelBuilder.Entity("FinanceApi.Models.CurrencyConversion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("CurrencyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MovementId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("MovementId");
+
+                    b.ToTable("CurrencyConversion");
                 });
 
             modelBuilder.Entity("FinanceApi.Models.Module", b =>
@@ -90,7 +124,7 @@ namespace FinanceApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Fund");
+                    b.ToTable("ModuleEntry");
                 });
 
             modelBuilder.Entity("FinanceApi.Models.Movement", b =>
@@ -99,7 +133,7 @@ namespace FinanceApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("Ammount")
+                    b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
                     b.Property<string>("Concept1")
@@ -108,6 +142,9 @@ namespace FinanceApi.Migrations
 
                     b.Property<string>("Concept2")
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("CurrencyId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ModuleId")
                         .HasColumnType("uuid");
@@ -120,9 +157,28 @@ namespace FinanceApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CurrencyId");
+
                     b.HasIndex("ModuleId");
 
                     b.ToTable("Movement");
+                });
+
+            modelBuilder.Entity("FinanceApi.Models.CurrencyConversion", b =>
+                {
+                    b.HasOne("FinanceApi.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId");
+
+                    b.HasOne("FinanceApi.Models.Movement", "Movement")
+                        .WithMany()
+                        .HasForeignKey("MovementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("Movement");
                 });
 
             modelBuilder.Entity("FinanceApi.Models.Module", b =>
@@ -138,11 +194,17 @@ namespace FinanceApi.Migrations
 
             modelBuilder.Entity("FinanceApi.Models.Movement", b =>
                 {
+                    b.HasOne("FinanceApi.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId");
+
                     b.HasOne("FinanceApi.Models.Module", "Module")
                         .WithMany("Movements")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Currency");
 
                     b.Navigation("Module");
                 });

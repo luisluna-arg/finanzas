@@ -5,28 +5,27 @@ namespace FinanceApi.Core.Config;
 
 public class DatabaseSeeder : IHostedService
 {
-    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceProvider provider;
 
     public DatabaseSeeder(IServiceProvider serviceProvider)
     {
-        this.serviceProvider = serviceProvider;
+        provider = serviceProvider;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        using var scope = serviceProvider.CreateScope();
+        using var scope = provider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<FinanceDbContext>();
 
         bool saveChanges = false;
         if (!dbContext.Currency.Any())
         {
-            await dbContext.Currency.AddRangeAsync(new Currency[] {
-                new Currency() { Name = CurrencyNames.Peso, ShortName = CurrencyNames.Peso, },
-                new Currency() { Name = CurrencyNames.Dollar, ShortName = CurrencyNames.Dollar, },
-             });
+            await dbContext.Currency.AddRangeAsync(
+                new Currency { Name = CurrencyNames.Peso, ShortName = CurrencyNames.Peso, },
+                new Currency { Name = CurrencyNames.Dollar, ShortName = CurrencyNames.Dollar, });
             saveChanges = true;
         }
-        
+
         if (saveChanges) await dbContext.SaveChangesAsync();
 
         if (!dbContext.Module.Any())

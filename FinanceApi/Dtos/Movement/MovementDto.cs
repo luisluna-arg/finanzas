@@ -11,9 +11,9 @@ public class MovementDto : BaseMovementDto
     public override FinanceApi.Models.Movement BuildEntity()
     {
         var result = base.BuildEntity();
-        result.Id = this.Id;
-        result.ModuleId = this.ModuleId;
-        result.CurrencyId = this.CurrencyId;
+        result.Id = Id;
+        result.ModuleId = ModuleId;
+        result.CurrencyId = CurrencyId;
         return result;
     }
 }

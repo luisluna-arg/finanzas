@@ -17,7 +17,7 @@ public sealed class Movement : Entity, IEquatable<Movement>
 
     public override bool Equals(object? obj)
     {
-        return this.Equals(obj as Movement);
+        return Equals(obj as Movement);
     }
 
     public bool Equals(Movement? movement2)
@@ -25,21 +25,21 @@ public sealed class Movement : Entity, IEquatable<Movement>
         if (movement2 is null) return false;
 
         var result =
-            this.ModuleId == movement2.ModuleId &&
-            this.TimeStamp == movement2.TimeStamp &&
-            this.Amount == movement2.Amount &&
-            this.Total == movement2.Total &&
-            this.Concept1 == movement2.Concept1 &&
-            this.Concept2 == movement2.Concept2;
+            ModuleId == movement2.ModuleId &&
+            TimeStamp == movement2.TimeStamp &&
+            Amount == movement2.Amount &&
+            Total == movement2.Total &&
+            Concept1 == movement2.Concept1 &&
+            Concept2 == movement2.Concept2;
 
         return result;
     }
 
     public override int GetHashCode() => (
-        this.ModuleId,
-        this.TimeStamp,
-        this.Amount,
-        this.Total,
-        this.Concept1,
-        this.Concept2).GetHashCode();
+        ModuleId,
+        TimeStamp,
+        Amount,
+        Total,
+        Concept1,
+        Concept2).GetHashCode();
 }

@@ -4,9 +4,9 @@ public class ErrorResponse
 {
     public ErrorResponse()
     {
-        this.Title = string.Empty;
-        this.Detail = string.Empty;
-        this.Status = 0;
+        Title = string.Empty;
+        Detail = string.Empty;
+        Status = 0;
     }
 
     public string Title { get; private set; }

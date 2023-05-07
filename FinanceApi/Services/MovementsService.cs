@@ -8,23 +8,23 @@ namespace FinanceApi.Services;
 public class MovementsService : IMovementsService
 {
     private readonly FinanceDbContext dbContext;
-    private readonly IMovementDtoFactory movementDtoFactory;
+    private readonly IMovementDtoFactory dtoFactory;
 
     public MovementsService(FinanceDbContext db, IMovementDtoFactory movementDtoFactory)
     {
-        this.dbContext = db;
-        this.movementDtoFactory = movementDtoFactory;
+        dbContext = db;
+        dtoFactory = movementDtoFactory;
     }
 
     public async Task<MovementDto[]> GetAll()
     {
-        return movementDtoFactory.Create(await this.dbContext.Movement.ToArrayAsync());
+        return dtoFactory.Create(await dbContext.Movement.ToArrayAsync());
     }
 
-    public  async Task<MovementDto?> GetById(Guid id)
+    public async Task<MovementDto?> GetById(Guid id)
     {
         var movement = await GetRecordById(id, false);
-        return movement != null ? movementDtoFactory.Create(movement) : null;
+        return movement != null ? dtoFactory.Create(movement) : null;
     }
 
     public async Task Create(CreateMovementDto movement)
@@ -41,8 +41,8 @@ public class MovementsService : IMovementsService
             Total = movement.Total,
         };
 
-        this.dbContext.Movement.Add(newMovement);
-        await this.dbContext.SaveChangesAsync();
+        dbContext.Movement.Add(newMovement);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task Update(MovementDto movement)
@@ -55,42 +55,42 @@ public class MovementsService : IMovementsService
         existingMovement.TimeStamp = movement.TimeStamp;
         existingMovement.Total = movement.Total;
 
-        this.dbContext.Movement.Update(existingMovement);
-        await this.dbContext.SaveChangesAsync();
+        dbContext.Movement.Update(existingMovement);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task Delete(Guid id)
     {
         var existingMovement = await GetRecordById(id);
 
-        this.dbContext.Movement.Remove(existingMovement);
-        await this.dbContext.SaveChangesAsync();
+        dbContext.Movement.Remove(existingMovement);
+        await dbContext.SaveChangesAsync();
     }
 
-    public  async Task<TotalsDto?> GetTotals()
+    public async Task<TotalsDto?> GetTotals()
     {
-        var latestMovement = await this.dbContext.Movement.OrderByDescending(o => o.TimeStamp).FirstOrDefaultAsync();
+        var latestMovement = await dbContext.Movement.OrderByDescending(o => o.TimeStamp).FirstOrDefaultAsync();
 
         if (latestMovement == null) return null;
 
-        return movementDtoFactory.CreateTotals(latestMovement);
+        return dtoFactory.CreateTotals(latestMovement);
     }
 
     public async Task<bool> Exists(Guid id)
     {
-        return await this.dbContext.Movement.AnyAsync(o => o.Id == id);
+        return await dbContext.Movement.AnyAsync(o => o.Id == id);
     }
 
     private async Task<Module> GetModule()
     {
-        var module = await this.dbContext.Module.FirstOrDefaultAsync(o => o.Name == "Fondos");
+        var module = await dbContext.Module.FirstOrDefaultAsync(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
         return module;
     }
 
     private async Task<Movement> GetRecordById(Guid id, bool throwException = true)
     {
-        var movement = await this.dbContext.Movement.FirstOrDefaultAsync(o => o.Id == id);
+        var movement = await dbContext.Movement.FirstOrDefaultAsync(o => o.Id == id);
         if (movement == null && throwException) throw new Exception($"Movement {id} not found");
         return movement!;
     }
