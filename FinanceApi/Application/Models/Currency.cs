@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace FinanceApi.Application.Models;
 
 public class Currency : Entity

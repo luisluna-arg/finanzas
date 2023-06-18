@@ -1,9 +1,13 @@
 using FinanceApi.Application.Dtos.Currency;
 
-namespace FinanceApi.Application.Dtos.Module;
+namespace FinanceApi.Application.Dtos.Modules;
 
 public record ModuleDto : Dto
 {
+    public ModuleDto() : base()
+    {
+    }
+
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public Guid? CurrencyId { get; set; }

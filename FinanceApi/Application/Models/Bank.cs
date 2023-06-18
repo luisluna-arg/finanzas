@@ -1,7 +1,5 @@
 namespace FinanceApi.Application.Models;
 
-using System.ComponentModel.DataAnnotations.Schema;
-
 public class Bank : Entity
 {
     public Bank()

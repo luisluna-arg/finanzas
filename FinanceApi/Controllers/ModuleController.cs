@@ -1,6 +1,6 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.Modules;
-using FinanceApi.Application.Dtos.Module;
+using FinanceApi.Application.Dtos.Modules;
 using FinanceApi.Application.Queries.Modules;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,6 @@ namespace FinanceApi.Controllers;
 [Route("api/modules")]
 public class ModuleController : ControllerBase
 {
-    // private readonly IModulesService service;
     private readonly IMapper mapper;
     private readonly IMediator mediator;
 

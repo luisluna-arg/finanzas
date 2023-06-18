@@ -1,8 +1,11 @@
-namespace FinanceApi.Application.Dtos.Module;
+namespace FinanceApi.Application.Dtos.Modules;
 
-public abstract class CreateModuleDto
+public abstract record UpdateModuleDto : Dto
 {
-    public Guid Id { get; set; }
+    public UpdateModuleDto() : base()
+    {
+    }
+
     required public string Name { get; set; } = string.Empty;
     required public DateTime CreatedAt { get; set; }
     required public Guid CurrencyId { get; set; }

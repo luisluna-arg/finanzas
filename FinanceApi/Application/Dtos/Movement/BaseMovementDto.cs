@@ -5,8 +5,7 @@ namespace FinanceApi.Application.Dtos;
 
 public abstract record BaseMovementDto : Dto
 {
-    protected BaseMovementDto()
-        : base()
+    protected BaseMovementDto() : base()
     {
         TimeStamp = DateTime.UtcNow;
     }
