@@ -2,7 +2,8 @@ namespace FinanceApi.Application.Dtos.Currency;
 
 public record CurrencyDto : Dto
 {
-    public CurrencyDto() : base()
+    public CurrencyDto()
+        : base()
     {
     }
 

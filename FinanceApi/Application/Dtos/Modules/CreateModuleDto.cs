@@ -2,7 +2,7 @@ namespace FinanceApi.Application.Dtos.Modules;
 
 public abstract record CreateModuleDto
 {
-    public CreateModuleDto()
+    protected CreateModuleDto()
     {
     }
 

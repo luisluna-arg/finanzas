@@ -2,7 +2,7 @@ namespace FinanceApi.Application.Dtos;
 
 public abstract record Dto
 {
-    public Dto()
+    protected Dto()
     {
     }
 

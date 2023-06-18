@@ -2,7 +2,8 @@ namespace FinanceApi.Application.Dtos.Modules;
 
 public abstract record UpdateModuleDto : Dto
 {
-    public UpdateModuleDto() : base()
+    protected UpdateModuleDto()
+        : base()
     {
     }
 

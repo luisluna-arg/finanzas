@@ -2,7 +2,8 @@ namespace FinanceApi.Application.Dtos.Movement;
 
 public record MovementDto : BaseMovementDto
 {
-    public MovementDto() : base()
+    public MovementDto()
+        : base()
     {
     }
 

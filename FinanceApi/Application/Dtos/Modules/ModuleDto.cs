@@ -4,7 +4,8 @@ namespace FinanceApi.Application.Dtos.Modules;
 
 public record ModuleDto : Dto
 {
-    public ModuleDto() : base()
+    public ModuleDto()
+        : base()
     {
     }
 
