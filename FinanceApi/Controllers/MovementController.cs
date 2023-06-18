@@ -1,5 +1,5 @@
+using FinanceApi.Application.Dtos.Movement;
 using FinanceApi.Commons;
-using FinanceApi.Dtos.Movement;
 using FinanceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 

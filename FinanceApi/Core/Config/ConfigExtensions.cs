@@ -10,5 +10,7 @@ public static class ConfigExtensions
         services.AddSingleton<IMovementDtoFactory, MovementDtoFactory>();
 
         services.AddScoped<IMovementsService, MovementsService>();
+
+        services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
     }
 }

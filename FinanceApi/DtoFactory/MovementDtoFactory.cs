@@ -1,5 +1,5 @@
-using FinanceApi.Dtos.Movement;
-using FinanceApi.Models;
+using FinanceApi.Application.Dtos.Movement;
+using FinanceApi.Application.Models;
 
 namespace FinanceApi.DtoFactory;
 

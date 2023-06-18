@@ -1,4 +1,4 @@
-using FinanceApi.Models;
+using FinanceApi.Application.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Core.Config;

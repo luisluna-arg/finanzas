@@ -1,6 +1,6 @@
+using FinanceApi.Application.Dtos.Movement;
+using FinanceApi.Application.Models;
 using FinanceApi.DtoFactory;
-using FinanceApi.Dtos.Movement;
-using FinanceApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Services;

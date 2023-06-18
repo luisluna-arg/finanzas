@@ -1,8 +1,8 @@
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
+using FinanceApi.Application.Models;
 using FinanceApi.Extensions;
-using FinanceApi.Models;
 using Tesseract;
 
 namespace FinanceApi.Helpers;
