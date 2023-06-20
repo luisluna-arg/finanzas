@@ -44,11 +44,6 @@ public class FinanceDbContext : DbContext
             });
 
         modelBuilder
-            .Entity<InvestmentAssetIOL>()
-            .Property(p => p.AssetType)
-            .HasConversion<short>();
-
-        modelBuilder
             .Entity<InvestmentAssetIOLType>()
             .HasData(Enum.GetValues(typeof(InvestmentAssetIOLTypeEnum))
                 .Cast<InvestmentAssetIOLTypeEnum>()

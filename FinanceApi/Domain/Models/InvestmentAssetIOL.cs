@@ -20,7 +20,5 @@ public class InvestmentAssetIOL : Entity
     required public Money AverageReturnPercent { get; set; } = 0M;
     required public Money AverageReturn { get; set; } = 0M;
     required public Money Valued { get; set; } = 0M;
-    required public short AssetTypeId { get; set; }
-    required public virtual InvestmentAssetIOLType AssetType { get; set; }
-    public InvestmentAssetIOLTypeEnum InvestmentAssetIOLTypeEnum => (InvestmentAssetIOLTypeEnum)AssetTypeId;
+    required public virtual InvestmentAssetIOLType InvestmentAssetIOLType { get; set; }
 }
