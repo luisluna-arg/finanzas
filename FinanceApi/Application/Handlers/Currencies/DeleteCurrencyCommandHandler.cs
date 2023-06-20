@@ -1,5 +1,6 @@
 using FinanceApi.Application.Commands.Currencies;
-using FinanceApi.Application.Models;
+using FinanceApi.Domain;
+using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

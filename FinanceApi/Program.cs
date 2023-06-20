@@ -1,6 +1,7 @@
 // Based on Microsoft Minimal API tutorial
 using FinanceApi.Controllers.ApiMappings;
 using FinanceApi.Core.Config;
+using FinanceApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

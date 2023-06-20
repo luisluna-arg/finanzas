@@ -1,5 +1,5 @@
 using ExcelDataReader;
-using FinanceApi.Application.Models;
+using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Helpers;
 

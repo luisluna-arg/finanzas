@@ -1,4 +1,4 @@
-using FinanceApi.Application.Dtos.Currency;
+using FinanceApi.Application.Dtos.Currencies;
 
 namespace FinanceApi.Application.Dtos.Modules;
 

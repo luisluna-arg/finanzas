@@ -1,6 +1,6 @@
-using FinanceApi.Application.Commands.Modules;
-using FinanceApi.Application.Models;
 using FinanceApi.Application.Queries.Modules;
+using FinanceApi.Domain;
+using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

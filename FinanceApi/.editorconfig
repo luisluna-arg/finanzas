@@ -15,7 +15,7 @@ csharp_using_directive_placement = outside_namespace:silent
 csharp_remove_unused_usings = true
 csharp_new_line_after_namespace = true
 
-# Move 'X' into a named namespace.
+# Move 'X' into a named namespace
 dotnet_diagnostic.S3903.severity = None
 # XML comment analysis is disabled due to project configuration
 dotnet_diagnostic.SA0001.severity = None
@@ -25,7 +25,7 @@ dotnet_diagnostic.SA1503.severity = None
 dotnet_diagnostic.SA1516.severity = None
 # File may not end with a newline character
 dotnet_diagnostic.SA1518.severity = None
-#  The file header is missing or not located at the top of the file.
+#  The file header is missing or not located at the top of the file
 dotnet_diagnostic.SA1633.severity = None
 #  Using directive should appear within a namespace declaration
 dotnet_diagnostic.SA1200.severity = None
@@ -33,10 +33,14 @@ dotnet_diagnostic.SA1200.severity = None
 dotnet_diagnostic.SA1413.severity = None
 # 'System.Exception' should not be thrown by user code
 dotnet_diagnostic.S112.severity = None
-# This call site is reachable on all platforms. 
+# This call site is reachable on all platforms
 dotnet_diagnostic.CA1416.severity = None
 # Prefix local calls with this"
 dotnet_diagnostic.SA1101.severity = None
+# Rename this enumeration to remove the 'Enum' suffix
+dotnet_diagnostic.S2344.severity = None
+# Rename class to match pascal case naming rules
+dotnet_diagnostic.S101.severity = None
 
 # All .cs files in the Migrations directory should have their naming convention ignored
 [*Migrations/*.cs]

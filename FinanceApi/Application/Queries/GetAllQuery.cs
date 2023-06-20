@@ -1,4 +1,4 @@
-using FinanceApi.Application.Models;
+using FinanceApi.Domain.Models;
 using MediatR;
 
 namespace FinanceApi.Application.Queries;

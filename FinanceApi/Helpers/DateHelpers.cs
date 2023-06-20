@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace FinanceApi.Extensions;
+namespace FinanceApi.Helpers;
 
 public static class DateHelpers
 {

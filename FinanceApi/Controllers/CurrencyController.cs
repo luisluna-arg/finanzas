@@ -1,6 +1,6 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.Currencies;
-using FinanceApi.Application.Dtos.Currency;
+using FinanceApi.Application.Dtos.Currencies;
 using FinanceApi.Application.Queries.Currencies;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

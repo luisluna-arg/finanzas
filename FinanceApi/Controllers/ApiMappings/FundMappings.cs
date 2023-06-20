@@ -1,3 +1,4 @@
+using FinanceApi.Domain;
 using FinanceApi.Helpers;
 
 namespace FinanceApi.Controllers.ApiMappings;

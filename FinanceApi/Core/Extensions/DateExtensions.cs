@@ -1,4 +1,4 @@
-namespace FinanceApi.Extensions;
+namespace FinanceApi.Core.Extensions;
 
 public static class DateExtensions
 {

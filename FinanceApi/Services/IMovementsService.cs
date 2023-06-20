@@ -1,4 +1,4 @@
-using FinanceApi.Application.Dtos.Movement;
+using FinanceApi.Application.Dtos.Movements;
 
 namespace FinanceApi.Services;
 

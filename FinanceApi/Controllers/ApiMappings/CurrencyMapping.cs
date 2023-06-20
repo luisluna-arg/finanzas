@@ -1,4 +1,7 @@
+using FinanceApi.Domain;
+
 namespace FinanceApi.Controllers.ApiMappings;
+
 internal static class CurrencyMappingExtensions
 {
     private static string route = "/currency";

@@ -1,4 +1,4 @@
-using FinanceApi.DtoFactory;
+using FinanceApi.Application.Dtos.Factories;
 using FinanceApi.Services;
 
 namespace FinanceApi.Core.Config;

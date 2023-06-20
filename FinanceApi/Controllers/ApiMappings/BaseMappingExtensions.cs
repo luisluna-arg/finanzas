@@ -1,7 +1,8 @@
-namespace FinanceApi.Controllers.ApiMappings;
-
-using FinanceApi.Application.Models;
+using FinanceApi.Domain;
+using FinanceApi.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+
+namespace FinanceApi.Controllers.ApiMappings;
 
 internal static class BaseMappingExtensions
 {

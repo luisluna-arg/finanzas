@@ -1,4 +1,7 @@
+using FinanceApi.Domain;
+
 namespace FinanceApi.Controllers.ApiMappings;
+
 internal static class BankMappingExtensions
 {
     private static string route = "/bank";

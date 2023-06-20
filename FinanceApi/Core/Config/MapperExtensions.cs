@@ -1,4 +1,4 @@
-using FinanceApi.Core.Config.Mapper;
+using FinanceApi.Core.Config.Mapper.Profiles;
 
 namespace FinanceApi.Core.Config;
 
