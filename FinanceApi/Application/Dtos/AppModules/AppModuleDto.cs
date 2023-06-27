@@ -1,10 +1,10 @@
 using FinanceApi.Application.Dtos.Currencies;
 
-namespace FinanceApi.Application.Dtos.Modules;
+namespace FinanceApi.Application.Dtos.AppModules;
 
-public record ModuleDto : Dto
+public record AppModuleDto : Dto
 {
-    public ModuleDto()
+    public AppModuleDto()
         : base()
     {
     }

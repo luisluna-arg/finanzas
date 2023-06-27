@@ -1,8 +1,8 @@
 namespace FinanceApi.Domain.Models;
 
-public class ModuleEntry : Entity
+public class AppModuleEntry : Entity
 {
-    public ModuleEntry()
+    public AppModuleEntry()
         : base()
     {
     }

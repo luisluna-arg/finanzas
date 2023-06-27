@@ -29,14 +29,14 @@ public class DatabaseSeeder : IHostedService
 
         if (saveChanges) await dbContext.SaveChangesAsync();
 
-        if (!dbContext.Module.Any())
+        if (!dbContext.AppModule.Any())
         {
             var currencyPeso = await dbContext.Currency.FirstOrDefaultAsync(x => x.Name == CurrencyNames.Peso);
             if (currencyPeso == null) throw new SystemException("Fatal error while seeding App database");
 
-            await dbContext.Module.AddRangeAsync(new List<Module>
+            await dbContext.AppModule.AddRangeAsync(new List<AppModule>
             {
-                new Module { Name = ModuleNames.Funds, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
+                new AppModule { Name = ModuleNames.Funds, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
             });
             saveChanges = true;
         }

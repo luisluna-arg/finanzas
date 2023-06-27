@@ -34,7 +34,7 @@ public class MovementsService : IMovementsService
 
         var newMovement = new Movement()
         {
-            Module = module,
+            AppModule = module,
             Amount = movement.Amount,
             Concept1 = movement.Concept1,
             Concept2 = movement.Concept2,
@@ -82,9 +82,9 @@ public class MovementsService : IMovementsService
         return await dbContext.Movement.AnyAsync(o => o.Id == id);
     }
 
-    private async Task<Module> GetModule()
+    private async Task<AppModule> GetModule()
     {
-        var module = await dbContext.Module.FirstOrDefaultAsync(o => o.Name == "Fondos");
+        var module = await dbContext.AppModule.FirstOrDefaultAsync(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
         return module;
     }

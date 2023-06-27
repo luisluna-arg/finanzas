@@ -11,7 +11,7 @@ public class OcrHelper
 {
     private const string LanguageFilePath = @"./Assets/tessdata";
 
-    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(IEnumerable<IFormFile> files, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(IEnumerable<IFormFile> files, FinanceDbContext db, AppModule module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         var movementResults = new List<Movement>();
         var currencyConversionResults = new List<CurrencyConversion>();
@@ -26,7 +26,7 @@ public class OcrHelper
         return (movementResults.ToArray(), currencyConversionResults.ToArray());
     }
 
-    public (Movement[] Movements, CurrencyConversion[] CurrencyConversion) Process(IFormFile file, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversion) Process(IFormFile file, FinanceDbContext db, AppModule module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         DocumentProcessGuard();
 
@@ -43,7 +43,7 @@ public class OcrHelper
         }
     }
 
-    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(byte[] bytes, FinanceDbContext db, Module module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(byte[] bytes, FinanceDbContext db, AppModule module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         DocumentProcessGuard();
 
@@ -187,7 +187,7 @@ public class OcrHelper
         }
     }
 
-    private (Movement Movement, CurrencyConversion? CurrencyConversion) BuildMovement(Module module, string content, string dateAndConversion, DateTime referenceDate, Currency[] currencies)
+    private (Movement Movement, CurrencyConversion? CurrencyConversion) BuildMovement(AppModule module, string content, string dateAndConversion, DateTime referenceDate, Currency[] currencies)
     {
         string pattern = @"(.+\s+)([\+\-]*\s*[\d\,\.]*\s+)([a-zA-Z]+)";
         Match match = Regex.Match(content, pattern);
@@ -211,7 +211,7 @@ public class OcrHelper
         var movement = new Movement()
         {
             ModuleId = module.Id,
-            Module = module,
+            AppModule = module,
             TimeStamp = date,
             Concept1 = entity,
             Concept2 = string.Empty,

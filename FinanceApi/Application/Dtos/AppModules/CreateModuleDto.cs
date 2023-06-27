@@ -1,8 +1,8 @@
-namespace FinanceApi.Application.Dtos.Modules;
+namespace FinanceApi.Application.Dtos.AppModules;
 
-public abstract record CreateModuleDto
+public abstract record CreateAppModuleDto
 {
-    protected CreateModuleDto()
+    protected CreateAppModuleDto()
     {
     }
 

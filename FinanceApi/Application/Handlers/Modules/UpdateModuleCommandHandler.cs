@@ -1,4 +1,4 @@
-using FinanceApi.Application.Commands.Modules;
+using FinanceApi.Application.Commands.AppModules;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using MediatR;
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Modules;
 
-public class UpdateModuleCommandHandler : IRequestHandler<UpdateModuleCommand, Module>
+public class UpdateModuleCommandHandler : IRequestHandler<UpdateAppModuleCommand, AppModule>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -15,7 +15,7 @@ public class UpdateModuleCommandHandler : IRequestHandler<UpdateModuleCommand, M
         dbContext = db;
     }
 
-    public async Task<Module> Handle(UpdateModuleCommand command, CancellationToken cancellationToken)
+    public async Task<AppModule> Handle(UpdateAppModuleCommand command, CancellationToken cancellationToken)
     {
         var module = await GetModule(command.Id);
         var currency = await GetCurrency(command.CurrencyId);
@@ -28,9 +28,9 @@ public class UpdateModuleCommandHandler : IRequestHandler<UpdateModuleCommand, M
         return await Task.FromResult(module);
     }
 
-    private async Task<Module> GetModule(Guid id)
+    private async Task<AppModule> GetModule(Guid id)
     {
-        var module = await dbContext.Module.FirstOrDefaultAsync(o => o.Id == id);
+        var module = await dbContext.AppModule.FirstOrDefaultAsync(o => o.Id == id);
         if (module == null) throw new Exception("Module not found");
         return module;
     }

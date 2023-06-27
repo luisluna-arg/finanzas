@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Modules;
 
-public class GetModuleQueryHandler : IRequestHandler<GetModuleQuery, Module>
+public class GetModuleQueryHandler : IRequestHandler<GetModuleQuery, AppModule>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -15,9 +15,9 @@ public class GetModuleQueryHandler : IRequestHandler<GetModuleQuery, Module>
         dbContext = db;
     }
 
-    public async Task<Module> Handle(GetModuleQuery request, CancellationToken cancellationToken)
+    public async Task<AppModule> Handle(GetModuleQuery request, CancellationToken cancellationToken)
     {
-        var module = await dbContext.Module.Include(o => o.Currency).FirstOrDefaultAsync(o => o.Id == request.Id);
+        var module = await dbContext.AppModule.Include(o => o.Currency).FirstOrDefaultAsync(o => o.Id == request.Id);
         if (module == null) throw new Exception("Module not found");
         return await Task.FromResult(module);
     }

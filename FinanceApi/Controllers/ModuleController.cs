@@ -1,6 +1,6 @@
 using AutoMapper;
-using FinanceApi.Application.Commands.Modules;
-using FinanceApi.Application.Dtos.Modules;
+using FinanceApi.Application.Commands.AppModules;
+using FinanceApi.Application.Dtos.AppModules;
 using FinanceApi.Application.Queries.Modules;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -22,17 +22,17 @@ public class ModuleController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> Get()
-        => Ok(mapper.Map<ModuleDto[]>(await mediator.Send(new GetAllModulesQuery())));
+        => Ok(mapper.Map<AppModuleDto[]>(await mediator.Send(new GetAllModulesQuery())));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
-        => Ok(mapper.Map<ModuleDto>(await mediator.Send(new GetModuleQuery { Id = id })));
+        => Ok(mapper.Map<AppModuleDto>(await mediator.Send(new GetModuleQuery { Id = id })));
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateModuleCommand command)
-        => Ok(mapper.Map<ModuleDto>(await mediator.Send(command)));
+    public async Task<IActionResult> Create(CreateAppModuleCommand command)
+        => Ok(mapper.Map<AppModuleDto>(await mediator.Send(command)));
 
     [HttpPut]
-    public async Task<IActionResult> Update(UpdateModuleCommand command)
-        => Ok(mapper.Map<ModuleDto>(await mediator.Send(command)));
+    public async Task<IActionResult> Update(UpdateAppModuleCommand command)
+        => Ok(mapper.Map<AppModuleDto>(await mediator.Send(command)));
 }

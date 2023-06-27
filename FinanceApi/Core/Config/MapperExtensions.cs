@@ -8,6 +8,6 @@ public static class MapperExtensions
     {
         services
             .AddAutoMapper(typeof(CurrencyMapperProfile))
-            .AddAutoMapper(typeof(ModuleMapperProfile));
+            .AddAutoMapper(typeof(AppModuleMapperProfile));
     }
 }

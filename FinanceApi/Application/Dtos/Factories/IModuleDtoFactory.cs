@@ -1,10 +1,10 @@
-using FinanceApi.Application.Dtos.Modules;
+using FinanceApi.Application.Dtos.AppModules;
 using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Application.Dtos.Factories;
 
-public interface IModuleDtoFactory
+public interface IAppModuleDtoFactory
 {
-    ModuleDto[] Create(IEnumerable<Module> modules);
-    ModuleDto Create(Module module);
+    AppModuleDto[] Create(IEnumerable<AppModule> modules);
+    AppModuleDto Create(AppModule module);
 }

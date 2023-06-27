@@ -6,7 +6,7 @@ public sealed class Movement : Entity, IEquatable<Movement>
 {
     [ForeignKey("ModuleId")]
     public Guid ModuleId { get; set; }
-    public Module Module { get; set; } = Module.Default();
+    public AppModule AppModule { get; set; } = AppModule.Default();
     public Currency? Currency { get; set; }
     public Guid? CurrencyId { get; set; } = null;
     required public DateTime TimeStamp { get; set; }

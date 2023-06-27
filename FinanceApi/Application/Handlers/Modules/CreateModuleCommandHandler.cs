@@ -1,4 +1,4 @@
-using FinanceApi.Application.Commands.Modules;
+using FinanceApi.Application.Commands.AppModules;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using MediatR;
@@ -6,30 +6,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Modules;
 
-public class CreateModuleCommandHandler : IRequestHandler<CreateModuleCommand, Module>
+public class CreateAppModuleCommandHandler : IRequestHandler<CreateAppModuleCommand, AppModule>
 {
     private readonly FinanceDbContext dbContext;
 
-    public CreateModuleCommandHandler(FinanceDbContext db)
+    public CreateAppModuleCommandHandler(FinanceDbContext db)
     {
         dbContext = db;
     }
 
-    public async Task<Module> Handle(CreateModuleCommand request, CancellationToken cancellationToken)
+    public async Task<AppModule> Handle(CreateAppModuleCommand request, CancellationToken cancellationToken)
     {
         var currency = await GetCurrency(request.CurrencyId);
 
-        var newModule = new Module()
+        var newAppModule = new AppModule()
         {
             CreatedAt = DateTime.UtcNow,
             Currency = currency,
             Name = request.Name
         };
 
-        dbContext.Module.Add(newModule);
+        dbContext.AppModule.Add(newAppModule);
         await dbContext.SaveChangesAsync();
 
-        return await Task.FromResult(newModule);
+        return await Task.FromResult(newAppModule);
     }
 
     private async Task<Currency> GetCurrency(Guid currencyId)

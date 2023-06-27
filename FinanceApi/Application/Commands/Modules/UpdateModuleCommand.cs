@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using FinanceApi.Domain.Models;
 using MediatR;
 
-namespace FinanceApi.Application.Commands.Modules;
+namespace FinanceApi.Application.Commands.AppModules;
 
-public class UpdateModuleCommand : IRequest<Module>
+public class UpdateAppModuleCommand : IRequest<AppModule>
 {
     [Required]
     public Guid Id { get; set; }

@@ -1,6 +1,4 @@
-using FinanceApi.Core.EntityFramework.Converters;
-using FinanceApi.Core.SpecialTypes;
-using FinanceApi.Domain.Enums;
+using FinanceApi.Domain.Configurations;
 using FinanceApi.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +14,8 @@ public class FinanceDbContext : DbContext
     public DbSet<Bank> Bank => Set<Bank>();
     public DbSet<Currency> Currency => Set<Currency>();
     public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
-    public DbSet<Module> Module => Set<Module>();
-    public DbSet<ModuleEntry> ModuleEntry => Set<ModuleEntry>();
+    public DbSet<AppModule> AppModule => Set<AppModule>();
+    public DbSet<AppModuleEntry> AppModuleEntry => Set<AppModuleEntry>();
     public DbSet<Movement> Movement => Set<Movement>();
     public DbSet<InvestmentAssetIOL> InvestmentAssetIOLs => Set<InvestmentAssetIOL>();
     public DbSet<InvestmentAssetIOLType> InvestmentAssetIOLTypes => Set<InvestmentAssetIOLType>();
@@ -26,49 +24,11 @@ public class FinanceDbContext : DbContext
     {
         modelBuilder.UseSerialColumns();
 
-        modelBuilder.Entity<Module>()
-            .HasMany(c => c.Movements)
-            .WithOne(e => e.Module)
-            .IsRequired();
+        modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
+        modelBuilder.ApplyConfiguration(new InvestmentAssetIOLTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new AppModuleConfiguration());
+        modelBuilder.ApplyConfiguration(new MovementConfiguration());
 
-        modelBuilder
-            .Entity<Movement>()
-            .Property(o => o.TimeStamp)
-            .HasConversion(o => o.ToUniversalTime(), o => o);
-
-        modelBuilder
-            .Entity<Currency>(entity =>
-            {
-                entity.HasIndex(o => o.Name).IsUnique();
-                entity.HasIndex(o => o.ShortName).IsUnique();
-            });
-
-        modelBuilder
-            .Entity<InvestmentAssetIOLType>()
-            .HasData(Enum.GetValues(typeof(InvestmentAssetIOLTypeEnum))
-                .Cast<InvestmentAssetIOLTypeEnum>()
-                .Select(e => new InvestmentAssetIOLType
-                {
-                    Id = (short)e,
-                    Name = e.ToString()
-                }));
-
-        this.SetTypeConverters(modelBuilder);
-    }
-
-    private void SetTypeConverters(ModelBuilder modelBuilder)
-    {
-        var moneyConverter = new MoneyValueConverter();
-
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            foreach (var property in entityType.GetProperties())
-            {
-                if (property.ClrType == typeof(Money))
-                {
-                    property.SetValueConverter(moneyConverter);
-                }
-            }
-        }
+        base.OnModelCreating(modelBuilder);
     }
 }

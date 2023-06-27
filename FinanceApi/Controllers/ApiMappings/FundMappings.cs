@@ -8,7 +8,7 @@ internal static class FundMappingExtensions
     private static string route = "/fund";
     internal static void FundMapping(this WebApplication app)
     {
-        app.BaseMapping(route, (FinanceDbContext db) => db.ModuleEntry);
+        app.BaseMapping(route, (FinanceDbContext db) => db.AppModuleEntry);
 
         app.MapPost(route + "/upload", Upload);
 
@@ -21,7 +21,7 @@ internal static class FundMappingExtensions
 
     internal static async void Upload(IFormFileCollection files, FinanceDbContext db, DateTimeKind dateKind)
     {
-        var module = db.Module.FirstOrDefault(o => o.Name == "Fondos");
+        var module = db.AppModule.FirstOrDefault(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
 
         var excelHelper = new ExcelHelper();
@@ -34,7 +34,7 @@ internal static class FundMappingExtensions
         var minDate = newRecords.Min(o => o.TimeStamp);
         var maxDate = newRecords.Max(o => o.TimeStamp);
 
-        var existingRecords = db.Movement.Where(o => o.TimeStamp >= minDate && o.TimeStamp <= maxDate && o.Module.Id == module.Id);
+        var existingRecords = db.Movement.Where(o => o.TimeStamp >= minDate && o.TimeStamp <= maxDate && o.AppModule.Id == module.Id);
 
         newRecords = newRecords.Where(o => existingRecords.All(x =>
             x.ModuleId != o.ModuleId ||
@@ -50,7 +50,7 @@ internal static class FundMappingExtensions
 
     internal static void UploadImage(IFormFileCollection files, FinanceDbContext db, DateTime? dateReference, DateTimeKind? dateKind)
     {
-        var module = db.Module.FirstOrDefault(o => o.Name == "Fondos");
+        var module = db.AppModule.FirstOrDefault(o => o.Name == "Fondos");
         if (module == null) throw new Exception("Fund module not found");
 
         // if (dateKind == null || dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;

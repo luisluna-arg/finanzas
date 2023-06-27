@@ -5,12 +5,12 @@ namespace FinanceApi.Helpers;
 
 public class ExcelHelper
 {
-    public Movement[] ReadAsync(IEnumerable<IFormFile> files, Module module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public Movement[] ReadAsync(IEnumerable<IFormFile> files, AppModule module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         return files.SelectMany(o => ReadAsync(o, module, dateTimeKind)).ToArray();
     }
 
-    public Movement[] ReadAsync(IFormFile file, Module module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public Movement[] ReadAsync(IFormFile file, AppModule module, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         List<Movement> records = new List<Movement>();
 
@@ -32,7 +32,7 @@ public class ExcelHelper
                     records.Add(new Movement()
                     {
                         ModuleId = module.Id,
-                        Module = module,
+                        AppModule = module,
                         TimeStamp = ParsingHelper.ParseDateTime(sheet.Rows[r][0], "dd/MM/yyyy", null, dateTimeKind),
                         Concept1 = StringHelper.ValueOrEmpty(sheet.Rows[r][1]),
                         Concept2 = StringHelper.ValueOrEmpty(sheet.Rows[r][2]),

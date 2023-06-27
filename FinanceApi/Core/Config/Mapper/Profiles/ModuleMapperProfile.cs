@@ -1,10 +1,10 @@
 using AutoMapper;
-using FinanceApi.Application.Dtos.Modules;
+using FinanceApi.Application.Dtos.AppModules;
 using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class ModuleMapperProfile : Profile
+public class AppModuleMapperProfile : Profile
 {
-    public ModuleMapperProfile() => CreateMap<Module, ModuleDto>();
+    public AppModuleMapperProfile() => CreateMap<AppModule, AppModuleDto>();
 }
