@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using FinanceApi.Core.SpecialTypes;
 
 namespace FinanceApi.Domain.Models;
 
@@ -6,14 +7,22 @@ public sealed class Movement : Entity, IEquatable<Movement>
 {
     [ForeignKey("ModuleId")]
     public Guid ModuleId { get; set; }
+
     public AppModule AppModule { get; set; } = AppModule.Default();
+
     public Currency? Currency { get; set; }
+
     public Guid? CurrencyId { get; set; } = null;
+
     required public DateTime TimeStamp { get; set; }
+
     required public string Concept1 { get; set; }
+
     required public string? Concept2 { get; set; }
-    required public decimal Amount { get; set; }
-    required public decimal? Total { get; set; }
+
+    required public Money Amount { get; set; }
+
+    required public Money? Total { get; set; }
 
     public override bool Equals(object? obj)
     {

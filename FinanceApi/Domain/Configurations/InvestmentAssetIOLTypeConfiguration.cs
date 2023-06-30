@@ -14,7 +14,7 @@ public class InvestmentAssetIOLTypeConfiguration : IEntityTypeConfiguration<Inve
             .Cast<InvestmentAssetIOLTypeEnum>()
             .Select(e => new InvestmentAssetIOLType
             {
-                Id = (short)e,
+                Id = (ushort)e,
                 Name = e.ToString()
             }));
     }

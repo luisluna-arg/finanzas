@@ -11,12 +11,12 @@ public class InvestmentAssetIOLType
 
     public InvestmentAssetIOLType(InvestmentAssetIOLTypeEnum enumValue)
     {
-        this.Id = (int)enumValue;
+        this.Id = (ushort)enumValue;
         this.Name = enumValue.ToString();
     }
 
     [Key]
-    required public int Id { get; set; } = 0;
+    required public ushort Id { get; set; } = 0;
 
     [Required]
     [MaxLength(100)]

@@ -3,6 +3,7 @@ using System;
 using FinanceApi.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinanceApi.Domain.Migrations
 {
     [DbContext(typeof(FinanceDbContext))]
-    partial class FinanceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230630072405_ModelsUpdate")]
+    partial class ModelsUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,8 +156,8 @@ namespace FinanceApi.Domain.Migrations
                     b.Property<decimal>("DailyVariation")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("InvestmentAssetIOLTypeId")
-                        .HasColumnType("integer");
+                    b.Property<long>("InvestmentAssetIOLTypeId")
+                        .HasColumnType("bigint");
 
                     b.Property<decimal>("LastPrice")
                         .HasColumnType("numeric");
@@ -174,11 +177,11 @@ namespace FinanceApi.Domain.Migrations
 
             modelBuilder.Entity("FinanceApi.Domain.Models.InvestmentAssetIOLType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -192,22 +195,22 @@ namespace FinanceApi.Domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = 1L,
                             Name = "Cedear"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = 2L,
                             Name = "TituloPublico"
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 3L,
                             Name = "FCI"
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 4L,
                             Name = "ObligacionNegociable"
                         });
                 });

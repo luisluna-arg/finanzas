@@ -1,4 +1,6 @@
+using FinanceApi.Core.SpecialTypes;
 using FinanceApi.Domain.Models;
+using FinanceApi.Domain.TypeConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,5 +13,13 @@ public class MovementConfiguration : IEntityTypeConfiguration<Movement>
         builder
             .Property(o => o.TimeStamp)
             .HasConversion(o => o.ToUniversalTime(), o => o);
+
+        builder
+            .Property(o => o.Amount)
+            .HasConversion(new MoneyConverter());
+
+        builder
+            .Property(o => o.Total)
+            .HasConversion(money => ((decimal?)money), value => value.HasValue ? new Money(value.Value) : null);
     }
 }

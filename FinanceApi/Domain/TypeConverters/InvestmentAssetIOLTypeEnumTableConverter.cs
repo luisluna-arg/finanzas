@@ -1,5 +1,6 @@
-using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
+
+namespace FinanceApi.Domain.TypeConverters;
 
 public static class InvestmentAssetIOLTypeEnumTableConverter
 {
