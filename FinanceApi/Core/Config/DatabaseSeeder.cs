@@ -36,7 +36,7 @@ public class DatabaseSeeder : IHostedService
 
             await dbContext.AppModule.AddRangeAsync(new List<AppModule>
             {
-                new AppModule { Name = ModuleNames.Funds, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
+                new AppModule { Name = AppModuleNames.Funds, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
             });
             saveChanges = true;
         }
@@ -55,7 +55,7 @@ public class DatabaseSeeder : IHostedService
         public const string Dollar = "Dollar";
     }
 
-    private static class ModuleNames
+    private static class AppModuleNames
     {
         public const string Funds = "Fondos";
     }

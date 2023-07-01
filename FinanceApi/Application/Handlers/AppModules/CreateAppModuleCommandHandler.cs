@@ -4,7 +4,7 @@ using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceApi.Application.Handlers.Modules;
+namespace FinanceApi.Application.Handlers.AppModules;
 
 public class CreateAppModuleCommandHandler : IRequestHandler<CreateAppModuleCommand, AppModule>
 {

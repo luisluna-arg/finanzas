@@ -17,8 +17,8 @@ public class GetCurrencyQueryHandler : IRequestHandler<GetCurrencyQuery, Currenc
 
     public async Task<Currency> Handle(GetCurrencyQuery request, CancellationToken cancellationToken)
     {
-        var module = await dbContext.Currency.FirstOrDefaultAsync(o => o.Id == request.Id);
-        if (module == null) throw new Exception("Currency not found");
-        return await Task.FromResult(module);
+        var appModule = await dbContext.Currency.FirstOrDefaultAsync(o => o.Id == request.Id);
+        if (appModule == null) throw new Exception("Currency not found");
+        return await Task.FromResult(appModule);
     }
 }

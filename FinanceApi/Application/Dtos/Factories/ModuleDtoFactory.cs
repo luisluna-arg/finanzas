@@ -5,13 +5,13 @@ namespace FinanceApi.Application.Dtos.Factories;
 
 public class AppModuleDtoFactory : IAppModuleDtoFactory
 {
-    public AppModuleDto Create(AppModule module) => new AppModuleDto()
+    public AppModuleDto Create(AppModule appModule) => new AppModuleDto()
     {
-        Id = module.Id,
-        CreatedAt = module.CreatedAt,
-        Name = module.Name
+        Id = appModule.Id,
+        CreatedAt = appModule.CreatedAt,
+        Name = appModule.Name
     };
 
-    public AppModuleDto[] Create(IEnumerable<AppModule> modules)
-        => modules.Select(o => Create(o)).ToArray();
+    public AppModuleDto[] Create(IEnumerable<AppModule> appModules)
+        => appModules.Select(o => Create(o)).ToArray();
 }

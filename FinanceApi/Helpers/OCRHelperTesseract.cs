@@ -11,14 +11,14 @@ public class OcrHelper
 {
     private const string LanguageFilePath = @"./Assets/tessdata";
 
-    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(IEnumerable<IFormFile> files, FinanceDbContext db, AppModule module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(IEnumerable<IFormFile> files, FinanceDbContext db, AppModule appModule, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         var movementResults = new List<Movement>();
         var currencyConversionResults = new List<CurrencyConversion>();
 
         foreach (var file in files)
         {
-            var (movements, currencyConversions) = Process(file, db, module, referenceDate, dateTimeKind);
+            var (movements, currencyConversions) = Process(file, db, appModule, referenceDate, dateTimeKind);
             movementResults.AddRange(movements);
             currencyConversionResults.AddRange(currencyConversions);
         }
@@ -26,7 +26,7 @@ public class OcrHelper
         return (movementResults.ToArray(), currencyConversionResults.ToArray());
     }
 
-    public (Movement[] Movements, CurrencyConversion[] CurrencyConversion) Process(IFormFile file, FinanceDbContext db, AppModule module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversion) Process(IFormFile file, FinanceDbContext db, AppModule appModule, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         DocumentProcessGuard();
 
@@ -38,12 +38,12 @@ public class OcrHelper
             using (var adjustedImageStream = AdjustImage(imageStream))
             {
                 byteArray = adjustedImageStream.ToArray();
-                return Process(byteArray, db, module, referenceDate, dateTimeKind);
+                return Process(byteArray, db, appModule, referenceDate, dateTimeKind);
             }
         }
     }
 
-    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(byte[] bytes, FinanceDbContext db, AppModule module, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public (Movement[] Movements, CurrencyConversion[] CurrencyConversions) Process(byte[] bytes, FinanceDbContext db, AppModule appModule, DateTime referenceDate, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         DocumentProcessGuard();
 
@@ -69,7 +69,7 @@ public class OcrHelper
                     {
                         string entry = text[i];
                         string dateAndConversion = text[i + 1];
-                        var (movement, currencyConversion) = BuildMovement(module, entry, dateAndConversion, referenceDate, currencies);
+                        var (movement, currencyConversion) = BuildMovement(appModule, entry, dateAndConversion, referenceDate, currencies);
                         movements.Add(movement);
                         if (currencyConversion != null) currencyConversions.Add(currencyConversion);
                     }
@@ -187,7 +187,7 @@ public class OcrHelper
         }
     }
 
-    private (Movement Movement, CurrencyConversion? CurrencyConversion) BuildMovement(AppModule module, string content, string dateAndConversion, DateTime referenceDate, Currency[] currencies)
+    private (Movement Movement, CurrencyConversion? CurrencyConversion) BuildMovement(AppModule appModule, string content, string dateAndConversion, DateTime referenceDate, Currency[] currencies)
     {
         string pattern = @"(.+\s+)([\+\-]*\s*[\d\,\.]*\s+)([a-zA-Z]+)";
         Match match = Regex.Match(content, pattern);
@@ -210,8 +210,8 @@ public class OcrHelper
 
         var movement = new Movement()
         {
-            ModuleId = module.Id,
-            AppModule = module,
+            ModuleId = appModule.Id,
+            AppModule = appModule,
             TimeStamp = date,
             Concept1 = entity,
             Concept2 = string.Empty,

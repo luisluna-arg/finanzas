@@ -21,20 +21,20 @@ internal static class FundMappingExtensions
 
     internal static async void Upload(IFormFileCollection files, FinanceDbContext db, DateTimeKind dateKind)
     {
-        var module = db.AppModule.FirstOrDefault(o => o.Name == "Fondos");
-        if (module == null) throw new Exception("Fund module not found");
+        var appModule = db.AppModule.FirstOrDefault(o => o.Name == "Fondos");
+        if (appModule == null) throw new Exception("Fund app module not found");
 
         var excelHelper = new ExcelHelper();
 
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
-        var newRecords = excelHelper.ReadAsync(files, module, dateKind);
+        var newRecords = excelHelper.ReadAsync(files, appModule, dateKind);
 
         if (newRecords == null || newRecords.Length == 0) return;
 
         var minDate = newRecords.Min(o => o.TimeStamp);
         var maxDate = newRecords.Max(o => o.TimeStamp);
 
-        var existingRecords = db.Movement.Where(o => o.TimeStamp >= minDate && o.TimeStamp <= maxDate && o.AppModule.Id == module.Id);
+        var existingRecords = db.Movement.Where(o => o.TimeStamp >= minDate && o.TimeStamp <= maxDate && o.AppModule.Id == appModule.Id);
 
         newRecords = newRecords.Where(o => existingRecords.All(x =>
             x.ModuleId != o.ModuleId ||
@@ -50,12 +50,12 @@ internal static class FundMappingExtensions
 
     internal static void UploadImage(IFormFileCollection files, FinanceDbContext db, DateTime? dateReference, DateTimeKind? dateKind)
     {
-        var module = db.AppModule.FirstOrDefault(o => o.Name == "Fondos");
-        if (module == null) throw new Exception("Fund module not found");
+        var appModule = db.AppModule.FirstOrDefault(o => o.Name == "Fondos");
+        if (appModule == null) throw new Exception("Fund app module not found");
 
         // if (dateKind == null || dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
         // var ocrHelper = new OcrHelper();
-        // var (newMovements, newCurrencyConversions) = ocrHelper.Process(files, db, module, dateReference ?? DateTime.Now, dateKind.Value);
+        // var (newMovements, newCurrencyConversions) = ocrHelper.Process(files, db, appModule, dateReference ?? DateTime.Now, dateKind.Value);
     }
 
     internal static async Task ProcessImage(HttpContext httpContext, IFormFileCollection files, FinanceDbContext db, DateTimeKind? dateKind)

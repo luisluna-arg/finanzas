@@ -7,6 +7,6 @@ internal static class MappingExtensions
         // app.BankMapping();
         // app.CurrencyMapping();
         // app.FundMapping();
-        // app.ModuleMapping();
+        // app.AppModuleMapping();
     }
 }

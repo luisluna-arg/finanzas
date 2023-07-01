@@ -4,35 +4,35 @@ using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceApi.Application.Handlers.Modules;
+namespace FinanceApi.Application.Handlers.AppModules;
 
-public class UpdateModuleCommandHandler : IRequestHandler<UpdateAppModuleCommand, AppModule>
+public class UpdateAppModuleCommandHandler : IRequestHandler<UpdateAppModuleCommand, AppModule>
 {
     private readonly FinanceDbContext dbContext;
 
-    public UpdateModuleCommandHandler(FinanceDbContext db)
+    public UpdateAppModuleCommandHandler(FinanceDbContext db)
     {
         dbContext = db;
     }
 
     public async Task<AppModule> Handle(UpdateAppModuleCommand command, CancellationToken cancellationToken)
     {
-        var module = await GetModule(command.Id);
+        var appModule = await GetAppModule(command.Id);
         var currency = await GetCurrency(command.CurrencyId);
 
-        module.Currency = currency;
-        module.Name = command.Name;
+        appModule.Currency = currency;
+        appModule.Name = command.Name;
 
         await dbContext.SaveChangesAsync();
 
-        return await Task.FromResult(module);
+        return await Task.FromResult(appModule);
     }
 
-    private async Task<AppModule> GetModule(Guid id)
+    private async Task<AppModule> GetAppModule(Guid id)
     {
-        var module = await dbContext.AppModule.FirstOrDefaultAsync(o => o.Id == id);
-        if (module == null) throw new Exception("Module not found");
-        return module;
+        var appModule = await dbContext.AppModule.FirstOrDefaultAsync(o => o.Id == id);
+        if (appModule == null) throw new Exception("App module not found");
+        return appModule;
     }
 
     private async Task<Currency> GetCurrency(Guid id)

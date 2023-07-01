@@ -5,6 +5,6 @@ namespace FinanceApi.Application.Dtos.Factories;
 
 public interface IAppModuleDtoFactory
 {
-    AppModuleDto[] Create(IEnumerable<AppModule> modules);
-    AppModuleDto Create(AppModule module);
+    AppModuleDto[] Create(IEnumerable<AppModule> appModules);
+    AppModuleDto Create(AppModule appModule);
 }

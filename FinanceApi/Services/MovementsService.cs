@@ -30,11 +30,11 @@ public class MovementsService : IMovementsService
 
     public async Task Create(CreateMovementDto movement)
     {
-        var module = await GetModule();
+        var appModule = await GetAppModule();
 
         var newMovement = new Movement()
         {
-            AppModule = module,
+            AppModule = appModule,
             Amount = movement.Amount,
             Concept1 = movement.Concept1,
             Concept2 = movement.Concept2,
@@ -82,11 +82,11 @@ public class MovementsService : IMovementsService
         return await dbContext.Movement.AnyAsync(o => o.Id == id);
     }
 
-    private async Task<AppModule> GetModule()
+    private async Task<AppModule> GetAppModule()
     {
-        var module = await dbContext.AppModule.FirstOrDefaultAsync(o => o.Name == "Fondos");
-        if (module == null) throw new Exception("Fund module not found");
-        return module;
+        var appModule = await dbContext.AppModule.FirstOrDefaultAsync(o => o.Name == "Fondos");
+        if (appModule == null) throw new Exception("Fund app module not found");
+        return appModule;
     }
 
     private async Task<Movement> GetRecordById(Guid id, bool throwException = true)
