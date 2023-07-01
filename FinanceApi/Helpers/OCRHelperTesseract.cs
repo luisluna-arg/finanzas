@@ -210,7 +210,7 @@ public class OcrHelper
 
         var movement = new Movement()
         {
-            ModuleId = appModule.Id,
+            AppModuleId = appModule.Id,
             AppModule = appModule,
             TimeStamp = date,
             Concept1 = entity,

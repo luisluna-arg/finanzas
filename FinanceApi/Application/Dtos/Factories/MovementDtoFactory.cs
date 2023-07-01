@@ -10,7 +10,7 @@ public class MovementDtoFactory : IMovementDtoFactory
         return new MovementDto()
         {
             Id = movement.Id,
-            ModuleId = movement.ModuleId,
+            AppModuleId = movement.AppModuleId,
             CurrencyId = movement.CurrencyId,
             TimeStamp = movement.TimeStamp,
             Concept1 = movement.Concept1,

@@ -37,7 +37,7 @@ internal static class FundMappingExtensions
         var existingRecords = db.Movement.Where(o => o.TimeStamp >= minDate && o.TimeStamp <= maxDate && o.AppModule.Id == appModule.Id);
 
         newRecords = newRecords.Where(o => existingRecords.All(x =>
-            x.ModuleId != o.ModuleId ||
+            x.AppModuleId != o.AppModuleId ||
                 x.TimeStamp != o.TimeStamp ||
                 x.Amount != o.Amount ||
                 x.Total != o.Total ||

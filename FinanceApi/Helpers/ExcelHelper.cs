@@ -31,7 +31,7 @@ public class ExcelHelper
                 {
                     records.Add(new Movement()
                     {
-                        ModuleId = appModule.Id,
+                        AppModuleId = appModule.Id,
                         AppModule = appModule,
                         TimeStamp = ParsingHelper.ParseDateTime(sheet.Rows[r][0], "dd/MM/yyyy", null, dateTimeKind),
                         Concept1 = StringHelper.ValueOrEmpty(sheet.Rows[r][1]),

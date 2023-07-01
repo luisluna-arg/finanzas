@@ -5,8 +5,8 @@ namespace FinanceApi.Domain.Models;
 
 public sealed class Movement : Entity, IEquatable<Movement>
 {
-    [ForeignKey("ModuleId")]
-    public Guid ModuleId { get; set; }
+    [ForeignKey("AppModuleId")]
+    public Guid AppModuleId { get; set; }
 
     public AppModule AppModule { get; set; } = AppModule.Default();
 
@@ -34,7 +34,7 @@ public sealed class Movement : Entity, IEquatable<Movement>
         if (movement2 is null) return false;
 
         var result =
-            ModuleId == movement2.ModuleId &&
+            AppModuleId == movement2.AppModuleId &&
             TimeStamp == movement2.TimeStamp &&
             Amount == movement2.Amount &&
             Total == movement2.Total &&
@@ -45,7 +45,7 @@ public sealed class Movement : Entity, IEquatable<Movement>
     }
 
     public override int GetHashCode() => (
-        ModuleId,
+        AppModuleId,
         TimeStamp,
         Amount,
         Total,

@@ -7,6 +7,6 @@ public record MovementDto : BaseMovementDto
     {
     }
 
-    public Guid ModuleId { get; set; }
+    public Guid AppModuleId { get; set; }
     public Guid? CurrencyId { get; set; }
 }
