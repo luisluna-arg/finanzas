@@ -15,15 +15,15 @@ public class CreateAppModuleCommandHandler : IRequestHandler<CreateAppModuleComm
         dbContext = db;
     }
 
-    public async Task<AppModule> Handle(CreateAppModuleCommand request, CancellationToken cancellationToken)
+    public async Task<AppModule> Handle(CreateAppModuleCommand command, CancellationToken cancellationToken)
     {
-        var currency = await GetCurrency(request.CurrencyId);
+        var currency = await GetCurrency(command.CurrencyId);
 
         var newAppModule = new AppModule()
         {
             CreatedAt = DateTime.UtcNow,
             Currency = currency,
-            Name = request.Name
+            Name = command.Name
         };
 
         dbContext.AppModule.Add(newAppModule);

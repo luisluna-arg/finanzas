@@ -14,12 +14,12 @@ public class CreateCurrencyCommandHandler : IRequestHandler<CreateCurrencyComman
         dbContext = db;
     }
 
-    public async Task<Currency> Handle(CreateCurrencyCommand request, CancellationToken cancellationToken)
+    public async Task<Currency> Handle(CreateCurrencyCommand command, CancellationToken cancellationToken)
     {
         var newCurrency = new Currency()
         {
-            ShortName = request.ShortName,
-            Name = request.Name
+            ShortName = command.ShortName,
+            Name = command.Name
         };
 
         dbContext.Currency.Add(newCurrency);
