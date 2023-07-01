@@ -1,72 +1,34 @@
+using AutoMapper;
+using FinanceApi.Application.Commands.Movements;
 using FinanceApi.Application.Dtos.Movements;
-using FinanceApi.Commons;
-using FinanceApi.Services;
+using FinanceApi.Application.Queries.Movements;
+using FinanceApi.Domain.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceApi.Controllers;
 
-[ApiController]
-[Route("movements")]
-public class MovementController : ControllerBase
+[Route("api/modules")]
+public class MovementController : ApiBaseController<Movement, MovementDto>
 {
-    private readonly IMovementsService service;
-
-    public MovementController(IMovementsService movementService)
+    public MovementController(IMapper mapper, IMediator mediator)
+        : base(mapper, mediator)
     {
-        service = movementService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MovementDto>>> Get()
-    {
-        return await service.GetAll();
-    }
+    public async Task<IActionResult> Get()
+        => await Handle(new GetAllMovementsQuery());
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<MovementDto>> GetById(Guid id)
-    {
-        var movement = await service.GetById(id);
-
-        if (movement == null) return NotFound();
-
-        return movement;
-    }
+    public async Task<IActionResult> GetById(Guid id)
+        => await Handle(new GetMovementQuery { Id = id });
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateMovementDto movement)
-    {
-        await service.Create(movement);
-
-        return Ok();
-    }
+    public async Task<IActionResult> Create(CreateMovementCommand command)
+        => await Handle(command);
 
     [HttpPut]
-    public async Task<IActionResult> Update(MovementDto movement)
-    {
-        if (!await service.Exists(movement.Id)) return NotFound();
-
-        await service.Update(movement);
-
-        return Ok();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        if (!await service.Exists(id)) return NotFound();
-
-        await service.Delete(id);
-
-        return Ok();
-    }
-
-    [HttpGet("totals")]
-    public async Task<IActionResult> Totals()
-    {
-        var totals = await service.GetTotals();
-
-        if (totals == null) return Ok(new OkResponse("No funds available", false));
-
-        return Ok(new TotalsDto());
-    }
+    public async Task<IActionResult> Update(PartialUpdateMovementCommand command)
+        => await Handle(command);
 }
