@@ -6,16 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.AppModules;
 
-public class UpdateAppModuleCommandHandler : IRequestHandler<UpdateAppModuleCommand, AppModule>
+public class UpdateAppModuleCommandHandler : BaseResponseHandler<UpdateAppModuleCommand, AppModule>
 {
-    private readonly FinanceDbContext dbContext;
-
     public UpdateAppModuleCommandHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<AppModule> Handle(UpdateAppModuleCommand command, CancellationToken cancellationToken)
+    public override async Task<AppModule> Handle(UpdateAppModuleCommand command, CancellationToken cancellationToken)
     {
         var appModule = await GetAppModule(command.Id);
         var currency = await GetCurrency(command.CurrencyId);
@@ -23,21 +21,21 @@ public class UpdateAppModuleCommandHandler : IRequestHandler<UpdateAppModuleComm
         appModule.Currency = currency;
         appModule.Name = command.Name;
 
-        await dbContext.SaveChangesAsync();
+        await DbContext.SaveChangesAsync();
 
         return await Task.FromResult(appModule);
     }
 
     private async Task<AppModule> GetAppModule(Guid id)
     {
-        var appModule = await dbContext.AppModule.FirstOrDefaultAsync(o => o.Id == id);
+        var appModule = await DbContext.AppModule.FirstOrDefaultAsync(o => o.Id == id);
         if (appModule == null) throw new Exception("App module not found");
         return appModule;
     }
 
     private async Task<Currency> GetCurrency(Guid id)
     {
-        var currency = await dbContext.Currency.FirstOrDefaultAsync(o => o.Id == id);
+        var currency = await DbContext.Currency.FirstOrDefaultAsync(o => o.Id == id);
         if (currency == null) throw new Exception("Currency not found");
         return currency;
     }

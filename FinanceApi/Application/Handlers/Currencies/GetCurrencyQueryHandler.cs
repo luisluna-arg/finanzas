@@ -6,18 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Currencies;
 
-public class GetCurrencyQueryHandler : IRequestHandler<GetCurrencyQuery, Currency>
+public class GetCurrencyQueryHandler : BaseResponseHandler<GetCurrencyQuery, Currency>
 {
-    private readonly FinanceDbContext dbContext;
-
     public GetCurrencyQueryHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<Currency> Handle(GetCurrencyQuery request, CancellationToken cancellationToken)
+    public override async Task<Currency> Handle(GetCurrencyQuery request, CancellationToken cancellationToken)
     {
-        var appModule = await dbContext.Currency.FirstOrDefaultAsync(o => o.Id == request.Id);
+        var appModule = await DbContext.Currency.FirstOrDefaultAsync(o => o.Id == request.Id);
         if (appModule == null) throw new Exception("Currency not found");
         return await Task.FromResult(appModule);
     }

@@ -6,18 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
-public class GetMovementQueryHandler : IRequestHandler<GetMovementQuery, Movement>
+public class GetMovementQueryHandler : BaseResponseHandler<GetMovementQuery, Movement>
 {
-    private readonly FinanceDbContext dbContext;
-
     public GetMovementQueryHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<Movement> Handle(GetMovementQuery request, CancellationToken cancellationToken)
+    public override async Task<Movement> Handle(GetMovementQuery request, CancellationToken cancellationToken)
     {
-        var movement = await dbContext.Movement.FirstOrDefaultAsync(o => o.Id == request.Id);
+        var movement = await DbContext.Movement.FirstOrDefaultAsync(o => o.Id == request.Id);
         if (movement == null) throw new Exception("Movement not found");
 
         return await Task.FromResult(movement);

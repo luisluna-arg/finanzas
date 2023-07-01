@@ -6,17 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.AppModules;
 
-public class GetAllAppModulesQueryHandler : IRequestHandler<GetAllAppModulesQuery, AppModule[]>
+public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModulesQuery, AppModule>
 {
-    private readonly FinanceDbContext dbContext;
-
     public GetAllAppModulesQueryHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<AppModule[]> Handle(GetAllAppModulesQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<AppModule>> Handle(GetAllAppModulesQuery request, CancellationToken cancellationToken)
     {
-        return await Task.FromResult(await dbContext.AppModule.Include(o => o.Currency).ToArrayAsync());
+        return await Task.FromResult(await DbContext.AppModule.Include(o => o.Currency).ToArrayAsync());
     }
 }

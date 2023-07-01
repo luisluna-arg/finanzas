@@ -6,17 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
-public class GetAllMovementsQueryHandler : IRequestHandler<GetAllMovementsQuery, Movement[]>
+public class GetAllMovementsQueryHandler : BaseCollectionHandler<GetAllMovementsQuery, Movement>
 {
-    private readonly FinanceDbContext dbContext;
-
     public GetAllMovementsQueryHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<Movement[]> Handle(GetAllMovementsQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<Movement>> Handle(GetAllMovementsQuery request, CancellationToken cancellationToken)
     {
-        return await Task.FromResult(await dbContext.Movement.ToArrayAsync());
+        return await Task.FromResult(await DbContext.Movement.ToArrayAsync());
     }
 }

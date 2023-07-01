@@ -6,17 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Currencies;
 
-public class GetAllCurrenciesQueryHandler : IRequestHandler<GetAllCurrenciesQuery, Currency[]>
+public class GetAllCurrenciesQueryHandler : BaseCollectionHandler<GetAllCurrenciesQuery, Currency>
 {
-    private readonly FinanceDbContext dbContext;
-
     public GetAllCurrenciesQueryHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<Currency[]> Handle(GetAllCurrenciesQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<Currency>> Handle(GetAllCurrenciesQuery request, CancellationToken cancellationToken)
     {
-        return await Task.FromResult(await dbContext.Currency.ToArrayAsync());
+        return await Task.FromResult(await DbContext.Currency.ToArrayAsync());
     }
 }

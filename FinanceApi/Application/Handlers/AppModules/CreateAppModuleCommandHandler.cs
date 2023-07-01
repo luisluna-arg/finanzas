@@ -6,16 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.AppModules;
 
-public class CreateAppModuleCommandHandler : IRequestHandler<CreateAppModuleCommand, AppModule>
+public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModuleCommand, AppModule>
 {
-    private readonly FinanceDbContext dbContext;
-
     public CreateAppModuleCommandHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<AppModule> Handle(CreateAppModuleCommand command, CancellationToken cancellationToken)
+    public override async Task<AppModule> Handle(CreateAppModuleCommand command, CancellationToken cancellationToken)
     {
         var currency = await GetCurrency(command.CurrencyId);
 
@@ -26,15 +24,15 @@ public class CreateAppModuleCommandHandler : IRequestHandler<CreateAppModuleComm
             Name = command.Name
         };
 
-        dbContext.AppModule.Add(newAppModule);
-        await dbContext.SaveChangesAsync();
+        DbContext.AppModule.Add(newAppModule);
+        await DbContext.SaveChangesAsync();
 
         return await Task.FromResult(newAppModule);
     }
 
     private async Task<Currency> GetCurrency(Guid currencyId)
     {
-        var currency = await dbContext.Currency.FirstOrDefaultAsync(o => o.Id == currencyId);
+        var currency = await DbContext.Currency.FirstOrDefaultAsync(o => o.Id == currencyId);
         if (currency == null) throw new Exception("Fund currency not found");
         return currency;
     }

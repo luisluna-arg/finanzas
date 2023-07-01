@@ -7,16 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
-public class CreateMovementCommandHandler : IRequestHandler<CreateMovementCommand, Movement>
+public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCommand, Movement>
 {
-    private readonly FinanceDbContext dbContext;
-
     public CreateMovementCommandHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<Movement> Handle(CreateMovementCommand command, CancellationToken cancellationToken)
+    public override async Task<Movement> Handle(CreateMovementCommand command, CancellationToken cancellationToken)
     {
         AppModule? appModule = await GetAppModule(command.AppModuleId);
 
@@ -33,8 +31,8 @@ public class CreateMovementCommandHandler : IRequestHandler<CreateMovementComman
             Total = command.Total,
         };
 
-        dbContext.Movement.Add(newMovement);
-        await dbContext.SaveChangesAsync();
+        DbContext.Movement.Add(newMovement);
+        await DbContext.SaveChangesAsync();
 
         return await Task.FromResult(newMovement);
     }
@@ -43,7 +41,7 @@ public class CreateMovementCommandHandler : IRequestHandler<CreateMovementComman
     {
         if (!currencyId.HasValue) return null;
 
-        var currency = await dbContext.Currency.FirstOrDefaultAsync(o => o.Id == currencyId);
+        var currency = await DbContext.Currency.FirstOrDefaultAsync(o => o.Id == currencyId);
         if (currency == null) throw new Exception("Fund currency not found");
         return currency;
     }
@@ -53,7 +51,7 @@ public class CreateMovementCommandHandler : IRequestHandler<CreateMovementComman
         AppModule? appModule = null;
         Expression<Func<AppModule, bool>> filter = !appModuleId.HasValue ? o => o.Name == "Fondos" : o => o.Id == appModuleId.Value;
 
-        appModule = await dbContext.AppModule.FirstOrDefaultAsync(filter);
+        appModule = await DbContext.AppModule.FirstOrDefaultAsync(filter);
 
         if (appModule == null) throw new Exception("Fund app module not found");
 

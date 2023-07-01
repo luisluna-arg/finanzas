@@ -6,16 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
-public class UpdateMovementCommandHandler : IRequestHandler<PartialUpdateMovementCommand, Movement>
+public class UpdateMovementCommandHandler : BaseResponseHandler<PartialUpdateMovementCommand, Movement>
 {
-    private readonly FinanceDbContext dbContext;
-
     public UpdateMovementCommandHandler(FinanceDbContext db)
+        : base(db)
     {
-        dbContext = db;
     }
 
-    public async Task<Movement> Handle(PartialUpdateMovementCommand command, CancellationToken cancellationToken)
+    public override async Task<Movement> Handle(PartialUpdateMovementCommand command, CancellationToken cancellationToken)
     {
         Movement movement = await GetMovement(command.Id);
 
@@ -25,16 +23,16 @@ public class UpdateMovementCommandHandler : IRequestHandler<PartialUpdateMovemen
         movement.TimeStamp = command.TimeStamp;
         movement.Total = command.Total;
 
-        dbContext.Movement.Update(movement);
-        await dbContext.SaveChangesAsync();
+        DbContext.Movement.Update(movement);
+        await DbContext.SaveChangesAsync();
 
         return await Task.FromResult(movement);
     }
 
     private async Task<Movement> GetMovement(Guid id)
     {
-        var Movement = await dbContext.Movement.FirstOrDefaultAsync(o => o.Id == id);
-        if (Movement == null) throw new Exception("Movement not found");
-        return Movement;
+        var movement = await DbContext.Movement.FirstOrDefaultAsync(o => o.Id == id);
+        if (movement == null) throw new Exception("Movement not found");
+        return movement;
     }
 }
