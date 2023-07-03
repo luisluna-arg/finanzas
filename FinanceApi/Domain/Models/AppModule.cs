@@ -1,3 +1,5 @@
+using FinanceApi.Domain.Models.Base;
+
 namespace FinanceApi.Domain.Models;
 
 public class AppModule : Entity

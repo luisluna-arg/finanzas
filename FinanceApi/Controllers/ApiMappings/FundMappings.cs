@@ -8,7 +8,7 @@ internal static class FundMappingExtensions
     private static string route = "/fund";
     internal static void FundMapping(this WebApplication app)
     {
-        app.BaseMapping(route, (FinanceDbContext db) => db.AppModuleEntry);
+        app.BaseMapping(route, (FinanceDbContext db) => db.Movement);
 
         app.MapPost(route + "/upload", Upload);
 

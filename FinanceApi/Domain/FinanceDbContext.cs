@@ -15,7 +15,6 @@ public class FinanceDbContext : DbContext
     public DbSet<Currency> Currency => Set<Currency>();
     public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
     public DbSet<AppModule> AppModule => Set<AppModule>();
-    public DbSet<AppModuleEntry> AppModuleEntry => Set<AppModuleEntry>();
     public DbSet<Movement> Movement => Set<Movement>();
     public DbSet<InvestmentAssetIOL> InvestmentAssetIOLs => Set<InvestmentAssetIOL>();
     public DbSet<InvestmentAssetIOLType> InvestmentAssetIOLTypes => Set<InvestmentAssetIOLType>();

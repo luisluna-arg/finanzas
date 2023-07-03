@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceApi.Controllers;
 
-[Route("api/modules")]
+[Route("api/movements")]
 public class MovementController : ApiBaseController<Movement, MovementDto>
 {
     public MovementController(IMapper mapper, IMediator mediator)

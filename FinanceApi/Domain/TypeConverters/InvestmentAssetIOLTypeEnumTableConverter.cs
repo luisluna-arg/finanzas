@@ -1,4 +1,4 @@
-using FinanceApi.Domain.Models;
+using FinanceApi.Domain.Models.Interfaces;
 
 namespace FinanceApi.Domain.TypeConverters;
 

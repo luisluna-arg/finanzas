@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using FinanceApi.Domain.Models.Interfaces;
 
-namespace FinanceApi.Domain.Models;
+namespace FinanceApi.Domain.Models.Base;
 
 public abstract class Entity : IEntity
 {

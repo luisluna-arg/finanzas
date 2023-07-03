@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 

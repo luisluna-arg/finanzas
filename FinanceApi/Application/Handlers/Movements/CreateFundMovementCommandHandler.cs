@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using FinanceApi.Application.Commands.Movements;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
@@ -6,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
-public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCommand, Movement>
+public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMovementCommand, Movement>
 {
-    public CreateMovementCommandHandler(FinanceDbContext db)
+    public CreateFundMovementCommandHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<Movement> Handle(CreateMovementCommand command, CancellationToken cancellationToken)
+    public override async Task<Movement> Handle(CreateFundMovementCommand command, CancellationToken cancellationToken)
     {
-        AppModule? appModule = await GetAppModule(command.AppModuleId);
+        AppModule? appModule = await GetFundAppModule();
 
         Currency? currency = await GetCurrency(command.CurrencyId);
 
@@ -45,12 +44,9 @@ public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCo
         return currency;
     }
 
-    private async Task<AppModule> GetAppModule(Guid? appModuleId)
+    private async Task<AppModule> GetFundAppModule()
     {
-        AppModule? appModule = null;
-        Expression<Func<AppModule, bool>> filter = !appModuleId.HasValue ? o => o.Name == "Fondos" : o => o.Id == appModuleId.Value;
-
-        appModule = await DbContext.AppModule.FirstOrDefaultAsync(filter);
+        var appModule = await DbContext.AppModule.FirstOrDefaultAsync(o => o.Name == "Fondos");
 
         if (appModule == null) throw new Exception("Fund app module not found");
 

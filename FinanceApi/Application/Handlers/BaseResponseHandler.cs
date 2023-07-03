@@ -1,5 +1,5 @@
 using FinanceApi.Domain;
-using FinanceApi.Domain.Models;
+using FinanceApi.Domain.Models.Base;
 using MediatR;
 
 namespace FinanceApi.Application.Handlers;

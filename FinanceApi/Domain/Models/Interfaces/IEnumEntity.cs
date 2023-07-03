@@ -1,4 +1,4 @@
-namespace FinanceApi.Domain.Models;
+namespace FinanceApi.Domain.Models.Interfaces;
 
 public interface IEnumEntity
 {

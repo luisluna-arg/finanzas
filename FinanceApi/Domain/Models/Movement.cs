@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using FinanceApi.Core.SpecialTypes;
+using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 
