@@ -3,7 +3,7 @@ using MediatR;
 
 namespace FinanceApi.Application.Queries;
 
-public abstract class GetAllQuery<TEntity> : IRequest<TEntity[]>
+public abstract class GetAllQuery<TEntity> : IRequest<ICollection<TEntity>>
     where TEntity : IEntity
 {
 }

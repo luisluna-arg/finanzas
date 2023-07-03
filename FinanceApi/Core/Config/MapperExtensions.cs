@@ -7,7 +7,12 @@ public static class MapperExtensions
     public static void AddAutoMapping(this IServiceCollection services)
     {
         services
+            .AddAutoMapper(typeof(AppModuleMapperProfile))
+            .AddAutoMapper(typeof(BankMapperProfile))
+            .AddAutoMapper(typeof(CurrencyConversionMapperProfile))
             .AddAutoMapper(typeof(CurrencyMapperProfile))
-            .AddAutoMapper(typeof(AppModuleMapperProfile));
+            .AddAutoMapper(typeof(InvestmentAssetIOLMapperProfile))
+            .AddAutoMapper(typeof(InvestmentAssetIOLTypeTypeMapperProfile))
+            .AddAutoMapper(typeof(MovementMapperProfile));
     }
 }

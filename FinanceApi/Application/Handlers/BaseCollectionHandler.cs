@@ -5,7 +5,7 @@ using MediatR;
 namespace FinanceApi.Application.Handlers;
 
 public abstract class BaseCollectionHandler<TRequest, TEntity> : IRequestHandler<TRequest, ICollection<TEntity>>
-    where TRequest : IRequest<TEntity[]>
+    where TRequest : IRequest<ICollection<TEntity>>
     where TEntity : Entity
 {
     protected BaseCollectionHandler(FinanceDbContext db)

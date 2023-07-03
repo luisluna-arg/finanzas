@@ -39,6 +39,6 @@ public abstract class ApiBaseController<TEntity, TDto> : ControllerBase
     private async Task<TDto> MapAndSend(IRequest<TEntity> command)
         => mapper.Map<TDto>(await mediator.Send(command));
 
-    private async Task<TDto> MapAndSend(IRequest<TEntity[]> command)
-        => mapper.Map<TDto>(await mediator.Send(command));
+    private async Task<TDto[]> MapAndSend(IRequest<ICollection<TEntity>> command)
+        => (await mediator.Send(command)).Select(entity => mapper.Map<TDto>(entity)).ToArray();
 }
