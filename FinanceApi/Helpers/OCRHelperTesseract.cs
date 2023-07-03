@@ -127,7 +127,7 @@ public class OcrHelper
                                     var concept = concepts[iConcept];
                                     var dateStr = concepts[iConcept + 1];
 
-                                    // TODO: How to set year when the entry is from previous year, also how determine if it's from the immediate year or older
+                                    // How to set year when the entry is from previous year, also how determine if it's from the immediate year or older
                                     var date = DateTime.Parse(dateStr);
                                     dateStr = date.ToString("MM/dd/yyyy");
                                     var value = values[iVal];

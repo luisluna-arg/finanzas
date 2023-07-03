@@ -15,9 +15,5 @@ public class UploadImageCommandHandler : BaseResponselessHandler<UploadImageComm
     {
         var appModule = await DbContext.AppModule.FirstOrDefaultAsync(o => o.Name == "Fondos");
         if (appModule == null) throw new Exception("Fund app module not found");
-
-        // if (dateKind == null || dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
-        // var ocrHelper = new OcrHelper();
-        // var (newMovements, newCurrencyConversions) = ocrHelper.Process(files, db, appModule, dateReference ?? DateTime.Now, dateKind.Value);
     }
 }

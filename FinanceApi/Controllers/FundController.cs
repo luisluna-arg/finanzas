@@ -74,13 +74,4 @@ public class FundController : ApiBaseController<Movement, MovementDto>
         });
         return Ok();
     }
-
-    private static string CreateTempfilePath()
-    {
-        var filename = $"{Guid.NewGuid()}.tmp";
-        var directoryPath = Path.Combine("temp", "uploads");
-        if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
-
-        return Path.Combine(directoryPath, filename);
-    }
 }
