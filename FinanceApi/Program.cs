@@ -1,5 +1,4 @@
 // Based on Microsoft Minimal API tutorial
-using FinanceApi.Controllers.ApiMappings;
 using FinanceApi.Core.Config;
 using FinanceApi.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -43,8 +42,6 @@ if (app.Environment.IsDevelopment())
     app.UseOpenApi();
     app.UseSwaggerUi3();
 }
-
-app.EndpointMappings();
 
 app.UseHttpsRedirection();
 
