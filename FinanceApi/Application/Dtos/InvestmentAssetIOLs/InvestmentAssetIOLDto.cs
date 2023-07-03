@@ -1,6 +1,6 @@
 namespace FinanceApi.Application.Dtos.InvestmentAssetIOLs;
 
-public record InvestmentAssetIOLDto : Dto
+public record InvestmentAssetIOLDto : Dto<Guid>
 {
     public InvestmentAssetIOLDto()
         : base()

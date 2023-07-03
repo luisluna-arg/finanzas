@@ -2,7 +2,7 @@ using FinanceApi.Application.Dtos.Currencies;
 
 namespace FinanceApi.Application.Dtos.AppModules;
 
-public record AppModuleDto : Dto
+public record AppModuleDto : Dto<Guid>
 {
     public AppModuleDto()
         : base()
@@ -10,7 +10,10 @@ public record AppModuleDto : Dto
     }
 
     public string Name { get; set; } = string.Empty;
+
     public DateTime CreatedAt { get; set; }
+
     public Guid? CurrencyId { get; set; }
+
     public CurrencyDto? Currency { get; set; }
 }

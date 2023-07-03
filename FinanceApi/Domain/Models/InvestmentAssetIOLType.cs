@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using FinanceApi.Domain.Enums;
+using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 
-public class InvestmentAssetIOLType
+public class InvestmentAssetIOLType : Entity<ushort>
 {
     public InvestmentAssetIOLType()
     {
@@ -14,9 +15,6 @@ public class InvestmentAssetIOLType
         this.Id = (ushort)enumValue;
         this.Name = enumValue.ToString();
     }
-
-    [Key]
-    required public ushort Id { get; set; } = 0;
 
     [Required]
     [MaxLength(100)]

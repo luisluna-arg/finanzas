@@ -1,14 +1,11 @@
-using FinanceApi.Domain.Models.Base;
+using FinanceApi.Domain.Enums;
+using FinanceApi.Domain.Models;
+using MediatR;
 
-namespace FinanceApi.Domain.Models;
+namespace FinanceApi.Application.Commands.InvestmentAssetIOLs;
 
-public class InvestmentAssetIOL : Entity<Guid>
+public class CreateInvestmentAssetIOLCommand : IRequest<InvestmentAssetIOL>
 {
-    public InvestmentAssetIOL()
-        : base()
-    {
-    }
-
     required public string Asset { get; set; } = string.Empty;
 
     required public uint Alarms { get; set; } = 0;
@@ -29,5 +26,5 @@ public class InvestmentAssetIOL : Entity<Guid>
 
     required public decimal Valued { get; set; } = 0M;
 
-    required public virtual InvestmentAssetIOLType InvestmentAssetIOLType { get; set; }
+    required public InvestmentAssetIOLTypeEnum InvestmentAssetIOLTypeId { get; set; }
 }

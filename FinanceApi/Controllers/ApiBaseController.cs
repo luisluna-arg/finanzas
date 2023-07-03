@@ -1,16 +1,16 @@
 using AutoMapper;
 using FinanceApi.Application.Dtos;
 using FinanceApi.Application.Queries;
-using FinanceApi.Domain.Models.Base;
+using FinanceApi.Domain.Models.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceApi.Controllers;
 
 [ApiController]
-public abstract class ApiBaseController<TEntity, TDto> : ControllerBase
-    where TDto : Dto
-    where TEntity : Entity
+public abstract class ApiBaseController<TEntity, TId, TDto> : ControllerBase
+    where TDto : Dto<TId>
+    where TEntity : IEntity
 {
     private readonly IMapper mapper;
     private readonly IMediator mediator;
@@ -24,7 +24,7 @@ public abstract class ApiBaseController<TEntity, TDto> : ControllerBase
     protected async Task<IActionResult> Handle(IRequest<TEntity> command)
         => Ok(await MapAndSend(command));
 
-    protected async Task<IActionResult> Handle(GetSingleByIdQuery<TEntity> query)
+    protected async Task<IActionResult> Handle(GetSingleByIdQuery<TEntity, TId> query)
         => Ok(await MapAndSend(query));
 
     protected async Task<IActionResult> Handle(GetAllQuery<TEntity> query)

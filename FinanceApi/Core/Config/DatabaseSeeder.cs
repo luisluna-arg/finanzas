@@ -1,4 +1,5 @@
 using FinanceApi.Domain;
+using FinanceApi.Domain.Enums;
 using FinanceApi.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,35 +19,53 @@ public class DatabaseSeeder : IHostedService
         using var scope = provider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<FinanceDbContext>();
 
-        bool saveChanges = false;
-        if (!dbContext.Currency.Any())
-        {
-            await dbContext.Currency.AddRangeAsync(
-                new Currency { Name = CurrencyNames.Peso, ShortName = CurrencyNames.Peso, },
-                new Currency { Name = CurrencyNames.Dollar, ShortName = CurrencyNames.Dollar, });
-            saveChanges = true;
-        }
+        await SeedDefaultCurrencies(dbContext);
 
-        if (saveChanges) await dbContext.SaveChangesAsync();
+        await SeedAppModules(dbContext);
 
-        if (!dbContext.AppModule.Any())
-        {
-            var currencyPeso = await dbContext.Currency.FirstOrDefaultAsync(x => x.Name == CurrencyNames.Peso);
-            if (currencyPeso == null) throw new SystemException("Fatal error while seeding App database");
-
-            await dbContext.AppModule.AddRangeAsync(new List<AppModule>
-            {
-                new AppModule { Name = AppModuleNames.Funds, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
-            });
-            saveChanges = true;
-        }
-
-        if (saveChanges) await dbContext.SaveChangesAsync();
+        await SeedInvestmentAssetIOLTypes(dbContext);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
+    }
+
+    private async Task SeedDefaultCurrencies(FinanceDbContext dbContext)
+    {
+        if (dbContext.Currency.Any()) return;
+
+        await dbContext.Currency.AddRangeAsync(
+            new Currency { Name = CurrencyNames.Peso, ShortName = CurrencyNames.Peso, },
+            new Currency { Name = CurrencyNames.Dollar, ShortName = CurrencyNames.Dollar, });
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    private async Task SeedAppModules(FinanceDbContext dbContext)
+    {
+        if (dbContext.AppModule.Any()) return;
+
+        var currencyPeso = await dbContext.Currency.FirstOrDefaultAsync(x => x.Name == CurrencyNames.Peso);
+        if (currencyPeso == null) throw new SystemException("Fatal error while seeding App database");
+
+        await dbContext.AppModule.AddRangeAsync(new List<AppModule>
+            {
+                new AppModule { Name = AppModuleNames.Funds, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
+            });
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    private async Task SeedInvestmentAssetIOLTypes(FinanceDbContext dbContext)
+    {
+        if (dbContext.InvestmentAssetIOLTypes.Any()) return;
+
+        await dbContext.InvestmentAssetIOLTypes.AddRangeAsync(
+            EnumHelper.GetEnumMembers<InvestmentAssetIOLTypeEnum>()
+            .Select(x => new InvestmentAssetIOLType() { Id = (ushort)x, Name = x.ToString() }));
+
+        await dbContext.SaveChangesAsync();
     }
 
     private static class CurrencyNames

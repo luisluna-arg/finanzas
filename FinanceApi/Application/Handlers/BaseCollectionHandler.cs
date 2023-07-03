@@ -1,12 +1,11 @@
 using FinanceApi.Domain;
-using FinanceApi.Domain.Models.Base;
 using MediatR;
 
 namespace FinanceApi.Application.Handlers;
 
 public abstract class BaseCollectionHandler<TRequest, TEntity> : IRequestHandler<TRequest, ICollection<TEntity>>
     where TRequest : IRequest<ICollection<TEntity>>
-    where TEntity : Entity
+    where TEntity : class
 {
     protected BaseCollectionHandler(FinanceDbContext db)
     {

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers;
 
 [Route("api/app-modules")]
-public class AppModuleController : ApiBaseController<AppModule, AppModuleDto>
+public class AppModuleController : ApiBaseController<AppModule, Guid, AppModuleDto>
 {
     public AppModuleController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)

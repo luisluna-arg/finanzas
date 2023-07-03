@@ -3,7 +3,7 @@ using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 
-public class CurrencyConversion : Entity
+public class CurrencyConversion : Entity<Guid>
 {
     public CurrencyConversion()
         : base()
@@ -12,7 +12,10 @@ public class CurrencyConversion : Entity
 
     [ForeignKey("MovementId")]
     public Guid MovementId { get; set; }
+
     public Movement? Movement { get; set; }
+
     public decimal Amount { get; set; }
+
     public Currency? Currency { get; set; }
 }

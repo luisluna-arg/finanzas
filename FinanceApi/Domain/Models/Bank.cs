@@ -2,7 +2,7 @@ using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 
-public class Bank : Entity
+public class Bank : Entity<Guid>
 {
     public Bank()
         : base()

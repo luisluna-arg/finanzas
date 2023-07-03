@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers;
 
 [Route("api/banks")]
-public class BankController : ApiBaseController<Bank, BankDto>
+public class BankController : ApiBaseController<Bank, Guid, BankDto>
 {
     public BankController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)

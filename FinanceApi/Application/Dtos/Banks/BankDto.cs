@@ -2,7 +2,7 @@ using FinanceApi.Application.Dtos.Currencies;
 
 namespace FinanceApi.Application.Dtos.Banks;
 
-public record BankDto : Dto
+public record BankDto : Dto<Guid>
 {
     public BankDto()
         : base()

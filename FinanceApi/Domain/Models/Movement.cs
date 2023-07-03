@@ -4,7 +4,7 @@ using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 
-public sealed class Movement : Entity, IEquatable<Movement>
+public sealed class Movement : Entity<Guid>, IEquatable<Movement>
 {
     [ForeignKey("AppModuleId")]
     public Guid AppModuleId { get; set; }

@@ -1,8 +1,6 @@
-using FinanceApi.Application.Dtos.Currencies;
-
 namespace FinanceApi.Application.Dtos.CurrencyConversions;
 
-public record CurrencyConversionDto : Dto
+public record CurrencyConversionDto : Dto<Guid>
 {
     public CurrencyConversionDto()
         : base()

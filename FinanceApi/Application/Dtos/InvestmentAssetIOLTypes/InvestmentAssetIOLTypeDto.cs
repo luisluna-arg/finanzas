@@ -1,6 +1,6 @@
 namespace FinanceApi.Application.Dtos.InvestmentAssetIOLTypes;
 
-public record InvestmentAssetIOLTypeDto : Dto
+public record InvestmentAssetIOLTypeDto : Dto<ushort>
 {
     public InvestmentAssetIOLTypeDto()
         : base()

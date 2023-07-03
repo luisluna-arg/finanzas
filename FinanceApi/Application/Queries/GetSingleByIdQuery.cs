@@ -3,8 +3,8 @@ using MediatR;
 
 namespace FinanceApi.Application.Queries;
 
-public abstract class GetSingleByIdQuery<TEntity> : IRequest<TEntity>
+public abstract class GetSingleByIdQuery<TEntity, TId> : IRequest<TEntity>
     where TEntity : IEntity
 {
-    public Guid Id { get; set; }
+    public TId Id { get; set; } = default!;
 }

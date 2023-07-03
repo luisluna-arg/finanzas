@@ -2,7 +2,7 @@ using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 
-public class Currency : Entity
+public class Currency : Entity<Guid>
 {
     public Currency()
         : base()
@@ -10,6 +10,7 @@ public class Currency : Entity
     }
 
     required public string Name { get; set; } = string.Empty;
+
     required public string ShortName { get; set; } = string.Empty;
 
     public static Currency Default()

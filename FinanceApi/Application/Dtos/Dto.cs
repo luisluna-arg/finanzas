@@ -1,10 +1,10 @@
 namespace FinanceApi.Application.Dtos;
 
-public abstract record Dto
+public abstract record Dto<TId>
 {
     protected Dto()
     {
     }
 
-    public Guid Id { get; set; }
+    public TId Id { get; set; } = default!;
 }
