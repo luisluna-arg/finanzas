@@ -15,5 +15,7 @@ public interface IRepository<TEntity, TId>
 
     Task Update(TEntity entity);
 
+    Task Delete(TId entity);
+
     Task Delete(TEntity entity);
 }

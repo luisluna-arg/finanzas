@@ -72,6 +72,11 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task Delete(TId entityId)
+    {
+        await Delete(await GetById(entityId));
+    }
+
     public async Task Delete(TEntity entity)
     {
         dbSet.Remove(entity);
