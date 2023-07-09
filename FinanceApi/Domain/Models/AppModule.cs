@@ -11,14 +11,4 @@ public class AppModule : Entity<Guid>
     required public Currency Currency { get; set; }
 
     public ICollection<Movement> Movements { get; set; } = new List<Movement>();
-
-    public static AppModule Default()
-    {
-        return new AppModule()
-        {
-            Name = string.Empty,
-            CreatedAt = DateTime.UtcNow,
-            Currency = Currency.Default()
-        };
-    }
 }

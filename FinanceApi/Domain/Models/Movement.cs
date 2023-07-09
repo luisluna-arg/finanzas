@@ -9,7 +9,7 @@ public sealed class Movement : Entity<Guid>, IEquatable<Movement>
     [ForeignKey("AppModuleId")]
     public Guid AppModuleId { get; set; }
 
-    public AppModule AppModule { get; set; } = AppModule.Default();
+    public AppModule AppModule { get; set; }
 
     public Currency? Currency { get; set; }
 

@@ -41,6 +41,8 @@ dotnet_diagnostic.SA1101.severity = None
 dotnet_diagnostic.S2344.severity = None
 # Rename class to match pascal case naming rules
 dotnet_diagnostic.S101.severity = None
+# Property that doesnt accept NULL values should value 
+dotnet_diagnostic.CS8618.severity = None
 
 # All .cs files in the Migrations directory should have their naming convention ignored
 [*Migrations/*.cs]
