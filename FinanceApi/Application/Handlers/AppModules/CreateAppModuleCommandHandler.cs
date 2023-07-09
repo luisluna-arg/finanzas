@@ -1,20 +1,23 @@
 using FinanceApi.Application.Commands.AppModules;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.AppModules;
 
 public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModuleCommand, AppModule>
 {
-    public CreateAppModuleCommandHandler(FinanceDbContext db)
+    private readonly IRepository<Currency, Guid> _currencyRepository;
+
+    public CreateAppModuleCommandHandler(FinanceDbContext db, IRepository<Currency, Guid> currencyRepository)
         : base(db)
     {
+        _currencyRepository = currencyRepository;
     }
 
     public override async Task<AppModule> Handle(CreateAppModuleCommand command, CancellationToken cancellationToken)
     {
-        var currency = await GetCurrency(command.CurrencyId);
+        var currency = await _currencyRepository.GetById(command.CurrencyId);
 
         var newAppModule = new AppModule()
         {
@@ -27,12 +30,5 @@ public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModule
         await DbContext.SaveChangesAsync();
 
         return await Task.FromResult(newAppModule);
-    }
-
-    private async Task<Currency> GetCurrency(Guid currencyId)
-    {
-        var currency = await DbContext.Currency.FirstOrDefaultAsync(o => o.Id == currencyId);
-        if (currency == null) throw new Exception("Fund currency not found");
-        return currency;
     }
 }

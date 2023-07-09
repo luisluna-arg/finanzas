@@ -1,22 +1,30 @@
 using FinanceApi.Application.Commands.Movements;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
 public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMovementCommand, Movement>
 {
-    public CreateFundMovementCommandHandler(FinanceDbContext db)
+    private readonly IRepository<Currency, Guid> _currencyRepository;
+    private readonly IAppModuleRepository _appModuleRepository;
+
+    public CreateFundMovementCommandHandler(
+        FinanceDbContext db,
+        IRepository<Currency, Guid> currencyRepository,
+        IAppModuleRepository appModuleRepository)
         : base(db)
     {
+        _currencyRepository = currencyRepository;
+        _appModuleRepository = appModuleRepository;
     }
 
     public override async Task<Movement> Handle(CreateFundMovementCommand command, CancellationToken cancellationToken)
     {
-        AppModule? appModule = await GetFundAppModule();
+        AppModule? appModule = await _appModuleRepository.GetFund();
 
-        Currency? currency = await GetCurrency(command.CurrencyId);
+        Currency? currency = command.CurrencyId.HasValue ? await _currencyRepository.GetById(command.CurrencyId.Value) : null;
 
         var newMovement = new Movement()
         {
@@ -33,23 +41,5 @@ public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMo
         await DbContext.SaveChangesAsync();
 
         return await Task.FromResult(newMovement);
-    }
-
-    private async Task<Currency?> GetCurrency(Guid? currencyId)
-    {
-        if (!currencyId.HasValue) return null;
-
-        var currency = await DbContext.Currency.FirstOrDefaultAsync(o => o.Id == currencyId);
-        if (currency == null) throw new Exception("Fund currency not found");
-        return currency;
-    }
-
-    private async Task<AppModule> GetFundAppModule()
-    {
-        var appModule = await DbContext.AppModule.FirstOrDefaultAsync(o => o.Name == "Fondos");
-
-        if (appModule == null) throw new Exception("Fund app module not found");
-
-        return appModule;
     }
 }

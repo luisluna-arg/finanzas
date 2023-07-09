@@ -6,7 +6,8 @@ namespace FinanceApi.Application.Handlers.Funds;
 
 public class ProcessImageCommandHandler : BaseResponselessHandler<ProcessImageCommand>
 {
-    public ProcessImageCommandHandler(FinanceDbContext db)
+    public ProcessImageCommandHandler(
+        FinanceDbContext db)
         : base(db)
     {
     }

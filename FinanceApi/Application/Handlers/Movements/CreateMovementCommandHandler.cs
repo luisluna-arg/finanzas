@@ -1,23 +1,30 @@
-using System.Linq.Expressions;
 using FinanceApi.Application.Commands.Movements;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
 public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCommand, Movement>
 {
-    public CreateMovementCommandHandler(FinanceDbContext db)
+    private readonly IRepository<Currency, Guid> _currencyRepository;
+    private readonly IAppModuleRepository _appModuleRepository;
+
+    public CreateMovementCommandHandler(
+        FinanceDbContext db,
+        IRepository<Currency, Guid> currencyRepository,
+        IAppModuleRepository appModuleRepository)
         : base(db)
     {
+        _currencyRepository = currencyRepository;
+        _appModuleRepository = appModuleRepository;
     }
 
     public override async Task<Movement> Handle(CreateMovementCommand command, CancellationToken cancellationToken)
     {
-        AppModule? appModule = await GetAppModule(command.AppModuleId);
+        AppModule? appModule = command.AppModuleId.HasValue ? await _appModuleRepository.GetById(command.AppModuleId.Value) : await _appModuleRepository.GetFund();
 
-        Currency? currency = await GetCurrency(command.CurrencyId);
+        Currency? currency = command.CurrencyId.HasValue ? await _currencyRepository.GetById(command.CurrencyId.Value) : null;
 
         var newMovement = new Movement()
         {
@@ -34,26 +41,5 @@ public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCo
         await DbContext.SaveChangesAsync();
 
         return await Task.FromResult(newMovement);
-    }
-
-    private async Task<Currency?> GetCurrency(Guid? currencyId)
-    {
-        if (!currencyId.HasValue) return null;
-
-        var currency = await DbContext.Currency.FirstOrDefaultAsync(o => o.Id == currencyId);
-        if (currency == null) throw new Exception("Fund currency not found");
-        return currency;
-    }
-
-    private async Task<AppModule> GetAppModule(Guid? appModuleId)
-    {
-        AppModule? appModule = null;
-        Expression<Func<AppModule, bool>> filter = !appModuleId.HasValue ? o => o.Name == "Fondos" : o => o.Id == appModuleId.Value;
-
-        appModule = await DbContext.AppModule.FirstOrDefaultAsync(filter);
-
-        if (appModule == null) throw new Exception("Fund app module not found");
-
-        return appModule;
     }
 }

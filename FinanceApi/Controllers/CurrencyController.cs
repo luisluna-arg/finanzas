@@ -32,7 +32,7 @@ public class CurrencyController : ApiBaseController<Currency, Guid, CurrencyDto>
     public async Task<IActionResult> Update(UpdateCurrencyCommand command)
         => await Handle(command);
 
-    [HttpDelete]
-    public async Task<IActionResult> Delete(DeleteCurrencyCommand command)
-        => await Handle(command);
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+        => await Handle(new DeleteCurrencyCommand() { Id = id });
 }
