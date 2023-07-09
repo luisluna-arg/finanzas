@@ -13,7 +13,5 @@ public class GetAllFundMovementsQueryHandler : BaseCollectionHandler<GetAllFundM
     }
 
     public override async Task<ICollection<Movement>> Handle(GetAllFundMovementsQuery request, CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(await DbContext.Movement.Include(o => o.AppModule).Where(o => o.AppModule.Name == "Fondos").ToArrayAsync());
-    }
+        => await Task.FromResult(await DbContext.Movement.Include(o => o.AppModule).Where(o => o.AppModule.Name == "Fondos").ToArrayAsync());
 }

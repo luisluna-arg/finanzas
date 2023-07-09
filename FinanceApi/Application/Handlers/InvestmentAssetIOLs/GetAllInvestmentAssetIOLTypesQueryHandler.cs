@@ -1,19 +1,22 @@
 using FinanceApi.Application.Queries.InvestmentAssetIOLs;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.InvestmentAssetIOLs;
 
 public class GetAllInvestmentAssetIOLTypesQueryHandler : BaseCollectionHandler<GetAllInvestmentAssetIOLTypesQuery, InvestmentAssetIOLType>
 {
-    public GetAllInvestmentAssetIOLTypesQueryHandler(FinanceDbContext db)
+    private readonly IRepository<InvestmentAssetIOLType, ushort> investmentAssetIOLTypesRepository;
+
+    public GetAllInvestmentAssetIOLTypesQueryHandler(
+        FinanceDbContext db,
+        IRepository<InvestmentAssetIOLType, ushort> investmentAssetIOLTypesRepository)
         : base(db)
     {
+        this.investmentAssetIOLTypesRepository = investmentAssetIOLTypesRepository;
     }
 
     public override async Task<ICollection<InvestmentAssetIOLType>> Handle(GetAllInvestmentAssetIOLTypesQuery request, CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(await DbContext.InvestmentAssetIOLTypes.ToArrayAsync());
-    }
+        => await investmentAssetIOLTypesRepository.GetAll();
 }

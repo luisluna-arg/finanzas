@@ -1,19 +1,22 @@
 using FinanceApi.Application.Queries.Currencies;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.Currencies;
 
 public class GetAllCurrenciesQueryHandler : BaseCollectionHandler<GetAllCurrenciesQuery, Currency>
 {
-    public GetAllCurrenciesQueryHandler(FinanceDbContext db)
+    private readonly IRepository<Currency, Guid> currencyRepository;
+
+    public GetAllCurrenciesQueryHandler(
+        FinanceDbContext db,
+        IRepository<Currency, Guid> currencyRepository)
         : base(db)
     {
+        this.currencyRepository = currencyRepository;
     }
 
     public override async Task<ICollection<Currency>> Handle(GetAllCurrenciesQuery request, CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(await DbContext.Currency.ToArrayAsync());
-    }
+        => await currencyRepository.GetAll();
 }

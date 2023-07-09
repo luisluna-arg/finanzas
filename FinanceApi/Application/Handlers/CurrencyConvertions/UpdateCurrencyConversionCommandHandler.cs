@@ -33,7 +33,7 @@ public class UpdateCurrencyConversionCommandHandler : BaseResponseHandler<Update
 
         currencyConversion.Amount = command.Amount;
 
-        await DbContext.SaveChangesAsync();
+        await currencyConversionRepository.Update(currencyConversion);
 
         return await Task.FromResult(currencyConversion);
     }

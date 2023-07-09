@@ -7,28 +7,28 @@ namespace FinanceApi.Application.Handlers.AppModules;
 
 public class UpdateAppModuleCommandHandler : BaseResponseHandler<UpdateAppModuleCommand, AppModule>
 {
-    private readonly IRepository<AppModule, Guid> _appModuleRepository;
-    private readonly IRepository<Currency, Guid> _currencyRepository;
+    private readonly IAppModuleRepository appModuleRepository;
+    private readonly IRepository<Currency, Guid> currencyRepository;
 
     public UpdateAppModuleCommandHandler(
         FinanceDbContext db,
-        IRepository<AppModule, Guid> appModuleRepository,
+        IAppModuleRepository appModuleRepository,
         IRepository<Currency, Guid> currencyRepository)
         : base(db)
     {
-        _appModuleRepository = appModuleRepository;
-        _currencyRepository = currencyRepository;
+        this.appModuleRepository = appModuleRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     public override async Task<AppModule> Handle(UpdateAppModuleCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await _appModuleRepository.GetById(command.Id);
-        var currency = await _currencyRepository.GetById(command.CurrencyId);
+        var appModule = await appModuleRepository.GetById(command.Id);
+        var currency = await currencyRepository.GetById(command.CurrencyId);
 
         appModule.Currency = currency;
         appModule.Name = command.Name;
 
-        await DbContext.SaveChangesAsync();
+        await appModuleRepository.Update(appModule);
 
         return await Task.FromResult(appModule);
     }

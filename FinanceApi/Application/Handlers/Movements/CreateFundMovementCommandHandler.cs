@@ -7,24 +7,27 @@ namespace FinanceApi.Application.Handlers.Movements;
 
 public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMovementCommand, Movement>
 {
-    private readonly IRepository<Currency, Guid> _currencyRepository;
-    private readonly IAppModuleRepository _appModuleRepository;
+    private readonly IRepository<Movement, Guid> movementRepository;
+    private readonly IRepository<Currency, Guid> currencyRepository;
+    private readonly IAppModuleRepository appModuleRepository;
 
     public CreateFundMovementCommandHandler(
         FinanceDbContext db,
+        IRepository<Movement, Guid> movementRepository,
         IRepository<Currency, Guid> currencyRepository,
         IAppModuleRepository appModuleRepository)
         : base(db)
     {
-        _currencyRepository = currencyRepository;
-        _appModuleRepository = appModuleRepository;
+        this.movementRepository = movementRepository;
+        this.currencyRepository = currencyRepository;
+        this.appModuleRepository = appModuleRepository;
     }
 
     public override async Task<Movement> Handle(CreateFundMovementCommand command, CancellationToken cancellationToken)
     {
-        AppModule? appModule = await _appModuleRepository.GetFund();
+        AppModule? appModule = await this.appModuleRepository.GetFund();
 
-        Currency? currency = command.CurrencyId.HasValue ? await _currencyRepository.GetById(command.CurrencyId.Value) : null;
+        Currency? currency = command.CurrencyId.HasValue ? await this.currencyRepository.GetById(command.CurrencyId.Value) : null;
 
         var newMovement = new Movement()
         {
@@ -37,8 +40,7 @@ public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMo
             Total = command.Total,
         };
 
-        DbContext.Movement.Add(newMovement);
-        await DbContext.SaveChangesAsync();
+        await movementRepository.Add(newMovement);
 
         return await Task.FromResult(newMovement);
     }

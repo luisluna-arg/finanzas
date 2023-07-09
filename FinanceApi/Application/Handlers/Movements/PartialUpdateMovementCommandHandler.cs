@@ -1,20 +1,25 @@
 using FinanceApi.Application.Commands.Movements;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
 public class UpdateMovementCommandHandler : BaseResponseHandler<PartialUpdateMovementCommand, Movement>
 {
-    public UpdateMovementCommandHandler(FinanceDbContext db)
+    private readonly IRepository<Movement, Guid> movementRepository;
+
+    public UpdateMovementCommandHandler(
+        FinanceDbContext db,
+        IRepository<Movement, Guid> movementRepository)
         : base(db)
     {
+        this.movementRepository = movementRepository;
     }
 
     public override async Task<Movement> Handle(PartialUpdateMovementCommand command, CancellationToken cancellationToken)
     {
-        Movement movement = await GetMovement(command.Id);
+        Movement movement = await movementRepository.GetById(command.Id);
 
         movement.Amount = command.Amount;
         movement.Concept1 = command.Concept1;
@@ -22,16 +27,8 @@ public class UpdateMovementCommandHandler : BaseResponseHandler<PartialUpdateMov
         movement.TimeStamp = command.TimeStamp;
         movement.Total = command.Total;
 
-        DbContext.Movement.Update(movement);
-        await DbContext.SaveChangesAsync();
+        await movementRepository.Update(movement);
 
         return await Task.FromResult(movement);
-    }
-
-    private async Task<Movement> GetMovement(Guid id)
-    {
-        var movement = await DbContext.Movement.FirstOrDefaultAsync(o => o.Id == id);
-        if (movement == null) throw new Exception("Movement not found");
-        return movement;
     }
 }

@@ -1,19 +1,22 @@
 using FinanceApi.Application.Queries.CurrencyConversions;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.CurrencyConvertions;
 
 public class GetAllCurrencyConversionsQueryHandler : BaseCollectionHandler<GetAllCurrencyConversionsQuery, CurrencyConversion>
 {
-    public GetAllCurrencyConversionsQueryHandler(FinanceDbContext db)
+    private readonly IRepository<CurrencyConversion, Guid> currencyConversionRepository;
+
+    public GetAllCurrencyConversionsQueryHandler(
+        FinanceDbContext db,
+        IRepository<CurrencyConversion, Guid> currencyConversionRepository)
         : base(db)
     {
+        this.currencyConversionRepository = currencyConversionRepository;
     }
 
     public override async Task<ICollection<CurrencyConversion>> Handle(GetAllCurrencyConversionsQuery request, CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(await DbContext.CurrencyConversion.ToArrayAsync());
-    }
+        => await currencyConversionRepository.GetAll();
 }

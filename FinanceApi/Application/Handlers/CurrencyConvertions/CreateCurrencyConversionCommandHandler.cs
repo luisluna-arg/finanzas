@@ -8,17 +8,19 @@ namespace FinanceApi.Application.Handlers.CurrencyConvertions;
 public class CreateCurrencyConversionCommandHandler : BaseResponseHandler<CreateCurrencyConversionCommand, CurrencyConversion>
 {
     private readonly IRepository<Movement, Guid> movementRepository;
-
     private readonly IRepository<Currency, Guid> currencyRepository;
+    private readonly IRepository<CurrencyConversion, Guid> currencyConversionRepository;
 
     public CreateCurrencyConversionCommandHandler(
         FinanceDbContext db,
         IRepository<Movement, Guid> movementRepository,
-        IRepository<Currency, Guid> currencyRepository)
+        IRepository<Currency, Guid> currencyRepository,
+        IRepository<CurrencyConversion, Guid> currencyConversionRepository)
         : base(db)
     {
         this.movementRepository = movementRepository;
         this.currencyRepository = currencyRepository;
+        this.currencyConversionRepository = currencyConversionRepository;
     }
 
     public override async Task<CurrencyConversion> Handle(CreateCurrencyConversionCommand command, CancellationToken cancellationToken)
@@ -30,8 +32,7 @@ public class CreateCurrencyConversionCommandHandler : BaseResponseHandler<Create
             Amount = command.Amount,
         };
 
-        DbContext.CurrencyConversion.Add(newCurrencyConversion);
-        await DbContext.SaveChangesAsync();
+        await this.currencyConversionRepository.Add(newCurrencyConversion);
 
         return await Task.FromResult(newCurrencyConversion);
     }

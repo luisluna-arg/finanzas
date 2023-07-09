@@ -1,34 +1,30 @@
 using FinanceApi.Application.Commands.Banks;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.Banks;
 
 public class UpdateBankCommandHandler : BaseResponseHandler<UpdateBankCommand, Bank>
 {
-    public UpdateBankCommandHandler(FinanceDbContext db)
+    private readonly IRepository<Bank, Guid> bankRepository;
+
+    public UpdateBankCommandHandler(
+        FinanceDbContext db,
+        IRepository<Bank, Guid> bankRepository)
         : base(db)
     {
+        this.bankRepository = bankRepository;
     }
 
     public override async Task<Bank> Handle(UpdateBankCommand command, CancellationToken cancellationToken)
     {
-        var bank = await GetBank(command.Id);
+        var bank = await bankRepository.GetById(command.Id);
 
         bank.Name = command.Name;
 
-        await DbContext.SaveChangesAsync();
+        await bankRepository.Update(bank);
 
         return await Task.FromResult(bank);
-    }
-
-    private async Task<Bank> GetBank(Guid id)
-    {
-        var bank = await DbContext.Bank.FirstOrDefaultAsync(o => o.Id == id);
-
-        if (bank == null) throw new Exception("Bank not found");
-
-        return bank;
     }
 }

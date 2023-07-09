@@ -7,24 +7,27 @@ namespace FinanceApi.Application.Handlers.Movements;
 
 public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCommand, Movement>
 {
-    private readonly IRepository<Currency, Guid> _currencyRepository;
-    private readonly IAppModuleRepository _appModuleRepository;
+    private readonly IRepository<Movement, Guid> movementRepository;
+    private readonly IRepository<Currency, Guid> currencyRepository;
+    private readonly IAppModuleRepository appModuleRepository;
 
     public CreateMovementCommandHandler(
         FinanceDbContext db,
+        IRepository<Movement, Guid> movementRepository,
         IRepository<Currency, Guid> currencyRepository,
         IAppModuleRepository appModuleRepository)
         : base(db)
     {
-        _currencyRepository = currencyRepository;
-        _appModuleRepository = appModuleRepository;
+        this.movementRepository = movementRepository;
+        this.currencyRepository = currencyRepository;
+        this.appModuleRepository = appModuleRepository;
     }
 
     public override async Task<Movement> Handle(CreateMovementCommand command, CancellationToken cancellationToken)
     {
-        AppModule? appModule = command.AppModuleId.HasValue ? await _appModuleRepository.GetById(command.AppModuleId.Value) : await _appModuleRepository.GetFund();
+        AppModule? appModule = command.AppModuleId.HasValue ? await appModuleRepository.GetById(command.AppModuleId.Value) : await appModuleRepository.GetFund();
 
-        Currency? currency = command.CurrencyId.HasValue ? await _currencyRepository.GetById(command.CurrencyId.Value) : null;
+        Currency? currency = command.CurrencyId.HasValue ? await currencyRepository.GetById(command.CurrencyId.Value) : null;
 
         var newMovement = new Movement()
         {
@@ -37,8 +40,7 @@ public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCo
             Total = command.Total,
         };
 
-        DbContext.Movement.Add(newMovement);
-        await DbContext.SaveChangesAsync();
+        await this.movementRepository.Add(newMovement);
 
         return await Task.FromResult(newMovement);
     }

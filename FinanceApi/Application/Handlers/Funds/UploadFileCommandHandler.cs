@@ -1,20 +1,25 @@
 using FinanceApi.Application.Commands.Funds;
 using FinanceApi.Domain;
 using FinanceApi.Helpers;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.Funds;
 
 public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFileCommand>
 {
-    public UploadFundFileCommandHandler(FinanceDbContext db)
+    private readonly IAppModuleRepository appModuleRepository;
+
+    public UploadFundFileCommandHandler(
+        FinanceDbContext db,
+        IAppModuleRepository appModuleRepository)
         : base(db)
     {
+        this.appModuleRepository = appModuleRepository;
     }
 
     public override async Task Handle(UploadFundFileCommand command, CancellationToken cancellationToken)
     {
-        var appModule = DbContext.AppModule.FirstOrDefault(o => o.Name == "Fondos");
-        if (appModule == null) throw new Exception("Fund app module not found");
+        var appModule = await appModuleRepository.GetFund();
 
         var excelHelper = new ExcelHelper();
 

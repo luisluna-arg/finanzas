@@ -1,16 +1,12 @@
 using FinanceApi.Application.Commands.Funds;
 using FinanceApi.Domain;
-using FinanceApi.Domain.Models;
 using FinanceApi.Helpers;
-using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.Funds;
 
 public class ProcessImageToTextCommandHandler : BaseResponselessHandler<ProcessImageToTextCommand>
 {
-    public ProcessImageToTextCommandHandler(
-        FinanceDbContext db,
-        IRepository<Currency, Guid> currencyRepository)
+    public ProcessImageToTextCommandHandler(FinanceDbContext db)
         : base(db)
     {
     }

@@ -1,19 +1,22 @@
 using FinanceApi.Application.Queries.Movements;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.Movements;
 
 public class GetAllMovementsQueryHandler : BaseCollectionHandler<GetAllMovementsQuery, Movement>
 {
-    public GetAllMovementsQueryHandler(FinanceDbContext db)
+    private readonly IRepository<Movement, Guid> movementRepository;
+
+    public GetAllMovementsQueryHandler(
+        FinanceDbContext db,
+        IRepository<Movement, Guid> movementRepository)
         : base(db)
     {
+        this.movementRepository = movementRepository;
     }
 
     public override async Task<ICollection<Movement>> Handle(GetAllMovementsQuery request, CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(await DbContext.Movement.ToArrayAsync());
-    }
+        => await movementRepository.GetAll();
 }

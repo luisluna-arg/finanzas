@@ -1,23 +1,22 @@
 using FinanceApi.Application.Queries.InvestmentAssetIOLs;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Handlers.InvestmentAssetIOLs;
 
 public class GetInvestmentAssetIOLQueryHandler : BaseResponseHandler<GetInvestmentAssetIOLQuery, InvestmentAssetIOL>
 {
-    public GetInvestmentAssetIOLQueryHandler(FinanceDbContext db)
+    private readonly IRepository<InvestmentAssetIOL, Guid> investmentAssetIOLRepository;
+
+    public GetInvestmentAssetIOLQueryHandler(
+        FinanceDbContext db,
+        IRepository<InvestmentAssetIOL, Guid> investmentAssetIOLRepository)
         : base(db)
     {
+        this.investmentAssetIOLRepository = investmentAssetIOLRepository;
     }
 
     public override async Task<InvestmentAssetIOL> Handle(GetInvestmentAssetIOLQuery request, CancellationToken cancellationToken)
-    {
-        var bank = await DbContext.InvestmentAssetIOLs.FirstOrDefaultAsync(o => o.Id == request.Id);
-
-        if (bank == null) throw new Exception("InvestmentAssetIOL not found");
-
-        return await Task.FromResult(bank);
-    }
+        => await investmentAssetIOLRepository.GetById(request.Id);
 }
