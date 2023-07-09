@@ -4,7 +4,7 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class InvestmentAssetIOLTypeTypeMapperProfile : Profile
+public class InvestmentAssetIOLTypeMapperProfile : Profile
 {
-    public InvestmentAssetIOLTypeTypeMapperProfile() => CreateMap<InvestmentAssetIOLType, InvestmentAssetIOLTypeDto>();
+    public InvestmentAssetIOLTypeMapperProfile() => CreateMap<InvestmentAssetIOLType, InvestmentAssetIOLTypeDto>();
 }

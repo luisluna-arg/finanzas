@@ -6,8 +6,5 @@ namespace FinanceApi.Core.Config.Mapper.Profiles;
 
 public class AppModuleMapperProfile : Profile
 {
-    public AppModuleMapperProfile()
-    {
-        CreateMap<AppModule, AppModuleDto>();
-    }
+    public AppModuleMapperProfile() => CreateMap<AppModule, AppModuleDto>();
 }
