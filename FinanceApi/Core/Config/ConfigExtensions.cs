@@ -14,7 +14,7 @@ public static class ConfigExtensions
         services.AddScoped<IRepository<Currency, Guid>, CurrencyRepository>();
         services.AddScoped<IRepository<CurrencyConversion, Guid>, CurrencyConversionRepository>();
         services.AddScoped<IRepository<InvestmentAssetIOL, Guid>, InvestmentAssetIOLRepository>();
-        services.AddScoped<IRepository<InvestmentAssetIOLType, Guid>, InvestmentAssetIOLTypeRepository>();
+        services.AddScoped<IRepository<InvestmentAssetIOLType, ushort>, InvestmentAssetIOLTypeRepository>();
         services.AddScoped<IRepository<Movement, Guid>, MovementRepository>();
     }
 }

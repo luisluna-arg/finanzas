@@ -6,11 +6,11 @@ namespace FinanceApi.Application.Handlers.Funds;
 
 public class UploadImageCommandHandler : BaseResponselessHandler<UploadImageCommand>
 {
-    private readonly AppModuleRepository appModuleRepository;
+    private readonly IAppModuleRepository appModuleRepository;
 
     public UploadImageCommandHandler(
         FinanceDbContext db,
-        AppModuleRepository appModuleRepository)
+        IAppModuleRepository appModuleRepository)
         : base(db)
     {
         this.appModuleRepository = appModuleRepository;
