@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using AutoMapper;
 using FinanceApi.Application.Commands.Funds;
 using FinanceApi.Application.Dtos.Movements;
@@ -26,24 +27,24 @@ public class FundController : ApiBaseController<Movement, Guid, MovementDto>
 
     [HttpPost]
     [Route("api/funds/upload")]
-    public async Task<IActionResult> Upload(IFormFileCollection files, DateTimeKind dateKind)
+    public async Task<IActionResult> Upload(IFormFileCollection files, [DefaultValue("Local")] string dateKind)
     {
         await Handle(new UploadFundFileCommand
         {
             Files = files,
-            DateKind = dateKind
+            DateKind = EnumHelper.Parse<DateTimeKind>(dateKind)
         });
         return Ok();
     }
 
     [HttpPost]
     [Route("api/funds/upload-image")]
-    public async Task<IActionResult> UploadImage(IFormFileCollection files, DateTime? dateReference, DateTimeKind? dateKind)
+    public async Task<IActionResult> UploadImage(IFormFileCollection files, DateTime? dateReference, [DefaultValue("Local")] string? dateKind)
     {
         await Handle(new UploadImageCommand
         {
             Files = files,
-            DateKind = dateKind,
+            DateKind = ParseDateTimeKind(dateKind),
             DateReference = dateReference
         });
         return Ok();
@@ -51,27 +52,30 @@ public class FundController : ApiBaseController<Movement, Guid, MovementDto>
 
     [HttpPost]
     [Route("api/funds/process-image")]
-    public async Task<IActionResult> ProcessImage(HttpContext httpContext, IFormFileCollection files, DateTimeKind? dateKind)
+    public async Task<IActionResult> ProcessImage(HttpContext httpContext, IFormFileCollection files, [DefaultValue("Local")] string? dateKind)
     {
         await Handle(new ProcessImageCommand
         {
-            HttpContext = httpContext,
             Files = files,
-            DateKind = dateKind
+            DateKind = ParseDateTimeKind(dateKind),
+            HttpContext = httpContext,
         });
         return Ok();
     }
 
     [HttpPost]
     [Route("api/funds/read-image")]
-    public async Task<IActionResult> ProcessImageToText(HttpContext httpContext, IFormFileCollection files, DateTimeKind? dateKind)
+    public async Task<IActionResult> ProcessImageToText(HttpContext httpContext, IFormFileCollection files, [DefaultValue("Local")] string? dateKind)
     {
         await Handle(new ProcessImageToTextCommand
         {
-            HttpContext = httpContext,
             Files = files,
-            DateKind = dateKind
+            DateKind = ParseDateTimeKind(dateKind),
+            HttpContext = httpContext,
         });
         return Ok();
     }
+
+    private DateTimeKind ParseDateTimeKind(string? dateKind)
+        => !string.IsNullOrWhiteSpace(dateKind) ? EnumHelper.Parse<DateTimeKind>(dateKind) : DateTimeKind.Local;
 }

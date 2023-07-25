@@ -9,4 +9,8 @@ public static class EnumHelper
 
         return new List<T>((T[])Enum.GetValues(typeof(T)));
     }
+
+    internal static TEnum Parse<TEnum>(string enumName)
+        where TEnum : struct
+        => Enum.TryParse(typeof(TEnum), enumName, out var enumValue) ? (TEnum)enumValue : default;
 }

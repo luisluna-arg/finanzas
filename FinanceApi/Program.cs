@@ -1,7 +1,9 @@
 // Based on Microsoft Minimal API tutorial
+using System.Reflection;
 using FinanceApi.Core.Config;
 using FinanceApi.Domain;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 const string allowOriginsForCORSPolicy = "_allowOriginsForCORSPolicy";
@@ -11,7 +13,22 @@ builder.Services
     .AddDbContextPool<FinanceDbContext>(opt =>
         opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDb")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(o =>
+{
+    o.SerializerSettings.Converters.Add(new StringEnumConverter
+    {
+        CamelCaseText = true
+    });
+});
+
+builder.Services.AddSwaggerGen(c =>
+{
+    // Set the comments path for the Swagger JSON and UI.
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.MainServices();
 builder.Services.ConfigureNSwag();
