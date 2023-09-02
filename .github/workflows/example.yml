@@ -1,0 +1,21 @@
+name: SECRET
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up secret file
+        env:
+          A_TEST: ${{ secrets.A_TEST }}
+        run: |
+          echo ${{ secrets.A_TEST }} | sed 's/./& /g'

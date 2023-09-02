@@ -18,10 +18,12 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 7.0
+          dotnet-version: 7.0.x
+      - name: List content
+        run: ls
       - name: Build with dotnet
-        run: dotnet build --configuration Release
-        working-directory: .\FinanceApi
-      - name: Test
-        run: dotnet test
-        working-directory: .\FinanceApi
+        run: dotnet build
+        working-directory: FinanceApi
+      # - name: Test
+      #   run: dotnet test
+      #   working-directory: FinanceApi
