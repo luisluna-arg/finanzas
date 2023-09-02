@@ -27,7 +27,8 @@ public class FundController : ApiBaseController<Movement, Guid, MovementDto>
 
     [HttpPost]
     [Route("api/funds/upload")]
-    public async Task<IActionResult> Upload(IFormFileCollection files, [DefaultValue("Local")] string dateKind)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Upload([FromForm] IFormFileCollection files, [DefaultValue("Local")] string dateKind)
     {
         await Handle(new UploadFundFileCommand
         {

@@ -52,6 +52,7 @@ public class DatabaseSeeder : IHostedService
         await dbContext.AppModule.AddRangeAsync(new List<AppModule>
             {
                 new AppModule { Name = AppModuleNames.Funds, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
+                new AppModule { Name = AppModuleNames.IOLInvestments, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
             });
 
         await dbContext.SaveChangesAsync();
@@ -59,23 +60,24 @@ public class DatabaseSeeder : IHostedService
 
     private async Task SeedInvestmentAssetIOLTypes(FinanceDbContext dbContext)
     {
-        if (dbContext.InvestmentAssetIOLTypes.Any()) return;
+        if (dbContext.IOLInvestmentAssetTypes.Any()) return;
 
-        await dbContext.InvestmentAssetIOLTypes.AddRangeAsync(
-            EnumHelper.GetEnumMembers<InvestmentAssetIOLTypeEnum>()
-            .Select(x => new InvestmentAssetIOLType() { Id = (ushort)x, Name = x.ToString() }));
+        await dbContext.IOLInvestmentAssetTypes.AddRangeAsync(
+            EnumHelper.GetEnumMembers<IOLInvestmentAssetTypeEnum>()
+            .Select(x => new IOLInvestmentAssetType() { Id = (ushort)x, Name = x.ToString() }));
 
         await dbContext.SaveChangesAsync();
     }
 
-    private static class CurrencyNames
+    public static class CurrencyNames
     {
         public const string Peso = "Peso";
         public const string Dollar = "Dollar";
     }
 
-    private static class AppModuleNames
+    public static class AppModuleNames
     {
         public const string Funds = "Fondos";
+        public const string IOLInvestments = "Inversiones IOL";
     }
 }

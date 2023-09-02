@@ -11,11 +11,13 @@ public interface IRepository<TEntity, TId>
 
     Task<TEntity> GetBy(IDictionary<string, object> searchCriteria);
 
-    Task Add(TEntity entity);
+    Task Add(TEntity entity, bool persist = true);
 
-    Task Update(TEntity entity);
+    Task Update(TEntity entity, bool persist = true);
 
-    Task Delete(TId entity);
+    Task Delete(TId entityId, bool persist = true);
 
-    Task Delete(TEntity entity);
+    Task Delete(TEntity entity, bool persist = true);
+
+    Task Persist();
 }

@@ -21,7 +21,7 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
     {
         var appModule = await appModuleRepository.GetFund();
 
-        var excelHelper = new ExcelHelper();
+        var excelHelper = new MovementExcelHelper();
 
         var dateKind = command.DateKind;
         var files = command.Files;
@@ -29,7 +29,7 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
         var newRecords = excelHelper.ReadAsync(files, appModule, dateKind);
 
-        if (newRecords == null || newRecords.Length == 0) return;
+        if (newRecords == null || !newRecords.Any()) return;
 
         var minDate = newRecords.Min(o => o.TimeStamp);
         var maxDate = newRecords.Max(o => o.TimeStamp);

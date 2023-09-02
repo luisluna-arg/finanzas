@@ -16,15 +16,17 @@ public class FinanceDbContext : DbContext
     public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
     public DbSet<AppModule> AppModule => Set<AppModule>();
     public DbSet<Movement> Movement => Set<Movement>();
-    public DbSet<InvestmentAssetIOL> InvestmentAssetIOLs => Set<InvestmentAssetIOL>();
-    public DbSet<InvestmentAssetIOLType> InvestmentAssetIOLTypes => Set<InvestmentAssetIOLType>();
+    public DbSet<IOLInvestment> IOLInvestments => Set<IOLInvestment>();
+    public DbSet<IOLInvestmentAsset> IOLInvestmentAssets => Set<IOLInvestmentAsset>();
+    public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetTypes => Set<IOLInvestmentAssetType>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseSerialColumns();
 
         modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
-        modelBuilder.ApplyConfiguration(new InvestmentAssetIOLTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new IOLInvestmentConfiguration());
+        modelBuilder.ApplyConfiguration(new IOLInvestmentAssetTypeConfiguration());
         modelBuilder.ApplyConfiguration(new AppModuleConfiguration());
         modelBuilder.ApplyConfiguration(new MovementConfiguration());
 

@@ -1,0 +1,72 @@
+using ExcelDataReader;
+using FinanceApi.Domain.Models;
+using FinanceApi.Helpers;
+
+public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
+{
+    public IEnumerable<IOLInvestment> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    {
+        return files.SelectMany(o => ReadAsync(o, appModule, dateTimeKind)).ToArray();
+    }
+
+    public IEnumerable<IOLInvestment> ReadAsync(IFormFile file, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    {
+        List<IOLInvestment> records = new List<IOLInvestment>();
+
+        if (file == null || file.Length == 0)
+            throw new Exception("File Not Selected");
+
+        string fileExtension = Path.GetExtension(file.FileName);
+        if (fileExtension != ".xls" && fileExtension != ".xlsx")
+            throw new Exception("File Not Selected");
+
+        using (var fileStream = file.OpenReadStream())
+        {
+            using (var reader = ExcelReaderFactory.CreateReader(fileStream))
+            {
+                var result = reader.AsDataSet();
+                var sheet = result.Tables[0];
+
+                Func<object, uint> uIntParser = (cell) => ParsingHelper.ParseUInteger(SanitizeString(cell));
+                Func<object, decimal> decimalParser = (cell) => ParsingHelper.ParseDecimal(SanitizeString(cell));
+                DateTime currentDate = DateTime.UtcNow;
+
+                for (var r = 0; r < sheet.Rows.Count; r++)
+                {
+                    var row = sheet.Rows[r];
+                    var asset = StringHelper.ValueOrEmpty(row[0]).Split("\n");
+                    var assetSymbol = asset[0];
+                    var assetDescription = asset.Length == 2 ? asset[1] : string.Empty;
+
+                    records.Add(new IOLInvestment()
+                    {
+                        Asset = new IOLInvestmentAsset()
+                        {
+                            Symbol = assetSymbol,
+                            Description = assetDescription,
+                            Type = new IOLInvestmentAssetType()
+                            {
+                                Name = IOLInvestmentAssetType.Default
+                            }
+                        },
+                        TimeStamp = currentDate,
+                        Alarms = uIntParser(row[1]),
+                        Quantity = uIntParser(row[2]),
+                        Assets = uIntParser(row[3]),
+                        DailyVariation = decimalParser(row[4]),
+                        LastPrice = decimalParser(row[5]),
+                        AverageBuyPrice = decimalParser(row[6]),
+                        AverageReturnPercent = decimalParser(row[7]),
+                        AverageReturn = decimalParser(row[8]),
+                        Valued = decimalParser(row[9])
+                    });
+                }
+            }
+        }
+
+        return records.ToArray();
+    }
+
+    private object? SanitizeString(object value)
+        => value?.ToString()?.Replace(".", string.Empty).Replace(",", ".").Replace("$", string.Empty).Replace("%", string.Empty);
+}

@@ -59,27 +59,27 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         return queryableObjects;
     }
 
-    public async Task Add(TEntity entity)
+    public async Task Add(TEntity entity, bool persist = true)
     {
         dbSet.Add(entity);
-        await dbContext.SaveChangesAsync();
+        if (persist) await dbContext.SaveChangesAsync();
     }
 
-    public async Task Update(TEntity entity)
+    public async Task Update(TEntity entity, bool persist = true)
     {
         dbSet.Attach(entity);
         dbContext.Entry(entity).State = EntityState.Modified;
-        await dbContext.SaveChangesAsync();
+        if (persist) await dbContext.SaveChangesAsync();
     }
 
-    public async Task Delete(TId entityId)
-    {
-        await Delete(await GetById(entityId));
-    }
+    public async Task Delete(TId entityId, bool persist = true)
+        => await Delete(await GetById(entityId), persist);
 
-    public async Task Delete(TEntity entity)
+    public async Task Delete(TEntity entity, bool persist = true)
     {
         dbSet.Remove(entity);
-        await dbContext.SaveChangesAsync();
+        if (persist) await dbContext.SaveChangesAsync();
     }
+
+    public async Task Persist() => await dbContext.SaveChangesAsync();
 }
