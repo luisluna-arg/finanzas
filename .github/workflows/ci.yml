@@ -19,10 +19,20 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 7.0.x
-      - name: List content
-        run: ls
+      - name: Secrets injection in appsettings.json
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "**/appsettings.json"
+        env:
+          ConnectionStrings.PostgresDb: "${{ secrets.DB_CONNECTION }}"
       - name: Build with dotnet
         run: dotnet build
+        working-directory: FinanceApi
+      - name: Apply database migrations
+        run: |
+          dotnet tool install --global dotnet-ef
+          dotnet tool restore
+          dotnet ef database update
         working-directory: FinanceApi
       # - name: Test
       #   run: dotnet test
