@@ -47,12 +47,18 @@ public class DatabaseSeeder : IHostedService
         if (dbContext.AppModule.Any()) return;
 
         var currencyPeso = await dbContext.Currency.FirstOrDefaultAsync(x => x.Name == CurrencyNames.Peso);
-        if (currencyPeso == null) throw new SystemException("Fatal error while seeding App database");
+        if (currencyPeso == null) throw new SystemException($"Fatal error while seeding App database: Currency {CurrencyNames.Peso}");
+
+        var currencyDollar = await dbContext.Currency.FirstOrDefaultAsync(x => x.Name == CurrencyNames.Dollar);
+        if (currencyDollar == null) throw new SystemException($"Fatal error while seeding App database: Currency {CurrencyNames.Dollar}");
+
+        var now = DateTime.Now.ToUniversalTime();
 
         await dbContext.AppModule.AddRangeAsync(new List<AppModule>
             {
-                new AppModule { Name = AppModuleNames.Funds, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
-                new AppModule { Name = AppModuleNames.IOLInvestments, CreatedAt = DateTime.Now.ToUniversalTime(), Currency = currencyPeso },
+                new AppModule { Name = AppModuleNames.Funds, CreatedAt = now, Currency = currencyPeso },
+                new AppModule { Name = AppModuleNames.DollarFunds, CreatedAt = now, Currency = currencyDollar },
+                new AppModule { Name = AppModuleNames.IOLInvestments, CreatedAt = now, Currency = currencyPeso },
             });
 
         await dbContext.SaveChangesAsync();
@@ -78,6 +84,7 @@ public class DatabaseSeeder : IHostedService
     public static class AppModuleNames
     {
         public const string Funds = "Fondos";
+        public const string DollarFunds = "Fondos dólares";
         public const string IOLInvestments = "Inversiones IOL";
     }
 }

@@ -20,4 +20,13 @@ public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRe
 
         return appModule;
     }
+
+    public async Task<AppModule> GetDollarFunds()
+    {
+        var appModule = await GetBy("Name", AppModuleNames.DollarFunds);
+
+        if (appModule == null) throw new Exception("Dollar Funds App Module not found");
+
+        return appModule;
+    }
 }
