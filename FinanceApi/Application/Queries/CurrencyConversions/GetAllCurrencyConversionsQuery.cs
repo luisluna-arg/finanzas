@@ -2,7 +2,7 @@ using FinanceApi.Application.Base.Handlers;
 using FinanceApi.Application.Queries.Base;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using FinanceApi.Infrastructure.Repositotories;
+using FinanceApi.Infrastructure.Repositories;
 
 namespace FinanceApi.Application.Queries.CurrencyConvertions;
 

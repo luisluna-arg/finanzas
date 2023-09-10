@@ -1,9 +1,9 @@
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using FinanceApi.Infrastructure.Repositotories.Base;
+using FinanceApi.Infrastructure.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceApi.Infrastructure.Repositotories;
+namespace FinanceApi.Infrastructure.Repositories;
 
 public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRepository
 {

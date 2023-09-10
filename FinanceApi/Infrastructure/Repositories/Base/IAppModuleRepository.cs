@@ -1,6 +1,6 @@
 using FinanceApi.Domain.Models;
 
-namespace FinanceApi.Infrastructure.Repositotories;
+namespace FinanceApi.Infrastructure.Repositories;
 
 public interface IAppModuleRepository : IRepository<AppModule, Guid>
 {

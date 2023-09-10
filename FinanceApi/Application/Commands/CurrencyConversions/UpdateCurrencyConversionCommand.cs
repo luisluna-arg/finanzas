@@ -1,7 +1,7 @@
 using FinanceApi.Application.Base.Handlers;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using FinanceApi.Infrastructure.Repositotories;
+using FinanceApi.Infrastructure.Repositories;
 using MediatR;
 
 namespace FinanceApi.Application.Commands.CurrencyConvertions;

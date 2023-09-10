@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using FinanceApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceApi.Infrastructure.Repositotories.Base;
+namespace FinanceApi.Infrastructure.Repositories.Base;
 
 public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
     where TEntity : class

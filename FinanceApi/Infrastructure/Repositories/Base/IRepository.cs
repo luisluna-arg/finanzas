@@ -1,4 +1,4 @@
-namespace FinanceApi.Infrastructure.Repositotories;
+namespace FinanceApi.Infrastructure.Repositories;
 
 public interface IRepository<TEntity, TId>
     where TEntity : class

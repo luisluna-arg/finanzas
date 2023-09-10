@@ -1,8 +1,8 @@
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using FinanceApi.Infrastructure.Repositotories.Base;
+using FinanceApi.Infrastructure.Repositories.Base;
 
-namespace FinanceApi.Infrastructure.Repositotories;
+namespace FinanceApi.Infrastructure.Repositories;
 
 public class CurrencyConversionRepository : BaseRepository<CurrencyConversion, Guid>
 {

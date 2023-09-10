@@ -1,5 +1,5 @@
 using FinanceApi.Domain.Models;
-using FinanceApi.Infrastructure.Repositotories;
+using FinanceApi.Infrastructure.Repositories;
 
 namespace FinanceApi.Core.Config;
 
