@@ -35,6 +35,14 @@ public class FundController : ApiBaseController<Movement, Guid, MovementDto>
     }
 
     [HttpPost]
+    [Route("dollar-upload")]
+    public async Task<IActionResult> DollarUpload(IFormFile file, [DefaultValue("Local")] string dateKind)
+    {
+        await Handle(new UploadDollarFundsFileCommand(file, EnumHelper.Parse<DateTimeKind>(dateKind)));
+        return Ok();
+    }
+
+    [HttpPost]
     [Route("upload-image")]
     public async Task<IActionResult> UploadImage(IFormFileCollection files, DateTime? dateReference, [DefaultValue("Local")] string? dateKind)
     {
