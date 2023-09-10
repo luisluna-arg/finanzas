@@ -1,7 +1,7 @@
 using FinanceApi.Domain;
 using MediatR;
 
-namespace FinanceApi.Application.Handlers;
+namespace FinanceApi.Application.Base.Handlers;
 
 public abstract class BaseCollectionHandler<TRequest, TEntity> : IRequestHandler<TRequest, ICollection<TEntity>>
     where TRequest : IRequest<ICollection<TEntity>>

@@ -1,7 +1,7 @@
 using FinanceApi.Domain;
 using MediatR;
 
-namespace FinanceApi.Application.Handlers;
+namespace FinanceApi.Application.Base.Handlers;
 
 public abstract class BaseResponseHandler<TRequest, TEntity> : IRequestHandler<TRequest, TEntity>
     where TRequest : IRequest<TEntity>

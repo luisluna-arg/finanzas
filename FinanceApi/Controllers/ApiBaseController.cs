@@ -1,6 +1,6 @@
 using AutoMapper;
 using FinanceApi.Application.Dtos;
-using FinanceApi.Application.Queries;
+using FinanceApi.Application.Queries.Base;
 using FinanceApi.Domain.Models.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

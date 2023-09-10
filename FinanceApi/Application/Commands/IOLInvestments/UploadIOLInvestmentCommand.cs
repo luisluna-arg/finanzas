@@ -1,19 +1,20 @@
-using FinanceApi.Application.Commands.IOLInvestments;
+using FinanceApi.Application.Base.Handlers;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositotories;
+using MediatR;
 using static FinanceApi.Core.Config.DatabaseSeeder;
 
-namespace FinanceApi.Application.Handlers.IOLInvestments;
+namespace FinanceApi.Application.Commands.IOLInvestments;
 
-public class UploadIOLInvestmentAssetCommandHandler : BaseResponselessHandler<UploadIOLInvestmentsCommand>
+public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadIOLInvestmentsCommand>
 {
     private readonly IRepository<IOLInvestment, Guid> repository;
     private readonly IRepository<IOLInvestmentAsset, Guid> assetRepository;
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IOLInvestmentExcelHelper excelHelper;
 
-    public UploadIOLInvestmentAssetCommandHandler(
+    public UploadIOLInvestmentCommandHandler(
         FinanceDbContext db,
         IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository,
         IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLRepository,
@@ -58,4 +59,14 @@ public class UploadIOLInvestmentAssetCommandHandler : BaseResponselessHandler<Up
             await repository.Persist();
         }
     }
+}
+
+public class UploadIOLInvestmentsCommand : IRequest
+{
+    public UploadIOLInvestmentsCommand(IFormFile file)
+    {
+        this.File = file;
+    }
+
+    public IFormFile File { get; set; }
 }

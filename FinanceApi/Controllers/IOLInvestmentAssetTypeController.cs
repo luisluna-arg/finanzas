@@ -1,6 +1,6 @@
 using AutoMapper;
 using FinanceApi.Application.Dtos.IOLInvestmentAssetTypes;
-using FinanceApi.Application.Queries.IOLInvestments;
+using FinanceApi.Application.Queries.IOLInvestmentAssetTypes;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

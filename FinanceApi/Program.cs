@@ -4,6 +4,7 @@ using FinanceApi.Core.Config;
 using FinanceApi.Domain;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 const string allowOriginsForCORSPolicy = "_allowOriginsForCORSPolicy";
@@ -17,7 +18,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(o =>
 {
     o.SerializerSettings.Converters.Add(new StringEnumConverter
     {
-        CamelCaseText = true
+        NamingStrategy = new CamelCaseNamingStrategy()
     });
 });
 

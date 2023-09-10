@@ -1,9 +1,10 @@
-using FinanceApi.Application.Queries.IOLInvestments;
+using FinanceApi.Application.Base.Handlers;
+using FinanceApi.Application.Queries.Base;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositotories;
 
-namespace FinanceApi.Application.Handlers.IOLInvestments;
+namespace FinanceApi.Application.Queries.IOLInvestmentAssetTypes;
 
 public class GetIOLInvestmentAssetTypeQueryHandler : BaseResponseHandler<GetIOLInvestmentAssetTypeQuery, IOLInvestmentAssetType>
 {
@@ -19,4 +20,8 @@ public class GetIOLInvestmentAssetTypeQueryHandler : BaseResponseHandler<GetIOLI
 
     public override async Task<IOLInvestmentAssetType> Handle(GetIOLInvestmentAssetTypeQuery request, CancellationToken cancellationToken)
         => await investmentAssetIOLTypeRepository.GetById(request.Id);
+}
+
+public class GetIOLInvestmentAssetTypeQuery : GetSingleByIdQuery<IOLInvestmentAssetType, ushort>
+{
 }
