@@ -202,7 +202,7 @@ public class OcrHelper
 
         short dateDay;
         short.TryParse(match.Groups[1].Value.Trim(), out dateDay);
-        int dateMonth = DateHelpers.GetMonthNumber(match.Groups[3].Value);
+        int dateMonth = DateTimeHelper.GetMonthNumber(match.Groups[3].Value);
         int dateYear = referenceDate.Year + (referenceDate > DateTime.Now ? -1 : 0);
         var date = new DateTime(dateYear, dateMonth, dateDay, 0, 0, 0, referenceDate.Kind);
 

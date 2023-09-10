@@ -33,7 +33,7 @@ public class MovementExcelHelper : IExcelHelper<Movement>
                     {
                         AppModuleId = appModule.Id,
                         AppModule = appModule,
-                        TimeStamp = ParsingHelper.ParseDateTime(sheet.Rows[r][0], "dd/MM/yyyy", null, dateTimeKind),
+                        TimeStamp = DateTimeHelper.ParseDateTime(sheet.Rows[r][0], "dd/MM/yyyy", null, dateTimeKind),
                         Concept1 = StringHelper.ValueOrEmpty(sheet.Rows[r][1]),
                         Concept2 = StringHelper.ValueOrEmpty(sheet.Rows[r][2]),
                         Amount = ParsingHelper.ParseDecimal(sheet.Rows[r][3]),
