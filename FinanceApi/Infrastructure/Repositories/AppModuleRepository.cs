@@ -1,6 +1,7 @@
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories.Base;
+using Microsoft.EntityFrameworkCore;
 using static FinanceApi.Core.Config.DatabaseSeeder;
 
 namespace FinanceApi.Infrastructure.Repositories;
@@ -14,7 +15,7 @@ public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRe
 
     public async Task<AppModule> GetFunds()
     {
-        var appModule = await GetBy("Name", AppModuleNames.Funds);
+        var appModule = await GetAllBy("Name", AppModuleNames.Funds).Include(o => o.Currency).FirstOrDefaultAsync();
 
         if (appModule == null) throw new Exception("Funds App Module not found");
 
@@ -23,7 +24,7 @@ public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRe
 
     public async Task<AppModule> GetDollarFunds()
     {
-        var appModule = await GetBy("Name", AppModuleNames.DollarFunds);
+        var appModule = await GetAllBy("Name", AppModuleNames.DollarFunds).Include(o => o.Currency).FirstOrDefaultAsync();
 
         if (appModule == null) throw new Exception("Dollar Funds App Module not found");
 
