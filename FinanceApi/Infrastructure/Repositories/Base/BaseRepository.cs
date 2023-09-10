@@ -16,7 +16,7 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         dbSet = dbContext.Set<TEntity>();
     }
 
-    protected FinanceDbContext DbContext { get; }
+    protected FinanceDbContext DbContext { get => dbContext; }
 
     public async Task<TEntity[]> GetAll() => await dbSet.ToArrayAsync();
 
@@ -49,9 +49,44 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         return dbSet.Where(lambda);
     }
 
+    public IQueryable<TEntity> FilterBy(string searchCriteria, ExpressionOperator expressionOperator, object searchValue)
+    {
+        var parameter = Expression.Parameter(typeof(TEntity), "x");
+        var property = Expression.Property(parameter, searchCriteria);
+        var value = Expression.Constant(searchValue);
+
+        Expression operation;
+        switch (expressionOperator)
+        {
+            case ExpressionOperator.GreaterThan:
+                operation = Expression.GreaterThan(property, value);
+                break;
+            case ExpressionOperator.GreaterThanOrEqual:
+                operation = Expression.GreaterThanOrEqual(property, value);
+                break;
+            case ExpressionOperator.LessThan:
+                operation = Expression.LessThan(property, value);
+                break;
+            case ExpressionOperator.LessThanOrEqual:
+                operation = Expression.LessThanOrEqual(property, value);
+                break;
+            default:
+                operation = Expression.Equal(property, value);
+                break;
+        }
+
+        return dbSet.Where(Expression.Lambda<Func<TEntity, bool>>(operation, parameter));
+    }
+
     public async Task Add(TEntity entity, bool persist = true)
     {
         dbSet.Add(entity);
+        if (persist) await dbContext.SaveChangesAsync();
+    }
+
+    public async Task AddRange(IEnumerable<TEntity> entities, bool persist = true)
+    {
+        dbSet.AddRange(entities);
         if (persist) await dbContext.SaveChangesAsync();
     }
 

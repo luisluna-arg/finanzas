@@ -1,7 +1,7 @@
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories.Base;
-using Microsoft.EntityFrameworkCore;
+using static FinanceApi.Core.Config.DatabaseSeeder;
 
 namespace FinanceApi.Infrastructure.Repositories;
 
@@ -14,7 +14,7 @@ public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRe
 
     public async Task<AppModule> GetFund()
     {
-        var appModule = await DbContext.AppModule.SingleOrDefaultAsync(o => o.Name == "Fondos");
+        var appModule = await GetBy("Name", AppModuleNames.Funds);
 
         if (appModule == null) throw new Exception("Fund App Module not found");
 

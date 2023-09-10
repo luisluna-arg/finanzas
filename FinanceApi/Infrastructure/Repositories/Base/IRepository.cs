@@ -1,3 +1,5 @@
+using FinanceApi.Infrastructure.Repositories.Base;
+
 namespace FinanceApi.Infrastructure.Repositories;
 
 public interface IRepository<TEntity, TId>
@@ -15,7 +17,11 @@ public interface IRepository<TEntity, TId>
 
     Task<TEntity?> GetBy(IDictionary<string, object> searchCriteria);
 
+    IQueryable<TEntity> FilterBy(string searchCriteria, ExpressionOperator expressionOperator, object searchValue);
+
     Task Add(TEntity entity, bool persist = true);
+
+    Task AddRange(IEnumerable<TEntity> entities, bool persist = true);
 
     Task Update(TEntity entity, bool persist = true);
 
