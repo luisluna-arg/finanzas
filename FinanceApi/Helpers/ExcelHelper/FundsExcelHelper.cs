@@ -3,7 +3,7 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Helpers;
 
-public class FundMovementExcelHelper : IExcelHelper<Movement>
+public class FundsExcelHelper : IExcelHelper<Movement>
 {
     public IEnumerable<Movement> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {

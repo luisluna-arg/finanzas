@@ -25,7 +25,7 @@ public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMo
 
     public override async Task<Movement> Handle(CreateFundMovementCommand command, CancellationToken cancellationToken)
     {
-        AppModule? appModule = await this.appModuleRepository.GetFund();
+        AppModule? appModule = await this.appModuleRepository.GetFunds();
 
         Currency? currency = command.CurrencyId.HasValue ? await this.currencyRepository.GetById(command.CurrencyId.Value) : null;
 

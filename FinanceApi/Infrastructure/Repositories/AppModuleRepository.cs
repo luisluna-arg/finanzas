@@ -12,11 +12,11 @@ public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRe
     {
     }
 
-    public async Task<AppModule> GetFund()
+    public async Task<AppModule> GetFunds()
     {
         var appModule = await GetBy("Name", AppModuleNames.Funds);
 
-        if (appModule == null) throw new Exception("Fund App Module not found");
+        if (appModule == null) throw new Exception("Funds App Module not found");
 
         return appModule;
     }

@@ -12,7 +12,7 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
 {
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IRepository<Movement, Guid> movementRepository;
-    private readonly FundMovementExcelHelper excelHelper;
+    private readonly FundsExcelHelper excelHelper;
 
     public UploadFundFileCommandHandler(
         FinanceDbContext db,
@@ -22,12 +22,12 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
     {
         this.appModuleRepository = appModuleRepository;
         this.movementRepository = movementRepository;
-        this.excelHelper = new FundMovementExcelHelper();
+        this.excelHelper = new FundsExcelHelper();
     }
 
     public override async Task Handle(UploadFundFileCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetFund();
+        var appModule = await appModuleRepository.GetFunds();
 
         var dateKind = command.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
