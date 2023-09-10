@@ -4,10 +4,10 @@ using FinanceApi.Helpers;
 
 public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
 {
-    public IEnumerable<IOLInvestment> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
-        => files.SelectMany(o => ReadAsync(o, appModule, dateTimeKind)).ToArray();
+    public IEnumerable<IOLInvestment> ReadAsync(IEnumerable<IFormFile> files, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+        => files.SelectMany(o => ReadAsync(o, dateTimeKind)).ToArray();
 
-    public IEnumerable<IOLInvestment> ReadAsync(IFormFile file, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<IOLInvestment> ReadAsync(IFormFile file, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         List<IOLInvestment> records = new List<IOLInvestment>();
 

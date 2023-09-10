@@ -12,16 +12,19 @@ public class UploadDollarFundsFileCommandHandler : BaseResponselessHandler<Uploa
 {
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IRepository<Movement, Guid> movementRepository;
+    private readonly IRepository<Bank, Guid> bankRepository;
     private readonly FundsExcelHelper excelHelper;
 
     public UploadDollarFundsFileCommandHandler(
         FinanceDbContext db,
         IAppModuleRepository appModuleRepository,
-        IRepository<Movement, Guid> movementRepository)
+        IRepository<Movement, Guid> movementRepository,
+        IRepository<Bank, Guid> bankRepository)
         : base(db)
     {
         this.appModuleRepository = appModuleRepository;
         this.movementRepository = movementRepository;
+        this.bankRepository = bankRepository;
         this.excelHelper = new FundsExcelHelper();
     }
 
@@ -32,7 +35,10 @@ public class UploadDollarFundsFileCommandHandler : BaseResponselessHandler<Uploa
         var dateKind = command.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
 
-        var newRecords = excelHelper.ReadAsync(command.File, appModule, dateKind);
+        var bank = await bankRepository.GetBy("Id", command.BankId);
+        if (bank == null) throw new Exception($"Bank not found, Id: {command.BankId}");
+
+        var newRecords = excelHelper.ReadAsync(command.File, appModule, bank, dateKind);
         if (newRecords == null || !newRecords.Any()) return;
 
         var minDate = newRecords.Min(o => o.TimeStamp);
@@ -61,12 +67,14 @@ public class UploadDollarFundsFileCommandHandler : BaseResponselessHandler<Uploa
 
 public class UploadDollarFundsFileCommand : IRequest
 {
-    public UploadDollarFundsFileCommand(IFormFile file, DateTimeKind dateKind)
+    public UploadDollarFundsFileCommand(IFormFile file, Guid bankId, DateTimeKind dateKind)
     {
         this.File = file;
+        this.BankId = bankId;
         this.DateKind = dateKind;
     }
 
     public IFormFile File { get; set; }
+    public Guid BankId { get; set; }
     public DateTimeKind DateKind { get; set; }
 }

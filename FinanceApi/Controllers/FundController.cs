@@ -29,17 +29,17 @@ public class FundController : ApiBaseController<Movement, Guid, MovementDto>
 
     [HttpPost]
     [Route("upload")]
-    public async Task<IActionResult> Upload(IFormFile file, [DefaultValue("Local")] string dateKind)
+    public async Task<IActionResult> Upload(IFormFile file, Guid bankId, [DefaultValue("Local")] string dateKind)
     {
-        await Handle(new UploadFundFileCommand(file, EnumHelper.Parse<DateTimeKind>(dateKind)));
+        await Handle(new UploadFundFileCommand(file, bankId, EnumHelper.Parse<DateTimeKind>(dateKind)));
         return Ok();
     }
 
     [HttpPost]
     [Route("dollar-upload")]
-    public async Task<IActionResult> DollarUpload(IFormFile file, [DefaultValue("Local")] string dateKind)
+    public async Task<IActionResult> DollarUpload(IFormFile file, Guid bankId, [DefaultValue("Local")] string dateKind)
     {
-        await Handle(new UploadDollarFundsFileCommand(file, EnumHelper.Parse<DateTimeKind>(dateKind)));
+        await Handle(new UploadDollarFundsFileCommand(file, bankId, EnumHelper.Parse<DateTimeKind>(dateKind)));
         return Ok();
     }
 

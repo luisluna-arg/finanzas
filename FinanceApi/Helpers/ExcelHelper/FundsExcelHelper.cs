@@ -3,14 +3,14 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Helpers;
 
-public class FundsExcelHelper : IExcelHelper<Movement>
+public class FundsExcelHelper : IFundsExcelHelper<Movement>
 {
-    public IEnumerable<Movement> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<Movement> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, Bank? bank, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        return files.SelectMany(o => ReadAsync(o, appModule, dateTimeKind)).ToArray();
+        return files.SelectMany(o => ReadAsync(o, appModule, bank, dateTimeKind)).ToArray();
     }
 
-    public IEnumerable<Movement> ReadAsync(IFormFile file, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<Movement> ReadAsync(IFormFile file, AppModule appModule, Bank? bank, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         List<Movement> records = new List<Movement>();
 
@@ -33,6 +33,7 @@ public class FundsExcelHelper : IExcelHelper<Movement>
                     {
                         AppModuleId = appModule.Id,
                         AppModule = appModule,
+                        Bank = bank,
                         TimeStamp = DateParser(sheet.Rows[r][0], dateTimeKind),
                         Concept1 = StringHelper.ValueOrEmpty(sheet.Rows[r][1]),
                         Concept2 = StringHelper.ValueOrEmpty(sheet.Rows[r][2]),

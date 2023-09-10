@@ -4,7 +4,6 @@ using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using static FinanceApi.Core.Config.DatabaseSeeder;
 
 namespace FinanceApi.Application.Commands.IOLInvestments;
 
@@ -13,21 +12,18 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
     private readonly IRepository<IOLInvestment, Guid> repository;
     private readonly IRepository<IOLInvestmentAsset, Guid> assetRepository;
     private readonly IRepository<IOLInvestmentAssetType, ushort> assetTypeRepository;
-    private readonly IAppModuleRepository appModuleRepository;
     private readonly IOLInvestmentExcelHelper excelHelper;
 
     public UploadIOLInvestmentCommandHandler(
         FinanceDbContext db,
         IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository,
         IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLRepository,
-        IRepository<IOLInvestmentAssetType, ushort> investmentAssetTypeIOLRepository,
-        IAppModuleRepository appModuleRepository)
+        IRepository<IOLInvestmentAssetType, ushort> investmentAssetTypeIOLRepository)
         : base(db)
     {
         repository = investmentAssetIOLRecordRepository;
         assetRepository = investmentAssetIOLRepository;
         assetTypeRepository = investmentAssetTypeIOLRepository;
-        this.appModuleRepository = appModuleRepository;
         excelHelper = new IOLInvestmentExcelHelper();
     }
 
@@ -35,11 +31,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
     {
         var files = command.File;
 
-        var appModule = await appModuleRepository.GetBy("Name", AppModuleNames.IOLInvestments);
-
-        if (appModule == null) throw new Exception($"App module {AppModuleNames.IOLInvestments} not found");
-
-        var newRecords = excelHelper.ReadAsync(files, appModule, DateTimeKind.Utc).ToArray();
+        var newRecords = excelHelper.ReadAsync(files, DateTimeKind.Utc).ToArray();
 
         if (newRecords.Length > 0)
         {

@@ -11,6 +11,8 @@ public sealed class Movement : Entity<Guid>, IEquatable<Movement>
 
     public AppModule AppModule { get; set; }
 
+    public Bank? Bank { get; set; }
+
     public Currency? Currency { get; set; }
 
     public Guid? CurrencyId { get; set; } = null;
