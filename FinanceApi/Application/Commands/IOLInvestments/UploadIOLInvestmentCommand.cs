@@ -12,6 +12,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
 {
     private readonly IRepository<IOLInvestment, Guid> repository;
     private readonly IRepository<IOLInvestmentAsset, Guid> assetRepository;
+    private readonly IRepository<IOLInvestmentAssetType, ushort> assetTypeRepository;
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IOLInvestmentExcelHelper excelHelper;
 
@@ -19,11 +20,13 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
         FinanceDbContext db,
         IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository,
         IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLRepository,
+        IRepository<IOLInvestmentAssetType, ushort> investmentAssetTypeIOLRepository,
         IAppModuleRepository appModuleRepository)
         : base(db)
     {
         repository = investmentAssetIOLRecordRepository;
         assetRepository = investmentAssetIOLRepository;
+        assetTypeRepository = investmentAssetTypeIOLRepository;
         this.appModuleRepository = appModuleRepository;
         excelHelper = new IOLInvestmentExcelHelper();
     }
@@ -47,11 +50,25 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
                 .ToArrayAsync();
 
             var assets = new Dictionary<string, IOLInvestmentAsset>();
+            var assetTypes = new Dictionary<string, IOLInvestmentAssetType>();
 
             foreach (var record in newRecords)
             {
                 var existingRecord = records.FirstOrDefault(x => x.Asset.Symbol == record.Asset.Symbol);
                 if (existingRecord != null) continue;
+
+                var assetType = assetTypes.ContainsKey(record.Asset.Type.Name) ?
+                    assetTypes[record.Asset.Type.Name] :
+                    await assetTypeRepository.GetBy("Name", record.Asset.Type.Name);
+
+                if (assetType != null)
+                {
+                    record.Asset.Type = assetType;
+                }
+                else
+                {
+                    assetTypes.Add(record.Asset.Type.Name, record.Asset.Type);
+                }
 
                 var asset = assets.ContainsKey(record.Asset.Symbol) ?
                     assets[record.Asset.Symbol] :
@@ -60,7 +77,10 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
                 if (asset != null)
                 {
                     record.Asset = asset;
-                    assets.Add(asset.Symbol, asset);
+                }
+                else
+                {
+                    assets.Add(record.Asset.Symbol, record.Asset);
                 }
 
                 await repository.Add(record, false);
