@@ -25,8 +25,8 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
                 var result = reader.AsDataSet();
                 var sheet = result.Tables[0];
 
-                Func<object, uint> uIntParser = (cell) => ParsingHelper.ParseUInteger(SanitizeString(cell));
-                Func<object, decimal> decimalParser = (cell) => ParsingHelper.ParseDecimal(SanitizeString(cell));
+                Func<object, uint> uIntParser = (cell) => ParsingHelper.ParseUInteger(SanitizeDecimalString(cell));
+                Func<object, decimal> decimalParser = (cell) => ParsingHelper.ParseDecimal(SanitizeDecimalString(cell));
 
                 var dateString = sheet.Rows[0][1].ToString();
                 var currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy HH:mm:ss", null, dateTimeKind);
@@ -68,7 +68,7 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
         return records.ToArray();
     }
 
-    private object? SanitizeString(object value)
+    private object? SanitizeDecimalString(object value)
         => value?.ToString()?
             .Replace("$", string.Empty)
             .Replace("%", string.Empty)

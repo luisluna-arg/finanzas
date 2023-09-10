@@ -51,4 +51,7 @@ public static class ParsingHelper
     public static int ParseInteger(object? value) => ParseNullInteger(value) ?? default;
 
     public static decimal ParseDecimal(object? value) => ParseNullDecimal(value) ?? default;
+
+    public static DateTimeKind ParseDateTimeKind(string? dateKind)
+        => !string.IsNullOrWhiteSpace(dateKind) ? EnumHelper.Parse<DateTimeKind>(dateKind) : DateTimeKind.Local;
 }

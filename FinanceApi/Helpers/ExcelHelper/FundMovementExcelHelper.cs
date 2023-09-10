@@ -3,7 +3,7 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Helpers;
 
-public class MovementExcelHelper : IExcelHelper<Movement>
+public class FundMovementExcelHelper : IExcelHelper<Movement>
 {
     public IEnumerable<Movement> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
@@ -33,11 +33,11 @@ public class MovementExcelHelper : IExcelHelper<Movement>
                     {
                         AppModuleId = appModule.Id,
                         AppModule = appModule,
-                        TimeStamp = DateTimeHelper.ParseDateTime(sheet.Rows[r][0], "dd/MM/yyyy", null, dateTimeKind),
+                        TimeStamp = DateParser(sheet.Rows[r][0], dateTimeKind),
                         Concept1 = StringHelper.ValueOrEmpty(sheet.Rows[r][1]),
                         Concept2 = StringHelper.ValueOrEmpty(sheet.Rows[r][2]),
-                        Amount = ParsingHelper.ParseDecimal(sheet.Rows[r][3]),
-                        Total = ParsingHelper.ParseDecimal(sheet.Rows[r][4]),
+                        Amount = DecimalParser(sheet.Rows[r][3]),
+                        Total = DecimalParser(sheet.Rows[r][4]),
                         Currency = appModule.Currency
                     });
                 }
@@ -46,4 +46,30 @@ public class MovementExcelHelper : IExcelHelper<Movement>
 
         return records.ToArray();
     }
+
+    private DateTime DateParser(object? dateObject, DateTimeKind dateTimeKind)
+    {
+        if (dateObject != null)
+        {
+            var dateString = dateObject.ToString();
+            if (!string.IsNullOrWhiteSpace(dateString))
+            {
+                var currentDate = DateTimeHelper.ParseDateTime(dateString, "dd/MM/yyyy", null, dateTimeKind);
+                return DateTimeHelper.FromTimeZoneToUTC(currentDate, -3);
+            }
+        }
+
+        return DateTime.MinValue;
+    }
+
+    private decimal DecimalParser(object cell)
+        => ParsingHelper.ParseDecimal(SanitizeDecimalString(cell));
+
+    private string? SanitizeDecimalString(object value)
+        => value?.ToString()?
+            .Replace("$", string.Empty)
+            .Replace("%", string.Empty)
+            .Replace(".", string.Empty)
+            .Replace(",", ".")
+            .Trim();
 }
