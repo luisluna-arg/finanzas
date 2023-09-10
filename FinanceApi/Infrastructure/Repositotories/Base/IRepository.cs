@@ -5,6 +5,10 @@ public interface IRepository<TEntity, TId>
 {
     Task<TEntity[]> GetAll();
 
+    IQueryable<TEntity> GetAllBy(string searchCriteria, object searchValue);
+
+    IQueryable<TEntity> GetAllBy(IDictionary<string, object> searchCriteria);
+
     Task<TEntity?> GetById(TId id);
 
     Task<TEntity?> GetBy(string searchCriteria, object searchValue);

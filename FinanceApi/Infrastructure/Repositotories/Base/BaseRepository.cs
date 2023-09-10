@@ -26,9 +26,12 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         => await GetBy(new Dictionary<string, object>() { { searchCriteria, searchValue } });
 
     public async Task<TEntity?> GetBy(IDictionary<string, object> searchCriteria)
-        => await GetByQuery(searchCriteria).FirstOrDefaultAsync();
+        => await GetAllBy(searchCriteria).FirstOrDefaultAsync();
 
-    public IQueryable<TEntity> GetByQuery(IDictionary<string, object> searchCriteria)
+    public IQueryable<TEntity> GetAllBy(string searchCriteria, object searchValue)
+        => GetAllBy(new Dictionary<string, object>() { { searchCriteria, searchValue } });
+
+    public IQueryable<TEntity> GetAllBy(IDictionary<string, object> searchCriteria)
     {
         var parameter = Expression.Parameter(typeof(TEntity), "x");
         Expression body = Expression.Constant(true);
