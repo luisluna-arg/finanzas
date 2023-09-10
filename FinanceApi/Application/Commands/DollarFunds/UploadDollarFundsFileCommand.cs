@@ -6,9 +6,9 @@ using FinanceApi.Infrastructure.Repositories;
 using FinanceApi.Infrastructure.Repositories.Base;
 using MediatR;
 
-namespace FinanceApi.Application.Commands.Funds;
+namespace FinanceApi.Application.Commands.DollarFunds;
 
-public class UploadDollarFundsFileCommandHandler : BaseResponselessHandler<UploadFundFileCommand>
+public class UploadDollarFundsFileCommandHandler : BaseResponselessHandler<UploadDollarFundsFileCommand>
 {
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IRepository<Movement, Guid> movementRepository;
@@ -25,7 +25,7 @@ public class UploadDollarFundsFileCommandHandler : BaseResponselessHandler<Uploa
         this.excelHelper = new FundsExcelHelper();
     }
 
-    public override async Task Handle(UploadFundFileCommand command, CancellationToken cancellationToken)
+    public override async Task Handle(UploadDollarFundsFileCommand command, CancellationToken cancellationToken)
     {
         var appModule = await appModuleRepository.GetDollarFunds();
 

@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using AutoMapper;
+using FinanceApi.Application.Commands.DollarFunds;
 using FinanceApi.Application.Commands.Funds;
 using FinanceApi.Application.Dtos.Movements;
 using FinanceApi.Application.Queries.Movements;
