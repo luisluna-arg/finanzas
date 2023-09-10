@@ -5,9 +5,7 @@ using FinanceApi.Helpers;
 public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
 {
     public IEnumerable<IOLInvestment> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
-    {
-        return files.SelectMany(o => ReadAsync(o, appModule, dateTimeKind)).ToArray();
-    }
+        => files.SelectMany(o => ReadAsync(o, appModule, dateTimeKind)).ToArray();
 
     public IEnumerable<IOLInvestment> ReadAsync(IFormFile file, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
@@ -29,9 +27,12 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
 
                 Func<object, uint> uIntParser = (cell) => ParsingHelper.ParseUInteger(SanitizeString(cell));
                 Func<object, decimal> decimalParser = (cell) => ParsingHelper.ParseDecimal(SanitizeString(cell));
-                DateTime currentDate = DateTime.UtcNow;
 
-                for (var r = 0; r < sheet.Rows.Count; r++)
+                var dateString = sheet.Rows[0][1].ToString();
+                var currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy HH:mm:ss", null, dateTimeKind);
+                currentDate = DateTimeHelper.FromTimeZoneToUTC(currentDate, -3);
+
+                for (var r = 2; r < sheet.Rows.Count; r++)
                 {
                     var row = sheet.Rows[r];
                     var asset = StringHelper.ValueOrEmpty(row[0]).Split("\n");
@@ -68,5 +69,10 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
     }
 
     private object? SanitizeString(object value)
-        => value?.ToString()?.Replace(".", string.Empty).Replace(",", ".").Replace("$", string.Empty).Replace("%", string.Empty);
+        => value?.ToString()?
+            .Replace("$", string.Empty)
+            .Replace("%", string.Empty)
+            .Replace(".", string.Empty)
+            .Replace(",", ".")
+            .Trim();
 }

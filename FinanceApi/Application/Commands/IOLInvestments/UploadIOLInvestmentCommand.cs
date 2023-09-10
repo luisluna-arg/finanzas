@@ -3,6 +3,7 @@ using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositotories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using static FinanceApi.Core.Config.DatabaseSeeder;
 
 namespace FinanceApi.Application.Commands.IOLInvestments;
@@ -39,10 +40,19 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
 
         if (newRecords.Length > 0)
         {
+            var singleRecord = newRecords.First();
+
+            var records = await repository.GetAllBy("TimeStamp", singleRecord.TimeStamp)
+                .Include(o => o.Asset)
+                .ToArrayAsync();
+
             var assets = new Dictionary<string, IOLInvestmentAsset>();
 
             foreach (var record in newRecords)
             {
+                var existingRecord = records.FirstOrDefault(x => x.Asset.Symbol == record.Asset.Symbol);
+                if (existingRecord != null) continue;
+
                 var asset = assets.ContainsKey(record.Asset.Symbol) ?
                     assets[record.Asset.Symbol] :
                     await assetRepository.GetBy("Symbol", record.Asset.Symbol);
