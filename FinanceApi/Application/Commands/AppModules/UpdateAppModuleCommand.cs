@@ -25,7 +25,10 @@ public class UpdateAppModuleCommandHandler : BaseResponseHandler<UpdateAppModule
     public override async Task<AppModule> Handle(UpdateAppModuleCommand command, CancellationToken cancellationToken)
     {
         var appModule = await appModuleRepository.GetById(command.Id);
+        if (appModule == null) throw new Exception("App Module not found");
+
         var currency = await currencyRepository.GetById(command.CurrencyId);
+        if (currency == null) throw new Exception("Currency not found");
 
         appModule.Currency = currency;
         appModule.Name = command.Name;

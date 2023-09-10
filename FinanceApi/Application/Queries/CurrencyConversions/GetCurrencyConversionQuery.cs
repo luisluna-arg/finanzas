@@ -6,7 +6,7 @@ using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Queries.CurrencyConvertions;
 
-public class GetCurrencyConversionQueryHandler : BaseResponseHandler<GetCurrencyConversionQuery, CurrencyConversion>
+public class GetCurrencyConversionQueryHandler : BaseResponseHandler<GetCurrencyConversionQuery, CurrencyConversion?>
 {
     private readonly IRepository<CurrencyConversion, Guid> currencyRepository;
 
@@ -18,7 +18,7 @@ public class GetCurrencyConversionQueryHandler : BaseResponseHandler<GetCurrency
         this.currencyRepository = currencyRepository;
     }
 
-    public override async Task<CurrencyConversion> Handle(GetCurrencyConversionQuery request, CancellationToken cancellationToken)
+    public override async Task<CurrencyConversion?> Handle(GetCurrencyConversionQuery request, CancellationToken cancellationToken)
         => await currencyRepository.GetById(request.Id);
 }
 

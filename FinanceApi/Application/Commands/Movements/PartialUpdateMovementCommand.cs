@@ -21,7 +21,8 @@ public class UpdateMovementCommandHandler : BaseResponseHandler<PartialUpdateMov
 
     public override async Task<Movement> Handle(PartialUpdateMovementCommand command, CancellationToken cancellationToken)
     {
-        Movement movement = await movementRepository.GetById(command.Id);
+        var movement = await movementRepository.GetById(command.Id);
+        if (movement == null) throw new Exception("Movement not found");
 
         movement.Amount = command.Amount;
         movement.Concept1 = command.Concept1;

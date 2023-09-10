@@ -22,6 +22,7 @@ public class UpdateCurrencyCommandHandler : BaseResponseHandler<UpdateCurrencyCo
     public override async Task<Currency> Handle(UpdateCurrencyCommand command, CancellationToken cancellationToken)
     {
         var currency = await currencyRepository.GetById(command.Id);
+        if (currency == null) throw new Exception("Currency not found");
 
         currency.Name = command.Name;
         currency.ShortName = command.ShortName;

@@ -26,8 +26,10 @@ public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCo
     public override async Task<Movement> Handle(CreateMovementCommand command, CancellationToken cancellationToken)
     {
         AppModule? appModule = command.AppModuleId.HasValue ? await appModuleRepository.GetById(command.AppModuleId.Value) : await appModuleRepository.GetFund();
+        if (appModule == null) throw new Exception("AppModule not found");
 
         Currency? currency = command.CurrencyId.HasValue ? await currencyRepository.GetById(command.CurrencyId.Value) : null;
+        if (currency == null) throw new Exception("Currency not found");
 
         var newMovement = new Movement()
         {

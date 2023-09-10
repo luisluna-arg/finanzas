@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using FinanceApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,44 +20,30 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
 
     public async Task<TEntity[]> GetAll() => await dbSet.ToArrayAsync();
 
-    public async Task<TEntity> GetById(TId id)
-    {
-        var result = await dbSet.FindAsync(id);
+    public async Task<TEntity?> GetById(TId id) => await dbSet.FindAsync(id);
 
-        if (result == null) throw new ArgumentException($"{nameof(TEntity)} was not found");
+    public async Task<TEntity?> GetBy(string searchCriteria, object searchValue)
+        => await GetBy(new Dictionary<string, object>() { { searchCriteria, searchValue } });
 
-        return result;
-    }
-
-    public async Task<TEntity> GetBy(string searchCriteria, object searchValue)
-    {
-        return await GetBy(new Dictionary<string, object>() { { searchCriteria, searchValue } });
-    }
-
-    public async Task<TEntity> GetBy(IDictionary<string, object> searchCriteria)
-    {
-        var result = await GetByQuery(searchCriteria).FirstOrDefaultAsync();
-
-        if (result == null) throw new ArgumentException($"{nameof(TEntity)} was not found");
-
-        return result;
-    }
+    public async Task<TEntity?> GetBy(IDictionary<string, object> searchCriteria)
+        => await GetByQuery(searchCriteria).FirstOrDefaultAsync();
 
     public IQueryable<TEntity> GetByQuery(IDictionary<string, object> searchCriteria)
     {
-        var queryableObjects = dbSet.AsQueryable();
+        var parameter = Expression.Parameter(typeof(TEntity), "x");
+        Expression body = Expression.Constant(true);
 
-        foreach (var criterion in searchCriteria)
+        foreach (var filter in searchCriteria)
         {
-            queryableObjects = queryableObjects.Where(obj =>
-                obj.
-                    GetType().
-                    GetProperty(criterion.Key)!.
-                    GetValue(obj)!.
-                    Equals(criterion.Value));
+            var property = Expression.Property(parameter, filter.Key);
+            var value = Expression.Constant(filter.Value);
+            var equality = Expression.Equal(property, value);
+            body = Expression.AndAlso(body, equality);
         }
 
-        return queryableObjects;
+        var lambda = Expression.Lambda<Func<TEntity, bool>>(body, parameter);
+
+        return dbSet.Where(lambda);
     }
 
     public async Task Add(TEntity entity, bool persist = true)
@@ -73,7 +60,11 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
     }
 
     public async Task Delete(TId entityId, bool persist = true)
-        => await Delete(await GetById(entityId), persist);
+    {
+        var entity = await GetById(entityId);
+        if (entity != null)
+            await Delete(entity, persist);
+    }
 
     public async Task Delete(TEntity entity, bool persist = true)
     {

@@ -6,7 +6,7 @@ using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Queries.Banks;
 
-public class GetBankQueryHandler : BaseResponseHandler<GetBankQuery, Bank>
+public class GetBankQueryHandler : BaseResponseHandler<GetBankQuery, Bank?>
 {
     private readonly IRepository<Bank, Guid> bankRepository;
 
@@ -18,7 +18,7 @@ public class GetBankQueryHandler : BaseResponseHandler<GetBankQuery, Bank>
         this.bankRepository = bankRepository;
     }
 
-    public override async Task<Bank> Handle(GetBankQuery request, CancellationToken cancellationToken)
+    public override async Task<Bank?> Handle(GetBankQuery request, CancellationToken cancellationToken)
         => await bankRepository.GetById(request.Id);
 }
 

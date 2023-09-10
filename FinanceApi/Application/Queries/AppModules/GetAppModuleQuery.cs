@@ -6,7 +6,7 @@ using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Queries.AppModules;
 
-public class GetAppModuleQueryHandler : BaseResponseHandler<GetAppModuleQuery, AppModule>
+public class GetAppModuleQueryHandler : BaseResponseHandler<GetAppModuleQuery, AppModule?>
 {
     private readonly IAppModuleRepository appModuleRepository;
 
@@ -18,7 +18,7 @@ public class GetAppModuleQueryHandler : BaseResponseHandler<GetAppModuleQuery, A
         this.appModuleRepository = appModuleRepository;
     }
 
-    public override async Task<AppModule> Handle(GetAppModuleQuery request, CancellationToken cancellationToken)
+    public override async Task<AppModule?> Handle(GetAppModuleQuery request, CancellationToken cancellationToken)
         => await appModuleRepository.GetById(request.Id);
 }
 

@@ -26,9 +26,12 @@ public class CreateCurrencyConversionCommandHandler : BaseResponseHandler<Create
 
     public override async Task<CurrencyConversion> Handle(CreateCurrencyConversionCommand command, CancellationToken cancellationToken)
     {
+        var movement = await movementRepository.GetById(command.MovementId);
+        if (movement == null) throw new Exception("Movement not found");
+
         var newCurrencyConversion = new CurrencyConversion()
         {
-            Movement = await movementRepository.GetById(command.MovementId),
+            Movement = movement,
             Currency = command.CurrencyId.HasValue ? await currencyRepository.GetById(command.CurrencyId.Value) : null,
             Amount = command.Amount,
         };

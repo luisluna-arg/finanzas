@@ -35,9 +35,9 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
 
         if (appModule == null) throw new Exception($"App module {AppModuleNames.IOLInvestments} not found");
 
-        var newRecords = excelHelper.ReadAsync(files, appModule, DateTimeKind.Utc).ToList();
+        var newRecords = excelHelper.ReadAsync(files, appModule, DateTimeKind.Utc).ToArray();
 
-        if (newRecords.Any())
+        if (newRecords.Length > 0)
         {
             var assets = new Dictionary<string, IOLInvestmentAsset>();
 

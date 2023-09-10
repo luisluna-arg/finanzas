@@ -25,6 +25,7 @@ public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModule
     public override async Task<AppModule> Handle(CreateAppModuleCommand command, CancellationToken cancellationToken)
     {
         var currency = await currencyRepository.GetById(command.CurrencyId);
+        if (currency == null) throw new Exception("Currency not found");
 
         var newAppModule = new AppModule()
         {

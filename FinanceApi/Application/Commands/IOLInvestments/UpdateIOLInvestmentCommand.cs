@@ -27,22 +27,23 @@ public class UpdateIOLInvestmentCommandHandler : BaseResponseHandler<UpdateIOLIn
 
     public override async Task<IOLInvestment> Handle(UpdateIOLInvestmentCommand command, CancellationToken cancellationToken)
     {
-        var investmentAssetIOL = await iolInvestmentRepository.GetById(command.Id);
+        var iolInvestmentAsset = await iolInvestmentRepository.GetById(command.Id);
+        if (iolInvestmentAsset == null) throw new Exception("IOL Investment Asset not found");
 
-        investmentAssetIOL.Asset = await GetAsset(command.AssetSymbol);
-        investmentAssetIOL.Alarms = command.Alarms;
-        investmentAssetIOL.Quantity = command.Quantity;
-        investmentAssetIOL.Assets = command.Assets;
-        investmentAssetIOL.DailyVariation = command.DailyVariation;
-        investmentAssetIOL.LastPrice = command.LastPrice;
-        investmentAssetIOL.AverageBuyPrice = command.AverageBuyPrice;
-        investmentAssetIOL.AverageReturnPercent = command.AverageReturnPercent;
-        investmentAssetIOL.AverageReturn = command.AverageReturn;
-        investmentAssetIOL.Valued = command.Valued;
+        iolInvestmentAsset.Asset = await GetAsset(command.AssetSymbol);
+        iolInvestmentAsset.Alarms = command.Alarms;
+        iolInvestmentAsset.Quantity = command.Quantity;
+        iolInvestmentAsset.Assets = command.Assets;
+        iolInvestmentAsset.DailyVariation = command.DailyVariation;
+        iolInvestmentAsset.LastPrice = command.LastPrice;
+        iolInvestmentAsset.AverageBuyPrice = command.AverageBuyPrice;
+        iolInvestmentAsset.AverageReturnPercent = command.AverageReturnPercent;
+        iolInvestmentAsset.AverageReturn = command.AverageReturn;
+        iolInvestmentAsset.Valued = command.Valued;
 
-        await iolInvestmentRepository.Update(investmentAssetIOL);
+        await iolInvestmentRepository.Update(iolInvestmentAsset);
 
-        return await Task.FromResult(investmentAssetIOL);
+        return await Task.FromResult(iolInvestmentAsset);
     }
 
     private async Task<IOLInvestmentAsset> GetAsset(string assetSymbol)

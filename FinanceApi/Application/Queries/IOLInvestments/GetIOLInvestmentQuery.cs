@@ -6,7 +6,7 @@ using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Queries.IOLInvestments;
 
-public class GetIOLInvestmentQueryHandler : BaseResponseHandler<GetIOLInvestmentQuery, IOLInvestment>
+public class GetIOLInvestmentQueryHandler : BaseResponseHandler<GetIOLInvestmentQuery, IOLInvestment?>
 {
     private readonly IRepository<IOLInvestment, Guid> investmentAssetIOLRepository;
 
@@ -18,7 +18,7 @@ public class GetIOLInvestmentQueryHandler : BaseResponseHandler<GetIOLInvestment
         this.investmentAssetIOLRepository = investmentAssetIOLRepository;
     }
 
-    public override async Task<IOLInvestment> Handle(GetIOLInvestmentQuery request, CancellationToken cancellationToken)
+    public override async Task<IOLInvestment?> Handle(GetIOLInvestmentQuery request, CancellationToken cancellationToken)
         => await investmentAssetIOLRepository.GetById(request.Id);
 }
 

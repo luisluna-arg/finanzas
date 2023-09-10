@@ -6,7 +6,7 @@ using FinanceApi.Infrastructure.Repositotories;
 
 namespace FinanceApi.Application.Queries.Movements;
 
-public class GetMovementQueryHandler : BaseResponseHandler<GetMovementQuery, Movement>
+public class GetMovementQueryHandler : BaseResponseHandler<GetMovementQuery, Movement?>
 {
     private readonly IRepository<Movement, Guid> movementRepository;
 
@@ -18,7 +18,7 @@ public class GetMovementQueryHandler : BaseResponseHandler<GetMovementQuery, Mov
         this.movementRepository = movementRepository;
     }
 
-    public override async Task<Movement> Handle(GetMovementQuery request, CancellationToken cancellationToken)
+    public override async Task<Movement?> Handle(GetMovementQuery request, CancellationToken cancellationToken)
         => await movementRepository.GetById(request.Id);
 }
 

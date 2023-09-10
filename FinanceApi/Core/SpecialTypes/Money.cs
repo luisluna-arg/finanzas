@@ -39,7 +39,7 @@ public struct Money
     {
     }
 
-    public decimal Value { get; private set; }
+    public decimal Value { get => value; }
 
     public static implicit operator decimal(Money conversionStruct) => Convert.ToDecimal(conversionStruct.value);
 
