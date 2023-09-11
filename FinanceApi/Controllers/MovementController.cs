@@ -24,6 +24,10 @@ public class MovementController : ApiBaseController<Movement, Guid, MovementDto>
     public async Task<IActionResult> GetById(Guid id)
         => await Handle(new GetMovementQuery { Id = id });
 
+    [HttpGet("latest/{appModuleId}")]
+    public async Task<IActionResult> Latest(Guid appModuleId)
+        => await Handle(new GetLatestMovementQuery(appModuleId));
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateMovementCommand command)
         => await Handle(command);
