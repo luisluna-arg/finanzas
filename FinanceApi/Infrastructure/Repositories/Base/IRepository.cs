@@ -1,10 +1,13 @@
 using FinanceApi.Infrastructure.Repositories.Base;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Infrastructure.Repositories;
 
 public interface IRepository<TEntity, TId>
     where TEntity : class
 {
+    DbSet<TEntity> GetDbSet();
+
     Task<TEntity[]> GetAll();
 
     IQueryable<TEntity> GetAllBy(string searchCriteria, object searchValue);

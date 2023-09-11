@@ -18,6 +18,8 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
 
     protected FinanceDbContext DbContext { get => dbContext; }
 
+    public DbSet<TEntity> GetDbSet() => dbSet;
+
     public async Task<TEntity[]> GetAll() => await dbSet.ToArrayAsync();
 
     public async Task<TEntity?> GetById(TId id) => await dbSet.FindAsync(id);
