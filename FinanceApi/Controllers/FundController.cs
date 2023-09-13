@@ -20,8 +20,8 @@ public class FundController : ApiBaseController<Movement, Guid, MovementDto>
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
-        => await Handle(new GetAllFundMovementsQuery());
+    public async Task<IActionResult> Get(string? appModuleId)
+        => await Handle(new GetAllFundMovementsQuery(appModuleId));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
