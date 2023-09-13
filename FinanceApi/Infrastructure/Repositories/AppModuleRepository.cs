@@ -15,7 +15,7 @@ public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRe
 
     public async Task<AppModule> GetFunds()
     {
-        var appModule = await GetAllBy("Name", AppModuleNames.Funds).Include(o => o.Currency).FirstOrDefaultAsync();
+        var appModule = await GetModule(AppModuleConstants.FundsId);
 
         if (appModule == null) throw new Exception("Funds App Module not found");
 
@@ -24,10 +24,13 @@ public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRe
 
     public async Task<AppModule> GetDollarFunds()
     {
-        var appModule = await GetAllBy("Name", AppModuleNames.DollarFunds).Include(o => o.Currency).FirstOrDefaultAsync();
+        var appModule = await GetModule(AppModuleConstants.DollarFundsId);
 
         if (appModule == null) throw new Exception("Dollar Funds App Module not found");
 
         return appModule;
     }
+
+    private async Task<AppModule?> GetModule(string appModuleId)
+        => await GetAllBy("Id", new Guid(appModuleId)).Include(o => o.Currency).FirstOrDefaultAsync();
 }
