@@ -1,0 +1,37 @@
+using FinanceApi.Application.Base.Handlers;
+using FinanceApi.Application.Queries.Base;
+using FinanceApi.Domain;
+using FinanceApi.Domain.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace FinanceApi.Application.Queries.Debits;
+
+public class GetAllDebitsQueryHandler : BaseCollectionHandler<GetAllDebitsQuery, Debit>
+{
+    public GetAllDebitsQueryHandler(FinanceDbContext db)
+        : base(db)
+    {
+    }
+
+    public override async Task<ICollection<Debit>> Handle(GetAllDebitsQuery request, CancellationToken cancellationToken)
+    {
+        var q = DbContext.Debit.Include(o => o.DebitOrigin).ThenInclude(o => o.AppModule).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.AppModuleId))
+        {
+            q = q.Where(o => o.DebitOrigin.AppModuleId == new Guid(request.AppModuleId));
+        }
+
+        return await q.ToArrayAsync();
+    }
+}
+
+public class GetAllDebitsQuery : GetAllQuery<Debit>
+{
+    public GetAllDebitsQuery(string? appModuleId)
+    {
+        this.AppModuleId = appModuleId;
+    }
+
+    public string? AppModuleId { get; private set; }
+}

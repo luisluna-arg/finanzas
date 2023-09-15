@@ -1,6 +1,6 @@
 namespace FinanceApi.Application.Dtos;
 
-public abstract record Dto<TId>
+public abstract record Dto<TId> : IDto
 {
     protected Dto()
     {

@@ -13,6 +13,7 @@ public static class MapperExtensions
             .AddAutoMapper(typeof(CurrencyMapperProfile))
             .AddAutoMapper(typeof(IOLInvestmentMapperProfile))
             .AddAutoMapper(typeof(IOLInvestmentAssetTypeMapperProfile))
-            .AddAutoMapper(typeof(MovementMapperProfile));
+            .AddAutoMapper(typeof(MovementMapperProfile))
+            .AddAutoMapper(typeof(DebitMapperProfile));
     }
 }

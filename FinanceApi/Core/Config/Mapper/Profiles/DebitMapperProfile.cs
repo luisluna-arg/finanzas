@@ -1,12 +1,12 @@
-using FinanceApi.Application.Dtos.Banks;
+using FinanceApi.Application.Dtos.Debits;
 using FinanceApi.Core.Config.Mapper.Profiles.Base;
 using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class BankMapperProfile : BaseMapperProfile<Bank, BankDto>
+public class DebitMapperProfile : BaseMapperProfile<Debit, DebitDto>
 {
-    public BankMapperProfile()
+    public DebitMapperProfile()
         : base()
     {
     }

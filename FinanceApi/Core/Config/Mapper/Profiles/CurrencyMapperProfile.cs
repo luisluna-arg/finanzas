@@ -1,10 +1,13 @@
-using AutoMapper;
 using FinanceApi.Application.Dtos.Currencies;
+using FinanceApi.Core.Config.Mapper.Profiles.Base;
 using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class CurrencyMapperProfile : Profile
+public class CurrencyMapperProfile : BaseMapperProfile<Currency, CurrencyDto>
 {
-    public CurrencyMapperProfile() => CreateMap<Currency, CurrencyDto>();
+    public CurrencyMapperProfile()
+        : base()
+    {
+    }
 }

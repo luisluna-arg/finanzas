@@ -1,10 +1,13 @@
-using AutoMapper;
 using FinanceApi.Application.Dtos.IOLInvestments;
+using FinanceApi.Core.Config.Mapper.Profiles.Base;
 using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class IOLInvestmentMapperProfile : Profile
+public class IOLInvestmentMapperProfile : BaseMapperProfile<IOLInvestment, IOLInvestmentDto>
 {
-    public IOLInvestmentMapperProfile() => CreateMap<IOLInvestment, IOLInvestmentDto>();
+    public IOLInvestmentMapperProfile()
+        : base()
+    {
+    }
 }
