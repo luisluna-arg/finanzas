@@ -30,13 +30,14 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
 
                 var dateString = sheet.Rows[0][1].ToString();
                 var currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy HH:mm:ss", null, dateTimeKind);
+                if (currentDate.Ticks == DateTime.MinValue.Ticks) currentDate = DateTime.Now;
                 currentDate = DateTimeHelper.FromTimeZoneToUTC(currentDate, -3);
 
                 for (var r = 2; r < sheet.Rows.Count; r++)
                 {
                     var row = sheet.Rows[r];
                     var asset = StringHelper.ValueOrEmpty(row[0]).Split("\n");
-                    var assetSymbol = asset[0];
+                    var assetSymbol = asset[0].Trim();
                     var assetDescription = asset.Length == 2 ? asset[1] : string.Empty;
 
                     records.Add(new IOLInvestment()

@@ -18,5 +18,6 @@ public static class ConfigExtensions
         services.AddScoped<IRepository<IOLInvestmentAssetType, ushort>, IOLInvestmentAssetTypeRepository>();
         services.AddScoped<IRepository<Movement, Guid>, MovementRepository>();
         services.AddScoped<IRepository<Debit, Guid>, DebitRepository>();
+        services.AddScoped<IRepository<DebitOrigin, Guid>, DebitOriginRepository>();
     }
 }

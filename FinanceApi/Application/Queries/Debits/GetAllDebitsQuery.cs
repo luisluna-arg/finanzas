@@ -15,14 +15,14 @@ public class GetAllDebitsQueryHandler : BaseCollectionHandler<GetAllDebitsQuery,
 
     public override async Task<ICollection<Debit>> Handle(GetAllDebitsQuery request, CancellationToken cancellationToken)
     {
-        var q = DbContext.Debit.Include(o => o.DebitOrigin).ThenInclude(o => o.AppModule).AsQueryable();
+        var query = DbContext.Debit.Include(o => o.DebitOrigin).ThenInclude(o => o.AppModule).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.AppModuleId))
         {
-            q = q.Where(o => o.DebitOrigin.AppModuleId == new Guid(request.AppModuleId));
+            query = query.Where(o => o.DebitOrigin.AppModuleId == new Guid(request.AppModuleId));
         }
 
-        return await q.ToArrayAsync();
+        return await query.OrderByDescending(o => o.TimeStamp).ThenBy(o => o.DebitOrigin.Name).ToArrayAsync();
     }
 }
 

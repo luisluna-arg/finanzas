@@ -30,9 +30,10 @@ public class DebitsExcelHelper : IAppModuleExcelHelper<Debit>
 
                 var dateString = sheet.Rows[0][1].ToString();
                 var currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy HH:mm:ss", null, dateTimeKind);
+                if (currentDate.Ticks == DateTime.MinValue.Ticks) currentDate = DateTime.Now;
                 currentDate = DateTimeHelper.FromTimeZoneToUTC(currentDate, -3);
 
-                for (var r = 2; r < sheet.Rows.Count; r++)
+                for (var r = 3; r < sheet.Rows.Count; r++)
                 {
                     records.Add(new Debit()
                     {
@@ -40,11 +41,10 @@ public class DebitsExcelHelper : IAppModuleExcelHelper<Debit>
                         {
                             AppModuleId = appModule.Id,
                             AppModule = appModule,
-                            Name = StringHelper.ValueOrEmpty(sheet.Rows[r][0])
+                            Name = StringHelper.ValueOrEmpty(sheet.Rows[r][0]).Trim()
                         },
                         TimeStamp = currentDate,
                         Amount = DecimalParser(sheet.Rows[r][1]),
-                        AmountDollars = DecimalParser(sheet.Rows[r][2])
                     });
                 }
             }

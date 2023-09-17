@@ -16,6 +16,4 @@ public record DebitDto : Dto<Guid>
     required public DateTime TimeStamp { get; set; }
 
     required public Money Amount { get; set; }
-
-    required public Money AmountDollars { get; set; }
 }

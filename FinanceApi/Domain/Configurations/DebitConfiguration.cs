@@ -16,9 +16,5 @@ public class DebitConfiguration : IEntityTypeConfiguration<Debit>
         builder
             .Property(o => o.Amount)
             .HasConversion(new MoneyConverter());
-
-        builder
-            .Property(o => o.AmountDollars)
-            .HasConversion(new MoneyConverter());
     }
 }

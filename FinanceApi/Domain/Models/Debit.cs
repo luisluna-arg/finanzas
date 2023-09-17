@@ -15,8 +15,6 @@ public sealed class Debit : Entity<Guid>, IEquatable<Debit>
 
     required public Money Amount { get; set; }
 
-    required public Money AmountDollars { get; set; }
-
     public override bool Equals(object? obj)
     {
         return Equals(obj as Debit);
