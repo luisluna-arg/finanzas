@@ -21,11 +21,11 @@ public class FundController : ApiBaseController<Movement, Guid, MovementDto>
 
     [HttpGet]
     public async Task<IActionResult> Get(string? appModuleId)
-        => await Handle(new GetAllFundMovementsQuery(appModuleId));
+        => await Handle(new GetFundMovementsQuery(appModuleId));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
-        => await Handle(new GetMovementQuery { Id = id });
+        => await Handle(new GetSingleMovementQuery { Id = id });
 
     [HttpPost]
     [Route("upload")]

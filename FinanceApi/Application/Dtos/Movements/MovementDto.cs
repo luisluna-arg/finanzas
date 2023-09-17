@@ -9,4 +9,5 @@ public record MovementDto : BaseMovementDto
 
     public Guid AppModuleId { get; set; }
     public Guid? CurrencyId { get; set; }
+    public Guid? BankId { get; set; }
 }

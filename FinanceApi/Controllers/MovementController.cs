@@ -17,12 +17,12 @@ public class MovementController : ApiBaseController<Movement, Guid, MovementDto>
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
-        => await Handle(new GetAllMovementsQuery());
+    public async Task<IActionResult> Get([FromQuery] GetMovementsQuery command)
+        => await Handle(command);
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
-        => await Handle(new GetMovementQuery { Id = id });
+        => await Handle(new GetSingleMovementQuery { Id = id });
 
     [HttpGet("latest/{appModuleId}")]
     public async Task<IActionResult> Latest(Guid appModuleId)

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.IOLInvestments;
 
-public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetAllIOLInvestmentsQuery, IOLInvestment>
+public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetIOLInvestmentsQuery, IOLInvestment>
 {
     private readonly IRepository<IOLInvestment, Guid> repository;
 
@@ -19,7 +19,7 @@ public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetAllIOLIn
         repository = investmentAssetIOLRepository;
     }
 
-    public override async Task<ICollection<IOLInvestment>> Handle(GetAllIOLInvestmentsQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<IOLInvestment>> Handle(GetIOLInvestmentsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<IOLInvestment> query = repository.GetDbSet().Include(o => o.Asset).ThenInclude(o => o.Type).AsQueryable();
 
@@ -42,7 +42,7 @@ public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetAllIOLIn
     }
 }
 
-public class GetAllIOLInvestmentsQuery : GetAllQuery<IOLInvestment>
+public class GetIOLInvestmentsQuery : GetAllQuery<IOLInvestment>
 {
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.

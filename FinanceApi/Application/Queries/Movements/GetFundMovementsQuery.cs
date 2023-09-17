@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.Movements;
 
-public class GetAllFundMovementsQueryHandler : BaseCollectionHandler<GetAllFundMovementsQuery, Movement>
+public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovementsQuery, Movement>
 {
-    public GetAllFundMovementsQueryHandler(FinanceDbContext db)
+    public GetFundMovementsQueryHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<ICollection<Movement>> Handle(GetAllFundMovementsQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<Movement>> Handle(GetFundMovementsQuery request, CancellationToken cancellationToken)
     {
         var q = DbContext.Movement.Include(o => o.AppModule).AsQueryable();
 
@@ -26,9 +26,9 @@ public class GetAllFundMovementsQueryHandler : BaseCollectionHandler<GetAllFundM
     }
 }
 
-public class GetAllFundMovementsQuery : GetAllQuery<Movement>
+public class GetFundMovementsQuery : GetAllQuery<Movement>
 {
-    public GetAllFundMovementsQuery(string? appModuleId)
+    public GetFundMovementsQuery(string? appModuleId)
     {
         this.AppModuleId = appModuleId;
     }

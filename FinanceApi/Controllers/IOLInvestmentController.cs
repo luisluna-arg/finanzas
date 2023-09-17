@@ -17,12 +17,12 @@ public class IOLInvestmentController : ApiBaseController<IOLInvestment, Guid, IO
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllIOLInvestmentsQuery command)
+    public async Task<IActionResult> Get([FromQuery] GetIOLInvestmentsQuery command)
         => await Handle(command);
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
-        => await Handle(new GetIOLInvestmentQuery { Id = id });
+        => await Handle(new GetSingleIOLInvestmentQuery { Id = id });
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateIOLInvestmentCommand command)

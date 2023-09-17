@@ -6,11 +6,11 @@ using FinanceApi.Infrastructure.Repositories;
 
 namespace FinanceApi.Application.Queries.Movements;
 
-public class GetMovementQueryHandler : BaseResponseHandler<GetMovementQuery, Movement?>
+public class GetSingleMovementQueryHandler : BaseResponseHandler<GetSingleMovementQuery, Movement?>
 {
     private readonly IRepository<Movement, Guid> movementRepository;
 
-    public GetMovementQueryHandler(
+    public GetSingleMovementQueryHandler(
         FinanceDbContext db,
         IRepository<Movement, Guid> movementRepository)
         : base(db)
@@ -18,10 +18,10 @@ public class GetMovementQueryHandler : BaseResponseHandler<GetMovementQuery, Mov
         this.movementRepository = movementRepository;
     }
 
-    public override async Task<Movement?> Handle(GetMovementQuery request, CancellationToken cancellationToken)
+    public override async Task<Movement?> Handle(GetSingleMovementQuery request, CancellationToken cancellationToken)
         => await movementRepository.GetById(request.Id);
 }
 
-public class GetMovementQuery : GetSingleByIdQuery<Movement, Guid>
+public class GetSingleMovementQuery : GetSingleByIdQuery<Movement, Guid>
 {
 }
