@@ -49,6 +49,9 @@ dotnet_diagnostic.CS8618.severity = None
 dotnet_diagnostic.SA1602.severity = None
 # Remove unused usings
 dotnet_diagnostic.IDE0005.severity = error
+# Disable warning for no summary
+dotnet_diagnostic.CS1591.severity = None
+
 
 # All .cs files in the Migrations directory should have their naming convention ignored
 [*Migrations/*.cs]
