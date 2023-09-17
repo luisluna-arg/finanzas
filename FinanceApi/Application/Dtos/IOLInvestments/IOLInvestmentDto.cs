@@ -1,3 +1,5 @@
+using FinanceApi.Application.Dtos.IOLInvestmentAssets;
+
 namespace FinanceApi.Application.Dtos.IOLInvestments;
 
 public record IOLInvestmentDto : Dto<Guid>
@@ -7,7 +9,9 @@ public record IOLInvestmentDto : Dto<Guid>
     {
     }
 
-    public string Asset { get; set; } = string.Empty;
+    required public DateTime TimeStamp { get; set; }
+
+    public IOLInvestmentAssetDto Asset { get; set; }
 
     public uint Alarms { get; set; } = 0;
 
@@ -26,6 +30,4 @@ public record IOLInvestmentDto : Dto<Guid>
     public decimal AverageReturn { get; set; } = 0M;
 
     public decimal Valued { get; set; } = 0M;
-
-    public virtual Guid InvestmentAssetIOLTypeId { get; set; }
 }

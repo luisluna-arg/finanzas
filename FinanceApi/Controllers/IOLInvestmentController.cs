@@ -17,8 +17,8 @@ public class IOLInvestmentController : ApiBaseController<IOLInvestment, Guid, IO
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
-        => await Handle(new GetAllIOLInvestmentsQuery());
+    public async Task<IActionResult> Get([FromQuery] GetAllIOLInvestmentsQuery command)
+        => await Handle(command);
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
