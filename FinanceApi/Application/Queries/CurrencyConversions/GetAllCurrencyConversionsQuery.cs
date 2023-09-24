@@ -2,26 +2,30 @@ using FinanceApi.Application.Base.Handlers;
 using FinanceApi.Application.Queries.Base;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using FinanceApi.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.CurrencyConvertions;
 
-public class GetAllCurrencyConversionsQueryHandler : BaseCollectionHandler<GetAllCurrencyConversionsQuery, CurrencyConversion>
+public class GetAllCurrencyConversionsQueryHandler : BaseCollectionHandler<GetAllCurrencyConversionsQuery, CurrencyConversion?>
 {
-    private readonly IRepository<CurrencyConversion, Guid> currencyConversionRepository;
-
-    public GetAllCurrencyConversionsQueryHandler(
-        FinanceDbContext db,
-        IRepository<CurrencyConversion, Guid> currencyConversionRepository)
+    public GetAllCurrencyConversionsQueryHandler(FinanceDbContext db)
         : base(db)
     {
-        this.currencyConversionRepository = currencyConversionRepository;
     }
 
-    public override async Task<ICollection<CurrencyConversion>> Handle(GetAllCurrencyConversionsQuery request, CancellationToken cancellationToken)
-        => await currencyConversionRepository.GetAll();
+    public override async Task<ICollection<CurrencyConversion?>> Handle(GetAllCurrencyConversionsQuery request, CancellationToken cancellationToken)
+    {
+        var query = DbContext.CurrencyConversion.AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        return await Task.FromResult(await query.ToArrayAsync());
+    }
 }
 
-public class GetAllCurrencyConversionsQuery : GetAllQuery<CurrencyConversion>
+public class GetAllCurrencyConversionsQuery : GetAllQuery<CurrencyConversion?>
 {
 }

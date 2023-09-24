@@ -3,23 +3,30 @@ using FinanceApi.Application.Queries.Base;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.Banks;
 
-public class GetAllBanksQueryHandler : BaseCollectionHandler<GetAllBanksQuery, Bank>
+public class GetAllBanksQueryHandler : BaseCollectionHandler<GetAllBanksQuery, Bank?>
 {
-    private readonly IRepository<Bank, Guid> bankRepository;
-
     public GetAllBanksQueryHandler(FinanceDbContext db, IRepository<Bank, Guid> bankRepository)
         : base(db)
     {
-        this.bankRepository = bankRepository;
     }
 
-    public override async Task<ICollection<Bank>> Handle(GetAllBanksQuery request, CancellationToken cancellationToken)
-        => await bankRepository.GetAll();
+    public override async Task<ICollection<Bank?>> Handle(GetAllBanksQuery request, CancellationToken cancellationToken)
+    {
+        var query = DbContext.Bank.AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        return await Task.FromResult(await query.ToArrayAsync());
+    }
 }
 
-public class GetAllBanksQuery : GetAllQuery<Bank>
+public class GetAllBanksQuery : GetAllQuery<Bank?>
 {
 }

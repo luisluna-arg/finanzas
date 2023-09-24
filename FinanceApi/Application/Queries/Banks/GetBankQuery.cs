@@ -22,6 +22,6 @@ public class GetBankQueryHandler : BaseResponseHandler<GetBankQuery, Bank?>
         => await bankRepository.GetById(request.Id);
 }
 
-public class GetBankQuery : GetSingleByIdQuery<Bank, Guid>
+public class GetBankQuery : GetSingleByIdQuery<Bank?, Guid>
 {
 }

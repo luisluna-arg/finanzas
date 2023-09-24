@@ -1,4 +1,5 @@
 using AutoMapper;
+using FinanceApi.Application.Commands.CurrencyConversions;
 using FinanceApi.Application.Commands.CurrencyConvertions;
 using FinanceApi.Application.Dtos.CurrencyConversions;
 using FinanceApi.Application.Queries.CurrencyConvertions;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers;
 
 [Route("api/currency-conversions")]
-public class CurrencyConversionController : ApiBaseController<CurrencyConversion, Guid, CurrencyConversionDto>
+public class CurrencyConversionController : ApiBaseController<CurrencyConversion?, Guid, CurrencyConversionDto>
 {
     public CurrencyConversionController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)
@@ -17,12 +18,12 @@ public class CurrencyConversionController : ApiBaseController<CurrencyConversion
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
-        => await Handle(new GetAllCurrencyConversionsQuery());
+    public async Task<IActionResult> Get([FromQuery] GetAllCurrencyConversionsQuery request)
+        => await Handle(request);
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-        => await Handle(new GetCurrencyConversionQuery { Id = id });
+    public async Task<IActionResult> GetById([FromQuery] GetCurrencyConversionQuery request)
+        => await Handle(request);
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateCurrencyConversionCommand command)
@@ -35,4 +36,12 @@ public class CurrencyConversionController : ApiBaseController<CurrencyConversion
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
         => await Handle(new DeleteCurrencyConversionCommand { Id = id });
+
+    [HttpPatch("activate/{id}")]
+    public async Task<IActionResult> Activate(Guid id)
+        => await Handle(new ActivateCurrencyConversionCommand { Id = id });
+
+    [HttpPatch("deactivate/{id}")]
+    public async Task<IActionResult> Deactivate(Guid id)
+        => await Handle404(new DeactivateCurrencyConversionCommand { Id = id });
 }

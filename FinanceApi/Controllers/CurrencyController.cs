@@ -1,5 +1,6 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.Currencies;
+using FinanceApi.Application.Commands.Currencys;
 using FinanceApi.Application.Dtos.Currencies;
 using FinanceApi.Application.Queries.Currencies;
 using FinanceApi.Domain.Models;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers;
 
 [Route("api/currencies")]
-public class CurrencyController : ApiBaseController<Currency, Guid, CurrencyDto>
+public class CurrencyController : ApiBaseController<Currency?, Guid, CurrencyDto>
 {
     public CurrencyController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)
@@ -17,12 +18,12 @@ public class CurrencyController : ApiBaseController<Currency, Guid, CurrencyDto>
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
-        => await Handle(new GetAllCurrenciesQuery());
+    public async Task<IActionResult> Get([FromQuery] GetAllCurrenciesQuery request)
+        => await Handle(request);
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-        => await Handle(new GetCurrencyQuery { Id = id });
+    public async Task<IActionResult> GetById([FromQuery] GetCurrencyQuery request)
+        => await Handle(request);
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateCurrencyCommand command)
@@ -35,4 +36,12 @@ public class CurrencyController : ApiBaseController<Currency, Guid, CurrencyDto>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
         => await Handle(new DeleteCurrencyCommand() { Id = id });
+
+    [HttpPatch("activate/{id}")]
+    public async Task<IActionResult> Activate(Guid id)
+        => await Handle(new ActivateCurrencyCommand { Id = id });
+
+    [HttpPatch("deactivate/{id}")]
+    public async Task<IActionResult> Deactivate(Guid id)
+        => await Handle404(new DeactivateCurrencyCommand { Id = id });
 }

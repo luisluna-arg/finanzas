@@ -22,6 +22,6 @@ public class GetSingleIOLInvestmentQueryHandler : BaseResponseHandler<GetSingleI
         => await investmentAssetIOLRepository.GetById(request.Id);
 }
 
-public class GetSingleIOLInvestmentQuery : GetSingleByIdQuery<IOLInvestment, Guid>
+public class GetSingleIOLInvestmentQuery : GetSingleByIdQuery<IOLInvestment?, Guid>
 {
 }

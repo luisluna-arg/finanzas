@@ -22,6 +22,6 @@ public class GetCurrencyQueryHandler : BaseResponseHandler<GetCurrencyQuery, Cur
         => await currencyRepository.GetById(request.Id);
 }
 
-public class GetCurrencyQuery : GetSingleByIdQuery<Currency, Guid>
+public class GetCurrencyQuery : GetSingleByIdQuery<Currency?, Guid>
 {
 }

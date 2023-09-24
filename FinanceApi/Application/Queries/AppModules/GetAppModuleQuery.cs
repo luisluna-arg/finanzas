@@ -22,6 +22,6 @@ public class GetAppModuleQueryHandler : BaseResponseHandler<GetAppModuleQuery, A
         => await appModuleRepository.GetById(request.Id);
 }
 
-public class GetAppModuleQuery : GetSingleByIdQuery<AppModule, Guid>
+public class GetAppModuleQuery : GetSingleByIdQuery<AppModule?, Guid>
 {
 }

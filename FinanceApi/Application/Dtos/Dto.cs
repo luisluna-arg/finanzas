@@ -7,4 +7,6 @@ public abstract record Dto<TId> : IDto
     }
 
     public TId Id { get; set; } = default!;
+
+    public bool Deactivated { get; set; }
 }

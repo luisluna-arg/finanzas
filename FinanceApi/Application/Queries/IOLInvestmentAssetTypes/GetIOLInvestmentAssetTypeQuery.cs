@@ -22,6 +22,6 @@ public class GetIOLInvestmentAssetTypeQueryHandler : BaseResponseHandler<GetIOLI
         => await investmentAssetIOLTypeRepository.GetById(request.Id);
 }
 
-public class GetIOLInvestmentAssetTypeQuery : GetSingleByIdQuery<IOLInvestmentAssetType, ushort>
+public class GetIOLInvestmentAssetTypeQuery : GetSingleByIdQuery<IOLInvestmentAssetType?, ushort>
 {
 }

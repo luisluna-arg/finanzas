@@ -22,6 +22,6 @@ public class GetSingleMovementQueryHandler : BaseResponseHandler<GetSingleMoveme
         => await movementRepository.GetById(request.Id);
 }
 
-public class GetSingleMovementQuery : GetSingleByIdQuery<Movement, Guid>
+public class GetSingleMovementQuery : GetSingleByIdQuery<Movement?, Guid>
 {
 }

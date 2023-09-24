@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.Movements;
 
-public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovementsQuery, Movement>
+public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovementsQuery, Movement?>
 {
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IRepository<Movement, Guid> repository;
@@ -22,7 +22,7 @@ public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovemen
         this.repository = movementRepository;
     }
 
-    public override async Task<ICollection<Movement>> Handle(GetFundMovementsQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<Movement?>> Handle(GetFundMovementsQuery request, CancellationToken cancellationToken)
     {
         var fundModule = await appModuleRepository.GetFunds();
         if (fundModule == null) throw new Exception($"Funds module not found");
@@ -33,6 +33,11 @@ public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovemen
             .Include(o => o.Bank)
             .Where(o => o.AppModuleId == fundModule.Id)
             .AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
 
         if (request.From.HasValue)
         {
@@ -48,7 +53,7 @@ public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovemen
     }
 }
 
-public class GetFundMovementsQuery : GetAllQuery<Movement>
+public class GetFundMovementsQuery : GetAllQuery<Movement?>
 {
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.

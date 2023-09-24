@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers;
 
 [Route("api/funds")]
-public class FundController : ApiBaseController<Movement, Guid, MovementDto>
+public class FundController : ApiBaseController<Movement?, Guid, MovementDto>
 {
     public FundController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)
@@ -20,12 +20,12 @@ public class FundController : ApiBaseController<Movement, Guid, MovementDto>
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetFundMovementsQuery command)
-        => await Handle(command);
+    public async Task<IActionResult> Get([FromQuery] GetFundMovementsQuery request)
+        => await Handle(request);
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-        => await Handle(new GetSingleMovementQuery { Id = id });
+    public async Task<IActionResult> GetById([FromQuery] GetSingleMovementQuery request)
+        => await Handle(request);
 
     [HttpPost]
     [Route("upload")]

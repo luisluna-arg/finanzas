@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers;
 
 [Route("api/banks")]
-public class BankController : ApiBaseController<Bank, Guid, BankDto>
+public class BankController : ApiBaseController<Bank?, Guid, BankDto>
 {
     public BankController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)
@@ -17,12 +17,12 @@ public class BankController : ApiBaseController<Bank, Guid, BankDto>
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
-        => await Handle(new GetAllBanksQuery());
+    public async Task<IActionResult> Get([FromQuery] GetAllBanksQuery request)
+        => await Handle(request);
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-        => await Handle(new GetBankQuery { Id = id });
+    public async Task<IActionResult> GetById([FromQuery] GetBankQuery request)
+        => await Handle(request);
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateBankCommand command)
@@ -31,4 +31,12 @@ public class BankController : ApiBaseController<Bank, Guid, BankDto>
     [HttpPut]
     public async Task<IActionResult> Update(UpdateBankCommand command)
         => await Handle(command);
+
+    [HttpPatch("activate/{id}")]
+    public async Task<IActionResult> Activate(Guid id)
+        => await Handle(new ActivateBankCommand { Id = id });
+
+    [HttpPatch("deactivate/{id}")]
+    public async Task<IActionResult> Deactivate(Guid id)
+        => await Handle404(new DeactivateBankCommand { Id = id });
 }

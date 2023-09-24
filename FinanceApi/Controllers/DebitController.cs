@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers;
 
 [Route("api/debits")]
-public class DebitController : ApiBaseController<Debit, Guid, DebitDto>
+public class DebitController : ApiBaseController<Debit?, Guid, DebitDto>
 {
     public DebitController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)
@@ -18,8 +18,8 @@ public class DebitController : ApiBaseController<Debit, Guid, DebitDto>
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(string? appModuleId)
-        => await Handle(new GetAllDebitsQuery(appModuleId));
+    public async Task<IActionResult> Get([FromQuery] GetAllDebitsQuery request)
+        => await Handle(request);
 
     [HttpPost]
     [Route("upload")]
@@ -28,4 +28,12 @@ public class DebitController : ApiBaseController<Debit, Guid, DebitDto>
         await Handle(new UploadDebitsFileCommand(file, appModuleId, EnumHelper.Parse<DateTimeKind>(dateKind)));
         return Ok();
     }
+
+    [HttpPatch("activate/{id}")]
+    public async Task<IActionResult> Activate(Guid id)
+        => await Handle(new ActivateDebitCommand { Id = id });
+
+    [HttpPatch("deactivate/{id}")]
+    public async Task<IActionResult> Deactivate(Guid id)
+        => await Handle404(new DeactivateDebitCommand { Id = id });
 }

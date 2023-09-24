@@ -2,26 +2,30 @@ using FinanceApi.Application.Base.Handlers;
 using FinanceApi.Application.Queries.Base;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
-using FinanceApi.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.IOLInvestmentAssetTypes;
 
-public class GetAllIOLInvestmentAssetTypesQueryHandler : BaseCollectionHandler<GetAllIOLInvestmentAssetTypesQuery, IOLInvestmentAssetType>
+public class GetAllIOLInvestmentAssetTypesQueryHandler : BaseCollectionHandler<GetAllIOLInvestmentAssetTypesQuery, IOLInvestmentAssetType?>
 {
-    private readonly IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypesRepository;
-
-    public GetAllIOLInvestmentAssetTypesQueryHandler(
-        FinanceDbContext db,
-        IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypesRepository)
+    public GetAllIOLInvestmentAssetTypesQueryHandler(FinanceDbContext db)
         : base(db)
     {
-        this.investmentAssetIOLTypesRepository = investmentAssetIOLTypesRepository;
     }
 
-    public override async Task<ICollection<IOLInvestmentAssetType>> Handle(GetAllIOLInvestmentAssetTypesQuery request, CancellationToken cancellationToken)
-        => await investmentAssetIOLTypesRepository.GetAll();
+    public override async Task<ICollection<IOLInvestmentAssetType?>> Handle(GetAllIOLInvestmentAssetTypesQuery request, CancellationToken cancellationToken)
+    {
+        var query = DbContext.IOLInvestmentAssetTypes.AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        return await Task.FromResult(await query.ToArrayAsync());
+    }
 }
 
-public class GetAllIOLInvestmentAssetTypesQuery : GetAllQuery<IOLInvestmentAssetType>
+public class GetAllIOLInvestmentAssetTypesQuery : GetAllQuery<IOLInvestmentAssetType?>
 {
 }

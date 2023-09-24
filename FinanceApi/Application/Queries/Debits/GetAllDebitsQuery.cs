@@ -6,16 +6,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.Debits;
 
-public class GetAllDebitsQueryHandler : BaseCollectionHandler<GetAllDebitsQuery, Debit>
+public class GetAllDebitsQueryHandler : BaseCollectionHandler<GetAllDebitsQuery, Debit?>
 {
     public GetAllDebitsQueryHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<ICollection<Debit>> Handle(GetAllDebitsQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<Debit?>> Handle(GetAllDebitsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.Debit.Include(o => o.DebitOrigin).ThenInclude(o => o.AppModule).AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
 
         if (!string.IsNullOrWhiteSpace(request.AppModuleId))
         {
@@ -26,12 +31,7 @@ public class GetAllDebitsQueryHandler : BaseCollectionHandler<GetAllDebitsQuery,
     }
 }
 
-public class GetAllDebitsQuery : GetAllQuery<Debit>
+public class GetAllDebitsQuery : GetAllQuery<Debit?>
 {
-    public GetAllDebitsQuery(string? appModuleId)
-    {
-        this.AppModuleId = appModuleId;
-    }
-
-    public string? AppModuleId { get; private set; }
+    public string? AppModuleId { get; set; }
 }

@@ -5,7 +5,7 @@ namespace FinanceApi.Application.Base.Handlers;
 
 public abstract class BaseCollectionHandler<TRequest, TEntity> : IRequestHandler<TRequest, ICollection<TEntity>>
     where TRequest : IRequest<ICollection<TEntity>>
-    where TEntity : class
+    where TEntity : class?
 {
     protected BaseCollectionHandler(FinanceDbContext db)
     {

@@ -6,19 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.AppModules;
 
-public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModulesQuery, AppModule>
+public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModulesQuery, AppModule?>
 {
     public GetAllAppModulesQueryHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<ICollection<AppModule>> Handle(GetAllAppModulesQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<AppModule?>> Handle(GetAllAppModulesQuery request, CancellationToken cancellationToken)
     {
-        return await Task.FromResult(await DbContext.AppModule.Include(o => o.Currency).ToArrayAsync());
+        var query = DbContext.AppModule.Include(o => o.Currency).AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        return await Task.FromResult(await query.ToArrayAsync());
     }
 }
 
-public class GetAllAppModulesQuery : GetAllQuery<AppModule>
+public class GetAllAppModulesQuery : GetAllQuery<AppModule?>
 {
 }

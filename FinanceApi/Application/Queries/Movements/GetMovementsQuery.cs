@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.Movements;
 
-public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery, Movement>
+public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery, Movement?>
 {
     private readonly IRepository<Movement, Guid> movementRepository;
 
@@ -19,12 +19,17 @@ public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery,
         this.movementRepository = movementRepository;
     }
 
-    public override async Task<ICollection<Movement>> Handle(GetMovementsQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<Movement?>> Handle(GetMovementsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<Movement> query = movementRepository.GetDbSet()
             .Include(o => o.AppModule)
             .Include(o => o.Currency)
             .Include(o => o.Bank).AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
 
         if (request.From.HasValue)
         {
@@ -45,7 +50,7 @@ public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery,
     }
 }
 
-public class GetMovementsQuery : GetAllQuery<Movement>
+public class GetMovementsQuery : GetAllQuery<Movement?>
 {
     public string? AppModuleId { get; private set; }
 

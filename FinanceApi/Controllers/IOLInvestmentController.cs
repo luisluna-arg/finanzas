@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers;
 
 [Route("api/iol-investment")]
-public class IOLInvestmentController : ApiBaseController<IOLInvestment, Guid, IOLInvestmentDto>
+public class IOLInvestmentController : ApiBaseController<IOLInvestment?, Guid, IOLInvestmentDto>
 {
     public IOLInvestmentController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)
@@ -17,12 +17,12 @@ public class IOLInvestmentController : ApiBaseController<IOLInvestment, Guid, IO
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetIOLInvestmentsQuery command)
-        => await Handle(command);
+    public async Task<IActionResult> Get([FromQuery] GetIOLInvestmentsQuery request)
+        => await Handle(request);
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-        => await Handle(new GetSingleIOLInvestmentQuery { Id = id });
+    public async Task<IActionResult> GetById([FromQuery] GetSingleIOLInvestmentQuery request)
+        => await Handle(request);
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateIOLInvestmentCommand command)
@@ -39,4 +39,12 @@ public class IOLInvestmentController : ApiBaseController<IOLInvestment, Guid, IO
         await Handle(new UploadIOLInvestmentsCommand(file));
         return Ok();
     }
+
+    [HttpPatch("activate/{id}")]
+    public async Task<IActionResult> Activate(Guid id)
+        => await Handle(new ActivateIOLInvestmentCommand { Id = id });
+
+    [HttpPatch("deactivate/{id}")]
+    public async Task<IActionResult> Deactivate(Guid id)
+        => await Handle404(new DeactivateIOLInvestmentCommand { Id = id });
 }
