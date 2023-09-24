@@ -38,7 +38,7 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
         var bank = await bankRepository.GetBy("Id", command.BankId);
         if (bank == null) throw new Exception($"Bank not found, Id: {command.BankId}");
 
-        var newRecords = excelHelper.ReadAsync(command.File, appModule, bank, dateKind);
+        var newRecords = excelHelper.Read(command.File, appModule, bank, dateKind);
         if (newRecords == null || !newRecords.Any()) return;
 
         var minDate = newRecords.Min(o => o.TimeStamp);

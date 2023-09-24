@@ -31,7 +31,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
     {
         var files = command.File;
 
-        var newRecords = excelHelper.ReadAsync(files, DateTimeKind.Utc).ToArray();
+        var newRecords = excelHelper.Read(files, DateTimeKind.Utc).ToArray();
 
         if (newRecords.Length > 0)
         {

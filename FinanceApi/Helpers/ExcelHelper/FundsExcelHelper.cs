@@ -5,12 +5,12 @@ namespace FinanceApi.Helpers;
 
 public class FundsExcelHelper : IFundsExcelHelper<Movement>
 {
-    public IEnumerable<Movement> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, Bank? bank, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<Movement> Read(IEnumerable<IFormFile> files, AppModule appModule, Bank? bank, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        return files.SelectMany(o => ReadAsync(o, appModule, bank, dateTimeKind)).ToArray();
+        return files.SelectMany(o => Read(o, appModule, bank, dateTimeKind)).ToArray();
     }
 
-    public IEnumerable<Movement> ReadAsync(IFormFile file, AppModule appModule, Bank? bank, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<Movement> Read(IFormFile file, AppModule appModule, Bank? bank, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         List<Movement> records = new List<Movement>();
 

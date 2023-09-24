@@ -37,7 +37,7 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
         var dateKind = command.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
 
-        var newRecords = excelHelper.ReadAsync(command.File, appModule, dateKind);
+        var newRecords = excelHelper.Read(command.File, appModule, dateKind);
         if (newRecords == null || !newRecords.Any()) return;
 
         var minDate = newRecords.Min(o => o.TimeStamp);

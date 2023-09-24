@@ -5,12 +5,12 @@ namespace FinanceApi.Helpers.ExcelHelper;
 
 public class DebitsExcelHelper : IAppModuleExcelHelper<Debit>
 {
-    public IEnumerable<Debit> ReadAsync(IEnumerable<IFormFile> files, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<Debit> Read(IEnumerable<IFormFile> files, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        return files.SelectMany(o => ReadAsync(o, appModule, dateTimeKind)).ToArray();
+        return files.SelectMany(o => Read(o, appModule, dateTimeKind)).ToArray();
     }
 
-    public IEnumerable<Debit> ReadAsync(IFormFile file, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<Debit> Read(IFormFile file, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         List<Debit> records = new List<Debit>();
 
