@@ -12,6 +12,8 @@ public abstract class Entity<TId> : IEntity
     [Key]
     public TId Id { get; set; } = default!;
 
+    public bool Deactivated { get; set; }
+
     public virtual void Update(IEntity newData)
     {
         var properties = newData.GetType().GetProperties().Where(o => o.CanRead && o.CanWrite).ToArray();
