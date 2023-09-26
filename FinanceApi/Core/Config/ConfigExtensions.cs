@@ -11,6 +11,7 @@ public static class ConfigExtensions
         services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
         services.AddScoped<IAppModuleRepository, AppModuleRepository>();
+
         services.AddScoped<IRepository<AppModule, Guid>, AppModuleRepository>();
         services.AddScoped<IRepository<Bank, Guid>, BankRepository>();
         services.AddScoped<IRepository<Currency, Guid>, CurrencyRepository>();
@@ -21,6 +22,8 @@ public static class ConfigExtensions
         services.AddScoped<IRepository<Movement, Guid>, MovementRepository>();
         services.AddScoped<IRepository<Debit, Guid>, DebitRepository>();
         services.AddScoped<IRepository<DebitOrigin, Guid>, DebitOriginRepository>();
+        services.AddScoped<IRepository<CreditCardIssuer, Guid>, CreditCardIssuerRepository>();
+        services.AddScoped<IRepository<CreditCardMovement, Guid>, CreditCardMovementRepository>();
 
         services.AddScoped<IEntityService<AppModule, Guid>, EntityService<AppModule, Guid>>();
         services.AddScoped<IEntityService<Bank, Guid>, EntityService<Bank, Guid>>();
@@ -32,5 +35,7 @@ public static class ConfigExtensions
         services.AddScoped<IEntityService<IOLInvestmentAsset, Guid>, EntityService<IOLInvestmentAsset, Guid>>();
         services.AddScoped<IEntityService<IOLInvestmentAssetType, ushort>, EntityService<IOLInvestmentAssetType, ushort>>();
         services.AddScoped<IEntityService<Movement, Guid>, EntityService<Movement, Guid>>();
+        services.AddScoped<IEntityService<CreditCardIssuer, Guid>, EntityService<CreditCardIssuer, Guid>>();
+        services.AddScoped<IEntityService<CreditCardMovement, Guid>, EntityService<CreditCardMovement, Guid>>();
     }
 }

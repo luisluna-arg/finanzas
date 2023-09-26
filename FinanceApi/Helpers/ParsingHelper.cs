@@ -4,6 +4,34 @@ namespace FinanceApi.Helpers;
 
 public static class ParsingHelper
 {
+    public static short? ParseNullShort(object? value)
+    {
+        if (value != null)
+        {
+            var valueStr = value.ToString();
+            if (!string.IsNullOrWhiteSpace(valueStr) && short.TryParse(valueStr, CultureInfo.InvariantCulture, out var result))
+            {
+                return result;
+            }
+        }
+
+        return default;
+    }
+
+    public static ushort? ParseNullUShort(object? value)
+    {
+        if (value != null)
+        {
+            var valueStr = value.ToString();
+            if (!string.IsNullOrWhiteSpace(valueStr) && ushort.TryParse(valueStr, CultureInfo.InvariantCulture, out var result))
+            {
+                return result;
+            }
+        }
+
+        return default;
+    }
+
     public static int? ParseNullInteger(object? value)
     {
         if (value != null)
@@ -45,6 +73,10 @@ public static class ParsingHelper
 
         return default;
     }
+
+    public static ushort ParseUShort(object? value) => ParseNullUShort(value) ?? default;
+
+    public static short ParseShort(object? value) => ParseNullShort(value) ?? default;
 
     public static uint ParseUInteger(object? value) => ParseNullUInteger(value) ?? default;
 
