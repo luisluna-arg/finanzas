@@ -15,12 +15,14 @@ public class FinanceDbContext : DbContext
     public DbSet<Currency> Currency => Set<Currency>();
     public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
     public DbSet<AppModule> AppModule => Set<AppModule>();
-    public DbSet<DebitOrigin> DebitOrigin => Set<DebitOrigin>();
     public DbSet<Debit> Debit => Set<Debit>();
+    public DbSet<DebitOrigin> DebitOrigin => Set<DebitOrigin>();
     public DbSet<Movement> Movement => Set<Movement>();
     public DbSet<IOLInvestment> IOLInvestments => Set<IOLInvestment>();
     public DbSet<IOLInvestmentAsset> IOLInvestmentAssets => Set<IOLInvestmentAsset>();
     public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetTypes => Set<IOLInvestmentAssetType>();
+    public DbSet<CreditCardMovement> CreditCardMovements => Set<CreditCardMovement>();
+    public DbSet<CreditCardIssuer> CreditCardIssuers => Set<CreditCardIssuer>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,6 +34,7 @@ public class FinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AppModuleConfiguration());
         modelBuilder.ApplyConfiguration(new MovementConfiguration());
         modelBuilder.ApplyConfiguration(new DebitConfiguration());
+        modelBuilder.ApplyConfiguration(new CreditCardMovementConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
