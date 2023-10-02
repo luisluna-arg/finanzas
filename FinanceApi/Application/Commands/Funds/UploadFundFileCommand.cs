@@ -51,14 +51,9 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
             .Where(o => o.AppModule.Id == appModule.Id)
             .ToArray();
 
+        var movementComparer = new MovementComparer();
         newRecords = newRecords
-            .Where(o => existingRecords.All(x =>
-                x.AppModuleId != o.AppModuleId ||
-                x.TimeStamp != o.TimeStamp ||
-                x.Amount != o.Amount ||
-                x.Total != o.Total ||
-                x.Concept1 != o.Concept1 ||
-                x.Concept2 != o.Concept2))
+            .Where(o => existingRecords.All(x => movementComparer.Equals(x, o)))
             .ToArray();
 
         await movementRepository.AddRange(newRecords, true);
