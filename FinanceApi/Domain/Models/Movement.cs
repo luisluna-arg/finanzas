@@ -17,6 +17,8 @@ public sealed class Movement : Entity<Guid>, IEquatable<Movement>
 
     public Guid? CurrencyId { get; set; } = null;
 
+    required public DateTime CreatedAt { get; set; }
+
     required public DateTime TimeStamp { get; set; }
 
     required public string Concept1 { get; set; }
@@ -39,6 +41,7 @@ public sealed class Movement : Entity<Guid>, IEquatable<Movement>
         var result =
             AppModuleId == movement2.AppModuleId &&
             TimeStamp == movement2.TimeStamp &&
+            CreatedAt == movement2.CreatedAt &&
             Amount == movement2.Amount &&
             Total == movement2.Total &&
             Concept1 == movement2.Concept1 &&
@@ -49,6 +52,7 @@ public sealed class Movement : Entity<Guid>, IEquatable<Movement>
 
     public override int GetHashCode() => (
         AppModuleId,
+        CreatedAt,
         TimeStamp,
         Amount,
         Total,

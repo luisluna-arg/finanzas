@@ -37,6 +37,7 @@ public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMo
             Concept1 = command.Concept1,
             Concept2 = command.Concept2,
             TimeStamp = command.TimeStamp,
+            CreatedAt = DateTime.UtcNow,
             Total = command.Total,
         };
 

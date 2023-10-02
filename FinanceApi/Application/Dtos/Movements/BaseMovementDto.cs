@@ -8,8 +8,11 @@ public abstract record BaseMovementDto : Dto<Guid>
     protected BaseMovementDto()
         : base()
     {
+        CreatedAt = DateTime.UtcNow;
         TimeStamp = DateTime.UtcNow;
     }
+
+    public DateTime CreatedAt { get; set; }
 
     public DateTime TimeStamp { get; set; }
 
@@ -30,6 +33,7 @@ public abstract record BaseMovementDto : Dto<Guid>
         return new MovementEntity()
         {
             TimeStamp = TimeStamp,
+            CreatedAt = CreatedAt,
             Concept1 = Concept1,
             Concept2 = Concept2,
             Amount = Amount,

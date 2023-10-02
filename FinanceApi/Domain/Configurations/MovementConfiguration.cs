@@ -11,6 +11,10 @@ public class MovementConfiguration : IEntityTypeConfiguration<Movement>
     public void Configure(EntityTypeBuilder<Movement> builder)
     {
         builder
+            .Property(o => o.CreatedAt)
+            .HasConversion(o => o.ToUniversalTime(), o => o);
+
+        builder
             .Property(o => o.TimeStamp)
             .HasConversion(o => o.ToUniversalTime(), o => o);
 

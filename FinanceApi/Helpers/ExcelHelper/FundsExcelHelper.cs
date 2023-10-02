@@ -27,6 +27,7 @@ public class FundsExcelHelper : IFundsExcelHelper<Movement>
             {
                 var result = reader.AsDataSet();
                 var sheet = result.Tables[0];
+                var now = DateTime.UtcNow;
                 for (var r = 3; r < sheet.Rows.Count; r++)
                 {
                     records.Add(new Movement()
@@ -35,6 +36,7 @@ public class FundsExcelHelper : IFundsExcelHelper<Movement>
                         AppModule = appModule,
                         Bank = bank,
                         TimeStamp = DateParser(sheet.Rows[r][0], dateTimeKind),
+                        CreatedAt = now,
                         Concept1 = StringHelper.ValueOrEmpty(sheet.Rows[r][1]),
                         Concept2 = StringHelper.ValueOrEmpty(sheet.Rows[r][2]),
                         Amount = DecimalParser(sheet.Rows[r][3]),

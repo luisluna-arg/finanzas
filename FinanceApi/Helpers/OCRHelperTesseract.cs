@@ -213,6 +213,7 @@ public class OcrHelper
             AppModuleId = appModule.Id,
             AppModule = appModule,
             TimeStamp = date,
+            CreatedAt = DateTime.UtcNow,
             Concept1 = entity,
             Concept2 = string.Empty,
             Amount = amount,
