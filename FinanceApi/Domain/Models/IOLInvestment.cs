@@ -11,7 +11,11 @@ public class IOLInvestment : Entity<Guid>
     }
 
     required public IOLInvestmentAsset Asset { get; set; }
+
+    required public DateTime CreatedAt { get; set; }
+
     required public DateTime TimeStamp { get; set; }
+
     required public uint Alarms { get; set; } = 0;
 
     required public uint Quantity { get; set; } = 0;

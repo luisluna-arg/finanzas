@@ -33,6 +33,8 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
                 if (currentDate.Ticks == DateTime.MinValue.Ticks) currentDate = DateTime.Now;
                 currentDate = DateTimeHelper.FromTimeZoneToUTC(currentDate, -3);
 
+                var now = DateTime.UtcNow;
+
                 for (var r = 2; r < sheet.Rows.Count; r++)
                 {
                     var row = sheet.Rows[r];
@@ -51,6 +53,7 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
                                 Name = IOLInvestmentAssetType.Default
                             }
                         },
+                        CreatedAt = now,
                         TimeStamp = currentDate,
                         Alarms = uIntParser(row[1]),
                         Quantity = uIntParser(row[2]),

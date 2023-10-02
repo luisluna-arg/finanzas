@@ -30,6 +30,7 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
         var newInvestmentAssetIOL = new IOLInvestment()
         {
             Asset = await GetAsset(command.AssetSymbol),
+            CreatedAt = DateTime.UtcNow,
             TimeStamp = DateTime.UtcNow,
             Alarms = command.Alarms,
             Quantity = command.Quantity,
