@@ -11,8 +11,10 @@ const string allowOriginsForCORSPolicy = "_allowOriginsForCORSPolicy";
 
 // Add Context to dependency injection
 builder.Services
-    .AddDbContextPool<FinanceDbContext>(opt =>
-        opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDb")));
+    .AddDbContext<FinanceDbContext>(opt =>
+        opt
+            .UseLazyLoadingProxies(false)
+            .UseNpgsql(builder.Configuration.GetConnectionString("PostgresDb")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllers().AddNewtonsoftJson(o =>
 {

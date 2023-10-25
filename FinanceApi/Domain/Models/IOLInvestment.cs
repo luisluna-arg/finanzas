@@ -10,7 +10,7 @@ public class IOLInvestment : Entity<Guid>
     {
     }
 
-    required public IOLInvestmentAsset Asset { get; set; }
+    required public virtual IOLInvestmentAsset Asset { get; set; }
 
     required public DateTime CreatedAt { get; set; }
 

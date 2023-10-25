@@ -1,5 +1,13 @@
+/*
+!/.github/
+!/FinanceApi/
+!/FinanceApiUnitTests/
+!/FinanceFront/
+
+/sql
 **/bin
 **/obj
 **/.vs
 **/.vscode
 finanzas.sln
+

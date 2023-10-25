@@ -13,9 +13,9 @@ public class CurrencyConversion : Entity<Guid>
 
     public Guid? CurrencyId { get; set; }
 
-    public Movement Movement { get; set; }
+    public virtual Movement Movement { get; set; }
 
-    public Currency? Currency { get; set; }
+    public virtual Currency? Currency { get; set; }
 
     public decimal Amount { get; set; }
 }

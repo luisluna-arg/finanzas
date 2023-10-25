@@ -4,16 +4,16 @@ using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 
-public sealed class Movement : Entity<Guid>, IEquatable<Movement>
+public class Movement : Entity<Guid>
 {
     [ForeignKey("AppModuleId")]
     public Guid AppModuleId { get; set; }
 
-    public AppModule AppModule { get; set; }
+    public virtual AppModule AppModule { get; set; }
 
-    public Bank? Bank { get; set; }
+    public virtual Bank? Bank { get; set; }
 
-    public Currency? Currency { get; set; }
+    public virtual Currency? Currency { get; set; }
 
     public Guid? CurrencyId { get; set; } = null;
 
@@ -28,34 +28,4 @@ public sealed class Movement : Entity<Guid>, IEquatable<Movement>
     required public Money Amount { get; set; }
 
     required public Money? Total { get; set; }
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as Movement);
-    }
-
-    public bool Equals(Movement? movement2)
-    {
-        if (movement2 is null) return false;
-
-        var result =
-            AppModuleId == movement2.AppModuleId &&
-            TimeStamp == movement2.TimeStamp &&
-            CreatedAt == movement2.CreatedAt &&
-            Amount == movement2.Amount &&
-            Total == movement2.Total &&
-            Concept1 == movement2.Concept1 &&
-            Concept2 == movement2.Concept2;
-
-        return result;
-    }
-
-    public override int GetHashCode() => (
-        AppModuleId,
-        CreatedAt,
-        TimeStamp,
-        Amount,
-        Total,
-        Concept1,
-        Concept2).GetHashCode();
 }

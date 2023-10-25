@@ -8,7 +8,7 @@ public class AppModule : Entity<Guid>
 
     required public DateTime CreatedAt { get; set; }
 
-    required public Currency Currency { get; set; }
+    required public virtual Currency Currency { get; set; }
 
-    public ICollection<Movement> Movements { get; set; } = new List<Movement>();
+    public virtual ICollection<Movement> Movements { get; set; } = new List<Movement>();
 }
