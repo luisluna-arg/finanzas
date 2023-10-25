@@ -1,6 +1,7 @@
 using AutoMapper;
 using FinanceApi.Application.Dtos;
 using FinanceApi.Application.Queries.Base;
+using FinanceApi.Commons;
 using FinanceApi.Domain.Models.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,9 @@ public abstract class ApiBaseController<TEntity, TId, TDto> : ControllerBase
     protected async Task<IActionResult> Handle(IRequest<TEntity> command)
         => Ok(await MapAndSend(command));
 
+    protected async Task<IActionResult> Handle(IRequest<PaginatedResult<TEntity>> command)
+        => Ok(await MapAndSend(command));
+
     protected async Task<IActionResult> Handle(GetSingleByIdQuery<TEntity, TId> query)
         => Ok(await MapAndSend(query));
 
@@ -44,6 +48,9 @@ public abstract class ApiBaseController<TEntity, TId, TDto> : ControllerBase
 
     private async Task<TDto> MapAndSend(IRequest<TEntity> command)
         => mapper.Map<TDto>(await mediator.Send(command));
+
+    private async Task<PaginatedResult<TEntity>> MapAndSend(IRequest<PaginatedResult<TEntity>> command)
+        => await mediator.Send(command);
 
     private async Task<TDto[]> MapAndSend(IRequest<ICollection<TEntity>> command)
         => (await mediator.Send(command)).Select(entity => mapper.Map<TDto>(entity)).ToArray();

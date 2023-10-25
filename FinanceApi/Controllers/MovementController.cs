@@ -20,6 +20,10 @@ public class MovementController : ApiBaseController<Movement?, Guid, MovementDto
     public async Task<IActionResult> Get([FromQuery] GetMovementsQuery request)
         => await Handle(request);
 
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedMovementsQuery request)
+        => await Handle(request);
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromQuery] GetSingleMovementQuery request)
         => await Handle(request);
