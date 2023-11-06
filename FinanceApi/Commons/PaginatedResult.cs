@@ -10,12 +10,14 @@ public class PaginatedResult<T> : IEntity
         PageSize = pageSize;
         TotalItems = totalItems;
         Items = items;
+        HasMore = (Page * PageSize) < TotalItems;
     }
 
     public int Page { get; }
     public int PageSize { get; }
     public int TotalItems { get; }
     public int TotalPages => (int)Math.Ceiling((double)TotalItems / PageSize);
+    public bool HasMore { get; }
     public IEnumerable<T> Items { get; }
 
     public void Update(IEntity newData)
