@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
+import Bank from "../Bank";
 import CreditCardIssuer from "../CreditCardIssuer";
 
 const componentMap = {
+  Bank: <Bank />,
   CreditCardIssuer: <CreditCardIssuer />,
 };
 
 const labelMap = {
+  Bank: "Bancos",
   CreditCardIssuer: "Emisores de Tarjetas de Crédito",
 };
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("CreditCardIssuer");
+  const [activeTab, setActiveTab] = useState("Bank");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -22,7 +25,7 @@ const AdminDashboard = () => {
       <Row className="h-100 me-0">
         <Col className="me-0 col-md-2 pe-0 text-bg-dark text-light">
           <div className="d-flex flex-column flex-shrink-0 p-3">
-            <span className="fs-4">Modulos</span>
+            <span className="fs-4">Módulos</span>
             <hr />
             <Nav
               variant="pills"
@@ -31,9 +34,12 @@ const AdminDashboard = () => {
             >
               {Object.keys(componentMap).map((tab) => (
                 <Nav.Item key={tab}>
-                  <Nav.Link eventKey={tab} onClick={() => handleTabClick(tab)}>
+                  <Nav.Link
+                    className="text-light"
+                    eventKey={tab}
+                    onClick={() => handleTabClick(tab)}
+                  >
                     {`${labelMap[tab]}`}{" "}
-                    {/* Assumes your components are named like 'Component1', 'Component2', etc. */}
                   </Nav.Link>
                 </Nav.Item>
               ))}

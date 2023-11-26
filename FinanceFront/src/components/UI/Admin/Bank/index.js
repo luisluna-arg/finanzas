@@ -57,7 +57,7 @@ const Bank = () => {
 
   return (
     <div className="p-3 d-flex flex-column">
-      <h1>Emisores de tarjetas de credito</h1>
+      <h1>Bancos</h1>
       <div className="flex-row">
         <Button
           text={"Agregar"}
@@ -68,7 +68,7 @@ const Bank = () => {
       </div>
       <FormModal
         show={showModal}
-        title="Agregar Emisor de Tarjeta de Crédito"
+        title="Agregar Banco"
         handleAccept={handleFormModalAccept}
         handleCancel={handleFormModalCancel}
         editorSettings={CreateBanksettings}
@@ -76,17 +76,15 @@ const Bank = () => {
       <Table className="table">
         <thead>
           <tr>
-            <th scope="col">Banco</th>
             <th>Nombre</th>
             <th>Desactivado</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((issuer) => (
-            <tr key={issuer.id}>
-              <td>{issuer.Bank}</td>
-              <td>{issuer.Name}</td>
-              <td>{issuer.Deactivated}</td>
+          {data.map((bank) => (
+            <tr key={bank.id}>
+              <td>{bank.Name}</td>
+              <td>{bank.Deactivated}</td>
             </tr>
           ))}
         </tbody>
