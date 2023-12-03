@@ -1,95 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
+import React from "react";
 import urls from "../../../../routing/urls";
-import Button from "../../../utils/Button";
-import CustomToast from "../../../utils/CustomToast";
-import FormModal from "../../../utils/FormModal";
+import AdminModule from "../Utils/AdminModule";
+import FormInput from "../Utils/Helpers/FormInput";
 
-const fetchBanks = async () => {
-  let url = `${urls.Banks.get}`;
-  const response = await fetch(url);
-  return await response.json();
-};
-
-const CreateBanksettings = [
-  {
-    id: "name",
-    type: "TextInput",
-    label: "Nombre",
-    placeholder: "Ingrese un nombre",
-  },
-  //   { id: "bank", type: "DropdownInput", label: "Banco", placeholder: "Seleccione un banco" },
-  { id: "deactivated", type: "BooleanInput", label: "Desactivado" },
+const FormInputSettings = [
+  new FormInput("name", "TextInput", "Nombre", "Ingrese un nombre"),
+  new FormInput("deactivated", "BooleanInput", "Desactivado"),
 ];
 
+const TableSettings = {
+  columns: [
+    { title: "Nombre", name: "name" },
+    { title: "Desactivado", name: "deactivated" },
+  ],
+};
+
 const Bank = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-
-  const handleFormModalShow = () => setShowModal(true);
-  const handleFormModalCancel = () => setShowModal(false);
-  const handleFormModalAccept = () => {
-    setShowModal(false);
-  };
-
-  useEffect(() => {
-    setData([]);
-    const fetchData = async () => {
-      try {
-        setData(await fetchBanks());
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Call the fetchData function when the component mounts
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return (
-      <CustomToast text={"Cargando..."} position="top-center"></CustomToast>
-    );
-  }
-
   return (
-    <div className="p-3 d-flex flex-column">
-      <h1>Bancos</h1>
-      <div className="flex-row">
-        <Button
-          text={"Agregar"}
-          className={"me-2"}
-          onClickAction={handleFormModalShow}
-        />
-        <Button text={"Eliminar"} variant={"danger"} disabled={true} />
-      </div>
-      <FormModal
-        show={showModal}
-        title="Agregar Banco"
-        handleAccept={handleFormModalAccept}
-        handleCancel={handleFormModalCancel}
-        editorSettings={CreateBanksettings}
-      />
-      <Table className="table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Desactivado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((bank) => (
-            <tr key={bank.id}>
-              <td>{bank.Name}</td>
-              <td>{bank.Deactivated}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
+    <AdminModule
+      moduleName={"Bank"}
+      title={"Bancos"}
+      formInputs={FormInputSettings}
+      tableSettings={TableSettings}
+      endpoint={urls.Banks.endpoint}
+    />
   );
 };
 

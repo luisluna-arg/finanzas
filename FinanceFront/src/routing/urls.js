@@ -6,7 +6,7 @@ const urls = {
     get: "https://localhost:7005/api/credit-card-issuers/",
   },
   Banks: {
-    get: "https://localhost:7005/api/banks/",
+    endpoint: "https://localhost:7005/api/banks/",
   },
 };
 
