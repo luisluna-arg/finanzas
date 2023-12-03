@@ -1,14 +1,20 @@
 import React from "react";
-// import Toast from "react-bootstrap/Toast";
-// import ToastContainer from 'react-bootstrap/ToastContainer';
-
 import { Toast, ToastContainer } from "react-bootstrap";
+
+const floatStyles = {
+  position: "absolute",
+  top: "10px",
+  right: "10px",
+  zIndex: 1,
+};
 
 function CustomToast({
   brand,
   timestamp,
   text,
   variant,
+  closeButton,
+  float,
   position = "bottom-center",
 }) {
   return (
@@ -18,11 +24,15 @@ function CustomToast({
       className="position-relative"
       style={{ minHeight: "30px" }}
     >
-      <ToastContainer className="p-3" position={position} style={{ zIndex: 1 }}>
-        <Toast bg={"success"}>
+      <ToastContainer
+        className="p-3"
+        position={position}
+        style={float ? floatStyles : { zIndex: 1 }}
+      >
+        <Toast bg={variant ?? "success"}>
           {brand ||
             (timestamp && (
-              <Toast.Header>
+              <Toast.Header closeButton={closeButton}>
                 <img
                   src="holder.js/20x20?text=%20"
                   className="rounded me-2"
@@ -32,7 +42,17 @@ function CustomToast({
                 <small>{timestamp}</small>
               </Toast.Header>
             ))}
-          <Toast.Body className={"text-white"}>{text}</Toast.Body>
+          <div className={"d-flex flex-row"}>
+            <Toast.Body className={"text-white"}>{text}</Toast.Body>
+            {!timestamp && closeButton && (
+              <button
+                type="button"
+                className="btn-close btn-close-white me-2 m-auto"
+                data-bs-dismiss="toast"
+                aria-label="Close"
+              ></button>
+            )}
+          </div>
         </Toast>
       </ToastContainer>
     </div>

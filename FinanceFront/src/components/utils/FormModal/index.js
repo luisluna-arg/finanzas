@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, Modal } from "react-bootstrap";
 import Button from "../Button";
+import CustomToast from "../CustomToast";
 import Input from "../Input";
 
 const DEFAULTS = {
@@ -54,6 +55,7 @@ const FormModal = (props) => {
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {props.error && <CustomToast variant="danger" text={props.error} />}
         <Form
           id={formId}
           onSubmit={(event) => {
