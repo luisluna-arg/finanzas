@@ -48,7 +48,11 @@ const DecimalInputControl = (props) => {
     <div className="mb-2 text-light">
       <input
         id={props.settings.id ?? ""}
-        className="mb-2 form-control"
+        className={[
+          "mb-2",
+          "form-control",
+          props.settings.visible ? "visible" : "invisible",
+        ]}
         type="number"
         step="0.01"
       />
@@ -61,7 +65,11 @@ const BooleanInputControl = (props) => {
     <div className="mb-2 text-light">
       <input
         id={props.settings.id ?? ""}
-        className="form-check-input mt-0"
+        className={[
+          "form-check-input",
+          "mt-0",
+          props.settings.visible ? "visible" : "invisible",
+        ]}
         type="checkbox"
         value=""
       />
@@ -80,7 +88,10 @@ const InputControl = (props) => {
     default: {
       return (
         <Form.Control
-          className={"mb-2"}
+          className={[
+            "mb-2 ",
+            props.settings.visible ? "visible" : "invisible",
+          ]}
           id={props.settings.id}
           type={props.settings.type}
           placeholder={props.settings.placeholder}
@@ -103,13 +114,13 @@ const CRUDPopUpInput = (props) => {
   };
 
   return (
-    <div>
+    <div className={[!props.settings.visible ? "d-none" : ""]}>
       <Form.Group
         id={settings.id + "-group"}
         label-for={settings.id}
         description={settings.description}
       >
-        <Form.Label>{settings.label}</Form.Label>
+        {props.settings.visible && <Form.Label>{settings.label}</Form.Label>}
 
         <InputControl
           value={inputValue}

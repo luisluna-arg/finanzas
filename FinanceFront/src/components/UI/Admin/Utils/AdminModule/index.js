@@ -14,24 +14,60 @@ const AdminModule = ({
 }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedItems, setSelectedItems] = useState(false);
+  const [selectedInputs, setSelectedInputs] = useState([]);
+  const [selectedItemCount, setSelectedItemCount] = useState(0);
   const [editEnabled, setEditEnabled] = useState(false);
   const [deleteEnabled, setDeleteEnabled] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [error, setError] = useState(null);
-  const [createStatus, setCreateStatus] = useState(null);
+  const [requestStatus, setRequestStatus] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  tableSettings.idColumn = tableSettings.idColumn ?? "id";
 
   const elementIds = {
     form: `${moduleName}-form`,
     table: `${moduleName}-table`,
   };
 
-  const handleRequest = async (method, setCreateStatus, inputs) => {
-    try {
-      let record = {};
-      Array.from(inputs).map((i) => (record[i.id] = i.value));
+  const clearForm = () => {
+    let inputs = getFormInputs();
+    setError(null);
+    for (let i = 0; i < inputs.length; i++) {
+      inputs[i].value = "";
+    }
+  };
 
+  const validateForm = (inputs) => {
+    setError(null);
+    inputs = inputs ?? getFormInputs();
+    for (let i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      if (
+        !input.classList.contains("invisible") &&
+        input.type !== "checkbox" &&
+        !input.value
+      ) {
+        setError("Algunos campos no han sido completados");
+        break;
+      }
+    }
+  };
+
+  const getFormInputs = () => {
+    let form = document.getElementById(elementIds.form);
+    return Array.from(form.getElementsByTagName("input"));
+  };
+
+  const getFormValues = () =>
+    getFormInputs().reduce((o, i) => {
+      o[i.id] = i.value;
+      return o;
+    }, {});
+
+  const handleRequest = async (method, setRequestStatus, record) => {
+    try {
       const response = await fetch(endpoint, {
         method: method,
         headers: {
@@ -41,26 +77,26 @@ const AdminModule = ({
       });
 
       if (response.ok) {
-        setCreateStatus(null);
+        setRequestStatus(null);
       } else {
-        setCreateStatus("Ocurrió un error en la operación");
+        setRequestStatus("Ocurrió un error en la operación");
       }
     } catch (error) {
       console.error("Error:", error);
-      setCreateStatus("Ocurrió un error en la operación");
+      setRequestStatus("Ocurrió un error en la operación");
     }
   };
 
-  const handleCreate = async (setCreateStatus, inputs) => {
-    await handleRequest("POST", setCreateStatus, inputs);
+  const handleCreate = async (setRequestStatus, inputs) => {
+    await handleRequest("POST", setRequestStatus, inputs);
   };
 
-  const handleUpdate = async (setCreateStatus, inputs) => {
-    await handleRequest("PUT", setCreateStatus, inputs);
+  const handleUpdate = async (setRequestStatus, inputs) => {
+    await handleRequest("PUT", setRequestStatus, inputs);
   };
 
-  const handleDelete = async (setCreateStatus, ids) => {
-    await handleRequest("DELETE", setCreateStatus, { ids: ids });
+  const handleDelete = async (setRequestStatus, ids) => {
+    await handleRequest("DELETE", setRequestStatus, { ids: ids });
   };
 
   const fetchData = async () => {
@@ -77,41 +113,50 @@ const AdminModule = ({
 
   const onItemSelect = () => {
     let table = document.getElementById(elementIds.table);
-    let inputs = table.querySelectorAll("input:checked");
+    let inputs = Array.from(table.querySelectorAll("input:checked"));
     let itemCount = inputs.length;
-    setSelectedItems(itemCount);
+    setSelectedInputs(inputs);
+    setSelectedItemCount(itemCount);
     setDeleteEnabled(itemCount > 0);
     setEditEnabled(itemCount === 1);
   };
 
-  const clearForm = () => {
-    let form = document.getElementById(elementIds.form);
-    let inputs = form.getElementsByTagName("input");
+  const handleEditModalShow = () => {
     setError(null);
-    for (let i = 0; i < inputs.length; i++) {
-      inputs[i].value = "";
+
+    if (selectedItemCount === 0) {
+      setShowEditModal(true);
+      setSelectedItem(null);
+    } else {
+      let selectedId = selectedInputs[0].id;
+      let selectedItem = data.find(
+        (o) => o[tableSettings.idColumn] === selectedId
+      );
+
+      if (selectedItem) {
+        setShowEditModal(true);
+        setSelectedItem(selectedItem);
+      } else {
+        setError("No se ha encontrado el registro a editar");
+      }
     }
   };
 
-  const handleEditModalShow = () => setShowEditModal(true);
-  const handleEditModalCancel = () => setShowEditModal(false);
+  const handleEditModalCancel = () => {
+    setShowEditModal(false);
+    setSelectedItem(null);
+  };
+
   const handleEditModalAccept = async () => {
-    let form = document.getElementById(elementIds.form);
-    let inputs = form.getElementsByTagName("input");
-    setError(null);
-    for (let i = 0; i < inputs.length; i++) {
-      if (inputs[i].type !== "checkbox" && !inputs[i].value) {
-        setError("Algunos campos no han sido completados");
-        break;
-      }
-    }
+    validateForm();
 
     let action = editEnabled ? handleUpdate : handleCreate;
 
-    await action(setCreateStatus, inputs);
+    await action(setRequestStatus, getFormValues());
 
-    if (!createStatus) {
+    if (!requestStatus) {
       setShowEditModal(false);
+      setSelectedItem(null);
       clearForm();
       fetchData();
     }
@@ -119,8 +164,6 @@ const AdminModule = ({
 
   const handleDeleteModalShow = () => {
     setShowDeleteModal(true);
-    console.log("ADADSASD");
-    console.log(`${showDeleteModal}`);
   };
 
   const handleDeleteModalCancel = () => setShowDeleteModal(false);
@@ -134,16 +177,13 @@ const AdminModule = ({
 
     let inputIds = inputs.map((i) => i.id);
 
-    // await handleDelete(
-    //   setCreateStatus,
-    //   inputIds
-    // );
+    await handleDelete(setRequestStatus, inputIds);
 
-    // if (!createStatus) {
-    //   setShowDeleteModal(false);
-    //   clearForm();
-    //   fetchData();
-    // }
+    if (!requestStatus) {
+      setShowDeleteModal(false);
+      clearForm();
+      fetchData();
+    }
 
     setShowDeleteModal(false);
   };
@@ -162,7 +202,7 @@ const AdminModule = ({
   return (
     <div className="p-3 d-flex flex-column">
       <h1>{title}</h1>
-      {createStatus && <CustomToast variant="danger" text={createStatus} />}
+      {requestStatus && <CustomToast variant="danger" text={requestStatus} />}
       <div className="flex-row">
         <Button
           text={"Agregar"}
@@ -191,6 +231,7 @@ const AdminModule = ({
         handleAccept={handleEditModalAccept}
         handleCancel={handleEditModalCancel}
         editorSettings={formInputs}
+        form={selectedItem ?? {}}
       />
       <ConfirmationModal
         text="¿Confirma la eliminacion del registro?"
