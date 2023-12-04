@@ -4,6 +4,7 @@ import AdminModule from "../Utils/AdminModule";
 import FormInput from "../Utils/Helpers/FormInput";
 
 const FormInputSettings = [
+  new FormInput("id", "TextInput", "Id", null, false),
   new FormInput("name", "TextInput", "Nombre", "Ingrese un nombre"),
   new FormInput("deactivated", "BooleanInput", "Desactivado"),
 ];
