@@ -66,24 +66,37 @@ const AdminModule = ({
       return o;
     }, {});
 
+  const objectToQueryString = (obj) => {
+    return Object.keys(obj)
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`)
+      .join('&');
+  }
+
   const handleRequest = async (method, setRequestStatus, record) => {
     try {
-      var headers = {
-        "Content-Type": "application/json",
-      };
+      var requestEndpoint = "";
+      var requestBody = {};
+      var headers = {};
 
       switch (method) {
         case "DELETE":
-          {
-            headers["accept"] = "application/octet-stream";
-            break;
-          }
+          requestEndpoint = `${endpoint}?${objectToQueryString(record)}`;
+          requestBody = {};
+          headers = {};
+          break;
+        default:
+          requestEndpoint = endpoint;
+          requestBody = JSON.stringify(record);
+          headers = {
+            "Content-Type": "application/json",
+          };
+          break;
       }
 
-      const response = await fetch(endpoint, {
+      const response = await fetch(requestEndpoint, {
         method: method,
         headers: headers,
-        body: JSON.stringify(record),
+        body: requestBody
       });
 
       if (response.ok) {
@@ -191,6 +204,7 @@ const AdminModule = ({
 
     if (!requestStatus) {
       setShowDeleteModal(false);
+      clearForm();
       fetchData();
     }
 
