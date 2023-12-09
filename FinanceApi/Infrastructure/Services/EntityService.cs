@@ -26,4 +26,20 @@ public class EntityService<TEntity, TId>
 
         return entity;
     }
+
+    public async Task Delete(TId id)
+    {
+        await repository.Delete(id);
+        await repository.Persist();
+    }
+
+    public async Task Delete(ICollection<TId> ids)
+    {
+        foreach (TId id in ids)
+        {
+            await repository.Delete(id);
+        }
+
+        await repository.Persist();
+    }
 }

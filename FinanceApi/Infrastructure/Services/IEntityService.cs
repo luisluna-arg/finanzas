@@ -6,4 +6,8 @@ public interface IEntityService<TEntity, TId>
     where TEntity : Entity<TId>
 {
     Task<TEntity?> SetDeactivated(TId id, bool value);
+
+    Task Delete(TId id);
+
+    Task Delete(ICollection<TId> ids);
 }

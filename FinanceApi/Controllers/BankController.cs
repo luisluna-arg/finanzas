@@ -32,11 +32,7 @@ public class BankController : ApiBaseController<Bank?, Guid, BankDto>
     public async Task<IActionResult> Update(UpdateBankCommand command)
         => await Handle(command);
 
-    [HttpPatch("activate/{id}")]
-    public async Task<IActionResult> Activate(Guid id)
-        => await Handle(new ActivateBankCommand { Id = id });
-
-    [HttpPatch("deactivate/{id}")]
-    public async Task<IActionResult> Deactivate(Guid id)
-        => await Handle404(new DeactivateBankCommand { Id = id });
+    [HttpDelete]
+    public async Task<IActionResult> Delete(DeleteBankCommand request)
+        => await Handle(request);
 }
