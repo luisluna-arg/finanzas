@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using AutoMapper;
 using FinanceApi.Application.Commands.Movements;
 using FinanceApi.Application.Dtos.Movements;
@@ -47,4 +48,12 @@ public class MovementController : ApiBaseController<Movement?, Guid, MovementDto
     [HttpPatch("deactivate/{id}")]
     public async Task<IActionResult> Deactivate(Guid id)
         => await Handle404(new DeactivateMovementCommand { Id = id });
+
+    [HttpPost]
+    [Route("upload")]
+    public async Task<IActionResult> Upload(IFormFile file, Guid appModuleId, Guid bankId, [DefaultValue("Local")] string dateKind)
+    {
+        await Handle(new UploadMovementsFileCommand(file, appModuleId, bankId, EnumHelper.Parse<DateTimeKind>(dateKind)));
+        return Ok();
+    }
 }

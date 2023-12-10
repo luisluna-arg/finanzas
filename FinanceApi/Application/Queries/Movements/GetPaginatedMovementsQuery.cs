@@ -36,9 +36,14 @@ public class GetPaginatedMovementsQueryHandler : IRequestHandler<GetPaginatedMov
             query = query.Where(o => o.TimeStamp <= request.To.Value);
         }
 
-        if (!string.IsNullOrWhiteSpace(request.AppModuleId))
+        if (request.AppModuleId.HasValue)
         {
-            query = query.Where(o => o.AppModuleId == new Guid(request.AppModuleId));
+            query = query.Where(o => o.AppModuleId == request.AppModuleId.Value);
+        }
+
+        if (request.BankId.HasValue)
+        {
+            query = query.Where(o => o.BankId == request.BankId.Value);
         }
 
         // Pagination
@@ -62,7 +67,9 @@ public class GetPaginatedMovementsQuery : IRequest<PaginatedResult<Movement?>>
 {
     public bool IncludeDeactivated { get; set; }
 
-    public string? AppModuleId { get; private set; }
+    public Guid? AppModuleId { get; private set; }
+
+    public Guid? BankId { get; private set; }
 
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
@@ -75,5 +82,6 @@ public class GetPaginatedMovementsQuery : IRequest<PaginatedResult<Movement?>>
     public DateTime? To { get; set; }
 
     public int Page { get; set; } // Current page number
+
     public int PageSize { get; set; } // Number of items per page
 }

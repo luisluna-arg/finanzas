@@ -41,9 +41,14 @@ public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery,
             query = query.FilterBy("TimeStamp", Infrastructure.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
-        if (!string.IsNullOrWhiteSpace(request.AppModuleId))
+        if (request.AppModuleId.HasValue)
         {
-            query = query.Where(o => o.AppModuleId == new Guid(request.AppModuleId));
+            query = query.Where(o => o.AppModuleId == request.AppModuleId.Value);
+        }
+
+        if (request.BankId.HasValue)
+        {
+            query = query.Where(o => o.BankId == request.BankId.Value);
         }
 
         return await query.ToArrayAsync();
@@ -52,7 +57,9 @@ public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery,
 
 public class GetMovementsQuery : GetAllQuery<Movement?>
 {
-    public string? AppModuleId { get; private set; }
+    public Guid? AppModuleId { get; private set; }
+    
+    public Guid? BankId { get; private set; }
 
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.

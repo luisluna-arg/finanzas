@@ -9,6 +9,9 @@ public class Movement : Entity<Guid>
     [ForeignKey("AppModuleId")]
     public Guid AppModuleId { get; set; }
 
+    [ForeignKey("BankId")]
+    public Guid BankId { get; set; }
+
     public virtual AppModule AppModule { get; set; }
 
     public virtual Bank? Bank { get; set; }
