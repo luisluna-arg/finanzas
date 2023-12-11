@@ -57,7 +57,10 @@ public class FundsExcelHelper : IFundsExcelHelper<Movement>
             var dateString = dateObject.ToString();
             if (!string.IsNullOrWhiteSpace(dateString))
             {
-                var currentDate = DateTimeHelper.ParseDateTime(dateString, "dd/MM/yyyy", null, dateTimeKind);
+                var currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy", null, dateTimeKind);
+                if (currentDate.ToShortDateString().Equals(DateTime.MinValue.ToShortDateString()))
+                    currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy HH:mm:ss", null, dateTimeKind);
+
                 if (currentDate.ToShortDateString().Equals(DateTime.MinValue.ToShortDateString())) currentDate = DateTime.Now;
                 return DateTimeHelper.FromTimeZoneToUTC(currentDate, -3);
             }
