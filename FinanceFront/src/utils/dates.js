@@ -3,7 +3,7 @@ import "moment-timezone";
 
 const Format = {
   Date: "DD/MM/yyyy",
-  DateTime: "DD/MM/yyyy, HH:mm",
+  DateTime: "DD/MM/yyyy HH:mm",
 };
 
 const fromInputToRequest = (value) =>

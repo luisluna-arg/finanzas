@@ -1,76 +1,110 @@
 // Movements.js
-import React, { useState } from "react";
-import { Table } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import urls from "../../../../routing/urls";
-import usePaginatedQuery from "../../../../stores/PaginatedQuery";
-import dateFormat from "../../../../utils/dates";
-import CustomToast from "../../../utils/CustomToast";
+import Uploader from "../../../utils/Uploader";
+import Picker from "../../../utils/Picker";
+import PaginatedTable from "../../../utils/PaginatedTable";
 
-const fetchMovements = async (page, pageSize) => {
-  let url = `${urls.movements.paginated}?page=${page}&pageSize=${pageSize}`;
-  const response = await fetch(url);
-  return await response.json();
-};
+function List() {
+  const [selectedBankId, setSelectedBankId] = useState("");
+  const [selectedAppModuleId, setSelectedAppModuleId] = useState("");
+  const [fundsUploadEndpoint, setFundsUploadEndpoint] = useState(`${urls.funds.upload}`);
+  const [movementsEndpoint, setMovementsEndpoint] = useState(``);
 
-function MovementsList() {
-  const [pageSize, setPageSize] = useState(10); // State for the number of items per page
-  const [currentPage, setCurrentPage] = useState(0); // State for the current page
+  const refreshEndpoints = () => {
+    setFundsUploadEndpoint(`${urls.movements.upload}?DateKind=Local&AppModuleId=${selectedAppModuleId}&BankId=${selectedBankId}`);
+    setMovementsEndpoint(`${urls.movements.paginated}?AppModuleId=${selectedAppModuleId}&BankId=${selectedBankId}`);
+  }
 
-  // Use the usePaginatedQuery hook to fetch paginated data
-  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isFetching } =
-    usePaginatedQuery(["movements", currentPage, pageSize], fetchMovements);
+  const onBankPickerChange = (picker) => {
+    setSelectedBankId(picker.value);
+  };
 
-  if (!data)
-    return (
-      <CustomToast text={"Cargando..."} position="top-center"></CustomToast>
-    );
+  const onBankPickerFetch = (data) => {
+    setSelectedBankId(data[0].id);
+  };
+
+  const onAppModulePickerChange = (picker) => {
+    setSelectedAppModuleId(picker.value);
+  };
+
+  const onAppModulePickerFetch = (data) => {
+    setSelectedAppModuleId(data[0].id);
+  };
+
+  const onFetchFundsTable = (data) => {
+    console.log("data", data);
+  }
+
+  useEffect(() => {
+    refreshEndpoints();
+  }, [selectedBankId, selectedAppModuleId]);
 
   return (
-    <div className="container pt-3 pb-3">
-      <Table className="table">
-        <thead>
-          <tr>
-            <th scope="col">Fecha</th>
-            <th>Fecha</th>
-            <th>Concepto 1</th>
-            <th>Concepto 2</th>
-            <th>Monto</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.pages.map((page) =>
-            page.items.map((movement) => (
-              <tr key={movement.id}>
-                <td>{dateFormat.toDisplay(movement.timeStamp)}</td>
-                <td>{movement.timeStamp}</td>
-                <td>{movement.concept1}</td>
-                <td>{movement.concept2}</td>
-                <td>{movement.amount.value}</td>
-                <td>{movement.total.value}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
-
-      {isFetching && !isFetchingNextPage && (
-        <CustomToast text={"Cargando..."}></CustomToast>
-      )}
-      {isFetchingNextPage && (
-        <CustomToast text={"Cargando más..."}></CustomToast>
-      )}
-      {hasNextPage && (
-        <button
-          type="button"
-          className="btn btn-outline-success"
-          onClick={() => fetchNextPage()}
-        >
-          Load More
-        </button>
-      )}
-    </div>
+    <>
+      <div className="container pt-3 pb-3">
+        <div className="row">
+          <div className="col">
+            <Picker
+              id={"bank-picker"}
+              url={urls.banks.endpoint}
+              mapper={{ id: "id", label: "name" }}
+              onChange={onBankPickerChange}
+              onFetch={onBankPickerFetch} />
+          </div>
+          <div className="col-3">
+            <Picker
+              id={"module-picker"}
+              url={urls.appModules.endpoint}
+              mapper={{ id: "id", label: "name" }}
+              onChange={onAppModulePickerChange}
+              onFetch={onAppModulePickerFetch}
+            />
+          </div>
+        </div>
+        <hr className="py-1" />
+        <Uploader url={fundsUploadEndpoint} extensions={[".xls", ".xlsx"]} />
+        <hr className="py-1" />
+        <PaginatedTable
+          name={"funds-table"}
+          url={movementsEndpoint}
+          onFetch={onFetchFundsTable}
+          columns={[
+            {
+              id: "timeStamp",
+              label: "Fecha",
+              type: "datetime"
+            },
+            {
+              id: "concept1",
+              label: "Concepto 1",
+            },
+            {
+              id: "concept2",
+              label: "Concepto 2",
+            },
+            {
+              id: "amount",
+              label: "Monto",
+              headerClass: "text-end",
+              class: "text-end",
+              mapper: (field) => parseFloat(field.value.toFixed(2)),
+              conditionalClass: {
+                class: "text-success fw-bold",
+                eval: (field) => field.value > 0
+              }
+            },
+            {
+              id: "total",
+              label: "Total",
+              headerClass: "text-end",
+              class: "text-end",
+              mapper: (field) => parseFloat(field.value.toFixed(2)),
+            }
+          ]} />
+      </div>
+    </>
   );
 }
 
-export default MovementsList;
+export default List;
