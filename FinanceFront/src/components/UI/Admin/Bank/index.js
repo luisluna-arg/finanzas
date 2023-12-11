@@ -23,7 +23,7 @@ const Bank = () => {
       title={"Bancos"}
       formInputs={FormInputSettings}
       tableSettings={TableSettings}
-      endpoint={urls.Banks.endpoint}
+      endpoint={urls.banks.endpoint}
     />
   );
 };

@@ -1,13 +1,26 @@
+const baseUrl = "https://localhost:7005/";
+
 const urls = {
-  movements: {
-    paginated: "https://localhost:7005/api/movements/paginated",
+  appModules: {
+    endpoint: `${baseUrl}api/app-modules/`,
+  },
+  banks: {
+    endpoint: `${baseUrl}api/banks/`,
+  },
+  currencies: {
+    endpoint: `${baseUrl}api/currencies/`,
   },
   creditCardIssuers: {
-    get: "https://localhost:7005/api/credit-card-issuers/",
+    get: `${baseUrl}api/credit-card-issuers/`,
   },
-  Banks: {
-    endpoint: "https://localhost:7005/api/banks/",
+  funds: {
+    endpoint: `${baseUrl}api/funds/`,
+    upload: `${baseUrl}api/funds/upload`,
   },
+  movements: {
+    paginated: `${baseUrl}api/movements/paginated`,
+    upload: `${baseUrl}api/movements/upload`,
+  }
 };
 
 export default urls;
