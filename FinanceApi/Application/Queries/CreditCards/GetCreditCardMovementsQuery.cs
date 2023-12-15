@@ -15,7 +15,7 @@ public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCredi
 
     public override async Task<ICollection<CreditCardMovement>> Handle(GetCreditCardMovementsQuery request, CancellationToken cancellationToken)
     {
-        var query = DbContext.CreditCardMovements.Include(o => o.CreditCard).ThenInclude(o => o.Bank).AsQueryable();
+        var query = DbContext.CreditCardMovement.Include(o => o.CreditCard).ThenInclude(o => o.Bank).AsQueryable();
 
         if (request.IssuerId.HasValue)
         {

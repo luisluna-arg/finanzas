@@ -18,10 +18,10 @@ public class FinanceDbContext : DbContext
     public DbSet<Debit> Debit => Set<Debit>();
     public DbSet<DebitOrigin> DebitOrigin => Set<DebitOrigin>();
     public DbSet<Movement> Movement => Set<Movement>();
-    public DbSet<IOLInvestment> IOLInvestments => Set<IOLInvestment>();
-    public DbSet<IOLInvestmentAsset> IOLInvestmentAssets => Set<IOLInvestmentAsset>();
-    public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetTypes => Set<IOLInvestmentAssetType>();
-    public DbSet<CreditCardMovement> CreditCardMovements => Set<CreditCardMovement>();
+    public DbSet<IOLInvestment> IOLInvestment => Set<IOLInvestment>();
+    public DbSet<IOLInvestmentAsset> IOLInvestmentAsset => Set<IOLInvestmentAsset>();
+    public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetType => Set<IOLInvestmentAssetType>();
+    public DbSet<CreditCardMovement> CreditCardMovement => Set<CreditCardMovement>();
     public DbSet<CreditCard> CreditCard => Set<CreditCard>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -15,7 +15,7 @@ public class GetAllIOLInvestmentAssetTypesQueryHandler : BaseCollectionHandler<G
 
     public override async Task<ICollection<IOLInvestmentAssetType?>> Handle(GetAllIOLInvestmentAssetTypesQuery request, CancellationToken cancellationToken)
     {
-        var query = DbContext.IOLInvestmentAssetTypes.AsQueryable();
+        var query = DbContext.IOLInvestmentAssetType.AsQueryable();
 
         if (!request.IncludeDeactivated)
         {

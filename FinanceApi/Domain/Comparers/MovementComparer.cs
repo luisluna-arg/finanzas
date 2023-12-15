@@ -17,7 +17,8 @@ public class MovementComparer : IEqualityComparer<Movement>
 
     public int GetHashCode(Movement obj)
     {
-        unchecked // Overflow is fine, just wrap
+        // Overflow is fine, just wrap
+        unchecked
         {
             int hash = 17;
             int mixerConst = 23;

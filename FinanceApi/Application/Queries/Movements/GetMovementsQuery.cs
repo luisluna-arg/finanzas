@@ -58,7 +58,7 @@ public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery,
 public class GetMovementsQuery : GetAllQuery<Movement?>
 {
     public Guid? AppModuleId { get; private set; }
-    
+
     public Guid? BankId { get; private set; }
 
     /// <summary>

@@ -93,7 +93,7 @@ public class DatabaseSeeder : IHostedService
 
     private async Task SeedInvestmentAssetIOLTypes(FinanceDbContext dbContext)
     {
-        var investmentAssetTypes = await dbContext.IOLInvestmentAssetTypes.ToArrayAsync();
+        var investmentAssetTypes = await dbContext.IOLInvestmentAssetType.ToArrayAsync();
 
         var enumValueInstances = EnumHelper.GetEnumMembers<IOLInvestmentAssetTypeEnum>().ToList();
 
