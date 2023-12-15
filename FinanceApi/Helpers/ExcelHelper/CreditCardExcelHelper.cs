@@ -5,12 +5,12 @@ namespace FinanceApi.Helpers.ExcelHelper;
 
 public class CreditCardExcelHelper : ICreditCardExcelHelper<CreditCardMovement>
 {
-    public IEnumerable<CreditCardMovement> Read(IEnumerable<IFormFile> files, CreditCardIssuer creditCardIssuer, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<CreditCardMovement> Read(IEnumerable<IFormFile> files, CreditCard creditCard, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        return files.SelectMany(o => Read(o, creditCardIssuer, dateTimeKind)).ToArray();
+        return files.SelectMany(o => Read(o, creditCard, dateTimeKind)).ToArray();
     }
 
-    public IEnumerable<CreditCardMovement> Read(IFormFile file, CreditCardIssuer creditCardIssuer, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<CreditCardMovement> Read(IFormFile file, CreditCard creditCard, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
         List<CreditCardMovement> records = new List<CreditCardMovement>();
 
@@ -37,7 +37,7 @@ public class CreditCardExcelHelper : ICreditCardExcelHelper<CreditCardMovement>
 
                     records.Add(new CreditCardMovement()
                     {
-                        CreditCardIssuer = creditCardIssuer,
+                        CreditCard = creditCard,
                         TimeStamp = currentDate,
                         PlanStart = DateTimeParser(sheet.Rows[r][1], dateTimeKind),
                         Concept = sheet.Rows[r][2]?.ToString() ?? "-",

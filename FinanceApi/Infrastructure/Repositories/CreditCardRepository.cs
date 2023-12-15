@@ -4,9 +4,9 @@ using FinanceApi.Infrastructure.Repositories.Base;
 
 namespace FinanceApi.Infrastructure.Repositories;
 
-public class CreditCardIssuerRepository : BaseRepository<CreditCardIssuer, Guid>
+public class CreditCardRepository : BaseRepository<CreditCard, Guid>
 {
-    public CreditCardIssuerRepository(FinanceDbContext dbContext)
+    public CreditCardRepository(FinanceDbContext dbContext)
         : base(dbContext)
     {
     }

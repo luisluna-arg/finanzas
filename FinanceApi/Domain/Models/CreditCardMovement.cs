@@ -5,8 +5,8 @@ namespace FinanceApi.Domain.Models;
 
 public class CreditCardMovement : Entity<Guid>
 {
-    public Guid CreditCardIssuerId { get; set; }
-    public virtual CreditCardIssuer CreditCardIssuer { get; set; }
+    public Guid CreditCardId { get; set; }
+    public virtual CreditCard CreditCard { get; set; }
     required public DateTime TimeStamp { get; set; }
     required public DateTime PlanStart { get; set; }
     required public string Concept { get; set; }

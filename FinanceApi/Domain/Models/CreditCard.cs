@@ -2,7 +2,7 @@ using FinanceApi.Domain.Models.Base;
 
 namespace FinanceApi.Domain.Models;
 
-public class CreditCardIssuer : Entity<Guid>
+public class CreditCard : Entity<Guid>
 {
     public Guid BankId { get; set; }
 

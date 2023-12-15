@@ -23,9 +23,9 @@ public class CreditCardMovementController : ApiBaseController<CreditCardMovement
 
     [HttpPost]
     [Route("upload")]
-    public async Task<IActionResult> Upload(IFormFile file, string creditCardIssuerId, [DefaultValue("Local")] string dateKind)
+    public async Task<IActionResult> Upload(IFormFile file, string creditCardId, [DefaultValue("Local")] string dateKind)
     {
-        await Handle(new UploadCreditCardFileCommand(file, creditCardIssuerId, EnumHelper.Parse<DateTimeKind>(dateKind)));
+        await Handle(new UploadCreditCardFileCommand(file, creditCardId, EnumHelper.Parse<DateTimeKind>(dateKind)));
         return Ok();
     }
 }

@@ -4,9 +4,9 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class CreditCardIssuerMapperProfile : BaseMapperProfile<CreditCardIssuer, CreditCardIssuerDto>
+public class CreditCardMapperProfile : BaseMapperProfile<CreditCard, CreditCardDto>
 {
-    public CreditCardIssuerMapperProfile()
+    public CreditCardMapperProfile()
         : base()
     {
     }

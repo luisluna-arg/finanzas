@@ -9,7 +9,7 @@ public record CreditCardMovementDto : Dto<Guid>
     {
     }
 
-    public Guid CreditCardIssuerId { get; set; }
+    public Guid CreditCardId { get; set; }
     required public DateTime TimeStamp { get; set; }
     required public DateTime PlanStart { get; set; }
     required public string Concept { get; set; }

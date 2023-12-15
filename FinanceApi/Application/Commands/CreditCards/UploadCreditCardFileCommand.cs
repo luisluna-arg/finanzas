@@ -12,16 +12,16 @@ namespace FinanceApi.Application.Commands.CreditCards;
 public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<UploadCreditCardFileCommand>
 {
     private readonly IRepository<CreditCardMovement, Guid> repository;
-    private readonly IRepository<CreditCardIssuer, Guid> issuerRepository;
+    private readonly IRepository<CreditCard, Guid> issuerRepository;
     private readonly CreditCardExcelHelper excelHelper;
 
     public UploadCreditCardFileCommandHandler(
         FinanceDbContext db,
         IRepository<CreditCardMovement, Guid> debitRepository,
-        IRepository<CreditCardIssuer, Guid> creditCardIssuerRepository)
+        IRepository<CreditCard, Guid> creditCardRepository)
         : base(db)
     {
-        this.issuerRepository = creditCardIssuerRepository;
+        this.issuerRepository = creditCardRepository;
         this.repository = debitRepository;
         this.excelHelper = new CreditCardExcelHelper();
     }
@@ -44,13 +44,13 @@ public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<Upload
         var existingRecords = repository
             .FilterBy(timeStampProperty, ExpressionOperator.GreaterThanOrEqual, minDate)
             .FilterBy(timeStampProperty, ExpressionOperator.LessThanOrEqual, maxDate)
-            .Include(o => o.CreditCardIssuer)
-            .Where(o => o.CreditCardIssuerId == issuer.Id)
+            .Include(o => o.CreditCard)
+            .Where(o => o.CreditCardId == issuer.Id)
             .ToArray();
 
         newRecords = newRecords
             .Where(o => existingRecords.All(x =>
-                x.CreditCardIssuerId != o.CreditCardIssuer.Id ||
+                x.CreditCardId != o.CreditCard.Id ||
                 x.TimeStamp != o.TimeStamp ||
                 x.Concept != o.Concept ||
                 x.Amount != o.Amount ||

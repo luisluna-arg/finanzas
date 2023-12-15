@@ -15,11 +15,11 @@ public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCredi
 
     public override async Task<ICollection<CreditCardMovement>> Handle(GetCreditCardMovementsQuery request, CancellationToken cancellationToken)
     {
-        var query = DbContext.CreditCardMovements.Include(o => o.CreditCardIssuer).ThenInclude(o => o.Bank).AsQueryable();
+        var query = DbContext.CreditCardMovements.Include(o => o.CreditCard).ThenInclude(o => o.Bank).AsQueryable();
 
         if (request.IssuerId.HasValue)
         {
-            query = query.Where(o => o.CreditCardIssuerId == request.IssuerId.Value);
+            query = query.Where(o => o.CreditCardId == request.IssuerId.Value);
         }
 
         if (request.From.HasValue)
@@ -32,7 +32,7 @@ public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCredi
             query = query.FilterBy("TimeStamp", Infrastructure.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
-        return await query.OrderByDescending(o => o.TimeStamp).ThenBy(o => o.CreditCardIssuer.Name).ToArrayAsync();
+        return await query.OrderByDescending(o => o.TimeStamp).ThenBy(o => o.CreditCard.Name).ToArrayAsync();
     }
 }
 

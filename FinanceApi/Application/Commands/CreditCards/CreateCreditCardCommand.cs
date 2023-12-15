@@ -7,39 +7,39 @@ using MediatR;
 
 namespace FinanceApi.Application.Commands.CreditCards;
 
-public class CreateCreditCardIssuerCommandHandler : BaseResponseHandler<CreateCreditCardIssuerCommand, CreditCardIssuer>
+public class CreateCreditCardCommandHandler : BaseResponseHandler<CreateCreditCardCommand, CreditCard>
 {
-    private readonly IRepository<CreditCardIssuer, Guid> creditCardIssuerRepository;
+    private readonly IRepository<CreditCard, Guid> creditCardRepository;
     private readonly IRepository<Bank, Guid> bankRepository;
 
-    public CreateCreditCardIssuerCommandHandler(
+    public CreateCreditCardCommandHandler(
         FinanceDbContext db,
         IRepository<Bank, Guid> bankRepository,
-        IRepository<CreditCardIssuer, Guid> creditCardIssuerRepository)
+        IRepository<CreditCard, Guid> creditCardRepository)
         : base(db)
     {
         this.bankRepository = bankRepository;
-        this.creditCardIssuerRepository = creditCardIssuerRepository;
+        this.creditCardRepository = creditCardRepository;
     }
 
-    public override async Task<CreditCardIssuer> Handle(CreateCreditCardIssuerCommand command, CancellationToken cancellationToken)
+    public override async Task<CreditCard> Handle(CreateCreditCardCommand command, CancellationToken cancellationToken)
     {
         var bank = await bankRepository.GetById(command.BankId);
         if (bank == null) throw new Exception("Bank not found");
 
-        var newCreditCardIssuer = new CreditCardIssuer()
+        var newCreditCard = new CreditCard()
         {
             Bank = bank,
             Name = command.Name
         };
 
-        await creditCardIssuerRepository.Add(newCreditCardIssuer);
+        await creditCardRepository.Add(newCreditCard);
 
-        return await Task.FromResult(newCreditCardIssuer);
+        return await Task.FromResult(newCreditCard);
     }
 }
 
-public class CreateCreditCardIssuerCommand : IRequest<CreditCardIssuer>
+public class CreateCreditCardCommand : IRequest<CreditCard>
 {
     [Required]
     public Guid BankId { get; set; }
