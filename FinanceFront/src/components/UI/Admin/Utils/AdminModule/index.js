@@ -63,11 +63,18 @@ const AdminModule = ({
     ];
   };
 
-  const getFormValues = () =>
-    getFormInputs().reduce((o, i) => {
-      o[i.id] = i.value;
+  const getFormValues = () => {
+    return getFormInputs().reduce((o, i) => {
+      if (i && i.type === "checkbox") {
+        o[i.id] = i.checked;
+      }
+      else {
+        o[i.id] = i.value;
+      }
+
       return o;
     }, {});
+  }
 
   const handleRequest = async (method, setRequestStatus, record) => {
     try {
