@@ -28,11 +28,7 @@ public class CreditCardController : ApiBaseController<CreditCard?, Guid, CreditC
     public async Task<IActionResult> Update(UpdateCreditCardCommand command)
         => await Handle(command);
 
-    [HttpPatch("activate/{id}")]
-    public async Task<IActionResult> Activate(Guid id)
-        => await Handle(new ActivateCreditCardCommand { Id = id });
-
-    [HttpPatch("deactivate/{id}")]
-    public async Task<IActionResult> Deactivate(Guid id)
-        => await Handle404(new DeactivateCreditCardCommand { Id = id });
+    [HttpDelete]
+    public async Task<IActionResult> Delete(DeleteCreditCardCommand request)
+        => await Handle(request);
 }
