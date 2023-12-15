@@ -57,7 +57,10 @@ const AdminModule = ({
 
   const getFormInputs = () => {
     let form = document.getElementById(elementIds.form);
-    return Array.from(form.getElementsByTagName("input"));
+    return [
+      ...Array.from(form.getElementsByTagName("input")),
+      ...Array.from(form.getElementsByTagName("select"))
+    ];
   };
 
   const getFormValues = () =>
@@ -272,20 +275,22 @@ const AdminModule = ({
                   />
                 </td>
                 {tableSettings.columns.map((column, colIndex) => {
-                  var columnKey = `${rowKey}-col-${colIndex}`;
+                  let columnKey = `${rowKey}-col-${colIndex}`;
+                  let columnValue = record[column.name];
+                  columnValue = column.mapper ? column.mapper(record) : columnValue;
 
-                  if (typeof record[column.name] === "boolean") {
+                  if (typeof columnValue === "boolean") {
                     return (
                       <td key={columnKey}>
                         <Form.Check
                           type="checkbox"
-                          value={record[column.name]}
+                          value={columnValue}
                           disabled
                         />
                       </td>
                     );
                   } else {
-                    return <td key={columnKey}>{record[column.name]}</td>;
+                    return <td key={columnKey}>{columnValue}</td>;
                   }
                 })}
               </tr>

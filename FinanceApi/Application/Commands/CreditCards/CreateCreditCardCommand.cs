@@ -30,7 +30,8 @@ public class CreateCreditCardCommandHandler : BaseResponseHandler<CreateCreditCa
         var newCreditCard = new CreditCard()
         {
             Bank = bank,
-            Name = command.Name
+            Name = command.Name,
+            Deactivated = command.Deactivated
         };
 
         await creditCardRepository.Add(newCreditCard);
@@ -43,6 +44,9 @@ public class CreateCreditCardCommand : IRequest<CreditCard>
 {
     [Required]
     public Guid BankId { get; set; }
+
     [Required]
     public string Name { get; set; } = string.Empty;
+
+    public bool Deactivated { get; set; }
 }

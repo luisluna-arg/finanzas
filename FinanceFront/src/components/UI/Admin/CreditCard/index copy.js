@@ -5,24 +5,34 @@ import Button from "../../../utils/Button";
 import CustomToast from "../../../utils/CustomToast";
 import FormModal from "../../../utils/FormModal";
 
-const fetchIssuers = async () => {
-  let url = `${urls.creditCardIssuers.get}`;
+const fetchCreditCards = async () => {
+  let url = `${urls.creditCards.get}`;
   const response = await fetch(url);
   return await response.json();
 };
 
-const CreateIssuerSettings = [
+const CreateCreditCardSettings = [
   {
     id: "name",
     type: "TextInput",
     label: "Nombre",
     placeholder: "Ingrese un nombre",
   },
-  //   { id: "bank", type: "DropdownInput", label: "Banco", placeholder: "Seleccione un banco" },
+  {
+    id: "bank",
+    label: "Banco",
+    placeholder: "Seleccione un banco",
+    type: "DropdownInput",
+    endpoint: urls.banks.endpoint,
+    mapper: {
+      id: "id",
+      label: "name"
+    }
+  },
   { id: "deactivated", type: "BooleanInput", label: "Desactivado" },
 ];
 
-const CreditCardIssuer = () => {
+const CreditCard = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -37,7 +47,7 @@ const CreditCardIssuer = () => {
     setData([]);
     const fetchData = async () => {
       try {
-        setData(await fetchIssuers());
+        setData(await fetchCreditCards());
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -57,7 +67,7 @@ const CreditCardIssuer = () => {
 
   return (
     <div className="p-3 d-flex flex-column">
-      <h1>Emisores de tarjetas de crédito</h1>
+      <h1>Tarjetas de crédito</h1>
       <div className="flex-row">
         <Button
           text={"Agregar"}
@@ -71,7 +81,7 @@ const CreditCardIssuer = () => {
         title="Agregar Emisor de Tarjeta de Crédito"
         handleAccept={handleFormModalAccept}
         handleCancel={handleFormModalCancel}
-        editorSettings={CreateIssuerSettings}
+        editorSettings={CreateCreditCardSettings}
       />
       <Table className="table">
         <thead>
@@ -95,4 +105,4 @@ const CreditCardIssuer = () => {
   );
 };
 
-export default CreditCardIssuer;
+export default CreditCard;

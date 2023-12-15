@@ -9,7 +9,7 @@ function Picker({ id, url, mapper, onChange, onFetch }) {
       let response = await fetch(url);
       let data = await response.json();
       setData(data);
-      onFetch(data)
+      onFetch && onFetch(data)
     } catch (error) {
       console.error("Error fetching data:", error);
     }

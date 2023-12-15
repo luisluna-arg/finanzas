@@ -1,12 +1,26 @@
 import React from "react";
 import urls from "../../../../routing/urls";
 import AdminModule from "../Utils/AdminModule";
-import FormInput from "../Utils/Helpers/FormInput";
 
 const FormInputSettings = [
-  new FormInput("id", "TextInput", "Id", null, false),
-  new FormInput("name", "TextInput", "Nombre", "Ingrese un nombre"),
-  new FormInput("deactivated", "BooleanInput", "Desactivado"),
+  {
+    id: "id",
+    type: "TextInput",
+    label: "Id",
+    placeholder: null,
+    visible: false
+  },
+  {
+    id: "name",
+    type: "TextInput",
+    label: "Nombre",
+    placeholder: "Ingrese un nombre"
+  },
+  {
+    id: "deactivated",
+    type: "BooleanInput",
+    label: "Desactivado"
+  }
 ];
 
 const TableSettings = {

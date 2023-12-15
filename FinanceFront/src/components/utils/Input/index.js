@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
+import Picker from '../Picker';
 
 const DEFAULTS = {
   value: "",
@@ -10,6 +11,7 @@ const DEFAULTS = {
     label: "Default Input",
     type: "text",
     placeholder: "A default input sample",
+    visible: true
   },
 };
 
@@ -77,6 +79,17 @@ const BooleanInputControl = (props) => {
   );
 };
 
+const DropdownInput = (props) => {
+  console.log();
+  return (
+    <Picker
+      id={props.settings.id}
+      url={props.settings.endpoint}
+      mapper={props.settings.mapper}
+      />
+  );
+};
+
 const InputControl = (props) => {
   switch (props.settings.type) {
     // case "DateInput":
@@ -85,6 +98,8 @@ const InputControl = (props) => {
       return DecimalInputControl(props);
     case "BooleanInput":
       return BooleanInputControl(props);
+    case "DropdownInput":
+      return DropdownInput(props);
     default: {
       return (
         <Form.Control
@@ -114,13 +129,13 @@ const CRUDPopUpInput = (props) => {
   };
 
   return (
-    <div className={[!props.settings.visible ? "d-none" : ""]}>
+    <div className={[settings.visible ? "" : "d-none"]}>
       <Form.Group
         id={settings.id + "-group"}
         label-for={settings.id}
         description={settings.description}
       >
-        {props.settings.visible && <Form.Label>{settings.label}</Form.Label>}
+        {settings.visible && <Form.Label>{settings.label}</Form.Label>}
 
         <InputControl
           value={inputValue}

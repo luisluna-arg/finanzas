@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
 import Bank from "../Bank";
-import CreditCardIssuer from "../CreditCardIssuer";
+import CreditCard from "../CreditCard";
 
 const componentMap = {
   Bank: <Bank />,
-  CreditCardIssuer: <CreditCardIssuer />,
+  CreditCard: <CreditCard />,
 };
 
 const labelMap = {
   Bank: "Bancos",
-  CreditCardIssuer: "Emisores de Tarjetas de Crédito",
+  CreditCard: "Tarjetas de Crédito",
 };
 
 const AdminDashboard = () => {

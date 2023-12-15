@@ -32,6 +32,7 @@ public class UpdateCreditCardCommandHandler : BaseResponseHandler<UpdateCreditCa
 
         creditCard.Bank = bank;
         creditCard.Name = command.Name;
+        creditCard.Deactivated = command.Deactivated;
 
         await creditCardRepository.Update(creditCard);
         await creditCardRepository.Persist();
@@ -44,8 +45,12 @@ public class UpdateCreditCardCommand : IRequest<CreditCard>
 {
     [Required]
     public Guid Id { get; set; }
+
     [Required]
     public Guid BankId { get; set; }
+
     [Required]
     public string Name { get; set; } = string.Empty;
+
+    public bool Deactivated { get; set; }
 }
