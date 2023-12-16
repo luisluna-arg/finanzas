@@ -70,7 +70,7 @@ const Dashboard = () => {
       <div className="row flex-wrap  justify-content-center">
         {
           creditCardData && creditCardData.map((data, index) => {
-            const url = `${urls.creditCardMovements.get}?CreditCardId=${data.id}`;
+            const url = `${urls.creditCardMovements.latest}?CreditCardId=${data.id}`;
             const bgClass = backgroundClasses[index < backgroundClasses.length ? index : backgroundClasses.length - index - 1];
             return (<ContentTable
               key={index}

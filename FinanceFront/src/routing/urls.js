@@ -15,6 +15,7 @@ const urls = {
   },
   creditCardMovements: {
     get: `${baseUrl}api/credit-card-movements`,
+    latest: `${baseUrl}api/credit-card-movements/latest`,
   },
   funds: {
     endpoint: `${baseUrl}api/funds/`,
