@@ -21,6 +21,11 @@ public class CreditCardMovementController : ApiBaseController<CreditCardMovement
     public async Task<IActionResult> Get([FromQuery] GetCreditCardMovementsQuery query)
         => await Handle(query);
 
+    [HttpGet]
+    [Route("latest")]
+    public async Task<IActionResult> Latest([FromQuery] GetLatestCreditCardMovementsQuery query)
+        => await Handle(query);
+
     [HttpPost]
     [Route("upload")]
     public async Task<IActionResult> Upload(IFormFile file, string creditCardId, [DefaultValue("Local")] string dateKind)
