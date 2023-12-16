@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom"; // Update import
 import About from "../About";
 import AdminDashboard from "../Admin/AdminDashboard";
-import Home from "../Home";
+import Dashboard from "../Dashboard";
 import BankAccountMovements from "../Movements/List";
 import "./App.css";
 
@@ -42,7 +42,7 @@ function App() {
           </Navbar>
 
           <Routes>
-            <Route path="/" exact element={<Home />} />
+            <Route path="/" exact element={<Dashboard />} />
             <Route path="/movements" element={<BankAccountMovements />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/about" element={<About />} />

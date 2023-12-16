@@ -13,6 +13,9 @@ const urls = {
   creditCards: {
     get: `${baseUrl}api/credit-cards/`,
   },
+  creditCardMovements: {
+    get: `${baseUrl}api/credit-card-movements`,
+  },
   funds: {
     endpoint: `${baseUrl}api/funds/`,
     upload: `${baseUrl}api/funds/upload`,

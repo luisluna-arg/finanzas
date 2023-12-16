@@ -25,19 +25,6 @@ function objectToUrlParams(params) {
 }
 
 const PaginatedTable = ({ name, url, columns, onFetch }) => {
-    // const [hasNextPage, setHasNextPage] = useState(false);
-    // const [fetchNextPage, setFetchNextPage] = useState(false);
-    // const [customToast, setCustomToast] = useState(0);
-    // const [pageIndex, setpageIndex] = useState(0);
-    // const [pageOptions, setpageOptions] = useState(0);
-    // const [previousPage, setPreviousPage] = useState(0);
-    // const [nextPage, setNextPage] = useState(0);
-    // const [pageCount, setPageCount] = useState(0);
-    // const [goToPage, setGotoPage] = useState(0);
-    // const [canPreviousPage, setCanPreviousPage] = useState(0);
-    // const [canNextPage, setCanNextPage] = useState(true);
-    // 
-
     const [data, setData] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(1);
@@ -52,6 +39,7 @@ const PaginatedTable = ({ name, url, columns, onFetch }) => {
         setPage(newPage);
         setCanPreviousPage(newPage > 0);
     }
+    
     const goToNextPage = () => {
         const newPage = page >= totalPages - 1 ? totalPages : page + 1;
         setPage(newPage);

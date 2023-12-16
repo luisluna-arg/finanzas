@@ -88,6 +88,8 @@ const AdminModule = ({
             headers["accept"] = "application/octet-stream";
             break;
           }
+        default:
+          break;
       }
 
       const response = await fetch(endpoint, {
