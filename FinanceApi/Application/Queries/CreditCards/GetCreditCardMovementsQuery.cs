@@ -17,9 +17,9 @@ public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCredi
     {
         var query = DbContext.CreditCardMovement.Include(o => o.CreditCard).ThenInclude(o => o.Bank).AsQueryable();
 
-        if (request.IssuerId.HasValue)
+        if (request.CreditCardId.HasValue)
         {
-            query = query.Where(o => o.CreditCardId == request.IssuerId.Value);
+            query = query.Where(o => o.CreditCardId == request.CreditCardId.Value);
         }
 
         if (request.From.HasValue)
@@ -38,7 +38,7 @@ public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCredi
 
 public class GetCreditCardMovementsQuery : GetAllQuery<CreditCardMovement>
 {
-    public Guid? IssuerId { get; set; }
+    public Guid? CreditCardId { get; set; }
 
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
