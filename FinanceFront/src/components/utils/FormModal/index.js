@@ -2,7 +2,7 @@ import React from "react";
 import { Form, Modal } from "react-bootstrap";
 import Button from "../Button";
 import CustomToast from "../CustomToast";
-import Input from "../Input";
+import Input from "../FormInput";
 
 const DEFAULTS = {
   formId: `form-${new Date().getTime()}`,
