@@ -4,7 +4,7 @@ using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceApi.Application.Queries.CreditCardMovements;
+namespace FinanceApi.Application.Queries.CreditCards;
 
 public class GetLatestCreditCardMovementsQueryHandler : BaseCollectionHandler<GetLatestCreditCardMovementsQuery, CreditCardMovement>
 {

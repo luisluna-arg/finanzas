@@ -23,8 +23,8 @@ public class GetCreditCardQueryHandler : BaseCollectionHandler<GetCreditCardsQue
         }
 
         return await query
-            .OrderByDescending(o => o.Bank.Name)
-            .ThenByDescending(o => o.Name)
+            .OrderBy(o => o.Bank.Name)
+            .ThenBy(o => o.Name)
             .ToArrayAsync();
     }
 }

@@ -4,7 +4,7 @@ using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceApi.Application.Queries.CreditCardMovements;
+namespace FinanceApi.Application.Queries.CreditCards;
 
 public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCreditCardMovementsQuery, CreditCardMovement>
 {
@@ -32,7 +32,11 @@ public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCredi
             query = query.FilterBy("TimeStamp", Infrastructure.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
-        return await query.OrderByDescending(o => o.TimeStamp).ThenBy(o => o.CreditCard.Name).ToArrayAsync();
+        return await query
+            .OrderBy(o => o.CreditCard.Name)
+            .ThenBy(o => o.CreditCard.Bank.Name)
+            .OrderByDescending(o => o.TimeStamp)
+            .ToArrayAsync();
     }
 }
 

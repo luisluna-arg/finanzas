@@ -28,8 +28,8 @@ public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<Upload
 
     public override async Task Handle(UploadCreditCardFileCommand command, CancellationToken cancellationToken)
     {
-        var issuer = await issuerRepository.GetById(command.IssuerId);
-        if (issuer == null) throw new Exception($"Credit Card Issuer not found, Id: {command.IssuerId}");
+        var issuer = await issuerRepository.GetById(command.CreditCardId);
+        if (issuer == null) throw new Exception($"Credit Card Issuer not found, Id: {command.CreditCardId}");
 
         var dateKind = command.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
@@ -63,14 +63,14 @@ public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<Upload
 
 public class UploadCreditCardFileCommand : IRequest
 {
-    public UploadCreditCardFileCommand(IFormFile file, string issuerId, DateTimeKind dateKind)
+    public UploadCreditCardFileCommand(IFormFile file, string creditCardId, DateTimeKind dateKind)
     {
         this.File = file;
-        this.IssuerId = new Guid(issuerId);
+        this.CreditCardId = new Guid(creditCardId);
         this.DateKind = dateKind;
     }
 
     public IFormFile File { get; set; }
-    public Guid IssuerId { get; set; }
+    public Guid CreditCardId { get; set; }
     public DateTimeKind DateKind { get; set; }
 }

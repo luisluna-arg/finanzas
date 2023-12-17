@@ -2,7 +2,7 @@ using System.ComponentModel;
 using AutoMapper;
 using FinanceApi.Application.Commands.CreditCards;
 using FinanceApi.Application.Dtos.CreditCards;
-using FinanceApi.Application.Queries.CreditCardMovements;
+using FinanceApi.Application.Queries.CreditCards;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +19,10 @@ public class CreditCardMovementController : ApiBaseController<CreditCardMovement
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetCreditCardMovementsQuery query)
+        => await Handle(query);
+
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCreditCardMovementsQuery query)
         => await Handle(query);
 
     [HttpGet]
