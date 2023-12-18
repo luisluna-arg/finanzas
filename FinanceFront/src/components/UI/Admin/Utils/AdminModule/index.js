@@ -222,7 +222,7 @@ const AdminModule = ({
 
   return (
     <div className="p-3 d-flex flex-column">
-      <h1>{title}</h1>
+      {title && (<h1>{title}</h1>)}
       {requestStatus && <CustomToast variant="danger" text={requestStatus} />}
       <div className="flex-row">
         <Button

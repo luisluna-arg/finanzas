@@ -1,11 +1,11 @@
 // Movements.js
 import React, { useEffect, useState } from "react";
-import urls from "../../../../routing/urls";
-import Uploader from "../../../utils/Uploader";
-import Picker from "../../../utils/Picker";
-import PaginatedTable from "../../../utils/PaginatedTable";
+import urls from "../../../routing/urls";
+import Uploader from "../../utils/Uploader";
+import Picker from "../../utils/Picker";
+import PaginatedTable from "../../utils/PaginatedTable";
 
-function List() {
+function Movements() {
   const [selectedBankId, setSelectedBankId] = useState("");
   const [selectedAppModuleId, setSelectedAppModuleId] = useState("");
   const [fundsUploadEndpoint, setFundsUploadEndpoint] = useState(`${urls.funds.upload}`);
@@ -33,7 +33,7 @@ function List() {
   };
 
   const onFetchFundsTable = (data) => {
-    console.log("data", data);
+    
   }
 
   useEffect(() => {
@@ -107,4 +107,4 @@ function List() {
   );
 }
 
-export default List;
+export default Movements;

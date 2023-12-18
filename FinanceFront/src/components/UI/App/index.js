@@ -5,7 +5,8 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom"; // Up
 import About from "../About";
 import AdminDashboard from "../Admin/AdminDashboard";
 import Dashboard from "../Dashboard";
-import BankAccountMovements from "../Movements/List";
+import BankAccountMovements from "../Movements";
+import CreditCardMovements from "../CreditCardMovements";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,9 @@ function App() {
                   <Nav.Link className="text-light" href="/movements">
                     Movimientos
                   </Nav.Link>
+                  <Nav.Link className="text-light" href="/credit-cards-movements">
+                    Tarjetas de crédito
+                  </Nav.Link>
                   <Nav.Link className="text-light" href="/admin">
                     Administración
                   </Nav.Link>
@@ -44,6 +48,7 @@ function App() {
           <Routes>
             <Route path="/" exact element={<Dashboard />} />
             <Route path="/movements" element={<BankAccountMovements />} />
+            <Route path="/credit-cards-movements" element={<CreditCardMovements />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/about" element={<About />} />
           </Routes>
