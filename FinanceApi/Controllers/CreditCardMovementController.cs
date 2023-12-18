@@ -18,17 +18,21 @@ public class CreditCardMovementController : ApiBaseController<CreditCardMovement
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetCreditCardMovementsQuery query)
-        => await Handle(query);
+    public async Task<IActionResult> Get([FromQuery] GetCreditCardMovementsQuery request)
+        => await Handle(request);
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateCreditCardMovementCommand request)
+        => await Handle(request);
 
     [HttpGet("paginated")]
-    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCreditCardMovementsQuery query)
-        => await Handle(query);
+    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCreditCardMovementsQuery request)
+        => await Handle(request);
 
     [HttpGet]
     [Route("latest")]
-    public async Task<IActionResult> Latest([FromQuery] GetLatestCreditCardMovementsQuery query)
-        => await Handle(query);
+    public async Task<IActionResult> Latest([FromQuery] GetLatestCreditCardMovementsQuery request)
+        => await Handle(request);
 
     [HttpPost]
     [Route("upload")]
