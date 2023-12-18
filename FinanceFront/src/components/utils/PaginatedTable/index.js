@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo, Table } from 'react';
+import Button from 'react-bootstrap/Button';
 import dates from "../../../utils/dates";
 import CustomToast from '../CustomToast';
+import Input from '../../utils/Input';
+import { InputControlTypes } from '../InputControl';
 
 function parseUrl(url) {
     const urlObject = new URL(url);
@@ -24,22 +27,24 @@ function objectToUrlParams(params) {
     return urlSearchParams.toString();
 }
 
-const PaginatedTable = ({ name, url, columns, onFetch }) => {
+const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
     const [data, setData] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(1);
     const [canPreviousPage, setCanPreviousPage] = useState(false);
     const [canNextPage, setCanNextPage] = useState(false);
-    const [pageSize, setPageSize] = useState(10);
     const [isFetching, setIsFetching] = useState(false);
+    const [pageSize, setPageSize] = useState(10);
     const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
+
+    const adminRowId = `${name}-edit-row`;
 
     const goToPreviousPage = () => {
         const newPage = page <= 1 ? 1 : page - 1;
         setPage(newPage);
         setCanPreviousPage(newPage > 0);
     }
-    
+
     const goToNextPage = () => {
         const newPage = page >= totalPages - 1 ? totalPages : page + 1;
         setPage(newPage);
@@ -57,16 +62,12 @@ const PaginatedTable = ({ name, url, columns, onFetch }) => {
         try {
             setIsFetching(true);
             if (dataUrl) {
-                console.log(dataUrl);
-
                 let fetchData = await fetch(dataUrl);
                 let newData = await fetchData.json();
                 setData(newData);
                 setTotalPages(newData.totalPages);
                 setCanPreviousPage(newData.page > 1);
                 setCanNextPage(newData.totalPages > newData.page);
-
-                console.log("data", newData);
 
                 onFetch && onFetch(newData);
             }
@@ -75,6 +76,94 @@ const PaginatedTable = ({ name, url, columns, onFetch }) => {
         } finally {
             setIsFetching(false);
         }
+    };
+
+    const getEditRowInputs = () => {
+        const row = document.getElementById(adminRowId);
+        return [
+            ...Array.from(row.getElementsByTagName("input")),
+            ...Array.from(row.getElementsByTagName("select"))
+        ];
+    };
+
+    const getEditRowValues = () => {
+        return getEditRowInputs().reduce((o, i) => {
+            const column = columns.filter(o => o.id === i.id)[0];
+            let columnValue = null;
+            if (i && i.type === "checkbox") {
+                columnValue = i.checked;
+            }
+            else if (column.type === InputControlTypes.DateTime) {
+                columnValue = dates.tryGet(i.value);
+            }
+            else {
+                columnValue = i.value;
+            }
+
+            o[i.id] = columnValue;
+
+            return o;
+        }, {});
+    }
+
+    const validateForm = (inputs) => {
+        // setError(null);
+        inputs = inputs ?? getEditRowInputs();
+        for (let i = 0; i < inputs.length; i++) {
+            var input = inputs[i];
+            if (
+                !input.classList.contains("invisible") &&
+                input.type !== "checkbox" &&
+                !input.value
+            ) {
+                // setError("Algunos campos no han sido completados");
+                break;
+            }
+        }
+    };
+
+    const handleRequest = async (method, record) => {
+        try {
+            var headers = {
+                "Content-Type": "application/json",
+            };
+
+            switch (method) {
+                case "DELETE":
+                    {
+                        headers["accept"] = "application/octet-stream";
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            const response = await fetch(admin.endpoint, {
+                method: method,
+                headers: headers,
+                body: JSON.stringify(record),
+            });
+
+            if (response.ok) {
+                // setRequestStatus(null);
+            } else {
+                // setRequestStatus("Ocurrió un error en la operación");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            // setRequestStatus("Ocurrió un error en la operación");
+        }
+    };
+
+    const handleCreate = async (inputs) => {
+        await handleRequest("POST", inputs);
+    };
+
+    const onAdd = async (event) => {
+        const values = getEditRowValues();
+        validateForm();
+        values[admin.key.id] = admin.key.value
+        await handleCreate(values);
     };
 
     useEffect(() => {
@@ -88,7 +177,23 @@ const PaginatedTable = ({ name, url, columns, onFetch }) => {
         }
     }, [url, page, pageSize]);
 
-    if (!data || !data.items || data.items.length == 0) return (<div className='text-center'>No hay datos disponibles</div>);
+    const EditRow = () => {
+        return (<tr id={adminRowId}>
+            {columns && columns.map((column, index) => {
+                if (column.editable) {
+                    return (<td className={column.class} key={`${name}-${column.id}-${index}`}>
+                        <Input value={""} settings={column} />
+                    </td>);
+                }
+                else {
+                    return (<td key={`${name}-${column.id}-${index}`}></td>);
+                }
+            })}
+            <th>
+                <Button variant="outline-primary" onClick={onAdd}>+</Button>
+            </th>
+        </tr>);
+    };
 
     return (
         <>
@@ -100,14 +205,22 @@ const PaginatedTable = ({ name, url, columns, onFetch }) => {
                                 {column.label}
                             </th>
                         ))}
+                        {admin && (<th></th>)}
                     </tr>
                 </thead>
                 <tbody>
+                    {admin && <EditRow />}
+                    {!data || !data.items || data.items.length === 0 &&
+                        (<tr>
+                            <td colSpan={columns.length + 1}>
+                                <div className='text-center'>No hay datos disponibles</div>
+                            </td>
+                        </tr>)}
                     {data.items && data.items.map((record) => (
                         <tr key={record.id}>
                             {columns && columns.map((column, index) => {
                                 const value = column.mapper ? column.mapper(record[column.id]) : record[column.id];
-                                const displayValue = column.type && column.type == "datetime" ? dates.toDisplay(value) : value;
+                                const displayValue = column.type && column.type == InputControlTypes.DateTime ? dates.toDisplay(value) : value;
                                 const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[column.id]);
                                 const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
 

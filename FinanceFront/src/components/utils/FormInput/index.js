@@ -80,7 +80,6 @@ const BooleanInputControl = (props) => {
 };
 
 const DropdownInput = (props) => {
-  console.log();
   return (
     <Picker
       id={props.settings.id}
