@@ -9,17 +9,20 @@ namespace FinanceApi.Application.Commands.AppModules;
 
 public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModuleCommand, AppModule>
 {
+    private readonly IRepository<AppModuleType, short> appModuleTypeRepository;
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IRepository<Currency, Guid> currencyRepository;
 
     public CreateAppModuleCommandHandler(
         FinanceDbContext db,
         IRepository<Currency, Guid> currencyRepository,
-        IAppModuleRepository appModuleRepository)
+        IAppModuleRepository appModuleRepository,
+        IRepository<AppModuleType, short> appModuleTypeRepository)
         : base(db)
     {
-        this.currencyRepository = currencyRepository;
+        this.appModuleTypeRepository = appModuleTypeRepository;
         this.appModuleRepository = appModuleRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     public override async Task<AppModule> Handle(CreateAppModuleCommand command, CancellationToken cancellationToken)
@@ -27,11 +30,15 @@ public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModule
         var currency = await currencyRepository.GetById(command.CurrencyId);
         if (currency == null) throw new Exception("Currency not found");
 
+        var appModuleType = await appModuleTypeRepository.GetById(command.AppModuleTypeId);
+        if (appModuleType == null) throw new Exception("App module type not found");
+
         var newAppModule = new AppModule()
         {
             CreatedAt = DateTime.UtcNow,
             Currency = currency,
-            Name = command.Name
+            Name = command.Name,
+            Type = appModuleType
         };
 
         await appModuleRepository.Add(newAppModule);
@@ -46,4 +53,6 @@ public class CreateAppModuleCommand : IRequest<AppModule>
     public string Name { get; set; } = string.Empty;
     [Required]
     public Guid CurrencyId { get; set; }
+    [Required]
+    public short AppModuleTypeId { get; set; }
 }

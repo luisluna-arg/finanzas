@@ -8,5 +8,10 @@ public abstract class BaseMapperProfile<TEntity, TDto> : Profile
     where TEntity : IEntity
     where TDto : IDto
 {
-    protected BaseMapperProfile() => CreateMap<TEntity, TDto>();
+    protected BaseMapperProfile()
+    {
+        Map = CreateMap<TEntity, TDto>();
+    }
+
+    protected IMappingExpression<TEntity, TDto> Map { get; }
 }

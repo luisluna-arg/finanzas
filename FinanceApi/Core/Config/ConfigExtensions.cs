@@ -13,6 +13,7 @@ public static class ConfigExtensions
         services.AddScoped<IAppModuleRepository, AppModuleRepository>();
 
         services.AddScoped<IRepository<AppModule, Guid>, AppModuleRepository>();
+        services.AddScoped<IRepository<AppModuleType, short>, AppModuleTypeRepository>();
         services.AddScoped<IRepository<Bank, Guid>, BankRepository>();
         services.AddScoped<IRepository<Currency, Guid>, CurrencyRepository>();
         services.AddScoped<IRepository<CurrencyConversion, Guid>, CurrencyConversionRepository>();

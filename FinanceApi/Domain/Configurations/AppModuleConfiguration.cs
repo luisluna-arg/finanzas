@@ -12,5 +12,10 @@ public class AppModuleConfiguration : IEntityTypeConfiguration<AppModule>
             .HasMany(c => c.Movements)
             .WithOne(e => e.AppModule)
             .IsRequired();
+
+        builder
+            .HasOne(c => c.Type)
+            .WithMany(c => c.AppModules)
+            .IsRequired();
     }
 }

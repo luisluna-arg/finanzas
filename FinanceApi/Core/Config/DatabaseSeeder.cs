@@ -21,6 +21,8 @@ public class DatabaseSeeder : IHostedService
 
         await SeedDefaultCurrencies(dbContext);
 
+        await SeedAppModuleTypes(dbContext);
+
         await SeedAppModules(dbContext);
 
         await SeedInvestmentAssetIOLTypes(dbContext);
@@ -58,10 +60,39 @@ public class DatabaseSeeder : IHostedService
         }
     }
 
+    private async Task SeedAppModuleTypes(FinanceDbContext dbContext)
+    {
+        var appModuleTypes = await dbContext.AppModuleType.ToArrayAsync();
+
+        var newAppModuleTypes = new List<AppModuleType>();
+
+        AppModuleTypeEnum[] enumValues = (AppModuleTypeEnum[])Enum.GetValues(typeof(AppModuleTypeEnum));
+
+        Action<AppModuleTypeEnum> collector = (appModuleTypeEnum) =>
+        {
+            if (!appModuleTypes.Any(o => o.Id == (short)appModuleTypeEnum))
+            {
+                newAppModuleTypes.Add(new AppModuleType { Id = (short)appModuleTypeEnum, Name = appModuleTypeEnum });
+            }
+        };
+
+        foreach (var appModuleType in enumValues)
+        {
+            collector(appModuleType);
+        }
+
+        if (newAppModuleTypes.Any())
+        {
+            await dbContext.AddRangeAsync(newAppModuleTypes);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
     private async Task SeedAppModules(FinanceDbContext dbContext)
     {
         var currencies = await dbContext.Currency.ToArrayAsync();
         var appModules = await dbContext.AppModule.ToArrayAsync();
+        var appModuleTypes = await dbContext.AppModuleType.ToArrayAsync();
 
         var now = DateTime.Now.ToUniversalTime();
 
@@ -71,15 +102,29 @@ public class DatabaseSeeder : IHostedService
         {
             if (!appModules.Any(o => o.Id.ToString().Equals(moduleId, StringComparison.InvariantCulture)))
             {
-                var currencyPeso = currencies.FirstOrDefault(x => x.Id.ToString().Equals(currencyId, StringComparison.InvariantCulture));
-                var currencyPesoName = CurrencyConstants.Names[currencyId];
-                if (currencyPeso == null) throw new SystemException($"Fatal error while seeding App database: Currency not found {currencyPesoName}");
+                var currency = currencies.FirstOrDefault(x => x.Id.ToString().Equals(currencyId, StringComparison.InvariantCulture));
+                var currencyName = CurrencyConstants.Names[currencyId];
+                if (currency == null) throw new SystemException($"Fatal error while seeding App database: Currency not found {currencyName}");
 
-                newModules.Add(new AppModule { Id = new Guid(moduleId), Name = AppModuleConstants.Names[moduleId], CreatedAt = now, Currency = currencyPeso });
+                if (!AppModuleConstants.Types.ContainsKey(moduleId))
+                    throw new SystemException($"Fatal error while seeding App database: AppModuleTypeEnum not found for ModuleId {moduleId}");
+
+                var appModuleType = appModuleTypes.FirstOrDefault(x => x.Id == (short)AppModuleConstants.Types[moduleId]);
+                if (appModuleType == null)
+                    throw new SystemException($"Fatal error while seeding App database: AppModuleType not found {AppModuleConstants.Types[moduleId]}");
+
+                newModules.Add(new AppModule
+                {
+                    Id = new Guid(moduleId),
+                    Name = AppModuleConstants.Names[moduleId],
+                    CreatedAt = now,
+                    Currency = currency,
+                    Type = appModuleType
+                });
             }
         };
 
-        foreach (var appModuleIdPair in AppModuleConstants.AppModuleIdPairs)
+        foreach (var appModuleIdPair in AppModuleConstants.AppModuleCurrencyPairs)
         {
             collectModule(appModuleIdPair[0], appModuleIdPair[1]);
         }
@@ -140,6 +185,15 @@ public class DatabaseSeeder : IHostedService
         public const string DollarDebitsId = "03cc66c7-921c-4e05-810e-9764cd365c1d";
         public const string IOLInvestmentsId = "65325dbb-13b0-44ff-82ad-5808a26581a4";
 
+        private static readonly Dictionary<string, AppModuleTypeEnum> TypesValue = new Dictionary<string, AppModuleTypeEnum>()
+        {
+            { FundsId, AppModuleTypeEnum.Funds },
+            { DollarFundsId, AppModuleTypeEnum.Funds },
+            { DebitsId, AppModuleTypeEnum.Debits },
+            { DollarDebitsId, AppModuleTypeEnum.Debits },
+            { IOLInvestmentsId, AppModuleTypeEnum.Investments }
+        };
+
         private static readonly Dictionary<string, string> NamesValue = new Dictionary<string, string>()
         {
             { FundsId, "Fondos" },
@@ -151,7 +205,9 @@ public class DatabaseSeeder : IHostedService
 
         public static Dictionary<string, string> Names => NamesValue;
 
-        public static string[][] AppModuleIdPairs => new string[][]
+        public static Dictionary<string, AppModuleTypeEnum> Types => TypesValue;
+
+        public static string[][] AppModuleCurrencyPairs => new string[][]
         {
             new string[] { FundsId, CurrencyConstants.PesoId },
             new string[] { DollarFundsId, CurrencyConstants.DollarId },
