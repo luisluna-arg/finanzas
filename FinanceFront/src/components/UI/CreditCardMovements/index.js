@@ -9,7 +9,7 @@ function CreditCardMovements() {
   const [selectedCreditCardId, setSelectedCreditCardId] = useState("");
   const [uploadEndpoint, setUploadEndpoint] = useState(`${urls.creditCardMovements.upload}`);
   const [movementsEndpoint, setMovementsEndpoint] = useState(``);
-  
+
   const tableName = "credit-card-table";
 
   const refreshEndpoints = () => {
@@ -35,6 +35,13 @@ function CreditCardMovements() {
 
   const valueMapper = (field) => field != null ? field.value : null;
 
+  const numericHeader = {
+    classes: "text-end",
+    style: {
+      width: "100px"
+    }
+  };
+
   const TableColumns = [
     {
       id: "timeStamp",
@@ -47,7 +54,12 @@ function CreditCardMovements() {
         timeIntervals: 15,
         dateFormat: "DD/MM/YYYY HH:mm",
         placeholder: "Seleccionar fecha",
-      }      
+      },
+      header: {
+        style: {
+          width: "160px"
+        }
+      }
     },
     {
       id: "concept",
@@ -61,7 +73,7 @@ function CreditCardMovements() {
       placeholder: "Pesos",
       type: InputControlTypes.Decimal,
       min: 0.0,
-      headerClass: "text-end",
+      header: numericHeader,
       class: "text-end",
       editable: true,
       mapper: valueMapper,
@@ -73,7 +85,7 @@ function CreditCardMovements() {
       placeholder: "Dólares",
       type: InputControlTypes.Decimal,
       min: 0.0,
-      headerClass: "text-end",
+      header: numericHeader,
       class: "text-end",
       editable: true,
       mapper: valueMapper,
@@ -85,7 +97,8 @@ function CreditCardMovements() {
       placeholder: "Nro. Cuota",
       type: InputControlTypes.Integer,
       min: 0,
-      headerClass: "text-end",
+      header: numericHeader,
+      class: "text-end",
       editable: true,
     },
     {
@@ -94,7 +107,8 @@ function CreditCardMovements() {
       placeholder: "Cuotas",
       type: InputControlTypes.Integer,
       min: 0,
-      headerClass: "text-end",
+      header: numericHeader,
+      class: "text-end",
       editable: true,
     }
   ];
