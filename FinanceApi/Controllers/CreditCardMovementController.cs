@@ -25,6 +25,10 @@ public class CreditCardMovementController : ApiBaseController<CreditCardMovement
     public async Task<IActionResult> Create(CreateCreditCardMovementCommand request)
         => await Handle(request);
 
+    [HttpDelete]
+    public async Task<IActionResult> Delete(DeleteCreditCardMovementCommand request)
+        => await Handle(request);
+
     [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCreditCardMovementsQuery request)
         => await Handle(request);
