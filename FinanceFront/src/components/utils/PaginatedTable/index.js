@@ -57,12 +57,18 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         setCanNextPage(newPage < totalPages);
     }
 
-    const fetchData = async (dataUrl) => {
+    const fetchData = async () => {
         setData([]);
         try {
             setIsFetching(true);
-            if (dataUrl) {
-                let fetchData = await fetch(dataUrl);
+            if (url) {
+                const { queryParams, baseUrl } = parseUrl(url);
+                queryParams["Page"] = page;
+                queryParams["PageSize"] = pageSize;
+                const params = objectToUrlParams(queryParams);
+                const fetchUrl = `${baseUrl}?${params}`;
+
+                let fetchData = await fetch(fetchUrl);
                 let newData = await fetchData.json();
                 setData(newData);
                 setTotalPages(newData.totalPages);
@@ -153,10 +159,17 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
             console.error("Error:", error);
             // setRequestStatus("Ocurrió un error en la operación");
         }
+        finally {
+            fetchData();
+        }
     };
 
     const handleCreate = async (inputs) => {
         await handleRequest("POST", inputs);
+    };
+
+    const handleDelete = async (inputs) => {
+        await handleRequest("DELETE", inputs);
     };
 
     const onAdd = async (event) => {
@@ -166,14 +179,13 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         await handleCreate(values);
     };
 
+    const onDelete = async (event) => {
+        await handleDelete({ ids: [event.currentTarget.getAttribute('data-id')] });
+    };
+
     useEffect(() => {
         if (url) {
-            const { queryParams, baseUrl } = parseUrl(url);
-            queryParams["Page"] = page;
-            queryParams["PageSize"] = pageSize;
-            const params = objectToUrlParams(queryParams);
-            const fetchUrl = `${baseUrl}?${params}`;
-            fetchData(fetchUrl);
+            fetchData();
         }
     }, [url, page, pageSize]);
 
@@ -200,19 +212,23 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
             <table id={name} className="table">
                 <thead>
                     <tr>
-                        {columns.map((column, index) => (
-                            <th className={column.headerClass} scope="col" key={index}>
-                                {column.label}
-                            </th>
-                        ))}
-                        {admin && (<th></th>)}
+                        {columns.map((column, index) => {
+                            const { classes = "", style = {} } = column.header || {};
+                            const classValue = typeof classes === 'string' ? classes : classes.reduce((curr, next) => `${curr} ${next}`);
+                            return (
+                                <th className={`${classValue} align-bottom`} style={style} scope="col" key={index}>
+                                    {column.label}
+                                </th>
+                            );
+                            })}
+                        {admin && (<th style={{ width: "60px" }}></th>)}
                     </tr>
                 </thead>
                 <tbody>
                     {admin && <EditRow />}
                     {!data || !data.items || data.items.length === 0 &&
                         (<tr>
-                            <td colSpan={columns.length + 1}>
+                            <td colSpan={columns.length + 1} className='align-middle'>
                                 <div className='text-center'>No hay datos disponibles</div>
                             </td>
                         </tr>)}
@@ -224,10 +240,13 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
                                 const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[column.id]);
                                 const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
 
-                                return (<td className={column.class} key={`${name}-${column.id}-${index}`}>
+                                return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${column.id}-${index}`}>
                                     <span className={cssClasses}>{displayValue}</span>
                                 </td>);
                             })}
+                            {admin && (<td>
+                                <Button variant="outline-danger" style={{ width: "36px" }} data-id={record.id} onClick={onDelete}>-</Button>
+                            </td>)}
                         </tr>
                     ))}
                 </tbody>

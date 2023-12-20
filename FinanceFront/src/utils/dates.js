@@ -39,8 +39,6 @@ const tryGet = (dateToCheck) => {
 
   formatsToCheck.forEach((format) => {
     let localResult = moment(dateToCheck, format, true);
-    console.log(`Date: ${dateToCheck}`);
-    console.log(localResult);
     if (localResult.isValid()) {
       isValid = true;
       result = localResult;
