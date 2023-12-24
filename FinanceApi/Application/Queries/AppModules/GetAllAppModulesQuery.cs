@@ -1,6 +1,7 @@
 using FinanceApi.Application.Base.Handlers;
 using FinanceApi.Application.Queries.Base;
 using FinanceApi.Domain;
+using FinanceApi.Domain.Enums;
 using FinanceApi.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,10 +26,16 @@ public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModul
             query = query.Where(o => !o.Deactivated);
         }
 
+        if (request.AppModuleType.HasValue)
+        {
+            query = query.Where(o => o.Type.Id == (short)request.AppModuleType.Value);
+        }
+
         return await Task.FromResult(await query.ToArrayAsync());
     }
 }
 
 public class GetAllAppModulesQuery : GetAllQuery<AppModule?>
 {
+    public AppModuleTypeEnum? AppModuleType { get; set; }
 }

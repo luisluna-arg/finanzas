@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FinanceApi.Application.Base.Handlers;
-using FinanceApi.Core.SpecialTypes;
+using FinanceApi.Application.Commands.DebitOrigins;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories;
@@ -10,26 +10,49 @@ namespace FinanceApi.Application.Commands.Debits;
 
 public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand, Debit>
 {
-    private readonly IRepository<Debit, Guid> debitOriginRepository;
+    private readonly IMediator mediator;
+
+    private readonly IRepository<Debit, Guid> debitRepository;
+
+    private readonly IRepository<DebitOrigin, Guid> debitOriginRepository;
 
     public CreateDebitCommandHandler(
         FinanceDbContext db,
-        IRepository<Debit, Guid> debitRepository)
+        IMediator mediator,
+        IRepository<Debit, Guid> debitRepository,
+        IRepository<DebitOrigin, Guid> debitOriginRepository)
         : base(db)
     {
-        this.debitOriginRepository = debitRepository;
+        this.mediator = mediator;
+        this.debitRepository = debitRepository;
+        this.debitOriginRepository = debitOriginRepository;
     }
 
     public override async Task<Debit> Handle(CreateDebitCommand command, CancellationToken cancellationToken)
     {
+        var originName = command.Origin.Trim();
+
+        var origin = await debitOriginRepository.GetBy("Name", originName);
+
+        if (origin == null)
+        {
+            var createDebitOriginRequest = new CreateDebitOriginCommand()
+            {
+                Name = originName,
+                AppModuleId = command.AppModuleId
+            };
+
+            origin = await mediator.Send(createDebitOriginRequest)!;
+        }
+
         var newDebit = new Debit()
         {
-            OriginId = command.OriginId,
+            Origin = origin!,
             Amount = command.Amount,
             TimeStamp = DateTime.UtcNow
         };
 
-        await debitOriginRepository.Add(newDebit);
+        await debitRepository.Add(newDebit);
 
         return await Task.FromResult(newDebit);
     }
@@ -37,11 +60,13 @@ public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand,
 
 public class CreateDebitCommand : IRequest<Debit>
 {
-    [Required]
-    public Guid OriginId { get; set; }
+    public Guid AppModuleId { get; set; }
 
     [Required]
-    public Money Amount { get; set; } = 0m;
+    public string Origin { get; set; }
+
+    [Required]
+    public decimal Amount { get; set; } = 0m;
 
     [Required]
     public bool Deactivated { get; set; }
