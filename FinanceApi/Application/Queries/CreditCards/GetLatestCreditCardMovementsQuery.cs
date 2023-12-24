@@ -30,7 +30,11 @@ public class GetLatestCreditCardMovementsQueryHandler : BaseCollectionHandler<Ge
                 dates = await query.GroupBy(o => o.CreditCardId).Select(o => o.Max(o => o.TimeStamp)).ToArrayAsync();
             }
 
-            return await query.Where(o => dates.Contains(o.TimeStamp)).OrderByDescending(o => o.TimeStamp).ThenBy(o => o.CreditCard.Name).ToArrayAsync();
+            return await query.Where(o => dates.Contains(o.TimeStamp))
+                .OrderByDescending(o => o.TimeStamp)
+                .ThenBy(o => o.CreditCard.Name)
+                .ThenBy(o => o.Concept)
+                .ToArrayAsync();
         }
         catch
         {
