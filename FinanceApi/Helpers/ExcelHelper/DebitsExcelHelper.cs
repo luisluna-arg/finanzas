@@ -37,7 +37,7 @@ public class DebitsExcelHelper : IAppModuleExcelHelper<Debit>
                 {
                     records.Add(new Debit()
                     {
-                        DebitOrigin = new DebitOrigin()
+                        Origin = new DebitOrigin()
                         {
                             AppModuleId = appModule.Id,
                             AppModule = appModule,

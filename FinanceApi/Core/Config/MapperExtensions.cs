@@ -8,12 +8,20 @@ public static class MapperExtensions
     {
         services
             .AddAutoMapper(typeof(AppModuleMapperProfile))
+            .AddAutoMapper(typeof(AppModuleBasicMapperProfile))
+            .AddAutoMapper(typeof(AppModuleTypeMapperProfile))
             .AddAutoMapper(typeof(BankMapperProfile))
+            .AddAutoMapper(typeof(CreditCardMapperProfile))
+            .AddAutoMapper(typeof(CreditCardMovementMapperProfile))
             .AddAutoMapper(typeof(CurrencyConversionMapperProfile))
             .AddAutoMapper(typeof(CurrencyMapperProfile))
-            .AddAutoMapper(typeof(IOLInvestmentMapperProfile))
+            .AddAutoMapper(typeof(DebitMapperProfile))
+            .AddAutoMapper(typeof(DebitOriginMapperProfile))
+            .AddAutoMapper(typeof(IOLInvestmentAssetMapperProfile))
             .AddAutoMapper(typeof(IOLInvestmentAssetTypeMapperProfile))
+            .AddAutoMapper(typeof(IOLInvestmentMapperProfile))
             .AddAutoMapper(typeof(MovementMapperProfile))
-            .AddAutoMapper(typeof(DebitMapperProfile));
+            .AddAutoMapper(typeof(PaginatedDebitMapperProfile))
+            ;
     }
 }

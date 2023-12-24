@@ -10,11 +10,6 @@ public class AppModuleTypeConfiguration : IEntityTypeConfiguration<AppModuleType
     public void Configure(EntityTypeBuilder<AppModuleType> builder)
     {
         builder
-            .HasMany(c => c.AppModules)
-            .WithOne(e => e.Type)
-            .IsRequired();
-
-        builder
             .Property(o => o.Name)
             .IsRequired()
             .HasMaxLength(50)

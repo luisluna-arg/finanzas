@@ -97,22 +97,25 @@ public class DatabaseSeeder : IHostedService
         var now = DateTime.Now.ToUniversalTime();
 
         var newModules = new List<AppModule>();
+        var modulesToUpdate = new List<AppModule>();
 
         Action<string, string> collectModule = (moduleId, currencyId) =>
         {
-            if (!appModules.Any(o => o.Id.ToString().Equals(moduleId, StringComparison.InvariantCulture)))
+            var currency = currencies.FirstOrDefault(x => x.Id.ToString().Equals(currencyId, StringComparison.InvariantCulture));
+            var currencyName = CurrencyConstants.Names[currencyId];
+            if (currency == null) throw new SystemException($"Fatal error while seeding App database: Currency not found {currencyName}");
+
+            if (!AppModuleConstants.Types.ContainsKey(moduleId))
+                throw new SystemException($"Fatal error while seeding App database: AppModuleTypeEnum not found for ModuleId {moduleId}");
+
+            var appModuleType = appModuleTypes.FirstOrDefault(x => x.Id == (short)AppModuleConstants.Types[moduleId]);
+            if (appModuleType == null)
+                throw new SystemException($"Fatal error while seeding App database: AppModuleType not found {AppModuleConstants.Types[moduleId]}");
+
+            var appModule = appModules.FirstOrDefault(o => o.Id.ToString().Equals(moduleId, StringComparison.InvariantCulture));
+
+            if (appModule == null)
             {
-                var currency = currencies.FirstOrDefault(x => x.Id.ToString().Equals(currencyId, StringComparison.InvariantCulture));
-                var currencyName = CurrencyConstants.Names[currencyId];
-                if (currency == null) throw new SystemException($"Fatal error while seeding App database: Currency not found {currencyName}");
-
-                if (!AppModuleConstants.Types.ContainsKey(moduleId))
-                    throw new SystemException($"Fatal error while seeding App database: AppModuleTypeEnum not found for ModuleId {moduleId}");
-
-                var appModuleType = appModuleTypes.FirstOrDefault(x => x.Id == (short)AppModuleConstants.Types[moduleId]);
-                if (appModuleType == null)
-                    throw new SystemException($"Fatal error while seeding App database: AppModuleType not found {AppModuleConstants.Types[moduleId]}");
-
                 newModules.Add(new AppModule
                 {
                     Id = new Guid(moduleId),
@@ -121,6 +124,14 @@ public class DatabaseSeeder : IHostedService
                     Currency = currency,
                     Type = appModuleType
                 });
+            }
+            else
+            {
+                appModule.Name = AppModuleConstants.Names[moduleId];
+                appModule.Currency = currency;
+                appModule.Type = appModuleType;
+
+                modulesToUpdate.Add(appModule);
             }
         };
 
@@ -132,6 +143,12 @@ public class DatabaseSeeder : IHostedService
         if (newModules.Any())
         {
             await dbContext.AddRangeAsync(newModules);
+            await dbContext.SaveChangesAsync();
+        }
+
+        if (modulesToUpdate.Any())
+        {
+            dbContext.UpdateRange(modulesToUpdate);
             await dbContext.SaveChangesAsync();
         }
     }

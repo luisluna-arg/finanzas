@@ -44,7 +44,7 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
         var maxDate = newRecords.Max(o => o.TimeStamp);
 
         var records = await repository.GetDbSet()
-                .Include(o => o.DebitOrigin)
+                .Include(o => o.Origin)
                 .ToArrayAsync();
 
         var origins = new Dictionary<string, DebitOrigin>();
@@ -52,21 +52,21 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
         foreach (var record in newRecords)
         {
             var existingRecord = records
-                .FirstOrDefault(x => x.DebitOrigin.Name.Equals(record.DebitOrigin.Name, StringComparison.InvariantCultureIgnoreCase) &&
+                .FirstOrDefault(x => x.Origin.Name.Equals(record.Origin.Name, StringComparison.InvariantCultureIgnoreCase) &&
                     x.TimeStamp == record.TimeStamp);
             if (existingRecord != null) continue;
 
-            var origin = origins.ContainsKey(record.DebitOrigin.Name) ?
-                origins[record.DebitOrigin.Name] :
-                await originRepository.GetBy("Name", record.DebitOrigin.Name);
+            var origin = origins.ContainsKey(record.Origin.Name) ?
+                origins[record.Origin.Name] :
+                await originRepository.GetBy("Name", record.Origin.Name);
 
             if (origin != null)
             {
-                record.DebitOrigin = origin;
+                record.Origin = origin;
             }
             else
             {
-                origins.Add(record.DebitOrigin.Name, record.DebitOrigin);
+                origins.Add(record.Origin.Name, record.Origin);
             }
 
             await repository.Add(record, false);
@@ -76,14 +76,14 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
         var existingRecords = repository
             .FilterBy(timeStampProperty, ExpressionOperator.GreaterThanOrEqual, minDate)
             .FilterBy(timeStampProperty, ExpressionOperator.LessThanOrEqual, maxDate)
-            .Include(o => o.DebitOrigin)
-            .Where(o => o.DebitOrigin.AppModuleId == appModule.Id)
+            .Include(o => o.Origin)
+            .Where(o => o.Origin.AppModuleId == appModule.Id)
             .ToArray();
 
         newRecords = newRecords
             .Where(o => existingRecords.All(x =>
-                x.DebitOrigin.AppModuleId != o.DebitOrigin.AppModuleId ||
-                x.DebitOriginId != o.DebitOriginId ||
+                x.Origin.AppModuleId != o.Origin.AppModuleId ||
+                x.OriginId != o.OriginId ||
                 x.TimeStamp != o.TimeStamp ||
                 x.Amount != o.Amount))
             .ToArray();

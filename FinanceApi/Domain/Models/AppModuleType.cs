@@ -6,6 +6,4 @@ namespace FinanceApi.Domain.Models;
 public class AppModuleType : Entity<short>
 {
     required public AppModuleTypeEnum Name { get; set; }
-
-    public virtual ICollection<AppModule> AppModules { get; set; } = new List<AppModule>();
 }

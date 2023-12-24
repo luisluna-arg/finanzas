@@ -29,14 +29,15 @@ public class FinanceDbContext : DbContext
     {
         modelBuilder.UseSerialColumns();
 
-        modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
-        modelBuilder.ApplyConfiguration(new IOLInvestmentConfiguration());
-        modelBuilder.ApplyConfiguration(new IOLInvestmentAssetTypeConfiguration());
         modelBuilder.ApplyConfiguration(new AppModuleConfiguration());
         modelBuilder.ApplyConfiguration(new AppModuleTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new MovementConfiguration());
-        modelBuilder.ApplyConfiguration(new DebitConfiguration());
         modelBuilder.ApplyConfiguration(new CreditCardMovementConfiguration());
+        modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
+        modelBuilder.ApplyConfiguration(new DebitConfiguration());
+        modelBuilder.ApplyConfiguration(new DebitOriginConfiguration());
+        modelBuilder.ApplyConfiguration(new IOLInvestmentAssetTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new IOLInvestmentConfiguration());
+        modelBuilder.ApplyConfiguration(new MovementConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }

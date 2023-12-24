@@ -16,4 +16,6 @@ public record AppModuleDto : Dto<Guid>
     public Guid? CurrencyId { get; set; }
 
     public CurrencyDto? Currency { get; set; }
+
+    public AppModuleTypeDto? Type { get; set; }
 }

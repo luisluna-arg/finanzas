@@ -9,9 +9,10 @@ public class DebitConfiguration : IEntityTypeConfiguration<Debit>
 {
     public void Configure(EntityTypeBuilder<Debit> builder)
     {
-        builder
-            .Property(o => o.TimeStamp)
-            .HasConversion(o => o.ToUniversalTime(), o => o);
+        builder.Property(e => e.TimeStamp)
+            .HasConversion(
+                v => v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
         builder
             .Property(o => o.Amount)

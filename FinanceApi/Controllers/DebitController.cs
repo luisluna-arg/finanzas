@@ -22,6 +22,14 @@ public class DebitController : ApiBaseController<Debit?, Guid, DebitDto>
         => await Handle(request);
 
     [HttpPost]
+    public async Task<IActionResult> Create(CreateDebitCommand command)
+        => await Handle(command);
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete(DeleteDebitCommand request)
+        => await Handle(request);
+
+    [HttpPost]
     [Route("upload")]
     public async Task<IActionResult> Upload(IFormFile file, string appModuleId, [DefaultValue("Local")] string dateKind)
     {
@@ -36,4 +44,8 @@ public class DebitController : ApiBaseController<Debit?, Guid, DebitDto>
     [HttpPatch("deactivate/{id}")]
     public async Task<IActionResult> Deactivate(Guid id)
         => await Handle404(new DeactivateDebitCommand { Id = id });
+
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedDebitsQuery request)
+        => await Handle(request);
 }

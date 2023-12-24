@@ -14,8 +14,6 @@ public class AppModuleConfiguration : IEntityTypeConfiguration<AppModule>
             .IsRequired();
 
         builder
-            .HasOne(c => c.Type)
-            .WithMany(c => c.AppModules)
-            .IsRequired();
+            .HasOne(c => c.Type);
     }
 }

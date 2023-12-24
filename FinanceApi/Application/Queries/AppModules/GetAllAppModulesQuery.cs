@@ -15,7 +15,10 @@ public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModul
 
     public override async Task<ICollection<AppModule?>> Handle(GetAllAppModulesQuery request, CancellationToken cancellationToken)
     {
-        var query = DbContext.AppModule.Include(o => o.Currency).AsQueryable();
+        var query = DbContext.AppModule
+            .Include(o => o.Currency)
+            .Include(o => o.Type)
+            .AsQueryable();
 
         if (!request.IncludeDeactivated)
         {

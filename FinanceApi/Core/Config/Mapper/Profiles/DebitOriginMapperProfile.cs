@@ -1,4 +1,4 @@
-using FinanceApi.Application.Dtos.Debits;
+using FinanceApi.Application.Dtos.DebitOrigins;
 using FinanceApi.Core.Config.Mapper.Profiles.Base;
 using FinanceApi.Domain.Models;
 

@@ -4,9 +4,9 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class AppModuleTypeMapperProfile : BaseMapperProfile<AppModuleType, AppModuleTypeDto>
+public class AppModuleBasicMapperProfile : BaseMapperProfile<AppModule, AppModuleBasicDto>
 {
-    public AppModuleTypeMapperProfile()
+    public AppModuleBasicMapperProfile()
         : base()
     {
     }
