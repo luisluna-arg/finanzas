@@ -22,6 +22,7 @@ const urls = {
   debits: {
     endpoint: `${baseUrl}api/debits/`,
     paginated: `${baseUrl}api/debits/paginated`,
+    latest: `${baseUrl}api/debits/latest`,
   },
   debitOrigins: {
     endpoint: `${baseUrl}api/debit-origins`

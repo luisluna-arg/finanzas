@@ -29,7 +29,6 @@ const FetchTable = ({ name, classes, title, url, columns, onFetch }) => {
         }
     }, [url]);
 
-
     return (
         <>
             <table id={name} className={["table", ...classes].reduce((prev, curr) => `${prev} ${curr}`)}>
@@ -73,12 +72,6 @@ const FetchTable = ({ name, classes, title, url, columns, onFetch }) => {
                     }
                 </tbody>
             </table>
-            {/* {isFetching && !isFetchingNextPage && (
-                <CustomToast text={"Cargando..."}></CustomToast>
-            )}
-            {isFetchingNextPage && (
-                <CustomToast text={"Cargando más..."}></CustomToast>
-            )} */}
         </>
     );
 };
