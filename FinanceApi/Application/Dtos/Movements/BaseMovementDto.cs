@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using FinanceApi.Core.SpecialTypes;
 using MovementEntity = FinanceApi.Domain.Models.Movement;
 
 namespace FinanceApi.Application.Dtos.Movements;
@@ -23,10 +24,10 @@ public abstract record BaseMovementDto : Dto<Guid>
     public string? Concept2 { get; set; }
 
     [DefaultValue(5000)]
-    public decimal Amount { get; set; }
+    public Money Amount { get; set; }
 
     [DefaultValue(100000)]
-    public decimal? Total { get; set; }
+    public Money? Total { get; set; }
 
     public MovementEntity BuildEntity()
     {

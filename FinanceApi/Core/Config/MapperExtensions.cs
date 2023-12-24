@@ -22,6 +22,7 @@ public static class MapperExtensions
             .AddAutoMapper(typeof(IOLInvestmentMapperProfile))
             .AddAutoMapper(typeof(MovementMapperProfile))
             .AddAutoMapper(typeof(PaginatedDebitMapperProfile))
+            .AddAutoMapper(typeof(PaginatedMovementMapperProfile))
             ;
     }
 }
