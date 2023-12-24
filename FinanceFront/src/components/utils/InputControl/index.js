@@ -123,7 +123,7 @@ export const InputControl = (props) => {
                     placeholder={props.settings.placeholder}
                     type="text"
                     className={[
-                        "mb-2 ",
+                        "mb-2",
                         "form-control",
                         props.settings.visible ? "visible" : "invisible",
                     ].reduce((current, value) => `${current} ${value}`)}

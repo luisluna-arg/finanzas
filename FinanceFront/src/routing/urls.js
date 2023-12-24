@@ -19,6 +19,13 @@ const urls = {
     paginated: `${baseUrl}api/credit-card-movements/paginated`,
     upload: `${baseUrl}api/credit-card-movements/upload`,
   },
+  debits: {
+    endpoint: `${baseUrl}api/debits/`,
+    paginated: `${baseUrl}api/debits/paginated`,
+  },
+  debitOrigins: {
+    endpoint: `${baseUrl}api/debit-origins`
+  },
   funds: {
     endpoint: `${baseUrl}api/funds/`,
     upload: `${baseUrl}api/funds/upload`,

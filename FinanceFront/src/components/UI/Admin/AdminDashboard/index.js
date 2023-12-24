@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
 import Bank from "../Bank";
 import CreditCard from "../CreditCard";
+import DebitOrigin from "../DebitOrigin";
 
 const componentMap = {
   Bank: <Bank />,
+  DebitOrigin: <DebitOrigin />,
   CreditCard: <CreditCard />,
 };
 
 const labelMap = {
   Bank: "Bancos",
+  DebitOrigin: "Orígenes de débito",
   CreditCard: "Tarjetas de Crédito",
 };
 
