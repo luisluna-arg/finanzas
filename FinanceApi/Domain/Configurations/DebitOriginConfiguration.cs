@@ -9,6 +9,6 @@ public class DebitOriginConfiguration : IEntityTypeConfiguration<DebitOrigin>
     public void Configure(EntityTypeBuilder<DebitOrigin> builder)
     {
         builder
-            .HasIndex(o => o.Name).IsUnique();
+            .HasIndex(o => new { o.Name, o.AppModuleId }).IsUnique();
     }
 }

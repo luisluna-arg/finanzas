@@ -22,9 +22,9 @@ public class GetAllDebitsQueryHandler : BaseCollectionHandler<GetAllDebitsQuery,
             query = query.Where(o => !o.Deactivated);
         }
 
-        if (!string.IsNullOrWhiteSpace(request.AppModuleId))
+        if (request.AppModuleId.HasValue)
         {
-            query = query.Where(o => o.Origin.AppModuleId == new Guid(request.AppModuleId));
+            query = query.Where(o => o.Origin.AppModuleId == request.AppModuleId);
         }
 
         return await query.OrderByDescending(o => o.TimeStamp).ThenBy(o => o.Origin.Name).ToArrayAsync();
@@ -33,5 +33,5 @@ public class GetAllDebitsQueryHandler : BaseCollectionHandler<GetAllDebitsQuery,
 
 public class GetAllDebitsQuery : GetAllQuery<Debit?>
 {
-    public string? AppModuleId { get; set; }
+    public Guid? AppModuleId { get; set; }
 }

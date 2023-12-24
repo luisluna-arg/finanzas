@@ -40,6 +40,11 @@ public class GetPaginatedDebitsQueryHandler : IRequestHandler<GetPaginatedDebits
             query = query.Where(o => o.TimeStamp <= request.To.Value);
         }
 
+        if (request.AppModuleId.HasValue)
+        {
+            query = query.Where(o => o.Origin.AppModuleId == request.AppModuleId.Value);
+        }
+
         if (request.OriginId.HasValue)
         {
             query = query.Where(o => o.OriginId == request.OriginId.Value);
@@ -82,6 +87,8 @@ public class GetPaginatedDebitsQuery : IRequest<PaginatedResult<Debit>>
     public int Page { get; set; } = 1; // Current page number
 
     public int PageSize { get; set; } = 10; // Number of items per page
+
+    public Guid? AppModuleId { get; set; }
 
     public bool IncludeDeactivated { get; set; }
 

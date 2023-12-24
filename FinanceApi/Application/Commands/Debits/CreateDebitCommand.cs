@@ -32,7 +32,10 @@ public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand,
     {
         var originName = command.Origin.Trim();
 
-        var origin = await debitOriginRepository.GetBy("Name", originName);
+        var origin = await debitOriginRepository.GetBy(new Dictionary<string, object>() {
+            { "Name", originName },
+            { "AppModuleId", command.AppModuleId }
+        });
 
         if (origin == null)
         {
