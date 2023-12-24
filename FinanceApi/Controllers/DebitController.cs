@@ -21,6 +21,11 @@ public class DebitController : ApiBaseController<Debit?, Guid, DebitDto>
     public async Task<IActionResult> Get([FromQuery] GetAllDebitsQuery request)
         => await Handle(request);
 
+    [HttpGet]
+    [Route("latest")]
+    public async Task<IActionResult> Latest([FromQuery] GetLatestDebitsQuery request)
+        => await Handle(request);
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateDebitCommand command)
         => await Handle(command);
