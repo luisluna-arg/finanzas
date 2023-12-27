@@ -50,9 +50,9 @@ const FetchTable = ({ name, classes, title, url, columns, onFetch }) => {
                         return (
                             <tr key={record.id}>
                                 {columns && columns.map((column, index) => {
-                                    const value = column.mapper ? column.mapper(record[column.id]) : record[column.id];
+                                    const value = column.mapper ? column.mapper(record) : record[column.id];
                                     const displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
-                                    const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[column.id]);
+                                    const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(value);
                                     const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
 
                                     return (<td className={column.class} key={`${name}-${column.id}-${index}`}>
@@ -80,7 +80,7 @@ const FetchTable = ({ name, classes, title, url, columns, onFetch }) => {
 
                                 if (!column.totals && !isNumericCol) return <td key={cellKey}></td>
 
-                                let value = data.reduce((acc, curr) => acc + column.totals.reducer(curr[column.id]), 0);
+                                let value = data.reduce((acc, curr) => acc + column.totals.reducer(curr), 0);
                                 const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(value);
                                 const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
 

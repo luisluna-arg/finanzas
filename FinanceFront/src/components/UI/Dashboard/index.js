@@ -14,9 +14,9 @@ const CreditCardTableSettings = {
       label: "Monto",
       class: ["text-end"],
       headerClass: ["text-end"],
-      mapper: (r) => r ? r.value : 0,
+      mapper: (r) => r ? r.amount.value : 0,
       totals: {
-        reducer: (r) => r ? r.value : 0
+        reducer: (r) => r ? r.amount.value : 0
       }
     },
     {
@@ -24,22 +24,35 @@ const CreditCardTableSettings = {
       label: "Dólares",
       class: ["text-end"],
       headerClass: ["text-end"],
-      mapper: (r) => r ? r.value : 0,
+      mapper: (r) => r ? r.amountDollars.value : 0,
       totals: {
-        reducer: (r) => r ? r.value : 0
+        reducer: (r) => r ? r.amountDollars.value : 0
+      }
+    },    
+    {
+      id: "totalAmount",
+      label: "Total",
+      class: ["text-end"],
+      headerClass: ["text-end"],
+      mapper: (r) => r ? r.amount.value : 0,
+      totals: {
+        reducer: (r) => r ? r.amount.value : 0
       }
     },
     {
       id: "paymentNumber",
-      label: "Cuota",
+      label: "Nro. Cuota",
       class: ["text-end"],
       headerClass: ["text-end"],
     },
     {
       id: "planSize",
-      label: "Total",
+      label: "Cuotas",
       class: ["text-end"],
-      headerClass: ["text-end"]
+      headerClass: ["text-end"],
+      totals: {
+        reducer: (r) => r ? r.amount.value * r.planSize : 0
+      }
     }
   ],
 };
@@ -51,12 +64,13 @@ const DebitTableSettings = {
       label: "Débito/Servicio"
     },
     {
-      label: "Monto", id: "amount",
+      id: "amount",
+      label: "Monto", 
       class: ["text-end"],
       headerClass: ["text-end"],
-      mapper: (r) => r ? r.value : 0,
+      mapper: (r) => r ? r.amount.value : 0,
       totals: {
-        reducer: (r) => r ? r.value : 0
+        reducer: (r) => r ? r.amount.value : 0
       }
     }
   ],
