@@ -81,6 +81,26 @@ const DebitTableSettings = {
   ],
 };
 
+const ExpensesTableSettings = {
+  columns: [
+    {
+      id: "label",
+      label: "Gasto/Servicio"
+    },
+    {
+      id: "value",
+      label: "Monto",
+      class: ["text-end"],
+      headerClass: ["text-end"],
+      mapper: (r) => r ? r.value : 0,
+      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      totals: {
+        reducer: (r) => r ? r.value : 0
+      }
+    }
+  ],
+};
+
 const debitModulePesos = "4c1ee918-e8f9-4bed-8301-b4126b56cfc0";
 const debitModuleDollars = "03cc66c7-921c-4e05-810e-9764cd365c1d";
 
@@ -104,6 +124,7 @@ debitTableTitles[debitModuleDollars] = "Débitos Dólares";
 
 const Dashboard = () => {
   const [creditCardData, setCreditCardData] = useState(null);
+  const [expensesData, setExpensesData] = useState(null);
 
   const fetchData = async (dataUrl, setter, onFetch) => {
     setter([]);
@@ -117,11 +138,13 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
+      // Additional cleanup logic if needed
     }
   };
 
   useEffect(() => {
     fetchData(urls.creditCards.get, setCreditCardData);
+    fetchData(urls.summary.totalExpenses, setExpensesData);
   }, []);
 
   const tableClasses = ["table", "mt-2", "small", "table-sm"];
@@ -170,7 +193,22 @@ const Dashboard = () => {
   return (
     <div className="container-fluid">
       <div className='row'>
-        <div className="col-8 row flex-wrap justify-content-center">
+        <div className="col-2 row flex-wrap justify-content-center">
+          {expensesData && expensesData.expenses && <div className="w-auto me-2 overflow-hidden">
+            <FetchTable
+              name={`Expenses`}
+              title={{
+                text: `Gastos`,
+                class: `text-center red-bg text-light`
+              }}
+              data={expensesData.expenses}
+              columns={ExpensesTableSettings.columns}
+              classes={tableClasses}
+            />
+          </div>
+          }
+        </div>
+        <div className="col-7 row flex-wrap justify-content-center">
           {
             creditCardData && creditCardData.map((data, index) => {
               const url = `${urls.creditCardMovements.latest}?CreditCardId=${data.id}`;
@@ -185,7 +223,7 @@ const Dashboard = () => {
             })
           }
         </div>
-        <div className="col-4 row flex-wrap justify-content-center">
+        <div className="col-3 row flex-wrap justify-content-center">
           {
             debitModules && debitModules.map((appModuleId, index) => {
               const url = `${urls.debits.latest}?AppModuleId=${appModuleId}`;

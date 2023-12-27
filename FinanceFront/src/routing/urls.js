@@ -34,6 +34,9 @@ const urls = {
   movements: {
     paginated: `${baseUrl}api/movements/paginated`,
     upload: `${baseUrl}api/movements/upload`,
+  },
+  summary: {
+    totalExpenses: `${baseUrl}api/summary/totalExpenses`
   }
 };
 
