@@ -51,7 +51,8 @@ dotnet_diagnostic.SA1602.severity = None
 dotnet_diagnostic.IDE0005.severity = error
 # Disable warning for no summary
 dotnet_diagnostic.CS1591.severity = None
-
+# Disable warning for field should be private
+dotnet_diagnostic.SA1401.severity = None
 
 # All .cs files in the Migrations directory should have their naming convention ignored
 [*Migrations/*.cs]

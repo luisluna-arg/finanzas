@@ -13,8 +13,8 @@ public abstract class ApiBaseController<TEntity, TId, TDto> : ControllerBase
     where TDto : Dto<TId>
     where TEntity : IEntity?
 {
-    private readonly IMapper mapper;
-    private readonly IMediator mediator;
+    protected readonly IMapper mapper;
+    protected readonly IMediator mediator;
 
     protected ApiBaseController(IMapper mapper, IMediator mediator)
     {
