@@ -5,23 +5,59 @@ import "./styles.css";
 
 const CreditCardTableSettings = {
   columns: [
-    { label: "Concepto", id: "concept" },
     {
-      label: "Monto", id: "amount", mapper: (r) => r ? r.value : 0
+      id: "concept",
+      label: "Concepto"
     },
     {
-      label: "Dólares", id: "amountDollars", mapper: (r) => r ? r.value : 0
+      id: "amount",
+      label: "Monto",
+      class: ["text-end"],
+      headerClass: ["text-end"],
+      mapper: (r) => r ? r.value : 0,
+      totals: {
+        reducer: (r) => r ? r.value : 0
+      }
     },
-    { label: "Cuota", id: "paymentNumber" },
-    { label: "Total", id: "planSize" }
+    {
+      id: "amountDollars",
+      label: "Dólares",
+      class: ["text-end"],
+      headerClass: ["text-end"],
+      mapper: (r) => r ? r.value : 0,
+      totals: {
+        reducer: (r) => r ? r.value : 0
+      }
+    },
+    {
+      id: "paymentNumber",
+      label: "Cuota",
+      class: ["text-end"],
+      headerClass: ["text-end"],
+    },
+    {
+      id: "planSize",
+      label: "Total",
+      class: ["text-end"],
+      headerClass: ["text-end"]
+    }
   ],
 };
 
 const DebitTableSettings = {
   columns: [
-    { label: "Débito/Servicio", id: "origin" },
     {
-      label: "Monto", id: "amount", mapper: (r) => r ? r.value : 0
+      id: "origin",
+      label: "Débito/Servicio"
+    },
+    {
+      label: "Monto", id: "amount",
+      class: ["text-end"],
+      headerClass: ["text-end"],
+      mapper: (r) => r ? r.value : 0,
+      totals: {
+        reducer: (r) => r ? r.value : 0
+      }
     }
   ],
 };
@@ -69,7 +105,7 @@ const Dashboard = () => {
     fetchData(urls.creditCards.get, setCreditCardData);
   }, []);
 
-  const tableClasses = ["table", "mt-2", "small"];
+  const tableClasses = ["table", "mt-2", "small", "table-sm"];
 
   const backgroundClasses = [
     'bg-primary',
