@@ -71,6 +71,27 @@ const FetchTable = ({ name, classes, title, url, columns, onFetch }) => {
                         </tr>
                     }
                 </tbody>
+                {data && data.length > 0 && columns.filter(o => o.totals != null).length > 0 && (
+                    <tfoot style={{ borderTop: "2px solid" }}>
+                        <tr key={`${name}-totals-row`}>
+                            {columns && columns.map((column, index) => {
+                                const cellKey = `${name}-total-${column.id}-${index}`;
+                                const isNumericCol = [InputControlTypes.Decimal, InputControlTypes.Integer].indexOf(column.type) > -1;
+
+                                if (!column.totals && !isNumericCol) return <td key={cellKey}></td>
+
+                                let value = data.reduce((acc, curr) => acc + column.totals.reducer(curr[column.id]), 0);
+                                const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(value);
+                                const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
+
+                                return (<td className={column.class} key={cellKey}>
+                                    <span className={cssClasses}>{value}</span>
+                                </td>);
+                            })}
+                        </tr>
+                    </tfoot>
+                )}
+
             </table>
         </>
     );
