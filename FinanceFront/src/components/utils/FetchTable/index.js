@@ -51,10 +51,10 @@ const FetchTable = ({ name, classes, title, url, columns, onFetch }) => {
                             <tr key={record.id}>
                                 {columns && columns.map((column, index) => {
                                     const value = column.mapper ? column.mapper(record) : record[column.id];
-                                    const displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
                                     const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(value);
                                     const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
-
+                                    let displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
+                                    if (column.formatter) displayValue = column.formatter(displayValue);
                                     return (<td className={column.class} key={`${name}-${column.id}-${index}`}>
                                         <span className={cssClasses}>{displayValue}</span>
                                     </td>);
@@ -83,6 +83,8 @@ const FetchTable = ({ name, classes, title, url, columns, onFetch }) => {
                                 let value = data.reduce((acc, curr) => acc + column.totals.reducer(curr), 0);
                                 const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(value);
                                 const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
+
+                                if (column.formatter) value = column.formatter(value);
 
                                 return (<td className={column.class} key={cellKey}>
                                     <span className={cssClasses}>{value}</span>

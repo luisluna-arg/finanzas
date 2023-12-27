@@ -15,6 +15,7 @@ const CreditCardTableSettings = {
       class: ["text-end"],
       headerClass: ["text-end"],
       mapper: (r) => r ? r.amount.value : 0,
+      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
       totals: {
         reducer: (r) => r ? r.amount.value : 0
       }
@@ -25,16 +26,18 @@ const CreditCardTableSettings = {
       class: ["text-end"],
       headerClass: ["text-end"],
       mapper: (r) => r ? r.amountDollars.value : 0,
+      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
       totals: {
         reducer: (r) => r ? r.amountDollars.value : 0
       }
-    },    
+    },
     {
       id: "totalAmount",
       label: "Total",
       class: ["text-end"],
       headerClass: ["text-end"],
       mapper: (r) => r ? r.amount.value : 0,
+      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
       totals: {
         reducer: (r) => r ? r.amount.value : 0
       }
@@ -50,6 +53,7 @@ const CreditCardTableSettings = {
       label: "Cuotas",
       class: ["text-end"],
       headerClass: ["text-end"],
+      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
       totals: {
         reducer: (r) => r ? r.amount.value * r.planSize : 0
       }
@@ -65,10 +69,11 @@ const DebitTableSettings = {
     },
     {
       id: "amount",
-      label: "Monto", 
+      label: "Monto",
       class: ["text-end"],
       headerClass: ["text-end"],
       mapper: (r) => r ? r.amount.value : 0,
+      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
       totals: {
         reducer: (r) => r ? r.amount.value : 0
       }
