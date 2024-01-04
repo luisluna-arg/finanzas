@@ -49,6 +49,10 @@ public class MovementController : ApiBaseController<Movement?, Guid, MovementDto
     public async Task<IActionResult> Deactivate(Guid id)
         => await Handle404(new DeactivateMovementCommand { Id = id });
 
+    [HttpDelete]
+    public async Task<IActionResult> Delete(DeleteMovementsCommand request)
+        => await Handle(request);
+
     [HttpPost]
     [Route("upload")]
     public async Task<IActionResult> Upload(IFormFile file, Guid appModuleId, Guid bankId, [DefaultValue("Local")] string dateKind)
