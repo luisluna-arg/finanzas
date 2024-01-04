@@ -3,11 +3,12 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom"; // Update import
 import AdminDashboard from "../Admin/AdminDashboard";
-import Dashboard from "../Dashboard";
 import BankAccountMovements from "../Movements";
 import CreditCardMovements from "../CreditCardMovements";
-import "./App.css";
+import Dashboard from "../Dashboard";
 import Debits from "../Debits";
+import Investments from "../Investments";
+import "./App.css";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ function App() {
             <Route path="/movements" element={<BankAccountMovements />} />
             <Route path="/credit-cards-movements" element={<CreditCardMovements />} />
             <Route path="/debits" element={<Debits />} />
+            <Route path="/investments" element={<Investments />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Router>

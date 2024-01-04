@@ -31,6 +31,10 @@ const urls = {
     endpoint: `${baseUrl}api/funds/`,
     upload: `${baseUrl}api/funds/upload`,
   },
+  iolInvestments: {
+    endpoint: `${baseUrl}api/iol-investment/`,
+    paginated: `${baseUrl}api/iol-investment/paginated`,
+  },
   movements: {
     endpoint: `${baseUrl}api/movements/`,
     paginated: `${baseUrl}api/movements/paginated`,
