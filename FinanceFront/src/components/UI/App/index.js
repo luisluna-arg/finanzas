@@ -2,7 +2,6 @@ import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom"; // Update import
-import About from "../About";
 import AdminDashboard from "../Admin/AdminDashboard";
 import Dashboard from "../Dashboard";
 import BankAccountMovements from "../Movements";
@@ -41,6 +40,9 @@ function App() {
                   <Nav.Link className="text-light" href="/debits">
                     Débitos
                   </Nav.Link>
+                  <Nav.Link className="text-light" href="/investments">
+                    Inversiones
+                  </Nav.Link>
                   <Nav.Link className="text-light" href="/admin">
                     Administración
                   </Nav.Link>
@@ -55,7 +57,6 @@ function App() {
             <Route path="/credit-cards-movements" element={<CreditCardMovements />} />
             <Route path="/debits" element={<Debits />} />
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/about" element={<About />} />
           </Routes>
         </Router>
       </QueryClientProvider>
