@@ -10,5 +10,10 @@ public class DebitOriginConfiguration : IEntityTypeConfiguration<DebitOrigin>
     {
         builder
             .HasIndex(o => new { o.Name, o.AppModuleId }).IsUnique();
+
+        builder
+            .HasMany(o => o.Debits)
+            .WithOne(o => o.Origin)
+            .IsRequired();
     }
 }

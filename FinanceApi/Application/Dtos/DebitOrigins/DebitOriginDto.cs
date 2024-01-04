@@ -12,4 +12,6 @@ public record DebitOriginDto : Dto<Guid>
     public virtual AppModuleBasicDto AppModule { get; set; }
 
     public string Name { get; set; }
+
+    public int RecordCount { get; set; }
 }

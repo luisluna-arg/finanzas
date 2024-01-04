@@ -33,6 +33,7 @@ public class UpdateDebitOriginCommandHandler : BaseResponseHandler<UpdateDebitOr
 
         debitOrigin.AppModule = appModule;
         debitOrigin.Name = command.Name;
+        debitOrigin.Deactivated = command.Deactivated;
 
         await debitOriginRepository.Update(debitOrigin);
 
@@ -50,4 +51,7 @@ public class UpdateDebitOriginCommand : IRequest<DebitOrigin>
 
     [Required]
     public string Name { get; set; } = string.Empty;
+
+    [Required]
+    public bool Deactivated { get; set; }
 }

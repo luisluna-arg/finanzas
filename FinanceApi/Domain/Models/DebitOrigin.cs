@@ -11,4 +11,6 @@ public class DebitOrigin : Entity<Guid>
     public virtual AppModule AppModule { get; set; }
 
     required public string Name { get; set; }
+
+    public virtual ICollection<Debit> Debits { get; set; } = new List<Debit>();
 }

@@ -18,6 +18,9 @@ public class GetAllDebitOriginsQueryHandler : BaseCollectionHandler<GetAllDebitO
     {
         var query = DbContext.DebitOrigin
             .Include(o => o.AppModule)
+            .Include(o => o.Debits)
+            .OrderBy(o => o.Name)
+                .ThenBy(o => o.AppModule.Name)
             .AsQueryable();
 
         if (!request.IncludeDeactivated)

@@ -24,7 +24,7 @@ public class GetLatestDebitsQueryHandler : BaseCollectionHandler<GetLatestDebits
 
         if (!request.IncludeDeactivated)
         {
-            baseQuery = baseQuery.Where(o => !o.Deactivated);
+            baseQuery = baseQuery.Where(o => !o.Origin.AppModule.Deactivated && !o.Origin.Deactivated && !o.Deactivated);
         }
 
         var debits = new List<Debit?>();

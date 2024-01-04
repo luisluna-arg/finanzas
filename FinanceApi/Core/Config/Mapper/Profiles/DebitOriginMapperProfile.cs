@@ -9,5 +9,6 @@ public class DebitOriginMapperProfile : BaseMapperProfile<DebitOrigin, DebitOrig
     public DebitOriginMapperProfile()
         : base()
     {
+        this.Map.ForMember(o => o.RecordCount, o => o.MapFrom(x => x.Debits.Count));
     }
 }
