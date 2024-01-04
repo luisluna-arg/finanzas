@@ -4,18 +4,21 @@ import Bank from "../Bank";
 import CreditCard from "../CreditCard";
 import DebitOrigin from "../DebitOrigin";
 import IOLInvestmentsAsset from "../IOLInvestmentsAsset";
+import IOLInvestmentsAssetType from "../IOLInvestmentsAssetType";
 
 const componentMap = {
   Bank: <Bank />,
   CreditCard: <CreditCard />,
   DebitOrigin: <DebitOrigin />,
   IOLInvestmentsAsset: <IOLInvestmentsAsset />,
+  IOLInvestmentsAssetType: <IOLInvestmentsAssetType />,
 };
 
 const labelMap = {
   Bank: "Bancos",
   CreditCard: "Tarjetas de Crédito",
   DebitOrigin: "Orígenes de débito",
+  IOLInvestmentsAssetType: "Tipos de activos de inversión",
   IOLInvestmentsAsset: "Activos de inversión",
 };
 

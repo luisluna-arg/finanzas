@@ -263,7 +263,7 @@ const AdminModule = ({
       <Table id={elementIds.table} className="table mt-2">
         <thead>
           <tr>
-            <th></th>
+            <th style={{ width: "40px" }}></th>
             {tableSettings.columns.map((column, rowIndex) => {
               const rowKey = `${moduleName}-header-${rowIndex}`;
               return <th key={rowKey}>{column.title}</th>;
@@ -275,7 +275,7 @@ const AdminModule = ({
             const rowKey = `${moduleName}-row-${rowIndex}`;
             return (
               <tr key={rowKey}>
-                <td>
+                <td className={["text-center"]}>
                   <Form.Check
                     id={`${record[tableSettings.idColumn ?? "id"]}`}
                     type="checkbox"
@@ -290,7 +290,7 @@ const AdminModule = ({
 
                   if (typeof columnValue === "boolean") {
                     return (
-                      <td key={columnKey}>
+                      <td key={columnKey} className={["text-center"]}>
                         <Form.Check
                           type="checkbox"
                           checked={columnValue}

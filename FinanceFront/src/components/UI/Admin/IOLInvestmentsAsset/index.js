@@ -44,13 +44,10 @@ const FormInputSettings = [
   }
 ];
 
-console.log("Collection", FormInputSettings.filter(o => o.visible).map(o => ({ title: o.label, name: o.id })));
-
 const TableSettings = {
   columns: FormInputSettings.filter(o => o.visible).map(o => {
     var result = { title: o.label, name: o.id };
-    if (o.id === "typeId")
-    {
+    if (o.id === "typeId") {
       result["mapper"] = (r) => r.type.name;
     }
     return result;
