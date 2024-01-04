@@ -135,7 +135,7 @@ const AdminModule = ({
 
   const onItemSelect = () => {
     let table = document.getElementById(elementIds.table);
-    let inputs = Array.from(table.querySelectorAll("input:checked"));
+    let inputs = Array.from(table.querySelectorAll("tr td:first-child input:checked"));
     let itemCount = inputs.length;
     setSelectedInputs(inputs);
     setSelectedItemCount(itemCount);
@@ -293,7 +293,7 @@ const AdminModule = ({
                       <td key={columnKey}>
                         <Form.Check
                           type="checkbox"
-                          value={columnValue}
+                          checked={columnValue}
                           disabled
                         />
                       </td>

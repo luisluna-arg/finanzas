@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InputControlTypes } from "../../utils/InputControl";
 import dates from "../../../utils/dates";
 
-const FetchTable = ({ name, classes, title, data, url, columns, onFetch }) => {
+const FetchTable = ({ name, classes, title, data, url, columns, hideIfEmpty, onFetch }) => {
     const [internalData, setInternalData] = useState(data ?? []);
     const [isFetching, setIsFetching] = useState(false);
 
@@ -28,6 +28,8 @@ const FetchTable = ({ name, classes, title, data, url, columns, onFetch }) => {
             fetchData(url);
         }
     }, [url]);
+
+    if (hideIfEmpty && (!internalData || internalData.length == 0)) return (<></>);
 
     return (
         <table id={name} className={["table", ...classes].reduce((prev, curr) => `${prev} ${curr}`)}>

@@ -32,6 +32,7 @@ const urls = {
     upload: `${baseUrl}api/funds/upload`,
   },
   movements: {
+    endpoint: `${baseUrl}api/movements/`,
     paginated: `${baseUrl}api/movements/paginated`,
     upload: `${baseUrl}api/movements/upload`,
   },

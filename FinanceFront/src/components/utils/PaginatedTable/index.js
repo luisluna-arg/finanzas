@@ -175,7 +175,16 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
     const onAdd = async (event) => {
         const values = getEditRowValues();
         validateForm();
-        values[admin.key.id] = admin.key.value
+        if (admin.key) {
+            var keys = [];
+            if (!Array.isArray(admin.key)) {
+                keys.push(admin.key);
+            }
+
+            keys.forEach(key => {
+                values[key.id] = key.value
+            });
+        }
         await handleCreate(values);
     };
 
@@ -220,7 +229,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
                                     {column.label}
                                 </th>
                             );
-                            })}
+                        })}
                         {admin && (<th style={{ width: "60px" }}></th>)}
                     </tr>
                 </thead>
