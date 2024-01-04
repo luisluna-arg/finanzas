@@ -77,7 +77,12 @@ function CreditCardMovements() {
       class: "text-end",
       editable: true,
       mapper: valueMapper,
-      conditionalClass: valueConditionalClass
+      conditionalClass: valueConditionalClass,
+      header: {
+        style: {
+          width: "140px"
+        }
+      }
     },
     {
       id: "amountDollars",
@@ -89,7 +94,12 @@ function CreditCardMovements() {
       class: "text-end",
       editable: true,
       mapper: valueMapper,
-      conditionalClass: valueConditionalClass
+      conditionalClass: valueConditionalClass,
+      header: {
+        style: {
+          width: "140px"
+        }
+      }
     },
     {
       id: "paymentNumber",
@@ -115,7 +125,7 @@ function CreditCardMovements() {
 
   useEffect(() => {
     refreshEndpoints();
-  }, [selectedCreditCardId, selectedCreditCardId]);
+  }, [selectedCreditCardId]);
 
   if (!movementsEndpoint) return <div>Data</div>;
 

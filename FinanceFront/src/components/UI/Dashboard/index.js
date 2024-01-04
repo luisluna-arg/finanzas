@@ -170,6 +170,7 @@ const Dashboard = () => {
           url={url}
           columns={CreditCardTableSettings.columns}
           classes={tableClasses}
+          hideIfEmpty={true}
         />
       </div>)
   }
@@ -186,6 +187,7 @@ const Dashboard = () => {
           url={url}
           columns={DebitTableSettings.columns}
           classes={tableClasses}
+          hideIfEmpty={true}
         />
       </div>)
   }
@@ -226,7 +228,7 @@ const Dashboard = () => {
         <div className="col-3 row flex-wrap justify-content-center">
           {
             debitModules && debitModules.map((appModuleId, index) => {
-              const url = `${urls.debits.latest}?AppModuleId=${appModuleId}`;
+              const url = `${urls.debits.latest}?AppModuleId=${appModuleId}&IncludeDeactivated=false`;
               const bgClass = debitBackgroundClasses[appModuleId];
               const tableName = debitTableNames[appModuleId];
               const title = debitTableTitles[appModuleId];

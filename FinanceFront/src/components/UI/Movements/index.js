@@ -53,13 +53,61 @@ function Movements() {
     selectedAppModuleId,
   ]);
 
-  console.log({
-    selectedBankId,
-    selectedAppModuleId,
-    fundsUploadEndpoint,
-    movementsEndpoint,
-    appModulesEndpoint,
-  });
+  const placeholder = "Ingrese un valor";
+  const movementsTableColumns = [
+    {
+      id: "timeStamp",
+      label: "Fecha",
+      placeholder,
+      type: InputControlTypes.DateTime,
+      editable: true,
+      datetime: {
+        timeFormat: "HH:mm",
+        timeIntervals: 15,
+        dateFormat: "DD/MM/YYYY HH:mm",
+        placeholder: "Seleccionar fecha",
+      },
+      header: {
+        style: {
+          width: "160px"
+        }
+      }
+    },
+    {
+      id: "concept1",
+      label: "Concepto 1",
+      placeholder,
+      editable: true,
+    },
+    {
+      id: "concept2",
+      label: "Concepto 2",
+      placeholder,
+      editable: true,
+    },
+    {
+      id: "amount",
+      label: "Monto",
+      placeholder,
+      headerClass: "text-end",
+      class: "text-end",
+      editable: true,
+      mapper: (field) => parseFloat(field.value.toFixed(2)),
+      conditionalClass: {
+        class: "text-success fw-bold",
+        eval: (field) => field.value > 0
+      }
+    },
+    {
+      id: "total",
+      label: "Total",
+      placeholder,
+      headerClass: "text-end",
+      class: "text-end",
+      editable: true,
+      mapper: (field) => parseFloat(field.value.toFixed(2)),
+    }
+  ];
 
   let enabled = fundsUploadEndpoint
     && movementsEndpoint
@@ -95,53 +143,21 @@ function Movements() {
           <PaginatedTable
             name={"funds-table"}
             url={movementsEndpoint}
-            onFetch={onFetchFundsTable}
-            columns={[
-              {
-                id: "timeStamp",
-                label: "Fecha",
-                placeholder: "Fecha",
-                type: InputControlTypes.DateTime,
-                editable: true,
-                datetime: {
-                  timeFormat: "HH:mm",
-                  timeIntervals: 15,
-                  dateFormat: "DD/MM/YYYY HH:mm",
-                  placeholder: "Seleccionar fecha",
+            admin={{
+              endpoint: urls.movements.endpoint,
+              key: [
+                {
+                  id: "AppModuleId",
+                  value: selectedAppModuleId
                 },
-                header: {
-                  style: {
-                    width: "160px"
-                  }
+                {
+                  id: "BankId",
+                  value: selectedBankId
                 }
-              },
-              {
-                id: "concept1",
-                label: "Concepto 1",
-              },
-              {
-                id: "concept2",
-                label: "Concepto 2",
-              },
-              {
-                id: "amount",
-                label: "Monto",
-                headerClass: "text-end",
-                class: "text-end",
-                mapper: (field) => parseFloat(field.value.toFixed(2)),
-                conditionalClass: {
-                  class: "text-success fw-bold",
-                  eval: (field) => field.value > 0
-                }
-              },
-              {
-                id: "total",
-                label: "Total",
-                headerClass: "text-end",
-                class: "text-end",
-                mapper: (field) => parseFloat(field.value.toFixed(2)),
-              }
-            ]} />
+              ]
+            }}
+            onFetch={onFetchFundsTable}
+            columns={movementsTableColumns} />
         </div>
         }
       </div>

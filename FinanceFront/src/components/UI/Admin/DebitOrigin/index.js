@@ -37,6 +37,7 @@ const FormInputSettings = [
 const TableSettings = {
   columns: [
     { title: "Nombre", name: "name" },
+    { title: "Registros", name: "recordCount" },
     { title: "Desactivado", name: "deactivated" },
   ],
 };
@@ -48,7 +49,7 @@ const DebitOrigin = () => {
       title={"Orígenes de débito"}
       formInputs={FormInputSettings}
       tableSettings={TableSettings}
-      endpoint={urls.debitOrigins.endpoint}
+      endpoint={`${urls.debitOrigins.endpoint}?IncludeDeactivated=true`}
     />
   );
 };
