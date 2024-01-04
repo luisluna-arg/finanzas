@@ -35,12 +35,10 @@ const tryGet = (dateToCheck) => {
   ];
 
   let result = null;
-  let isValid = false;
 
   formatsToCheck.forEach((format) => {
     let localResult = moment(dateToCheck, format, true);
     if (localResult.isValid()) {
-      isValid = true;
       result = localResult;
       return false; // exit the loop if a valid format is found
     }

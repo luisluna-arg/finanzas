@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React, { useState } from "react";
-import { InputControl, InputControlTypes } from '../InputControl';
+import { InputControl } from '../InputControl';
 
 const DEFAULTS = {
     value: "",

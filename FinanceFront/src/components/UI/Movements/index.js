@@ -51,6 +51,7 @@ function Movements() {
   }, [
     selectedBankId,
     selectedAppModuleId,
+    refreshEndpoints
   ]);
 
   const placeholder = "Ingrese un valor";

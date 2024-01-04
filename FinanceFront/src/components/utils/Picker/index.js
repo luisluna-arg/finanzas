@@ -34,7 +34,7 @@ function Picker({ id, url, mapper, onChange, onFetch }) {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   return (
     <select id={id} className="form-select" onChange={onPickerChange} value={selectedValue}>

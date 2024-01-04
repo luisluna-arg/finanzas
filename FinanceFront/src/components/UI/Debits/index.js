@@ -7,7 +7,6 @@ function Debits() {
   const [pesosEndpoint, setPesosEndpoint] = useState(``);
   const [dollarsEndpoint, setDollarsEndpoint] = useState(``);
 
-  const moduleTypeId = 2;
   const pesosModuleId = "4c1ee918-e8f9-4bed-8301-b4126b56cfc0";
   const dollarsModuleId = "03cc66c7-921c-4e05-810e-9764cd365c1d";
 

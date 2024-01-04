@@ -4,12 +4,10 @@ import dates from "../../../utils/dates";
 
 const FetchTable = ({ name, classes, title, data, url, columns, hideIfEmpty, onFetch }) => {
     const [internalData, setInternalData] = useState(data ?? []);
-    const [isFetching, setIsFetching] = useState(false);
 
     const fetchData = async (dataUrl) => {
         setInternalData([]);
         try {
-            setIsFetching(true);
             if (dataUrl) {
                 let fetchData = await fetch(dataUrl);
                 let newData = await fetchData.json();
@@ -19,7 +17,6 @@ const FetchTable = ({ name, classes, title, data, url, columns, hideIfEmpty, onF
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-            setIsFetching(false);
         }
     };
 
@@ -29,7 +26,7 @@ const FetchTable = ({ name, classes, title, data, url, columns, hideIfEmpty, onF
         }
     }, [url]);
 
-    if (hideIfEmpty && (!internalData || internalData.length == 0)) return (<></>);
+    if (hideIfEmpty && (!internalData || internalData.length === 0)) return (<></>);
 
     return (
         <table id={name} className={["table", ...classes].reduce((prev, curr) => `${prev} ${curr}`)}>

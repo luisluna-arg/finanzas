@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, Table } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import dates from "../../../utils/dates";
 import CustomToast from '../CustomToast';
@@ -57,7 +57,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         setCanNextPage(newPage < totalPages);
     }
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setData([]);
         try {
             setIsFetching(true);
@@ -82,7 +82,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         } finally {
             setIsFetching(false);
         }
-    };
+    }, []);
 
     const getEditRowInputs = () => {
         const row = document.getElementById(adminRowId);
@@ -196,7 +196,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         if (url) {
             fetchData();
         }
-    }, [url, page, pageSize]);
+    }, [url, page, pageSize, fetchData]);
 
     const EditRow = () => {
         return (<tr id={adminRowId}>
@@ -235,7 +235,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
                 </thead>
                 <tbody>
                     {admin && <EditRow />}
-                    {!data || !data.items || data.items.length === 0 &&
+                    {(!data || !data.items || data.items.length === 0) &&
                         (<tr>
                             <td colSpan={columns.length + 1} className='align-middle'>
                                 <div className='text-center'>No hay datos disponibles</div>

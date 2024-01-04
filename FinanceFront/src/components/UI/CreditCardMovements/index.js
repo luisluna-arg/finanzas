@@ -38,7 +38,7 @@ function CreditCardMovements() {
   const numericHeader = {
     classes: "text-end",
     style: {
-      width: "100px"
+      width: "140px"
     }
   };
 
@@ -77,12 +77,7 @@ function CreditCardMovements() {
       class: "text-end",
       editable: true,
       mapper: valueMapper,
-      conditionalClass: valueConditionalClass,
-      header: {
-        style: {
-          width: "140px"
-        }
-      }
+      conditionalClass: valueConditionalClass
     },
     {
       id: "amountDollars",
@@ -94,12 +89,7 @@ function CreditCardMovements() {
       class: "text-end",
       editable: true,
       mapper: valueMapper,
-      conditionalClass: valueConditionalClass,
-      header: {
-        style: {
-          width: "140px"
-        }
-      }
+      conditionalClass: valueConditionalClass
     },
     {
       id: "paymentNumber",
