@@ -20,6 +20,10 @@ public class IOLInvestmentController : ApiBaseController<IOLInvestment?, Guid, I
     public async Task<IActionResult> Get([FromQuery] GetIOLInvestmentsQuery request)
         => await Handle(request);
 
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedIOLInvestmentsQuery request)
+        => await Handle(request);
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromQuery] GetSingleIOLInvestmentQuery request)
         => await Handle(request);
