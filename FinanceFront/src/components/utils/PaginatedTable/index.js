@@ -245,7 +245,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
                         <tr key={record.id}>
                             {columns && columns.map((column, index) => {
                                 const value = column.mapper ? column.mapper(record[column.id]) : record[column.id];
-                                const displayValue = column.type && column.type == InputControlTypes.DateTime ? dates.toDisplay(value) : value;
+                                const displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
                                 const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[column.id]);
                                 const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
 

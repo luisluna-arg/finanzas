@@ -22,7 +22,7 @@ const setPropsDefaults = (originalProps) => {
         originalProps.settings
     );
 
-    if (typeof fullProps.value == "undefined") fullProps.value = "";
+    if (typeof fullProps.value === "undefined") fullProps.value = "";
 
     return fullProps;
 };

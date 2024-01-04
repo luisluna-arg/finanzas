@@ -15,19 +15,19 @@ const setPropsDefaults = (originalProps) => {
   let fullProps = Object.assign({}, DEFAULTS, originalProps);
 
   if (
-    typeof originalProps.editorSettings == "undefined" ||
-    originalProps.editorSettings == null
+    typeof originalProps.editorSettings === "undefined" ||
+    originalProps.editorSettings === null
   ) {
     fullProps.editorSettings = DEFAULTS.editorSettings;
   }
 
-  if (typeof originalProps.form == "undefined" || originalProps.form == null) {
+  if (typeof originalProps.form === "undefined" || originalProps.form === null) {
     fullProps.form = DEFAULTS.form;
   }
 
   if (
-    typeof originalProps.title == "undefined" ||
-    originalProps.title == null
+    typeof originalProps.title === "undefined" ||
+    originalProps.title === null
   ) {
     fullProps.title = DEFAULTS.title;
   }
@@ -37,8 +37,8 @@ const setPropsDefaults = (originalProps) => {
 
     if (
       !(fieldSettings.id in fullProps.form) ||
-      (typeof fullProps.form[fieldSettings.id] == "undefined" &&
-        fullProps.form[fieldSettings.id] == null)
+      (typeof fullProps.form[fieldSettings.id] === "undefined" &&
+        fullProps.form[fieldSettings.id] === null)
     )
       fullProps.form[fieldSettings.id] = "";
   }
