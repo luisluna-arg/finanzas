@@ -15,12 +15,16 @@ public class GetAllIOLInvestmentAssetsQueryHandler : BaseCollectionHandler<GetAl
 
     public override async Task<ICollection<IOLInvestmentAsset?>> Handle(GetAllIOLInvestmentAssetsQuery request, CancellationToken cancellationToken)
     {
-        var query = DbContext.IOLInvestmentAsset.AsQueryable();
+        var query = DbContext.IOLInvestmentAsset
+            .Include(o => o.Type)
+            .AsQueryable();
 
         if (!request.IncludeDeactivated)
         {
             query = query.Where(o => !o.Deactivated);
         }
+
+        query = query.OrderBy(o => o.Symbol).ThenBy(o => o.Description).ThenBy(o => o.Type.Name);
 
         return await Task.FromResult(await query.ToArrayAsync());
     }
