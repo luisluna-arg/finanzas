@@ -22,6 +22,8 @@ public class GetAllIOLInvestmentAssetTypesQueryHandler : BaseCollectionHandler<G
             query = query.Where(o => !o.Deactivated);
         }
 
+        query = query.OrderBy(o => o.Name);
+
         return await Task.FromResult(await query.ToArrayAsync());
     }
 }
