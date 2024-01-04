@@ -35,6 +35,12 @@ const urls = {
     endpoint: `${baseUrl}api/iol-investment/`,
     paginated: `${baseUrl}api/iol-investment/paginated`,
   },
+  iolInvestmentAssets: {
+    endpoint: `${baseUrl}api/iol-investment-asset/`
+  },
+  iolInvestmentAssetTypes: {
+    endpoint: `${baseUrl}api/iol-investment-asset-type/`
+  },
   movements: {
     endpoint: `${baseUrl}api/movements/`,
     paginated: `${baseUrl}api/movements/paginated`,

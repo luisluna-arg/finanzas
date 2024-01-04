@@ -3,17 +3,20 @@ import { Col, Nav, Row, Tab } from "react-bootstrap";
 import Bank from "../Bank";
 import CreditCard from "../CreditCard";
 import DebitOrigin from "../DebitOrigin";
+import IOLInvestmentsAsset from "../IOLInvestmentsAsset";
 
 const componentMap = {
   Bank: <Bank />,
-  DebitOrigin: <DebitOrigin />,
   CreditCard: <CreditCard />,
+  DebitOrigin: <DebitOrigin />,
+  IOLInvestmentsAsset: <IOLInvestmentsAsset />,
 };
 
 const labelMap = {
   Bank: "Bancos",
-  DebitOrigin: "Orígenes de débito",
   CreditCard: "Tarjetas de Crédito",
+  DebitOrigin: "Orígenes de débito",
+  IOLInvestmentsAsset: "Activos de inversión",
 };
 
 const AdminDashboard = () => {
