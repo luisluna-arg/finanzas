@@ -57,19 +57,18 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         setCanNextPage(newPage < totalPages);
     }
 
-    const fetchData = useCallback(async () => {
+    const fetchData = useCallback(async (fetchUrl) => {
         setData([]);
         try {
             setIsFetching(true);
-            if (url) {
-                const { queryParams, baseUrl } = parseUrl(url);
+            if (fetchUrl) {
+                const { queryParams, baseUrl } = parseUrl(fetchUrl);
                 queryParams["Page"] = page;
                 queryParams["PageSize"] = pageSize;
                 const params = objectToUrlParams(queryParams);
-                const fetchUrl = `${baseUrl}?${params}`;
+                const paginatedUrl = `${baseUrl}?${params}`;
 
-                let fetchData = await fetch(fetchUrl);
-                let newData = await fetchData.json();
+                let newData = await (await fetch(paginatedUrl)).json();
                 setData(newData);
                 setTotalPages(newData.totalPages);
                 setCanPreviousPage(newData.page > 1);
@@ -160,7 +159,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
             // setRequestStatus("Ocurrió un error en la operación");
         }
         finally {
-            fetchData();
+            fetchData(url);
         }
     };
 
@@ -194,7 +193,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
 
     useEffect(() => {
         if (url) {
-            fetchData();
+            fetchData(url);
         }
     }, [url, page, pageSize, fetchData]);
 

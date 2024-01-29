@@ -12,21 +12,23 @@ function CreditCardMovements() {
 
   const tableName = "credit-card-table";
 
-  const refreshEndpoints = () => {
-    setUploadEndpoint(`${urls.creditCardMovements.upload}?DateKind=Local&CreditCardId=${selectedCreditCardId}`);
-    setMovementsEndpoint(`${urls.creditCardMovements.paginated}?CreditCardId=${selectedCreditCardId}`);
-  }
+  const updateMovementsEndpoint = (creditCardId) => {
+    setMovementsEndpoint(`${urls.creditCardMovements.paginated}?CreditCardId=${creditCardId}`);
+    setUploadEndpoint(`${urls.creditCardMovements.upload}?CreditCardId=${creditCardId}`);
+  };
 
   const onCreditCardPickerChange = (picker) => {
-    setSelectedCreditCardId(picker.value);
+    var newCreditCardId = selectedCreditCardId !== picker.value ? picker.value : selectedCreditCardId;
+    setSelectedCreditCardId(newCreditCardId);
+    updateMovementsEndpoint(newCreditCardId);
   };
 
-  const onCreditCardPickerFetch = (data) => {
-    setSelectedCreditCardId(data[0].id);
+  const onCreditCardPickerFetch = ({ data }) => {
+    console.log(`onCreditCardPickerFetch`);
+    let newCreditCardId = data[0].id;
+    setSelectedCreditCardId(newCreditCardId);
+    updateMovementsEndpoint(newCreditCardId);
   };
-
-  const onFetchMovementsTable = (data) => {
-  }
 
   const valueConditionalClass = {
     class: "text-success fw-bold",
@@ -114,10 +116,8 @@ function CreditCardMovements() {
   ];
 
   useEffect(() => {
-    refreshEndpoints();
-  }, [selectedCreditCardId]);
+  }, [selectedCreditCardId, movementsEndpoint]);
 
-  if (!movementsEndpoint) return <div>Data</div>;
 
   return (
     <div className="container pt-3 pb-3">
@@ -128,13 +128,16 @@ function CreditCardMovements() {
             url={urls.creditCards.get}
             mapper={{ id: "id", label: record => `${record.name} ${record.bank.name}` }}
             onChange={onCreditCardPickerChange}
-            onFetch={onCreditCardPickerFetch} />
+            onFetch={onCreditCardPickerFetch}
+          />
         </div>
       </div>
       <hr className="py-1" />
       <Uploader url={uploadEndpoint} extensions={[".xls", ".xlsx"]} />
       <hr className="py-1" />
-      <PaginatedTable
+      {(!movementsEndpoint || movementsEndpoint.trim() === "") &&
+        <div className={"container centered"}>Cargando datos</div>}
+      {movementsEndpoint && <PaginatedTable
         name={tableName}
         admin={{
           endpoint: urls.creditCardMovements.endpoint,
@@ -144,8 +147,8 @@ function CreditCardMovements() {
           }
         }}
         url={movementsEndpoint}
-        onFetch={onFetchMovementsTable}
-        columns={TableColumns} />
+        columns={TableColumns}
+      />}
     </div>
   );
 }

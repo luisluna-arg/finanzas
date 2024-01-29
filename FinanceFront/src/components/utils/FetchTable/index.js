@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InputControlTypes } from "../../utils/InputControl";
 import dates from "../../../utils/dates";
 
-const FetchTable = ({ name, classes, title, data, url, columns, hideIfEmpty, onFetch }) => {
+const FetchTable = ({ name, classes, wrapper, title, data, url, columns, hideIfEmpty, onFetch }) => {
     const [internalData, setInternalData] = useState(data ?? []);
 
     const fetchData = async (dataUrl) => {
@@ -28,7 +28,7 @@ const FetchTable = ({ name, classes, title, data, url, columns, hideIfEmpty, onF
 
     if (hideIfEmpty && (!internalData || internalData.length === 0)) return (<></>);
 
-    return (
+    const Content = () => (
         <table id={name} className={["table", ...classes].reduce((prev, curr) => `${prev} ${curr}`)}>
             <thead>
                 {title && <tr>
@@ -91,9 +91,20 @@ const FetchTable = ({ name, classes, title, data, url, columns, hideIfEmpty, onF
                     </tr>
                 </tfoot>
             )}
-
         </table>
     );
+
+    if (wrapper) {
+        let wrapperClasses = wrapper.classes ?? [];
+        console.log(`wrapper.classes`, wrapper.classes);
+        console.log(`wrapperClasses: ${wrapperClasses}`);
+        return (<div className={wrapperClasses.join(' ')}>
+            <Content />
+        </div>);
+    }
+    else {
+        return (<Content />);
+    }
 };
 
 export default FetchTable;

@@ -159,37 +159,42 @@ const Dashboard = () => {
   ];
 
   const CreditCardTable = ({ name, headerTitle, headerColor, url }) => {
-    return (
-      <div className="w-auto me-2 overflow-hidden">
-        <FetchTable
-          name={name}
-          title={{
-            text: headerTitle,
-            class: `text-center ${headerColor}`
-          }}
-          url={url}
-          columns={CreditCardTableSettings.columns}
-          classes={tableClasses}
-          hideIfEmpty={true}
-        />
-      </div>)
+    return (<FetchTable
+      name={name}
+      title={{
+        text: headerTitle,
+        class: `text-center ${headerColor}`
+      }}
+      url={url}
+      columns={CreditCardTableSettings.columns}
+      classes={tableClasses}
+      hideIfEmpty={true}
+      wrapper={
+        {
+          classes: ["w-auto", "overflow-hidden"]
+        }
+      }
+    />)
   }
 
   const DebitTable = ({ name, headerTitle, headerColor, url }) => {
     return (
-      <div className="w-auto me-2 overflow-hidden">
-        <FetchTable
-          name={name}
-          title={{
-            text: headerTitle,
-            class: `text-center ${headerColor}`
-          }}
-          url={url}
-          columns={DebitTableSettings.columns}
-          classes={tableClasses}
-          hideIfEmpty={true}
-        />
-      </div>)
+      <FetchTable
+        name={name}
+        title={{
+          text: headerTitle,
+          class: `text-center ${headerColor}`
+        }}
+        url={url}
+        columns={DebitTableSettings.columns}
+        classes={tableClasses}
+        hideIfEmpty={true}
+        wrapper={
+          {
+            classes: ["w-auto", "overflow-hidden"]
+          }
+        }
+      />);
   }
 
   return (
