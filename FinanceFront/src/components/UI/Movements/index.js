@@ -28,7 +28,7 @@ function Movements() {
   };
 
   const onBankPickerFetch = (data) => {
-    setSelectedBankId(data[0].id);
+    setSelectedBankId(data.data[0].id);
     refreshEndpoints();
   };
 
@@ -38,7 +38,7 @@ function Movements() {
   };
 
   const onAppModulePickerFetch = (data) => {
-    setSelectedAppModuleId(data[0].id);
+    setSelectedAppModuleId(data.data[0].id);
     refreshEndpoints();
   };
 
