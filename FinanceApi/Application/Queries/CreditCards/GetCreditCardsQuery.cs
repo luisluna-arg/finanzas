@@ -22,6 +22,11 @@ public class GetCreditCardQueryHandler : BaseCollectionHandler<GetCreditCardsQue
             query = query.Where(o => o.BankId == new Guid(request.BankId));
         }
 
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
         return await query
             .OrderBy(o => o.Bank.Name)
             .ThenBy(o => o.Name)
