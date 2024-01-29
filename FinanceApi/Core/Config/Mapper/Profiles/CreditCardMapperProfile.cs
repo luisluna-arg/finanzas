@@ -9,5 +9,6 @@ public class CreditCardMapperProfile : BaseMapperProfile<CreditCard, CreditCardD
     public CreditCardMapperProfile()
         : base()
     {
+        this.Map.ForMember(o => o.RecordCount, o => o.MapFrom(x => x.Movements.Count));
     }
 }

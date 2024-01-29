@@ -13,5 +13,7 @@ public record CreditCardDto : Dto<Guid>
 
     public BankDto Bank { get; set; }
 
+    public int RecordCount { get; set; }
+
     required public string Name { get; set; }
 }

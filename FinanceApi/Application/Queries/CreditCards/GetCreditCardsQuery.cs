@@ -15,7 +15,10 @@ public class GetCreditCardQueryHandler : BaseCollectionHandler<GetCreditCardsQue
 
     public override async Task<ICollection<CreditCard?>> Handle(GetCreditCardsQuery request, CancellationToken cancellationToken)
     {
-        var query = DbContext.CreditCard.Include(o => o.Bank).AsQueryable();
+        var query = DbContext.CreditCard
+            .Include(o => o.Bank)
+            .Include(o => o.Movements)
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.BankId))
         {

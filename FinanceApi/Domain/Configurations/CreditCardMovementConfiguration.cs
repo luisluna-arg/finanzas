@@ -24,5 +24,9 @@ public class CreditCardMovementConfiguration : IEntityTypeConfiguration<CreditCa
         builder
             .Property(o => o.AmountDollars)
             .HasConversion(new MoneyConverter());
+
+        builder
+            .HasOne(o => o.CreditCard)
+            .WithMany(o => o.Movements);
     }
 }
