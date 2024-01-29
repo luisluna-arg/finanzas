@@ -25,8 +25,6 @@ const FormInputSettings = [
   }
 ];
 
-console.log("collection", FormInputSettings.filter(o => o.visible).map(o => ({ title: o.label, name: o.id })));
-
 const TableSettings = {
   columns: FormInputSettings.filter(o => o.visible).map(o => ({ title: o.label, name: o.id }))
 };
