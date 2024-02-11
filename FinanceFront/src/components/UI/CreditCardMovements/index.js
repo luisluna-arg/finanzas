@@ -24,7 +24,6 @@ function CreditCardMovements() {
   };
 
   const onCreditCardPickerFetch = ({ data }) => {
-    console.log(`onCreditCardPickerFetch`);
     let newCreditCardId = data[0].id;
     setSelectedCreditCardId(newCreditCardId);
     updateMovementsEndpoint(newCreditCardId);

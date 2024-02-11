@@ -96,8 +96,6 @@ const FetchTable = ({ name, classes, wrapper, title, data, url, columns, hideIfE
 
     if (wrapper) {
         let wrapperClasses = wrapper.classes ?? [];
-        console.log(`wrapper.classes`, wrapper.classes);
-        console.log(`wrapperClasses: ${wrapperClasses}`);
         return (<div className={wrapperClasses.join(' ')}>
             <Content />
         </div>);
