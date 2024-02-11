@@ -39,7 +39,7 @@ public class GetLatestDebitsQueryHandler : BaseCollectionHandler<GetLatestDebits
             if (record != null) debits.Add(record);
         }
 
-        return debits;
+        return debits.OrderBy(x => x.Origin.Name).ToArray();
     }
 }
 

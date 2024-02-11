@@ -62,6 +62,7 @@ public class GetPaginatedDebitsQueryHandler : IRequestHandler<GetPaginatedDebits
 
         var paginatedItems = await query
             .OrderByDescending(o => o.TimeStamp)
+            .ThenBy(o => o.Origin.Name)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
