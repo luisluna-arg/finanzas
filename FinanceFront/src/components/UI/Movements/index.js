@@ -55,6 +55,14 @@ function Movements() {
   ]);
 
   const placeholder = "Ingrese un valor";
+  const textStyle = {
+    paddingTop: '0',
+    paddingBottom: '0',
+  };
+  const numericStyle = {
+    paddingTop: '0',
+    paddingBottom: '0',
+  };
   const movementsTableColumns = [
     {
       id: "timeStamp",
@@ -62,6 +70,10 @@ function Movements() {
       placeholder,
       type: InputControlTypes.DateTime,
       editable: true,
+      style: {
+        paddingTop: '0',
+        paddingBottom: '0',
+      },
       datetime: {
         timeFormat: "HH:mm",
         timeIntervals: 15,
@@ -79,12 +91,14 @@ function Movements() {
       label: "Concepto 1",
       placeholder,
       editable: true,
+      style: textStyle,
     },
     {
       id: "concept2",
       label: "Concepto 2",
       placeholder,
       editable: true,
+      style: textStyle,
     },
     {
       id: "amount",
@@ -93,6 +107,7 @@ function Movements() {
       headerClass: "text-end",
       class: "text-end",
       editable: true,
+      style: numericStyle,
       mapper: (field) => parseFloat(field.value.toFixed(2)),
       conditionalClass: {
         class: "text-success fw-bold",
@@ -106,6 +121,7 @@ function Movements() {
       headerClass: "text-end",
       class: "text-end",
       editable: true,
+      style: numericStyle,
       mapper: (field) => parseFloat(field.value.toFixed(2)),
     }
   ];

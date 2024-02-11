@@ -31,37 +31,36 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
     const [data, setData] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
     const [canPreviousPage, setCanPreviousPage] = useState(false);
     const [canNextPage, setCanNextPage] = useState(false);
-    const [isFetching, setIsFetching] = useState(false);
-    const [pageSize, setPageSize] = useState(10);
-    const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
+    const [reload, setReload] = useState(true);
 
     const adminRowId = `${name}-edit-row`;
 
+    const updatePage = (pageNumber, pageCount) => {
+        setPage(pageNumber);
+        setCanPreviousPage(pageNumber > 1);
+        setCanNextPage(pageNumber < (pageCount ?? totalPages));
+        setReload(true);
+    }
+
     const goToPreviousPage = () => {
-        const newPage = page <= 1 ? 1 : page - 1;
-        setPage(newPage);
-        setCanPreviousPage(newPage > 0);
+        updatePage(page <= 1 ? 1 : page - 1);
     }
 
     const goToNextPage = () => {
-        const newPage = page >= totalPages - 1 ? totalPages : page + 1;
-        setPage(newPage);
-        setCanNextPage(newPage < totalPages);
+        updatePage(page >= totalPages ? totalPages : page + 1);
     }
 
     const goToPage = (newPage) => {
-        setPage(newPage);
-        setCanPreviousPage(newPage > 0);
-        setCanNextPage(newPage < totalPages);
+        updatePage(newPage);
     }
 
     const fetchData = useCallback(async (fetchUrl) => {
         setData([]);
         try {
-            setIsFetching(true);
-            if (fetchUrl) {
+            if (reload && fetchUrl) {
                 const { queryParams, baseUrl } = parseUrl(fetchUrl);
                 queryParams["Page"] = page;
                 queryParams["PageSize"] = pageSize;
@@ -71,17 +70,16 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
                 let newData = await (await fetch(paginatedUrl)).json();
                 setData(newData);
                 setTotalPages(newData.totalPages);
-                setCanPreviousPage(newData.page > 1);
-                setCanNextPage(newData.totalPages > newData.page);
+                updatePage(page, newData.totalPages);
 
                 onFetch && onFetch(newData);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-            setIsFetching(false);
+            setReload(false);
         }
-    }, []);
+    }, [page]);
 
     const getEditRowInputs = () => {
         const row = document.getElementById(adminRowId);
@@ -201,23 +199,64 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         return (<tr id={adminRowId}>
             {columns && columns.map((column, index) => {
                 if (column.editable) {
-                    return (<td className={column.class} key={`${name}-${column.id}-${index}`}>
+                    return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${column.id}-${index}`}>
                         <Input value={""} settings={column} />
                     </td>);
                 }
                 else {
-                    return (<td key={`${name}-${column.id}-${index}`}></td>);
+                    return (<td className={"align-middle"} key={`${name}-${column.id}-${index}`}></td>);
                 }
             })}
-            <th>
-                <Button variant="outline-primary" onClick={onAdd}>+</Button>
+            <th className={"align-middle"}>
+                <ActionButton text={'+'} action={onAdd} />
             </th>
         </tr>);
     };
 
+    const ActionButton = ({ text, action, disabled, dataId, variant }) => {
+        const buttonStyle = {
+            width: '2.8em',
+            height: "31px"
+        };
+
+        return (
+            <>
+                <Button
+                    variant={variant ?? 'outline-primary'}
+                    size="sm"
+                    style={buttonStyle}
+                    className="me-2 small"
+                    onClick={action}
+                    disabled={disabled}
+                    data-id={dataId}>
+                    {text}
+                </Button>
+            </>
+        );
+    }
+
+    const Navigation = () => {
+        return (<>
+            <div className='d-flex p-2 justify-content-center'>
+                <span className='d-inline p-2 me-2'>
+                    Page{' '}
+                    <strong>
+                        {page} of {totalPages}
+                    </strong>
+                </span>
+
+                <ActionButton text={'<<'} action={() => goToPage(1)} disabled={!canPreviousPage} />
+                <ActionButton text={'<'} action={() => goToPreviousPage()} disabled={!canPreviousPage} />
+                <ActionButton text={'>'} action={() => goToNextPage()} disabled={!canNextPage} />
+                <ActionButton text={'>>'} action={() => goToPage(totalPages)} disabled={!canNextPage} />
+            </div>
+        </>);
+    }
+
     return (
         <>
-            <table id={name} className="table">
+            <Navigation />
+            <table id={name} className="table table-sm">
                 <thead>
                     <tr>
                         {columns.map((column, index) => {
@@ -252,39 +291,20 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
                                     <span className={cssClasses}>{displayValue}</span>
                                 </td>);
                             })}
-                            {admin && (<td>
-                                <Button variant="outline-danger" style={{ width: "36px" }} data-id={record.id} onClick={onDelete}>-</Button>
+                            {admin && (<td className={"align-middle"}>
+                                <ActionButton text={'-'} action={onDelete} dataId={record.id} disabled={!canNextPage} variant={"outline-danger"} />
                             </td>)}
                         </tr>
                     ))}
                 </tbody>
             </table>
-            {isFetching && !isFetchingNextPage && (
+            <Navigation />
+            {/* {isFetching && !isFetchingNextPage && (
                 <CustomToast text={"Cargando..."}></CustomToast>
             )}
             {isFetchingNextPage && (
                 <CustomToast text={"Cargando más..."}></CustomToast>
-            )}
-            <div className='d-flex p-2 justify-content-center'>
-                <span className='d-inline p-2 me-2'>
-                    Page{' '}
-                    <strong>
-                        {page} of {totalPages}
-                    </strong>
-                </span>
-                <button className='btn btn-outline-primary me-2' onClick={() => goToPage(1)} disabled={!canPreviousPage}>
-                    {'<<'}
-                </button>
-                <button className='btn btn-outline-primary me-2' onClick={() => goToPreviousPage()} disabled={!canPreviousPage}>
-                    {'<'}
-                </button>
-                <button className='btn btn-outline-primary me-2' onClick={() => goToNextPage()} disabled={!canNextPage}>
-                    {'>'}
-                </button>
-                <button className='btn btn-outline-primary' onClick={() => goToPage(totalPages)} disabled={!canNextPage}>
-                    {'>>'}
-                </button>
-            </div>
+            )} */}
         </>
     );
 };

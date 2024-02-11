@@ -57,13 +57,16 @@ export const InputControl = (props) => {
                 step="1"
                 {...(nullablePropertyResolver("min", props.settings.min))}
                 pattern="\d+"
-                title="Ingresar un número entero válido" />
+                title="Ingresar un número entero válido"
+                style={props.settings.style ?? {}}
+            />
         );
 
         return input;
     };
 
     const DecimalInputControl = (props) => {
+        console.log("props.settings.style", props.settings.style);
         return (
             <input
                 id={props.settings.id ?? ""}
@@ -75,7 +78,9 @@ export const InputControl = (props) => {
                 {...nullablePropertyResolver("min", props.settings.min)}
                 step="0.01"
                 pattern="\d+(\.\d{2})?"
-                title="Ingresar un número decimal válido" />
+                title="Ingresar un número decimal válido"
+                style={props.settings.style ?? {}}
+            />
         );
     };
 
@@ -90,6 +95,7 @@ export const InputControl = (props) => {
                     ])}
                     type="checkbox"
                     value=""
+                    style={props.settings.style ?? {}}
                 />
             </div>
         );
@@ -101,6 +107,7 @@ export const InputControl = (props) => {
                 id={props.settings.id}
                 url={props.settings.endpoint}
                 mapper={props.settings.mapper}
+                style={props.settings.style ?? {}}
             />
         );
     };
@@ -122,8 +129,9 @@ export const InputControl = (props) => {
                     id={props.settings.id}
                     placeholder={props.settings.placeholder}
                     type="text"
+                    style={props.settings.style ?? {}}
                     className={[
-                        "mb-2",
+                        props.settings.className ?? '',
                         "form-control",
                         props.settings.visible ? "visible" : "invisible",
                     ].reduce((current, value) => `${current} ${value}`)}
