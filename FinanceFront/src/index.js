@@ -1,13 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/UI/App";
-import "./index.css";
+import "./index.scss";
 import reportWebVitals from "./reportWebVitals";
 
 // Bootstrap CSS
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.scss";
+import "bootstrap/scss/bootstrap.scss";
 // Bootstrap Bundle JS
 import "bootstrap/dist/js/bootstrap.bundle.min";
+// Bootstrap SCSS
+import './finance-bootstrap.scss';
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

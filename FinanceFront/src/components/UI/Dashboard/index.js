@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FetchTable from "../../utils/FetchTable";
 import urls from "../../../routing/urls";
-import "./styles.css";
+import "./styles.scss";
 
 const CreditCardTableSettings = {
   columns: [

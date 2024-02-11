@@ -8,7 +8,7 @@ import CreditCardMovements from "../CreditCardMovements";
 import Dashboard from "../Dashboard";
 import Debits from "../Debits";
 import Investments from "../Investments";
-import "./App.css";
+import "./App.scss";
 
 const queryClient = new QueryClient();
 
