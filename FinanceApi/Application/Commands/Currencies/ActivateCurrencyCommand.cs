@@ -2,7 +2,7 @@ using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Services;
 using MediatR;
 
-namespace FinanceApi.Application.Commands.Currencys;
+namespace FinanceApi.Application.Commands.Currencies;
 
 public class ActivateCurrencyCommandHandler : IRequestHandler<ActivateCurrencyCommand, Currency?>
 {

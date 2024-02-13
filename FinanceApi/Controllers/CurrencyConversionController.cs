@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceApi.Controllers;
 
-[Route("api/currency-conversions")]
+[Route("api/currencies/conversions")]
 public class CurrencyConversionController : ApiBaseController<CurrencyConversion?, Guid, CurrencyConversionDto>
 {
     public CurrencyConversionController(IMapper mapper, IMediator mediator)

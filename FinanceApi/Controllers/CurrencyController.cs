@@ -1,6 +1,5 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.Currencies;
-using FinanceApi.Application.Commands.Currencys;
 using FinanceApi.Application.Dtos.Currencies;
 using FinanceApi.Application.Queries.Currencies;
 using FinanceApi.Domain.Models;

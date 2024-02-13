@@ -17,6 +17,7 @@ public static class ConfigExtensions
         services.AddScoped<IRepository<Bank, Guid>, BankRepository>();
         services.AddScoped<IRepository<Currency, Guid>, CurrencyRepository>();
         services.AddScoped<IRepository<CurrencyConversion, Guid>, CurrencyConversionRepository>();
+        services.AddScoped<IRepository<CurrencyExchangeRate, Guid>, CurrencyExchangeRateRepository>();
         services.AddScoped<IRepository<IOLInvestment, Guid>, IOLInvestmentRepository>();
         services.AddScoped<IRepository<IOLInvestmentAsset, Guid>, IOLInvestmentAssetRepository>();
         services.AddScoped<IRepository<IOLInvestmentAssetType, ushort>, IOLInvestmentAssetTypeRepository>();
@@ -30,6 +31,7 @@ public static class ConfigExtensions
         services.AddScoped<IEntityService<Bank, Guid>, EntityService<Bank, Guid>>();
         services.AddScoped<IEntityService<Currency, Guid>, EntityService<Currency, Guid>>();
         services.AddScoped<IEntityService<CurrencyConversion, Guid>, EntityService<CurrencyConversion, Guid>>();
+        services.AddScoped<IEntityService<CurrencyExchangeRate, Guid>, EntityService<CurrencyExchangeRate, Guid>>();
         services.AddScoped<IEntityService<Debit, Guid>, EntityService<Debit, Guid>>();
         services.AddScoped<IEntityService<DebitOrigin, Guid>, EntityService<DebitOrigin, Guid>>();
         services.AddScoped<IEntityService<IOLInvestment, Guid>, EntityService<IOLInvestment, Guid>>();

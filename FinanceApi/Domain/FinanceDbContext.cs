@@ -14,6 +14,7 @@ public class FinanceDbContext : DbContext
     public DbSet<Bank> Bank => Set<Bank>();
     public DbSet<Currency> Currency => Set<Currency>();
     public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
+    public DbSet<CurrencyExchangeRate> CurrencyExchangeRate => Set<CurrencyExchangeRate>();
     public DbSet<AppModule> AppModule => Set<AppModule>();
     public DbSet<AppModuleType> AppModuleType => Set<AppModuleType>();
     public DbSet<Debit> Debit => Set<Debit>();
@@ -33,6 +34,7 @@ public class FinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AppModuleTypeConfiguration());
         modelBuilder.ApplyConfiguration(new CreditCardMovementConfiguration());
         modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
+        modelBuilder.ApplyConfiguration(new CurrencyExchangeRateConfiguration());
         modelBuilder.ApplyConfiguration(new DebitConfiguration());
         modelBuilder.ApplyConfiguration(new DebitOriginConfiguration());
         modelBuilder.ApplyConfiguration(new IOLInvestmentAssetTypeConfiguration());
