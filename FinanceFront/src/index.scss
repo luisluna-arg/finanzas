@@ -12,7 +12,5 @@ code {
     monospace;
 }
 
-.centered {
-  display: inline-flex;
-  justify-content: center;
-}
+@import 'finance-bootstrap';
+@import 'custom-mixins';

@@ -150,12 +150,12 @@ const Dashboard = () => {
   const tableClasses = ["table", "mt-2", "small", "table-sm"];
 
   const backgroundClasses = [
-    'bg-primary',
-    'bg-success',
-    'bg-danger',
-    'bg-warning',
-    'bg-info',
-    'bg-secondary',
+    // "violet-bg",
+    "orange-bg",
+    // "red-bg",
+    "blue-bg",
+    "tomato-bg",
+    "lime-bg"
   ];
 
   const CreditCardTable = ({ name, headerTitle, headerColor, url }) => {
