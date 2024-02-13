@@ -227,19 +227,20 @@ const AdminModule = ({
       <div className="flex-row">
         <Button
           text={"Agregar"}
+          variant={"outline-info"}
           className={"me-2"}
           onClickAction={handleEditModalShow}
         />
         <Button
           text={"Editar"}
-          variant={"warning"}
+          variant={"outline-warning"}
           className={"me-2"}
           disabled={!editEnabled}
           onClickAction={handleEditModalShow}
         />
         <Button
           text={"Eliminar"}
-          variant={"danger"}
+          variant={"outline-danger"}
           disabled={!deleteEnabled}
           onClickAction={handleDeleteModalShow}
         />

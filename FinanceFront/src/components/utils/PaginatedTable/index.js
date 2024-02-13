@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import dates from "../../../utils/dates";
-import CustomToast from '../CustomToast';
 import Input from '../../utils/Input';
 import { InputControlTypes } from '../InputControl';
 
@@ -195,6 +194,26 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         }
     }, [url, page, pageSize, fetchData]);
 
+    const ActionButton = ({ text, action, disabled, dataId, variant }) => {
+        const buttonStyle = {
+            width: '2.8em',
+            height: "31px"
+        };
+
+        return (
+            <Button
+                variant={variant ?? 'outline-info'}
+                size="sm"
+                style={buttonStyle}
+                className="me-2 small"
+                onClick={action}
+                disabled={disabled}
+                data-id={dataId}>
+                {text}
+            </Button>
+        );
+    };
+
     const EditRow = () => {
         return (<tr id={adminRowId}>
             {columns && columns.map((column, index) => {
@@ -213,32 +232,10 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
         </tr>);
     };
 
-    const ActionButton = ({ text, action, disabled, dataId, variant }) => {
-        const buttonStyle = {
-            width: '2.8em',
-            height: "31px"
-        };
-
-        return (
-            <>
-                <Button
-                    variant={variant ?? 'outline-primary'}
-                    size="sm"
-                    style={buttonStyle}
-                    className="me-2 small"
-                    onClick={action}
-                    disabled={disabled}
-                    data-id={dataId}>
-                    {text}
-                </Button>
-            </>
-        );
-    }
-
     const Navigation = () => {
         return (<>
             <div className='d-flex p-2 justify-content-center'>
-                <span className='d-inline p-2 me-2'>
+                <span className='centered me-2'>
                     Page{' '}
                     <strong>
                         {page} of {totalPages}

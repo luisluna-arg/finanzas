@@ -36,7 +36,7 @@ const Uploader = ({ url, extensions }) => {
                 <form className="row">
                     <div className="input-group">
                         <input id="fileInput" type="file" className="form-control" aria-describedby="inputGroupFileAddon04" aria-label="Subir" accept={extensions} />
-                        <button id="fileUploadButton" className="btn btn-outline-primary" type="button" onClick={uploadFile}>Subir</button>
+                        <button id="fileUploadButton" className="btn btn-outline-secondary" type="button" onClick={uploadFile}>Subir</button>
                     </div>
                 </form>
             </div>

@@ -36,6 +36,7 @@ $dark:          $gray-900 !default;
 .centered {
   display: inline-flex;
   justify-content: center;
+  background-color: red !important;
 }
 
 // TABLES
@@ -51,7 +52,8 @@ $dark:          $gray-900 !default;
   padding: 0;
 }
 
-.navbar-brand:hover,
-.nav-link:hover {
-  color: $secondary !important;
+.bg-dark .nav-item {
+  .nav-link.active {
+    color: $dark !important;
+  }
 }

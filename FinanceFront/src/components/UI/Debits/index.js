@@ -90,10 +90,10 @@ function Debits() {
     return (<div className="col">
       <div className="row">
         <div className="col text-center">
-          <span className="fs-3">{title}</span>
+          <span className="fs-5">{title}</span>
         </div>
       </div>
-      <hr className="py-1" />
+      <hr className="mt-1 mb-1" />
       <PaginatedTable
         name={tableName}
         admin={adminSettings}

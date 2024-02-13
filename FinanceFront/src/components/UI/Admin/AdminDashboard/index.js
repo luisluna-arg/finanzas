@@ -5,6 +5,7 @@ import CreditCard from "../CreditCard";
 import DebitOrigin from "../DebitOrigin";
 import IOLInvestmentsAsset from "../IOLInvestmentsAsset";
 import IOLInvestmentsAssetType from "../IOLInvestmentsAssetType";
+import './styles.scss';
 
 const componentMap = {
   Bank: <Bank />,
@@ -32,8 +33,9 @@ const AdminDashboard = () => {
   return (
     <Tab.Container id="tabs" activeKey={activeTab}>
       <Row className="h-100 me-0">
-        <Col className="me-0 col-md-2 pe-0 text-bg-dark text-light">
-          <div className="d-flex flex-column flex-shrink-0 p-3">
+        <Col className="me-0 col-md-2 pe-0 text-light bg-dark">
+          {/* text-bg-dark text-light */}
+          <div className="d-flex flex-column flex-shrink-0 p-3 sidebar">
             <span className="fs-4">Módulos</span>
             <hr />
             <Nav
@@ -44,10 +46,10 @@ const AdminDashboard = () => {
               {Object.keys(componentMap).map((tab) => (
                 <Nav.Item key={tab}>
                   <Nav.Link
-                    className="text-light"
+                    className=""
+                    // text-light
                     eventKey={tab}
-                    onClick={() => handleTabClick(tab)}
-                  >
+                    onClick={() => handleTabClick(tab)}>
                     {`${labelMap[tab]}`}{" "}
                   </Nav.Link>
                 </Nav.Item>
@@ -55,8 +57,7 @@ const AdminDashboard = () => {
             </Nav>
           </div>
         </Col>
-        <Col className="col-md-10 text-bg-light">
-          {/* Your content area */}
+        <Col className="col-md-10">
           {componentMap[activeTab]}
         </Col>
       </Row>
