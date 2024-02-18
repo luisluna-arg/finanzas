@@ -1,3 +1,5 @@
+using FinanceApi.Application.Dtos.Currencies;
+
 namespace FinanceApi.Application.Dtos;
 
 public record CurrencyExchangeRateDto : Dto<Guid>
@@ -7,9 +9,9 @@ public record CurrencyExchangeRateDto : Dto<Guid>
     {
     }
 
-    public Guid BaseCurrencyId { get; set; }
+    public CurrencyDto BaseCurrency { get; set; }
 
-    public Guid QuoteCurrencyId { get; set; }
+    public CurrencyDto QuoteCurrency { get; set; }
 
     public decimal BuyRate { get; set; }
 

@@ -20,6 +20,10 @@ public class CurrencyExchangeRateController : ApiBaseController<CurrencyExchange
     public async Task<IActionResult> Get([FromQuery] GetAllCurrencyExchangeRatesQuery request)
         => await Handle(request);
 
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCurrencyExchangeRatesQuery request)
+        => await Handle(request);
+
     [HttpGet]
     [Route("latest")]
     public async Task<IActionResult> Latest([FromQuery] GetLatestCurrencyExchangeRatesQuery request)
