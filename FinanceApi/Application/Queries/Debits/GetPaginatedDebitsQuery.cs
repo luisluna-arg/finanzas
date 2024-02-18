@@ -1,3 +1,4 @@
+using FinanceApi.Application.Queries.Base;
 using FinanceApi.Commons;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Enums;
@@ -73,25 +74,9 @@ public class GetPaginatedDebitsQueryHandler : IRequestHandler<GetPaginatedDebits
     }
 }
 
-public class GetPaginatedDebitsQuery : IRequest<PaginatedResult<Debit>>
+public class GetPaginatedDebitsQuery : GetPaginatedQuery<Debit>
 {
-    /// <summary>
-    /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
-    /// </summary>
-    public DateTime? From { get; set; }
-
-    /// <summary>
-    /// Gets or sets date to filter to. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
-    /// </summary>
-    public DateTime? To { get; set; }
-
-    public int Page { get; set; } = 1; // Current page number
-
-    public int PageSize { get; set; } = 10; // Number of items per page
-
     public Guid? AppModuleId { get; set; }
-
-    public bool IncludeDeactivated { get; set; }
 
     public Guid? OriginId { get; set; }
 

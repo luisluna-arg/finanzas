@@ -1,3 +1,4 @@
+using FinanceApi.Application.Queries.Base;
 using FinanceApi.Commons;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
@@ -58,25 +59,9 @@ public class GetPaginatedCreditCardMovementsQueryHandler : IRequestHandler<GetPa
     }
 }
 
-public class GetPaginatedCreditCardMovementsQuery : IRequest<PaginatedResult<CreditCardMovement?>>
+public class GetPaginatedCreditCardMovementsQuery : GetPaginatedQuery<CreditCardMovement?>
 {
-    public bool IncludeDeactivated { get; set; }
-
     public string? CreditCardId { get; set; }
 
     public string? BankId { get; set; }
-
-    /// <summary>
-    /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
-    /// </summary>
-    public DateTime? From { get; set; }
-
-    /// <summary>
-    /// Gets or sets date to filter to. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
-    /// </summary>
-    public DateTime? To { get; set; }
-
-    public int Page { get; set; } // Current page number
-
-    public int PageSize { get; set; } // Number of items per page
 }
