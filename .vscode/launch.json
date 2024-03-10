@@ -26,7 +26,7 @@
             }
         },
         {
-            "name": "Launch Vue App",
+            "name": "Vue App Launch",
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceFolder}/FinanceFront",
