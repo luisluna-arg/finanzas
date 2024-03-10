@@ -32,6 +32,10 @@ public class IOLInvestmentController : ApiBaseController<IOLInvestment?, Guid, I
     public async Task<IActionResult> Create(CreateIOLInvestmentCommand command)
         => await Handle(command);
 
+    [HttpDelete]
+    public async Task<IActionResult> Delete(DeleteIOLInvestmentCommand request)
+        => await Handle(request);
+
     [HttpPut]
     public async Task<IActionResult> Update(UpdateIOLInvestmentCommand command)
         => await Handle(command);
