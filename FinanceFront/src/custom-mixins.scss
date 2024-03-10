@@ -27,3 +27,43 @@
 .lime-bg {
     @include bg-setting(lime);
 }
+
+.coral-bg {
+    @include bg-setting(coral);
+}
+
+.brown-bg {
+    @include bg-setting(brown);
+}
+
+.crimson-bg {
+    @include bg-setting(crimson);
+}
+
+.cornflowerblue-bg {
+    @include bg-setting(cornflowerblue);
+}
+
+.darkmagenta-bg {
+    @include bg-setting(darkmagenta);
+}
+
+.deeppink-bg {
+    @include bg-setting(deeppink);
+}
+
+.goldenrod-bg {
+    @include bg-setting(goldenrod);
+}
+
+.indianred-bg {
+    @include bg-setting(indianred);
+}
+
+.indigo-bg {
+    @include bg-setting(indigo);
+}
+
+.mediumpurple-bg {
+    @include bg-setting(mediumpurple);
+}

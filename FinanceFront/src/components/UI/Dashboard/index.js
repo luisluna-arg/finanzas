@@ -3,6 +3,20 @@ import FetchTable from "../../utils/FetchTable";
 import urls from "../../../routing/urls";
 import "./styles.scss";
 
+const NumericColumn = (id, label) => {
+  return {
+    id: id,
+    label: label,
+    class: ["text-end"],
+    headerClass: ["text-end"],
+    mapper: (r) => r && r[id] ? r[id] : 0,
+    formatter: (v) => v ? parseFloat(v.toFixed(2)) : 0,
+    totals: {
+      reducer: (r) => r && r[id]  ? r[id] : 0
+    }
+  };
+};
+
 const CreditCardTableSettings = {
   columns: [
     {
@@ -101,6 +115,17 @@ const ExpensesTableSettings = {
   ],
 };
 
+const InvestmentsTableSettings = {
+  columns: [
+    {
+      id: "symbol",
+      label: "Activo"
+    },
+    NumericColumn("averageReturn", "Rend. prom."),
+    NumericColumn("valued", "Valorado")
+  ],
+};
+
 const debitModulePesos = "4c1ee918-e8f9-4bed-8301-b4126b56cfc0";
 const debitModuleDollars = "03cc66c7-921c-4e05-810e-9764cd365c1d";
 
@@ -125,6 +150,7 @@ debitTableTitles[debitModuleDollars] = "Débitos Dólares";
 const Dashboard = () => {
   const [creditCardData, setCreditCardData] = useState(null);
   const [expensesData, setExpensesData] = useState(null);
+  const [investmentsData, setInvestmentsData] = useState(null);
 
   const fetchData = async (dataUrl, setter, onFetch) => {
     setter([]);
@@ -145,6 +171,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData(urls.creditCards.get, setCreditCardData);
     fetchData(urls.summary.totalExpenses, setExpensesData);
+    fetchData(urls.summary.currentInvestments, setInvestmentsData);
   }, []);
 
   const tableClasses = ["table", "mt-2", "small", "table-sm"];
@@ -200,7 +227,7 @@ const Dashboard = () => {
   return (
     <div className="container-fluid">
       <div className='row'>
-        <div className="col-2 row flex-wrap justify-content-center">
+        <div className="col-2 column flex-wrap">
           {expensesData && expensesData.expenses && <div className="w-auto me-2 overflow-hidden">
             <FetchTable
               name={`Expenses`}
@@ -214,8 +241,25 @@ const Dashboard = () => {
             />
           </div>
           }
+          {debitModules && <div className="w-auto me-2 overflow-hidden">
+              {debitModules.map((appModuleId, index) => {
+                const url = `${urls.debits.latest}?AppModuleId=${appModuleId}&IncludeDeactivated=false`;
+                const bgClass = debitBackgroundClasses[appModuleId];
+                const tableName = debitTableNames[appModuleId];
+                const title = debitTableTitles[appModuleId];
+
+                return (<DebitTable
+                  key={appModuleId}
+                  name={`${tableName}`}
+                  headerTitle={`${title}`}
+                  headerColor={`${bgClass} text-light`}
+                  url={url}
+                />);
+              })}
+            </div>
+          }
         </div>
-        <div className="col-7 row flex-wrap justify-content-center">
+        <div className="col-7 column flex-wrap justify-content-center">
           {
             creditCardData && creditCardData.map((data, index) => {
               const url = `${urls.creditCardMovements.latest}?CreditCardId=${data.id}`;
@@ -230,22 +274,19 @@ const Dashboard = () => {
             })
           }
         </div>
-        <div className="col-3 row flex-wrap justify-content-center">
-          {
-            debitModules && debitModules.map((appModuleId, index) => {
-              const url = `${urls.debits.latest}?AppModuleId=${appModuleId}&IncludeDeactivated=false`;
-              const bgClass = debitBackgroundClasses[appModuleId];
-              const tableName = debitTableNames[appModuleId];
-              const title = debitTableTitles[appModuleId];
-
-              return (<DebitTable
-                key={appModuleId}
-                name={`${tableName}`}
-                headerTitle={`${title}`}
-                headerColor={`${bgClass} text-light`}
-                url={url}
-              />);
-            })
+        <div className="col-3 column flex-wrap justify-content-center">
+          {investmentsData && investmentsData.investments && <div className="w-auto me-2 overflow-hidden">
+            <FetchTable
+              name={`Investments`}
+              title={{
+                text: `Inversiones`,
+                class: `text-center mediumpurple-bg text-light`
+              }}
+              data={investmentsData.investments}
+              columns={InvestmentsTableSettings.columns}
+              classes={tableClasses}
+            />
+          </div>
           }
         </div>
       </div>

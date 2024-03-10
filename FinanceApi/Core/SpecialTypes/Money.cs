@@ -1,6 +1,6 @@
 namespace FinanceApi.Core.SpecialTypes;
 
-public struct Money
+public struct Money : IComparable<Money>
 {
     private readonly decimal value;
 
@@ -74,6 +74,8 @@ public struct Money
     public bool Equals(Money other) => EqualityComparer<object>.Default.Equals(value, other.value);
 
     public override int GetHashCode() => value!.GetHashCode();
+
+    public int CompareTo(Money obj) => this.Value.CompareTo(obj.Value);
 
     private static int CompareValues(Money left, Money right) => Comparer<object>.Default.Compare(left.value, right.value);
 }
