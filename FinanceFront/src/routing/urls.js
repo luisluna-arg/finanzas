@@ -33,6 +33,7 @@ const urls = {
   },
   iolInvestments: {
     endpoint: `${baseUrl}api/iol-investment/`,
+    upload: `${baseUrl}api/iol-investment/upload`,
     paginated: `${baseUrl}api/iol-investment/paginated`,
   },
   iolInvestmentAssets: {
