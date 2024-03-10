@@ -8,6 +8,8 @@
 **/bin
 **/obj
 **/.vs
-**/.vscode
-finanzas.sln
 
+/**/.vscode
+!/.vscode
+
+finanzas.sln

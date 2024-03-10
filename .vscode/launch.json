@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/FinanceApi/bin/Debug/net7.0/FinanceApi.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/FinanceApi",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "uriFormat": "%s/swagger",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": "Launch Vue App",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/FinanceFront",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "start"
+            ]
+        }
+    ]
+}
