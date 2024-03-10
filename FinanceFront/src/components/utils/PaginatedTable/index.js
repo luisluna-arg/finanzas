@@ -26,14 +26,16 @@ function objectToUrlParams(params) {
     return urlSearchParams.toString();
 }
 
-const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
+const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
     const [data, setData] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(rowCount ?? 10);
     const [canPreviousPage, setCanPreviousPage] = useState(false);
     const [canNextPage, setCanNextPage] = useState(false);
     const [reload, setReload] = useState(true);
+    const [adminAddEnabled, ] = useState(admin && (!admin.hasOwnProperty("addEnabled") || admin.addEnabled));
+    const [adminDeletedEnabled, ] = useState(admin && (!admin.hasOwnProperty("deleteEnabled") || admin.deleteEnabled));
 
     const adminRowId = `${name}-edit-row`;
 
@@ -269,7 +271,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {admin && <EditRow />}
+                    {admin && adminAddEnabled && <EditRow />}
                     {(!data || !data.items || data.items.length === 0) &&
                         (<tr>
                             <td colSpan={columns.length + 1} className='align-middle'>
@@ -288,7 +290,7 @@ const PaginatedTable = ({ name, url, admin, columns, onFetch }) => {
                                     <span className={cssClasses}>{displayValue}</span>
                                 </td>);
                             })}
-                            {admin && (<td className={"align-middle"}>
+                            {admin && adminDeletedEnabled && (<td className={"align-middle"}>
                                 <ActionButton text={'-'} action={onDelete} dataId={record.id} disabled={!canNextPage} variant={"outline-danger"} />
                             </td>)}
                         </tr>
