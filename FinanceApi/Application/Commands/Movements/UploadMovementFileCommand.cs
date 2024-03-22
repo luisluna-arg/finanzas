@@ -55,7 +55,7 @@ public class UploadMovementsFileCommandHandler : BaseResponselessHandler<UploadM
 
         var movementComparer = new MovementComparer();
         newRecords = newRecords
-            .Where(o => existingRecords.All(x => movementComparer.Equals(x, o)))
+            .Where(o => existingRecords.All(x => !movementComparer.Equals(x, o)))
             .ToArray();
 
         await movementRepository.AddRange(newRecords, true);

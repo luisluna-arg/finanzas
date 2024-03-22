@@ -12,8 +12,8 @@ public class MovementComparer : IEqualityComparer<Movement>
         x.TimeStamp.Date.Subtract(y.TimeStamp.Date).TotalDays == 1 &&
         x.Amount == y.Amount &&
         x.Total == y.Total &&
-        x.Concept1 == y.Concept1 &&
-        x.Concept2 == y.Concept2);
+        x.Concept1?.Trim() == y.Concept1?.Trim() &&
+        x.Concept2?.Trim() == y.Concept2?.Trim());
 
     public int GetHashCode(Movement obj)
     {
