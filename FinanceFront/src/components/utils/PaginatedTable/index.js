@@ -196,6 +196,15 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
         }
     }, [url, page, pageSize, fetchData]);
 
+    const getColumnValue = (columnSettings, record) => {
+        let recordIdField = columnSettings.id;
+        let propValue = record[recordIdField];
+
+        if (typeof columnSettings?.mapper === "function") return columnSettings.mapper(propValue);
+
+        return propValue;
+    }
+
     const ActionButton = ({ text, action, disabled, dataId, variant }) => {
         const buttonStyle = {
             width: '2.8em',
@@ -281,7 +290,8 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
                     {data.items && data.items.map((record) => (
                         <tr key={record.id}>
                             {columns && columns.map((column, index) => {
-                                const value = column.mapper ? column.mapper(record[column.id]) : record[column.id];
+                                const value = column.mapper && typeof column.mapper == 'function' ? column.mapper(record[column.id]) : record[column.id];
+                                //const value = getColumnValue(column, record);
                                 const displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
                                 const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[column.id]);
                                 const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
