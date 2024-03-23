@@ -4,8 +4,23 @@ function Picker({ id, value, url, mapper, onChange, onFetch }) {
   const [data, setData] = useState([]);
 
   const getRecordId = record => {
-    return typeof mapper.id === "function" ? mapper.id(record) : record[mapper.id];
+    let recordIdField = "id";
+
+    if (mapper) {
+      if (typeof mapper === "function") recordIdField = mapper(record);
+
+      if (mapper.id) {
+        if (typeof mapper.id === "function") recordIdField = mapper.id(record);
+
+        recordIdField = mapper.id;
+      }
+    }
+
+    return record[recordIdField];
   }
+
+  const getRecordLabel = record =>
+    typeof mapper.label === "function" ? mapper.label(record) : record[mapper.label];
 
   const fetchData = useCallback(async () => {
     try {
@@ -29,10 +44,11 @@ function Picker({ id, value, url, mapper, onChange, onFetch }) {
     <select id={id} className="form-select" onChange={onPickerChange} defaultValue={value}>
       {data.map((record, index) => {
         const recordId = getRecordId(record);
-        const label = typeof mapper.label === "function" ? mapper.label(record) : record[mapper.label];
+        const label = getRecordLabel(record);
+        const key = `${id}-${recordId}`;
 
         return ((
-          <option key={recordId} value={recordId}>
+          <option key={key} value={recordId}>
             {label}
           </option>
         ));

@@ -10,6 +10,10 @@ const urls = {
   currencies: {
     endpoint: `${baseUrl}api/currencies/`,
   },
+  currencyExchangeRates: {
+    endpoint: `${baseUrl}api/currencies/exchange-rates`,
+    paginated: `${baseUrl}api/currencies/exchange-rates/paginated`,
+  },
   creditCards: {
     get: `${baseUrl}api/credit-cards/`,
   },

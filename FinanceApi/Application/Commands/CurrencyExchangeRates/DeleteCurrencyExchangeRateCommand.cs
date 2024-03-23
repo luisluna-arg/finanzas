@@ -20,11 +20,16 @@ public class DeleteCurrencyExchangeRateCommandHandler : BaseResponselessHandler<
     }
 
     public override async Task Handle(DeleteCurrencyExchangeRateCommand command, CancellationToken cancellationToken)
-        => await currencyRepository.Delete(command.Id);
+    {
+        foreach (Guid id in command.Ids)
+        {
+            await currencyRepository.Delete(id);
+        }
+    }
 }
 
 public class DeleteCurrencyExchangeRateCommand : IRequest
 {
     [Required]
-    public Guid Id { get; set; }
+    public Guid[] Ids { get; set; }
 }

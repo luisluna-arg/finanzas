@@ -41,9 +41,9 @@ public class CurrencyExchangeRateController : ApiBaseController<CurrencyExchange
     public async Task<IActionResult> Update(UpdateCurrencyExchangeRateCommand command)
         => await Handle(command);
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-        => await Handle(new DeleteCurrencyExchangeRateCommand() { Id = id });
+    [HttpDelete]
+    public async Task<IActionResult> Delete(Guid[] ids)
+        => await Handle(new DeleteCurrencyExchangeRateCommand() { Ids = ids });
 
     [HttpPatch("activate/{id}")]
     public async Task<IActionResult> Activate(Guid id)

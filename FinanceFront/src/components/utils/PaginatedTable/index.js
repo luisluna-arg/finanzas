@@ -34,8 +34,8 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
     const [canPreviousPage, setCanPreviousPage] = useState(false);
     const [canNextPage, setCanNextPage] = useState(false);
     const [reload, setReload] = useState(true);
-    const [adminAddEnabled, ] = useState(admin && (!admin.hasOwnProperty("addEnabled") || admin.addEnabled));
-    const [adminDeletedEnabled, ] = useState(admin && (!admin.hasOwnProperty("deleteEnabled") || admin.deleteEnabled));
+    const [adminAddEnabled,] = useState(admin && (!admin.hasOwnProperty("addEnabled") || admin.addEnabled));
+    const [adminDeletedEnabled,] = useState(admin && (!admin.hasOwnProperty("deleteEnabled") || admin.deleteEnabled));
 
     const adminRowId = `${name}-edit-row`;
 
@@ -197,12 +197,19 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
     }, [url, page, pageSize, fetchData]);
 
     const getColumnValue = (columnSettings, record) => {
-        let recordIdField = columnSettings.id;
-        let propValue = record[recordIdField];
+        const columnId = columnSettings.id ?? columnSettings.key;
 
-        if (typeof columnSettings?.mapper === "function") return columnSettings.mapper(propValue);
+        const mapper = columnSettings.mapper;
 
-        return propValue;
+        if (mapper) {
+            if (typeof mapper == 'function') return mapper(record[columnId]);
+
+            if (mapper.hasOwnProperty("label")) {
+                return record[columnSettings.id][mapper["label"]];
+            }
+        }
+
+        return record[columnId];
     }
 
     const ActionButton = ({ text, action, disabled, dataId, variant }) => {
@@ -228,13 +235,14 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
     const EditRow = () => {
         return (<tr id={adminRowId}>
             {columns && columns.map((column, index) => {
+                const columnId = column.key ?? column.id;
                 if (column.editable) {
-                    return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${column.id}-${index}`}>
+                    return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>
                         <Input value={""} settings={column} />
                     </td>);
                 }
                 else {
-                    return (<td className={"align-middle"} key={`${name}-${column.id}-${index}`}></td>);
+                    return (<td className={"align-middle"} key={`${name}-${columnId}-${index}`}></td>);
                 }
             })}
             <th className={"align-middle"}>
@@ -290,18 +298,18 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
                     {data.items && data.items.map((record) => (
                         <tr key={record.id}>
                             {columns && columns.map((column, index) => {
-                                const value = column.mapper && typeof column.mapper == 'function' ? column.mapper(record[column.id]) : record[column.id];
-                                //const value = getColumnValue(column, record);
+                                const columnId = column.key ?? column.id;
+                                const value = getColumnValue(column, record);
                                 const displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
-                                const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[column.id]);
+                                const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[columnId]);
                                 const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
 
-                                return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${column.id}-${index}`}>
+                                return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>
                                     <span className={cssClasses}>{displayValue}</span>
                                 </td>);
                             })}
                             {admin && adminDeletedEnabled && (<td className={"align-middle"}>
-                                <ActionButton text={'-'} action={onDelete} dataId={record.id} disabled={!canNextPage} variant={"outline-danger"} />
+                                <ActionButton text={'-'} action={onDelete} dataId={record.id} variant={"outline-danger"} />
                             </td>)}
                         </tr>
                     ))}

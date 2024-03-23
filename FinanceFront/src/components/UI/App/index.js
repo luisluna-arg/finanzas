@@ -8,6 +8,7 @@ import CreditCardMovements from "../CreditCardMovements";
 import Dashboard from "../Dashboard";
 import Debits from "../Debits";
 import Investments from "../Investments";
+import CurrencyExchangeRates from "../CurrencyExchangeRates";
 import "./App.scss";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ function App() {
                   <NavLink text="Movimientos" link="/movements" />
                   <NavLink text="Tarjetas de crédito" link="/credit-cards-movements" />
                   <NavLink text="Débitos" link="/debits" />
+                  <NavLink text="Cotizaciones" link="/currency-exchange-rates" />
                   <NavLink text="Inversiones" link="/investments" />
                   <NavLink text="Administración" link="/admin" />
                 </Nav>
@@ -54,6 +56,7 @@ function App() {
             <Route path="/movements" element={<BankAccountMovements />} />
             <Route path="/credit-cards-movements" element={<CreditCardMovements />} />
             <Route path="/debits" element={<Debits />} />
+            <Route path="/currency-exchange-rates" element={<CurrencyExchangeRates />} />
             <Route path="/investments" element={<Investments />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>

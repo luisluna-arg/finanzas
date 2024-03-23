@@ -20,6 +20,8 @@ public class GetPaginatedCurrencyExchangeRatesQueryHandler : IRequestHandler<Get
     public async Task<PaginatedResult<CurrencyExchangeRate?>> Handle(GetPaginatedCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
     {
         IQueryable<CurrencyExchangeRate> query = dbContext.Set<CurrencyExchangeRate>()
+            .Include(o => o.BaseCurrency)
+            .Include(o => o.QuoteCurrency)
             .AsQueryable();
 
         if (!request.IncludeDeactivated)
