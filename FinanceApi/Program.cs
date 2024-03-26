@@ -35,7 +35,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.MainServices();
 builder.Services.ConfigureNSwag();
-builder.Services.AddAutoMapping();
 
 builder.Services.AddCors(options =>
 {

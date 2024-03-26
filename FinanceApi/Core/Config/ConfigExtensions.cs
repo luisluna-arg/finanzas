@@ -1,6 +1,6 @@
+using Castle.DynamicProxy.Internal;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories;
-using FinanceApi.Infrastructure.Services;
 
 namespace FinanceApi.Core.Config;
 
@@ -10,35 +10,71 @@ public static class ConfigExtensions
     {
         services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+        services.AddAutoMapper(typeof(Program));
+
+        var assembly = typeof(Program).Assembly;
+        var assemblyTypes = assembly.GetTypes();
+
+        services.AddRepositories(assemblyTypes);
+
+        services.AddEntityServices(assemblyTypes);
+    }
+
+    private static void AddRepositories(
+        this IServiceCollection services,
+        IEnumerable<Type> assemblyTypes
+    )
+    {
+        var repositoryTypeTuples = assemblyTypes
+            .Where(t => t.Namespace == "FinanceApi.Infrastructure.Repositories")
+            .Where(t =>
+            {
+                var interfaces = t.GetAllInterfaces();
+                return interfaces.Any(x => x.Name == "IRepository`2") &&
+                    interfaces.All(x =>
+                        x.Name != "IAppModuleRepository" &&
+                        x.GetGenericArguments().All(o => o.Name != "TEntity" && o.Name != "TId"));
+            })
+            .Select(t => (t.GetAllInterfaces().First(x => x.Name == "IRepository`2"), t))
+            .ToArray();
+
+        foreach (var (repositoryInterface, repositoryType) in repositoryTypeTuples)
+        {
+            services.AddScoped(repositoryInterface, repositoryType);
+        }
+
         services.AddScoped<IAppModuleRepository, AppModuleRepository>();
-
         services.AddScoped<IRepository<AppModule, Guid>, AppModuleRepository>();
-        services.AddScoped<IRepository<AppModuleType, short>, AppModuleTypeRepository>();
-        services.AddScoped<IRepository<Bank, Guid>, BankRepository>();
-        services.AddScoped<IRepository<Currency, Guid>, CurrencyRepository>();
-        services.AddScoped<IRepository<CurrencyConversion, Guid>, CurrencyConversionRepository>();
-        services.AddScoped<IRepository<CurrencyExchangeRate, Guid>, CurrencyExchangeRateRepository>();
-        services.AddScoped<IRepository<IOLInvestment, Guid>, IOLInvestmentRepository>();
-        services.AddScoped<IRepository<IOLInvestmentAsset, Guid>, IOLInvestmentAssetRepository>();
-        services.AddScoped<IRepository<IOLInvestmentAssetType, ushort>, IOLInvestmentAssetTypeRepository>();
-        services.AddScoped<IRepository<Movement, Guid>, MovementRepository>();
-        services.AddScoped<IRepository<Debit, Guid>, DebitRepository>();
-        services.AddScoped<IRepository<DebitOrigin, Guid>, DebitOriginRepository>();
-        services.AddScoped<IRepository<CreditCard, Guid>, CreditCardRepository>();
-        services.AddScoped<IRepository<CreditCardMovement, Guid>, CreditCardMovementRepository>();
+    }
 
-        services.AddScoped<IEntityService<AppModule, Guid>, EntityService<AppModule, Guid>>();
-        services.AddScoped<IEntityService<Bank, Guid>, EntityService<Bank, Guid>>();
-        services.AddScoped<IEntityService<Currency, Guid>, EntityService<Currency, Guid>>();
-        services.AddScoped<IEntityService<CurrencyConversion, Guid>, EntityService<CurrencyConversion, Guid>>();
-        services.AddScoped<IEntityService<CurrencyExchangeRate, Guid>, EntityService<CurrencyExchangeRate, Guid>>();
-        services.AddScoped<IEntityService<Debit, Guid>, EntityService<Debit, Guid>>();
-        services.AddScoped<IEntityService<DebitOrigin, Guid>, EntityService<DebitOrigin, Guid>>();
-        services.AddScoped<IEntityService<IOLInvestment, Guid>, EntityService<IOLInvestment, Guid>>();
-        services.AddScoped<IEntityService<IOLInvestmentAsset, Guid>, EntityService<IOLInvestmentAsset, Guid>>();
-        services.AddScoped<IEntityService<IOLInvestmentAssetType, ushort>, EntityService<IOLInvestmentAssetType, ushort>>();
-        services.AddScoped<IEntityService<Movement, Guid>, EntityService<Movement, Guid>>();
-        services.AddScoped<IEntityService<CreditCard, Guid>, EntityService<CreditCard, Guid>>();
-        services.AddScoped<IEntityService<CreditCardMovement, Guid>, EntityService<CreditCardMovement, Guid>>();
+    private static void AddEntityServices(
+        this IServiceCollection services,
+        IEnumerable<Type> assemblyTypes
+    )
+    {
+        var servicesTypes = assemblyTypes.Where(t =>
+            t.Namespace == "FinanceApi.Infrastructure.Services");
+
+        var serviceInterface = servicesTypes.First(t => t.IsInterface);
+
+        var serviceClass = servicesTypes.First(t => t.IsClass);
+
+        var entityServiceTypeTuples = assemblyTypes
+            .Where(t => t.Namespace == "FinanceApi.Domain.Models")
+            .Select(entityType =>
+            {
+                var idType = entityType.BaseType!.GetGenericArguments().First();
+
+                Type serviceInterfaceType = serviceInterface.MakeGenericType(entityType, idType);
+                Type serviceType = serviceClass.MakeGenericType(entityType, idType);
+
+                return (serviceInterfaceType, serviceType);
+            })
+            .ToArray();
+
+        foreach (var (concreteServiceInterfaceType, concreteServiceType) in entityServiceTypeTuples)
+        {
+            services.AddScoped(concreteServiceInterfaceType, concreteServiceType);
+        }
     }
 }
