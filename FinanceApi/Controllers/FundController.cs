@@ -1,18 +1,15 @@
-using System.ComponentModel;
 using AutoMapper;
-using FinanceApi.Application.Commands.DollarFunds;
 using FinanceApi.Application.Commands.Funds;
-using FinanceApi.Application.Dtos.Movements;
-using FinanceApi.Application.Queries.Movements;
+using FinanceApi.Application.Dtos.Funds;
+using FinanceApi.Application.Queries.Funds;
 using FinanceApi.Domain.Models;
-using FinanceApi.Helpers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceApi.Controllers;
 
 [Route("api/funds")]
-public class FundController : ApiBaseController<Movement?, Guid, MovementDto>
+public class FundController : ApiBaseController<Fund?, Guid, FundDto>
 {
     public FundController(IMapper mapper, IMediator mediator)
         : base(mapper, mediator)
@@ -20,65 +17,30 @@ public class FundController : ApiBaseController<Movement?, Guid, MovementDto>
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetFundMovementsQuery request)
+    public async Task<IActionResult> Get([FromQuery] GetFundsQuery request)
         => await Handle(request);
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetSingleMovementQuery request)
+    public async Task<IActionResult> GetById([FromQuery] GetSingleFundQuery request)
         => await Handle(request);
 
-    [HttpPost]
-    [Route("upload")]
-    public async Task<IActionResult> Upload(IFormFile file, Guid bankId, [DefaultValue("Local")] string dateKind)
-    {
-        await Handle(new UploadFundFileCommand(file, bankId, EnumHelper.Parse<DateTimeKind>(dateKind)));
-        return Ok();
-    }
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedFundsQuery request)
+        => await Handle(request);
+
+    [HttpGet("latest/{appModuleId}")]
+    public async Task<IActionResult> Latest(Guid appModuleId)
+        => await Handle(new GetLatestFundQuery(appModuleId));
 
     [HttpPost]
-    [Route("dollar-upload")]
-    public async Task<IActionResult> DollarUpload(IFormFile file, Guid bankId, [DefaultValue("Local")] string dateKind)
-    {
-        await Handle(new UploadDollarFundsFileCommand(file, bankId, EnumHelper.Parse<DateTimeKind>(dateKind)));
-        return Ok();
-    }
+    public async Task<IActionResult> Create(CreateFundCommand command)
+        => await Handle(command);
 
-    [HttpPost]
-    [Route("upload-image")]
-    public async Task<IActionResult> UploadImage(IFormFileCollection files, DateTime? dateReference, [DefaultValue("Local")] string? dateKind)
-    {
-        await Handle(new UploadImageCommand
-        {
-            Files = files,
-            DateKind = ParsingHelper.ParseDateTimeKind(dateKind),
-            DateReference = dateReference
-        });
-        return Ok();
-    }
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateFundCommand command)
+        => await Handle(command);
 
-    [HttpPost]
-    [Route("process-image")]
-    public async Task<IActionResult> ProcessImage(HttpContext httpContext, IFormFileCollection files, [DefaultValue("Local")] string? dateKind)
-    {
-        await Handle(new ProcessImageCommand
-        {
-            Files = files,
-            DateKind = ParsingHelper.ParseDateTimeKind(dateKind),
-            HttpContext = httpContext,
-        });
-        return Ok();
-    }
-
-    [HttpPost]
-    [Route("read-image")]
-    public async Task<IActionResult> ProcessImageToText(HttpContext httpContext, IFormFileCollection files, [DefaultValue("Local")] string? dateKind)
-    {
-        await Handle(new ProcessImageToTextCommand
-        {
-            Files = files,
-            DateKind = ParsingHelper.ParseDateTimeKind(dateKind),
-            HttpContext = httpContext,
-        });
-        return Ok();
-    }
+    [HttpDelete]
+    public async Task<IActionResult> Delete(DeleteFundsCommand request)
+        => await Handle(request);
 }
