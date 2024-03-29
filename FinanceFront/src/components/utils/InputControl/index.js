@@ -67,7 +67,6 @@ export const InputControl = (props) => {
     };
 
     const DecimalInputControl = (props) => {
-        console.log(`props?.value: ${props?.value}`);
         return (
             <input
                 id={props.settings.id ?? ""}

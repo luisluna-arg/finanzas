@@ -299,6 +299,7 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
 
     const EditRow = () => {
         return (<tr id={adminRowId} className={`${name}-edit-row`}>
+            <td></td>
             {columns && columns.map((column, index) => {
                 const columnId = column.key ?? column.id;
                 if (column.editable) {
@@ -385,7 +386,7 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
                     {admin && adminAddEnabled && <EditRow />}
                     {(!data || !data.items || data.items.length === 0) &&
                         (<tr>
-                            <td colSpan={columns.length + 1} className='align-middle'>
+                            <td colSpan={columns.length + (admin && adminDeletedEnabled ? 2 : 1)} className='align-middle'>
                                 <div className='text-center'>No hay datos disponibles</div>
                             </td>
                         </tr>)}

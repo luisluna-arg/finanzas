@@ -34,6 +34,7 @@ const urls = {
   funds: {
     endpoint: `${baseUrl}api/funds/`,
     upload: `${baseUrl}api/funds/upload`,
+    paginated: `${baseUrl}api/funds/paginated`,
   },
   iolInvestments: {
     endpoint: `${baseUrl}api/iol-investment/`,
