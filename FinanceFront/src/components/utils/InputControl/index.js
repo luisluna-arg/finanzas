@@ -59,6 +59,7 @@ export const InputControl = (props) => {
                 pattern="\d+"
                 title="Ingresar un número entero válido"
                 style={props.settings.style ?? {}}
+                defaultValue={props?.value}
             />
         );
 
@@ -66,6 +67,7 @@ export const InputControl = (props) => {
     };
 
     const DecimalInputControl = (props) => {
+        console.log(`props?.value: ${props?.value}`);
         return (
             <input
                 id={props.settings.id ?? ""}
@@ -79,6 +81,7 @@ export const InputControl = (props) => {
                 pattern="\d+(\.\d{2})?"
                 title="Ingresar un número decimal válido"
                 style={props.settings.style ?? {}}
+                defaultValue={props?.value}
             />
         );
     };
@@ -93,7 +96,7 @@ export const InputControl = (props) => {
                         props.settings.visible ? "visible" : "invisible",
                     ])}
                     type="checkbox"
-                    value=""
+                    value={props?.value}
                     style={props.settings.style ?? {}}
                 />
             </div>

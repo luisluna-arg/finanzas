@@ -212,6 +212,18 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
         return record[columnId];
     }
 
+    const getEditRowDefaultValue = (columnEditable) => {
+        if (columnEditable?.defaultValue === undefined ||
+            columnEditable?.defaultValue === null) return "";
+    
+        if (typeof columnEditable.defaultValue === "function") {
+            return columnEditable.defaultValue();
+        }
+    
+        return columnEditable.defaultValue;
+    };
+    
+
     const ActionButton = ({ text, action, disabled, dataId, variant }) => {
         const buttonStyle = {
             width: '2.8em',
@@ -233,12 +245,12 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
     };
 
     const EditRow = () => {
-        return (<tr id={adminRowId}>
+        return (<tr id={adminRowId} className={`${name}-edit-row`}>
             {columns && columns.map((column, index) => {
                 const columnId = column.key ?? column.id;
                 if (column.editable) {
                     return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>
-                        <Input value={""} settings={column} />
+                        <Input value={getEditRowDefaultValue(column.editable)} settings={column} />
                     </td>);
                 }
                 else {
@@ -296,7 +308,7 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
                             </td>
                         </tr>)}
                     {data.items && data.items.map((record) => (
-                        <tr key={record.id}>
+                        <tr key={record.id} className={`${name}-data-row`}>
                             {columns && columns.map((column, index) => {
                                 const columnId = column.key ?? column.id;
                                 const value = getColumnValue(column, record);
