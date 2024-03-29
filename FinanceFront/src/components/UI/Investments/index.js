@@ -1,12 +1,12 @@
-// Movements.js
 import React, { useEffect, useState } from "react";
 import urls from "../../../routing/urls";
 import Uploader from "../../utils/Uploader";
-// import Picker from "../../utils/Picker";
 import PaginatedTable from "../../utils/PaginatedTable";
 import { InputControlTypes } from "../../utils/InputControl";
 
 function Movements() {
+  const [reloadData, setReloadData] = useState(false);
+
   const AppModuleTypeEnumFundsId = 3;
 
   const IOLInvestmentsUploadEndpoint = `${urls.iolInvestments.upload}?DateKind=Local&AppModuleId=${AppModuleTypeEnumFundsId}`;
@@ -84,6 +84,7 @@ function Movements() {
           <Uploader
             url={IOLInvestmentsUploadEndpoint}
             extensions={[".xls", ".xlsx"]}
+            onSuccess={() => { setReloadData(true); }}
           />
           <hr className="py-1" />
           <PaginatedTable
@@ -95,7 +96,9 @@ function Movements() {
               addEnabled: false
             }}
             onFetch={onFetchInvestmentsTable}
-            columns={investmentsTableColumns} />
+            columns={investmentsTableColumns} 
+            reloadData={reloadData}
+            />
         </div>
         }
       </div>
