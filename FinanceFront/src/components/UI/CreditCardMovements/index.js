@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import moment from "moment";
 import urls from "../../../routing/urls";
 import Uploader from "../../utils/Uploader";
 import Picker from "../../utils/Picker";
@@ -11,6 +12,8 @@ function CreditCardMovements() {
   const [movementsEndpoint, setMovementsEndpoint] = useState(``);
 
   const tableName = "credit-card-table";
+
+  const dateFormat = "DD/MM/YYYY";
 
   const updateMovementsEndpoint = (creditCardId) => {
     setMovementsEndpoint(`${urls.creditCardMovements.paginated}?CreditCardId=${creditCardId}`);
@@ -49,11 +52,19 @@ function CreditCardMovements() {
       label: "Fecha",
       placeholder: "Fecha",
       type: InputControlTypes.DateTime,
-      editable: true,
+      editable: {
+        defaultValue: () => {
+          let rowSelector = document.querySelector(".credit-card-table-data-row > td > span");
+
+          if (!rowSelector?.textContent) return moment().format(dateFormat);
+
+          return moment(rowSelector.textContent, `${dateFormat}`).format(dateFormat);
+        }
+      },
       datetime: {
         timeFormat: "HH:mm",
         timeIntervals: 15,
-        dateFormat: "DD/MM/YYYY HH:mm",
+        dateFormat: dateFormat,
         placeholder: "Seleccionar fecha",
       },
       header: {
@@ -76,7 +87,9 @@ function CreditCardMovements() {
       min: 0.0,
       header: numericHeader,
       class: "text-end",
-      editable: true,
+      editable: {
+        defaultValue: 0.0
+      },
       mapper: valueMapper,
       conditionalClass: valueConditionalClass
     },
@@ -88,7 +101,9 @@ function CreditCardMovements() {
       min: 0.0,
       header: numericHeader,
       class: "text-end",
-      editable: true,
+      editable: {
+        defaultValue: 0.0
+      },
       mapper: valueMapper,
       conditionalClass: valueConditionalClass
     },
@@ -100,7 +115,9 @@ function CreditCardMovements() {
       min: 0,
       header: numericHeader,
       class: "text-end",
-      editable: true,
+      editable: {
+        defaultValue: 1
+      }
     },
     {
       id: "planSize",
@@ -110,7 +127,9 @@ function CreditCardMovements() {
       min: 0,
       header: numericHeader,
       class: "text-end",
-      editable: true,
+      editable: {
+        defaultValue: 1
+      }
     }
   ];
 
