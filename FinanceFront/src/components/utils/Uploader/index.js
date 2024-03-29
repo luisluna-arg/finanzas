@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CustomToast from "../../utils/CustomToast";
 
-const Uploader = ({ url, extensions }) => {
+const Uploader = ({ url, extensions, onSuccess, onError }) => {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const uploadFile = () => {
@@ -15,15 +15,16 @@ const Uploader = ({ url, extensions }) => {
             fetch(url, {
                 method: 'POST',
                 body: formData
-            })
-                .then(data => {
-                    setErrorMessage(null);
-                })
-                .catch(error => {
-                    const message = `Error uploading file: ${error}`;
-                    setErrorMessage(message);
-                    console.log(message);
-                });
+            }).then(data => {
+                setErrorMessage(null);
+                fileInput.value = '';
+                if (onSuccess) onSuccess();
+            }).catch(error => {
+                const message = `Error uploading file: ${error}`;
+                setErrorMessage(message);
+                console.log(message);
+                if (onError) onError();
+            });
         } else {
             setErrorMessage('No file selected.');
         }

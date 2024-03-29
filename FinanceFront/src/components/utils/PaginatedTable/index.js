@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
+import { Button as BootstrapButton } from 'react-bootstrap';
 import dates from "../../../utils/dates";
 import Input from '../../utils/Input';
+import ConfirmationModal from "../../utils/ConfirmationModal";
 import { InputControlTypes } from '../InputControl';
+import { Form } from "react-bootstrap";
 
 function parseUrl(url) {
     const urlObject = new URL(url);
@@ -26,7 +28,7 @@ function objectToUrlParams(params) {
     return urlSearchParams.toString();
 }
 
-const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
+const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadData }) => {
     const [data, setData] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(1);
@@ -36,6 +38,10 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
     const [reload, setReload] = useState(true);
     const [adminAddEnabled,] = useState(admin && (!admin.hasOwnProperty("addEnabled") || admin.addEnabled));
     const [adminDeletedEnabled,] = useState(admin && (!admin.hasOwnProperty("deleteEnabled") || admin.deleteEnabled));
+    const [allSelected, setAllSelected] = useState(false);
+    const [deleteEnabled, setDeleteEnabled] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [requestStatus, setRequestStatus] = useState(null);
 
     const adminRowId = `${name}-edit-row`;
 
@@ -110,6 +116,15 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
         }, {});
     }
 
+    const getSelectCheckboxes = (isSelected) => {
+        const baseSelector = `table#${name} tr.${name}-data-row td:first-child input[type=checkbox]`;
+        const checkboxes = Array.from(document.querySelectorAll(baseSelector));
+
+        if (typeof isSelected === 'undefined') return checkboxes;
+
+        return checkboxes.filter(checkbox => checkbox.checked === isSelected);
+    }
+
     const validateForm = (inputs) => {
         // setError(null);
         inputs = inputs ?? getEditRowInputs();
@@ -170,6 +185,23 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
         await handleRequest("DELETE", inputs);
     };
 
+    const handleDeleteModalShow = () => setShowDeleteModal(true);
+
+    const handleDeleteModalCancel = () => setShowDeleteModal(false);
+
+    const handleDeleteModalAccept = async () => {
+        let ids = getSelectCheckboxes(true).map((i) => i.id);
+        await handleDelete({ ids });
+
+        if (!requestStatus) {
+            setShowDeleteModal(false);
+            fetchData();
+        }
+
+        setShowDeleteModal(false);
+        setAllSelected(false);
+    };
+
     const onAdd = async (event) => {
         const values = getEditRowValues();
         validateForm();
@@ -194,7 +226,7 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
         if (url) {
             fetchData(url);
         }
-    }, [url, page, pageSize, fetchData]);
+    }, [url, page, pageSize, fetchData, reloadData]);
 
     const getColumnValue = (columnSettings, record) => {
         const columnId = columnSettings.id ?? columnSettings.key;
@@ -215,23 +247,23 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
     const getEditRowDefaultValue = (columnEditable) => {
         if (columnEditable?.defaultValue === undefined ||
             columnEditable?.defaultValue === null) return "";
-    
+
         if (typeof columnEditable.defaultValue === "function") {
             return columnEditable.defaultValue();
         }
-    
+
         return columnEditable.defaultValue;
     };
-    
 
-    const ActionButton = ({ text, action, disabled, dataId, variant }) => {
+
+    const ActionButton = ({ text, action, disabled, dataId, variant, width, height }) => {
         const buttonStyle = {
-            width: '2.8em',
-            height: "31px"
+            width: width ?? '2.8em',
+            height: height ?? "31px"
         };
 
         return (
-            <Button
+            <BootstrapButton
                 variant={variant ?? 'outline-info'}
                 size="sm"
                 style={buttonStyle}
@@ -240,8 +272,29 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
                 disabled={disabled}
                 data-id={dataId}>
                 {text}
-            </Button>
+            </BootstrapButton>
         );
+    };
+
+    const onSelect_SelectAll = (event) => {
+        const allChecked = event.target.checked;
+        const filteredChecks = getSelectCheckboxes(!allChecked);
+
+        filteredChecks
+            .forEach(checkbox => {
+                checkbox.checked = allChecked;
+            });
+
+        setDeleteEnabled(getSelectCheckboxes(true).length > 0);
+    };
+
+    const onChange_SelectAll = (event) => {
+        setAllSelected(event.target.checked);
+    }
+
+    const onItemSelect = () => {
+        let inputs = getSelectCheckboxes(true);
+        setDeleteEnabled(inputs.length > 0);
     };
 
     const EditRow = () => {
@@ -265,28 +318,57 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
 
     const Navigation = () => {
         return (<>
-            <div className='d-flex p-2 justify-content-center'>
-                <span className='centered me-2'>
-                    Page{' '}
-                    <strong>
-                        {page} of {totalPages}
-                    </strong>
-                </span>
+            <div className='container row'>
+                <div className='col-1 p-2 '>
+                    <ActionButton
+                        text={'Eliminar'}
+                        width="75px"
+                        variant={"outline-danger"}
+                        disabled={!deleteEnabled}
+                        action={handleDeleteModalShow}
+                    />
+                </div>
+                <div className="col-10 d-flex p-2 justify-content-center">
+                    <span className='centered me-2'>
+                        Page{' '}
+                        <strong>
+                            {page} of {totalPages}
+                        </strong>
+                    </span>
 
-                <ActionButton text={'<<'} action={() => goToPage(1)} disabled={!canPreviousPage} />
-                <ActionButton text={'<'} action={() => goToPreviousPage()} disabled={!canPreviousPage} />
-                <ActionButton text={'>'} action={() => goToNextPage()} disabled={!canNextPage} />
-                <ActionButton text={'>>'} action={() => goToPage(totalPages)} disabled={!canNextPage} />
+                    <ActionButton text={'<<'} action={() => goToPage(1)} disabled={!canPreviousPage} />
+                    <ActionButton text={'<'} action={() => goToPreviousPage()} disabled={!canPreviousPage} />
+                    <ActionButton text={'>'} action={() => goToNextPage()} disabled={!canNextPage} />
+                    <ActionButton text={'>>'} action={() => goToPage(totalPages)} disabled={!canNextPage} />
+                </div>
+                <div className='col-1  p-2 '>
+                </div>
             </div>
         </>);
     }
 
     return (
         <>
+            <ConfirmationModal
+                text="¿Confirma la eliminacion del registro?"
+                show={showDeleteModal}
+                handleAccept={handleDeleteModalAccept}
+                handleCancel={handleDeleteModalCancel}
+            />
             <Navigation />
             <table id={name} className="table table-sm">
                 <thead>
                     <tr>
+                        {admin && adminDeletedEnabled && (<th>
+                            <Form.Check
+                                id={`select-all-check`}
+                                type="checkbox"
+                                className="id-checkbox"
+                                onClick={onSelect_SelectAll}
+                                onChange={onChange_SelectAll}
+                                checked={allSelected}
+                            />
+                        </th>)}
                         {columns.map((column, index) => {
                             const { classes = "", style = {} } = column.header || {};
                             const classValue = typeof classes === 'string' ? classes : classes.reduce((curr, next) => `${curr} ${next}`);
@@ -309,6 +391,14 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch }) => {
                         </tr>)}
                     {data.items && data.items.map((record) => (
                         <tr key={record.id} className={`${name}-data-row`}>
+                            {admin && adminDeletedEnabled && (<td className={["text-center"]}>
+                                <Form.Check
+                                    id={`${record[admin.key ?? "id"]}`}
+                                    type="checkbox"
+                                    className="id-checkbox"
+                                    onClick={onItemSelect}
+                                />
+                            </td>)}
                             {columns && columns.map((column, index) => {
                                 const columnId = column.key ?? column.id;
                                 const value = getColumnValue(column, record);

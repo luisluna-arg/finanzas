@@ -1,4 +1,3 @@
-// Movements.js
 import React, { useEffect, useState } from "react";
 import urls from "../../../routing/urls";
 import Uploader from "../../utils/Uploader";

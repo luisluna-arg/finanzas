@@ -57,3 +57,7 @@ $dark:          $gray-900 !default;
     color: $dark !important;
   }
 }
+
+input[type="checkbox"]:checked {
+  background-color: $secondary;
+}
