@@ -7,6 +7,7 @@ import BankAccountMovements from "../Movements";
 import CreditCardMovements from "../CreditCardMovements";
 import Dashboard from "../Dashboard";
 import Debits from "../Debits";
+import Funds from "../Funds";
 import Investments from "../Investments";
 import CurrencyExchangeRates from "../CurrencyExchangeRates";
 import "./App.scss";
@@ -40,6 +41,7 @@ function App() {
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className={["me-auto"]}>
                   <NavLink text="Dashboard" link="/" />
+                  <NavLink text="Fondos" link="/funds" />
                   <NavLink text="Movimientos" link="/movements" />
                   <NavLink text="Tarjetas de crédito" link="/credit-cards-movements" />
                   <NavLink text="Débitos" link="/debits" />
@@ -53,6 +55,7 @@ function App() {
 
           <Routes>
             <Route path="/" exact element={<Dashboard />} />
+            <Route path="/funds" element={<Funds />} />
             <Route path="/movements" element={<BankAccountMovements />} />
             <Route path="/credit-cards-movements" element={<CreditCardMovements />} />
             <Route path="/debits" element={<Debits />} />
