@@ -4,7 +4,7 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class IOLInvestmentMapperProfile : BaseMapperProfile<IOLInvestment, IOLInvestmentDto>
+public class IOLInvestmentMapperProfile : BaseEntityMapperProfile<IOLInvestment, IOLInvestmentDto>
 {
     public IOLInvestmentMapperProfile()
         : base()

@@ -1,14 +1,13 @@
-using AutoMapper;
 using FinanceApi.Application.Dtos;
-using FinanceApi.Commons;
+using FinanceApi.Core.Config.Mapper.Profiles.Base;
 using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class PaginatedCurrencyExchangeRateMapperProfile : Profile
+public class PaginatedCurrencyExchangeRateMapperProfile : PaginatedResultMapperProfile<CurrencyExchangeRate, CurrencyExchangeRateDto>
 {
     public PaginatedCurrencyExchangeRateMapperProfile()
+        : base()
     {
-        CreateMap<PaginatedResult<CurrencyExchangeRate>, PaginatedResult<CurrencyExchangeRateDto>>();
     }
 }

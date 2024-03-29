@@ -4,7 +4,7 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class CurrencyConversionMapperProfile : BaseMapperProfile<CurrencyConversion, CurrencyConversionDto>
+public class CurrencyConversionMapperProfile : BaseEntityMapperProfile<CurrencyConversion, CurrencyConversionDto>
 {
     public CurrencyConversionMapperProfile()
         : base()

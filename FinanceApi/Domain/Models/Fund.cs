@@ -13,9 +13,9 @@ public class Fund : Entity<Guid>
 
     public virtual Currency? Currency { get; set; }
 
-    required public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-    required public DateTime TimeStamp { get; set; }
+    public DateTime TimeStamp { get; set; }
 
-    required public Money Amount { get; set; }
+    public Money Amount { get; set; } = 0m;
 }

@@ -4,7 +4,7 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class DebitOriginMapperProfile : BaseMapperProfile<DebitOrigin, DebitOriginDto>
+public class DebitOriginMapperProfile : BaseEntityMapperProfile<DebitOrigin, DebitOriginDto>
 {
     public DebitOriginMapperProfile()
         : base()

@@ -1,4 +1,3 @@
-using FinanceApi.Domain.Configurations;
 using FinanceApi.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,21 +24,13 @@ public class FinanceDbContext : DbContext
     public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetType => Set<IOLInvestmentAssetType>();
     public DbSet<CreditCardMovement> CreditCardMovement => Set<CreditCardMovement>();
     public DbSet<CreditCard> CreditCard => Set<CreditCard>();
+    public DbSet<Fund> Fund => Set<Fund>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseSerialColumns();
 
-        modelBuilder.ApplyConfiguration(new AppModuleConfiguration());
-        modelBuilder.ApplyConfiguration(new AppModuleTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new CreditCardMovementConfiguration());
-        modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
-        modelBuilder.ApplyConfiguration(new CurrencyExchangeRateConfiguration());
-        modelBuilder.ApplyConfiguration(new DebitConfiguration());
-        modelBuilder.ApplyConfiguration(new DebitOriginConfiguration());
-        modelBuilder.ApplyConfiguration(new IOLInvestmentAssetTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new IOLInvestmentConfiguration());
-        modelBuilder.ApplyConfiguration(new MovementConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(Program).Assembly);
 
         base.OnModelCreating(modelBuilder);
     }

@@ -4,7 +4,7 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class MovementMapperProfile : BaseMapperProfile<Movement, MovementDto>
+public class MovementMapperProfile : BaseEntityMapperProfile<Movement, MovementDto>
 {
     public MovementMapperProfile()
         : base()

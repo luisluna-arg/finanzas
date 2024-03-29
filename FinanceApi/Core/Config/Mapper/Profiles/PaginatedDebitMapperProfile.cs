@@ -1,14 +1,13 @@
-using AutoMapper;
 using FinanceApi.Application.Dtos.Debits;
-using FinanceApi.Commons;
+using FinanceApi.Core.Config.Mapper.Profiles.Base;
 using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class PaginatedDebitMapperProfile : Profile
+public class PaginatedDebitMapperProfile : PaginatedResultMapperProfile<Debit, DebitDto>
 {
     public PaginatedDebitMapperProfile()
+        : base()
     {
-        CreateMap<PaginatedResult<Debit>, PaginatedResult<DebitDto>>();
     }
 }

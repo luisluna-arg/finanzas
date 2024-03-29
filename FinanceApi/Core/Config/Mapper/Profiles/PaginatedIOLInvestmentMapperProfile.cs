@@ -1,14 +1,13 @@
-using AutoMapper;
 using FinanceApi.Application.Dtos.IOLInvestments;
-using FinanceApi.Commons;
+using FinanceApi.Core.Config.Mapper.Profiles.Base;
 using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class PaginatedIOLInvestmentMapperProfile : Profile
+public class PaginatedIOLInvestmentMapperProfile : PaginatedResultMapperProfile<IOLInvestment, IOLInvestmentDto>
 {
     public PaginatedIOLInvestmentMapperProfile()
+        : base()
     {
-        CreateMap<PaginatedResult<IOLInvestment>, PaginatedResult<IOLInvestmentDto>>();
     }
 }

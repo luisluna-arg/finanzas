@@ -1,17 +1,13 @@
 using AutoMapper;
-using FinanceApi.Application.Dtos;
-using FinanceApi.Domain.Models.Interfaces;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles.Base;
 
-public abstract class BaseMapperProfile<TEntity, TDto> : Profile
-    where TEntity : IEntity
-    where TDto : IDto
+public abstract class BaseMapperProfile<TSource, TDestination> : Profile
 {
     protected BaseMapperProfile()
     {
-        Map = CreateMap<TEntity, TDto>();
+        Map = CreateMap<TSource, TDestination>();
     }
 
-    protected IMappingExpression<TEntity, TDto> Map { get; }
+    protected IMappingExpression<TSource, TDestination> Map { get; }
 }

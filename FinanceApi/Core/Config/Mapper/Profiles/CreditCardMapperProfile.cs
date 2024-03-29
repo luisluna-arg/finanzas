@@ -4,7 +4,7 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class CreditCardMapperProfile : BaseMapperProfile<CreditCard, CreditCardDto>
+public class CreditCardMapperProfile : BaseEntityMapperProfile<CreditCard, CreditCardDto>
 {
     public CreditCardMapperProfile()
         : base()

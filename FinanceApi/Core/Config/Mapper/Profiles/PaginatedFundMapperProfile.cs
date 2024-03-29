@@ -4,9 +4,9 @@ using FinanceApi.Domain.Models;
 
 namespace FinanceApi.Core.Config.Mapper.Profiles;
 
-public class FundMapperProfile : BaseEntityMapperProfile<Fund, FundDto>
+public class PaginatedFundMapperProfile : PaginatedResultMapperProfile<Fund, FundDto>
 {
-    public FundMapperProfile()
+    public PaginatedFundMapperProfile()
         : base()
     {
     }
