@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FetchTable from "../../utils/FetchTable";
 import urls from "../../../routing/urls";
-import "./styles.scss";
 
 const NumericColumn = (id, label) => {
   return {
