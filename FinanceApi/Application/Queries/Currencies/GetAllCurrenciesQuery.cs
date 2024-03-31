@@ -22,7 +22,7 @@ public class GetAllCurrenciesQueryHandler : BaseCollectionHandler<GetAllCurrenci
             query = query.Where(o => !o.Deactivated);
         }
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        return await Task.FromResult(await query.OrderBy(o => o.Name).ToArrayAsync());
     }
 }
 
