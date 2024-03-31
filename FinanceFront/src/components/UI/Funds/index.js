@@ -1,48 +1,46 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import urls from "../../../routing/urls";
-// import Uploader from "../../utils/Uploader";
 import Picker from "../../utils/Picker";
 import PaginatedTable from "../../utils/PaginatedTable";
 import { InputControlTypes } from "../../utils/InputControl";
+import CommonUtils from "../../../utils/common";
 
 function Funds() {
   const [selectedBankId, setSelectedBankId] = useState("");
   const [selectedCurrencyId, setSelectedCurrencyId] = useState("");
-  // const [uploadEndpoint, setUploadEndpoint] = useState(`${urls.funds.upload}`);
   const [fundsEndpoint, setFundsEndpoint] = useState(``);
 
   const tableName = "funds-table";
 
   const dateFormat = "DD/MM/YYYY";
 
-  const updateMovementsEndpoint = (bankId) => {
-    setFundsEndpoint(`${urls.funds.paginated}?BankId=${bankId}`);
-    // setUploadEndpoint(`${urls.funds.upload}?BankId=${bankId}`);
+  const updateMovementsEndpoint = (bankId, currencyId) => {
+    const params = CommonUtils.Params({
+      BankId: bankId,
+      CurrencyId: currencyId
+    });
+    setFundsEndpoint(`${urls.funds.paginated}?${params}`);
   };
 
   const onBankPickerChange = (picker) => {
     var newBankId = selectedBankId !== picker.value ? picker.value : selectedBankId;
     setSelectedBankId(newBankId);
-    updateMovementsEndpoint(newBankId);
   };
 
   const onBankPickerFetch = ({ data }) => {
     let newBankId = data[0].id;
     setSelectedBankId(newBankId);
-    updateMovementsEndpoint(newBankId);
   };
 
   const onCurrencyPickerChange = (picker) => {
     var newCurrencyId = selectedCurrencyId !== picker.value ? picker.value : selectedCurrencyId;
     setSelectedCurrencyId(newCurrencyId);
-    updateMovementsEndpoint(newCurrencyId);
   };
 
   const onCurrencyPickerFetch = ({ data }) => {
     let newCurrencyId = data[0].id;
     setSelectedCurrencyId(newCurrencyId);
-    updateMovementsEndpoint(newCurrencyId);
   };
 
   const valueConditionalClass = {
@@ -126,6 +124,11 @@ function Funds() {
   ];
 
   useEffect(() => {
+    if (selectedBankId && selectedCurrencyId) {
+      console.log(`selectedBankId: ${selectedBankId}`);
+      console.log(`selectedCurrencyId: ${selectedCurrencyId}`);
+      updateMovementsEndpoint(selectedBankId, selectedCurrencyId);
+    }
   }, [selectedBankId, selectedCurrencyId]);
 
   return (
@@ -151,10 +154,6 @@ function Funds() {
             />
           </div>
         </div>
-        {/* 
-       <hr className="py-1" />
-       <Uploader url={uploadEndpoint} extensions={[".xls", ".xlsx"]} /> 
-       */}
         <hr className="py-1" />
         {(!fundsEndpoint || fundsEndpoint.trim() === "") &&
           <div className={"container centered"}>Cargando datos</div>}
