@@ -95,6 +95,16 @@ const DebitTableSettings = {
   ],
 };
 
+const FundsTableSettings = {
+  columns: [
+    {
+      id: "label",
+      label: "Origen"
+    },
+    NumericColumn("value", "Monto")
+  ],
+};
+
 const ExpensesTableSettings = {
   columns: [
     {
@@ -149,6 +159,7 @@ debitTableTitles[debitModuleDollars] = "Débitos Dólares";
 
 const Dashboard = () => {
   const [creditCardData, setCreditCardData] = useState(null);
+  const [fundsData, setFundsData] = useState(null);
   const [expensesData, setExpensesData] = useState(null);
   const [investmentsData, setInvestmentsData] = useState(null);
 
@@ -170,6 +181,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData(urls.creditCards.get, setCreditCardData);
+    fetchData(urls.summary.currentFunds, setFundsData);
     fetchData(urls.summary.totalExpenses, setExpensesData);
     fetchData(urls.summary.currentInvestments, setInvestmentsData);
   }, []);
@@ -237,6 +249,19 @@ const Dashboard = () => {
               }}
               data={expensesData.expenses}
               columns={ExpensesTableSettings.columns}
+              classes={tableClasses}
+            />
+          </div>
+          }
+          {fundsData && fundsData.funds && <div className="w-auto me-2 overflow-hidden">
+            <FetchTable
+              name={`Funds`}
+              title={{
+                text: `Fondos`,
+                class: `text-center coral-bg text-light`
+              }}
+              data={fundsData.funds}
+              columns={FundsTableSettings.columns}
               classes={tableClasses}
             />
           </div>

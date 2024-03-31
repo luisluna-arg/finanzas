@@ -89,24 +89,24 @@ function Funds() {
     id: "bank",
     label: "Banco/Entidad",
     placeholder: "Seleccione un banco",
-    editable: true,
+    editable: false,
     type: InputControlTypes.Dropdown,
     endpoint: urls.banks.endpoint,
     mapper: {
-        id: "id",
-        label: "name"
+      id: "id",
+      label: "name"
     }
   },
   {
     id: "currency",
     label: "Moneda",
     placeholder: "Seleccione una moneda",
-    editable: true,
+    editable: false,
     type: InputControlTypes.Dropdown,
     endpoint: urls.currencies.endpoint,
     mapper: {
-        id: "id",
-        label: "name"
+      id: "id",
+      label: "name"
     }
   },
   {
@@ -126,7 +126,7 @@ function Funds() {
   ];
 
   useEffect(() => {
-  }, [selectedBankId, selectedCurrencyId, fundsEndpoint]);
+  }, [selectedBankId, selectedCurrencyId]);
 
   return (
     <>
@@ -162,10 +162,16 @@ function Funds() {
           name={tableName}
           admin={{
             endpoint: urls.funds.endpoint,
-            // key: {
-            //   id: "BankId",
-            //   value: selectedBankId
-            // }
+            key: [
+              {
+                id: "BankId",
+                value: selectedBankId
+              },
+              {
+                id: "CurrencyId",
+                value: selectedCurrencyId
+              }
+            ]
           }}
           url={fundsEndpoint}
           columns={TableColumns}

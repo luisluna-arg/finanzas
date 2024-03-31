@@ -53,6 +53,7 @@ const urls = {
     upload: `${baseUrl}api/movements/upload`,
   },
   summary: {
+    currentFunds: `${baseUrl}api/summary/currentFunds`,
     totalExpenses: `${baseUrl}api/summary/totalExpenses`,
     currentInvestments: `${baseUrl}api/summary/currentInvestments`
   }
