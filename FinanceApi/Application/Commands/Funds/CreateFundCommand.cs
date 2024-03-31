@@ -1,5 +1,4 @@
 using FinanceApi.Application.Base.Handlers;
-using FinanceApi.Core.SpecialTypes;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories;
@@ -57,5 +56,5 @@ public class CreateFundCommand : IRequest<Fund>
 
     required public DateTime TimeStamp { get; set; }
 
-    required public Money Amount { get; set; }
+    required public decimal Amount { get; set; }
 }
