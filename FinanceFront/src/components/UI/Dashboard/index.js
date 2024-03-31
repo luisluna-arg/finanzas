@@ -11,7 +11,7 @@ const NumericColumn = (id, label) => {
     mapper: (r) => r && r[id] ? r[id] : 0,
     formatter: (v) => v ? parseFloat(v.toFixed(2)) : 0,
     totals: {
-      reducer: (r) => r && r[id]  ? r[id] : 0
+      reducer: (r) => r && r[id] ? r[id] : 0
     }
   };
 };
@@ -188,9 +188,7 @@ const Dashboard = () => {
   const tableClasses = ["table", "mt-2", "small", "table-sm"];
 
   const backgroundClasses = [
-    // "violet-bg",
     "orange-bg",
-    // "red-bg",
     "blue-bg",
     "tomato-bg",
     "lime-bg"
@@ -238,20 +236,7 @@ const Dashboard = () => {
   return (
     <div className="container-fluid">
       <div className='row'>
-        <div className="col-2 column flex-wrap">
-          {expensesData && expensesData.expenses && <div className="w-auto me-2 overflow-hidden">
-            <FetchTable
-              name={`Expenses`}
-              title={{
-                text: `Gastos`,
-                class: `text-center red-bg text-light`
-              }}
-              data={expensesData.expenses}
-              columns={ExpensesTableSettings.columns}
-              classes={tableClasses}
-            />
-          </div>
-          }
+        <div className="col-3 column flex-wrap">
           {fundsData && fundsData.funds && <div className="w-auto me-2 overflow-hidden">
             <FetchTable
               name={`Funds`}
@@ -265,25 +250,38 @@ const Dashboard = () => {
             />
           </div>
           }
+          {expensesData && expensesData.expenses && <div className="w-auto me-2 overflow-hidden">
+            <FetchTable
+              name={`Expenses`}
+              title={{
+                text: `Gastos`,
+                class: `text-center red-bg text-light`
+              }}
+              data={expensesData.expenses}
+              columns={ExpensesTableSettings.columns}
+              classes={tableClasses}
+            />
+          </div>
+          }
           {debitModules && <div className="w-auto me-2 overflow-hidden">
-              {debitModules.map((appModuleId, index) => {
-                const url = `${urls.debits.latest}?AppModuleId=${appModuleId}&IncludeDeactivated=false`;
-                const bgClass = debitBackgroundClasses[appModuleId];
-                const tableName = debitTableNames[appModuleId];
-                const title = debitTableTitles[appModuleId];
+            {debitModules.map((appModuleId, index) => {
+              const url = `${urls.debits.latest}?AppModuleId=${appModuleId}&IncludeDeactivated=false`;
+              const bgClass = debitBackgroundClasses[appModuleId];
+              const tableName = debitTableNames[appModuleId];
+              const title = debitTableTitles[appModuleId];
 
-                return (<DebitTable
-                  key={appModuleId}
-                  name={`${tableName}`}
-                  headerTitle={`${title}`}
-                  headerColor={`${bgClass} text-light`}
-                  url={url}
-                />);
-              })}
-            </div>
+              return (<DebitTable
+                key={appModuleId}
+                name={`${tableName}`}
+                headerTitle={`${title}`}
+                headerColor={`${bgClass} text-light`}
+                url={url}
+              />);
+            })}
+          </div>
           }
         </div>
-        <div className="col-7 column flex-wrap justify-content-center">
+        <div className="col-6 column flex-wrap justify-content-center">
           {
             creditCardData && creditCardData.map((data, index) => {
               const url = `${urls.creditCardMovements.latest}?CreditCardId=${data.id}`;
