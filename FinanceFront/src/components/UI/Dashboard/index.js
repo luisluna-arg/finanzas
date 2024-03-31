@@ -161,29 +161,43 @@ const Dashboard = () => {
   const [fundsData, setFundsData] = useState(null);
   const [expensesData, setExpensesData] = useState(null);
   const [investmentsData, setInvestmentsData] = useState(null);
-
-  const fetchData = async (dataUrl, setter, onFetch) => {
-    setter([]);
-    try {
-      if (dataUrl) {
-        let fetchData = await fetch(dataUrl);
-        let newData = await fetchData.json();
-        setter(newData);
-        onFetch && onFetch(newData);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      // Additional cleanup logic if needed
-    }
-  };
+  const [debitsData, setDebitsData] = useState(null);
 
   useEffect(() => {
-    fetchData(urls.creditCards.get, setCreditCardData);
-    fetchData(urls.summary.currentFunds, setFundsData);
-    fetchData(urls.summary.totalExpenses, setExpensesData);
-    fetchData(urls.summary.currentInvestments, setInvestmentsData);
-  }, []);
+    let endpoints = debitModules.map(moduleId => `${urls.debits.latest}?AppModuleId=${moduleId}&IncludeDeactivated=false`)
+
+    endpoints.push(urls.creditCards.get);
+    endpoints.push(urls.summary.currentFunds);
+    endpoints.push(urls.summary.totalExpenses);
+    endpoints.push(urls.summary.currentInvestments);
+
+    const fetchData = async (fetchUrls) => {
+      try {
+        return await Promise.all(fetchUrls.map(url => fetch(url).then(response => response.json())));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+      }
+    };
+
+    const getData = async () => {
+      const data = await fetchData(endpoints);
+      let debitsData = {};
+
+      for (let i = 0; i < debitModules.length; i++) {
+        debitsData[debitModules[i]] = data[i];
+      }
+
+      setDebitsData(debitsData);
+      setCreditCardData(data[2]);
+      setFundsData(data[3])
+      setExpensesData(data[4])
+      setInvestmentsData(data[5])
+    }
+
+    getData();
+  }, [
+  ]);
 
   const tableClasses = ["table", "mt-2", "small", "table-sm"];
 
@@ -213,7 +227,7 @@ const Dashboard = () => {
     />)
   }
 
-  const DebitTable = ({ name, headerTitle, headerColor, url }) => {
+  const DebitTable = ({ name, headerTitle, headerColor, data }) => {
     return (
       <FetchTable
         name={name}
@@ -221,7 +235,7 @@ const Dashboard = () => {
           text: headerTitle,
           class: `text-center ${headerColor}`
         }}
-        url={url}
+        data={data}
         columns={DebitTableSettings.columns}
         classes={tableClasses}
         hideIfEmpty={true}
@@ -264,8 +278,8 @@ const Dashboard = () => {
           </div>
           }
           {debitModules && <div className="w-auto me-2 overflow-hidden">
-            {debitModules.map((appModuleId, index) => {
-              const url = `${urls.debits.latest}?AppModuleId=${appModuleId}&IncludeDeactivated=false`;
+            {debitsData && debitModules.map((appModuleId, index) => {
+              const data = debitsData[appModuleId];
               const bgClass = debitBackgroundClasses[appModuleId];
               const tableName = debitTableNames[appModuleId];
               const title = debitTableTitles[appModuleId];
@@ -275,7 +289,7 @@ const Dashboard = () => {
                 name={`${tableName}`}
                 headerTitle={`${title}`}
                 headerColor={`${bgClass} text-light`}
-                url={url}
+                data={data}
               />);
             })}
           </div>
