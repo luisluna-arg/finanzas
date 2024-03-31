@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
 import Bank from "../Bank";
 import CreditCard from "../CreditCard";
+import Currency from "../Currency";
 import DebitOrigin from "../DebitOrigin";
 import IOLInvestmentsAsset from "../IOLInvestmentsAsset";
 import IOLInvestmentsAssetType from "../IOLInvestmentsAssetType";
@@ -13,11 +14,13 @@ const componentMap = {
   DebitOrigin: <DebitOrigin />,
   IOLInvestmentsAsset: <IOLInvestmentsAsset />,
   IOLInvestmentsAssetType: <IOLInvestmentsAssetType />,
+  Currency: <Currency />,
 };
 
 const labelMap = {
   Bank: "Bancos",
   CreditCard: "Tarjetas de Crédito",
+  Currency: "Monedas",
   DebitOrigin: "Orígenes de débito",
   IOLInvestmentsAssetType: "Tipos de activos de inversión",
   IOLInvestmentsAsset: "Activos de inversión",
