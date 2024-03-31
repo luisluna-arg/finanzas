@@ -19,7 +19,10 @@ public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQu
 
     public async Task<PaginatedResult<Fund?>> Handle(GetPaginatedFundsQuery request, CancellationToken cancellationToken)
     {
-        IQueryable<Fund?> query = dbContext.Set<Fund>()
+        IQueryable<Fund?> query = dbContext
+            .Fund
+            .Include(o => o.Bank)
+            .Include(o => o.Currency)
             .AsQueryable();
 
         if (!request.IncludeDeactivated)
