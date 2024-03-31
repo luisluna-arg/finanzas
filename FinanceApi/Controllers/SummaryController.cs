@@ -15,6 +15,10 @@ public class SummaryController : ApiBaseController<Bank?, Guid, BankDto>
     {
     }
 
+    [HttpGet("currentFunds")]
+    public async Task<IActionResult> TotalFunds([FromQuery] GetCurrentFundsQuery request)
+        => Ok(await mediator.Send(request));
+
     [HttpGet("totalExpenses")]
     public async Task<IActionResult> TotalExpenses([FromQuery] GetTotalExpensesQuery request)
         => Ok(await mediator.Send(request));
