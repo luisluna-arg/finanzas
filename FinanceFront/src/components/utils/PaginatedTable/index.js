@@ -205,16 +205,14 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
     const onAdd = async (event) => {
         const values = getEditRowValues();
         validateForm();
-        if (admin.key) {
-            var keys = [];
-            if (!Array.isArray(admin.key)) {
-                keys.push(admin.key);
-            }
 
+        if (admin.key) {
+            const keys = Array.isArray(admin.key) ? admin.key : [admin.key];
             keys.forEach(key => {
-                values[key.id] = key.value
+                values[key.id] = key.value;
             });
         }
+
         await handleCreate(values);
     };
 
