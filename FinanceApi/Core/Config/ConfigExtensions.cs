@@ -22,8 +22,7 @@ public static class ConfigExtensions
 
     private static void AddRepositories(
         this IServiceCollection services,
-        IEnumerable<Type> assemblyTypes
-    )
+        IEnumerable<Type> assemblyTypes)
     {
         var repositoryTypeTuples = assemblyTypes
             .Where(t => t.Namespace == "FinanceApi.Infrastructure.Repositories")
@@ -49,8 +48,7 @@ public static class ConfigExtensions
 
     private static void AddEntityServices(
         this IServiceCollection services,
-        IEnumerable<Type> assemblyTypes
-    )
+        IEnumerable<Type> assemblyTypes)
     {
         var servicesTypes = assemblyTypes.Where(t =>
             t.Namespace == "FinanceApi.Infrastructure.Services");
