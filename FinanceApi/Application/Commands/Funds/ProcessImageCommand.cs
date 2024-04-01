@@ -25,7 +25,7 @@ public class ProcessImageCommandHandler : BaseResponselessHandler<ProcessImageCo
         // Devolver la imagen procesada como descarga
         var response = command.HttpContext.Response;
         response.ContentType = "image/jpeg";
-        response.Headers.Add("Content-Disposition", "attachment; filename=image.jpg");
+        response.Headers.Append("Content-Disposition", "attachment; filename=image.jpg");
         response.ContentLength = stream.Length;
         stream.Seek(0, SeekOrigin.Begin);
         await stream.CopyToAsync(response.Body);

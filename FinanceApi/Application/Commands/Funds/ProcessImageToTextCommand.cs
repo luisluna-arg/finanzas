@@ -29,7 +29,7 @@ public class ProcessImageToTextCommandHandler : BaseResponselessHandler<ProcessI
 
         // Configurar respuesta HTTP
         command.HttpContext.Response.ContentType = "text/plain";
-        command.HttpContext.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"Lemon_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt\"");
+        command.HttpContext.Response.Headers.Append("Content-Disposition", $"attachment; filename=\"Lemon_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt\"");
 
         // Escribir contenido del MemoryStream en la respuesta HTTP
         stream.Seek(0, SeekOrigin.Begin);
