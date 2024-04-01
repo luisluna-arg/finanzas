@@ -1,29 +1,17 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.Currencies;
 using FinanceApi.Application.Dtos.Currencies;
-using FinanceApi.Application.Queries.Currencies;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Commands;
 
 [Route("api/currencies")]
-public class CurrencyController : ApiBaseController<Currency?, Guid, CurrencyDto>
+public class CurrencyCommandController(IMapper mapper, IMediator mediator)
+    : ApiBaseCommandController<Currency?, Guid, CurrencyDto>(mapper, mediator)
 {
-    public CurrencyController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllCurrenciesQuery request)
-        => await Handle(request);
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetCurrencyQuery request)
-        => await Handle(request);
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateCurrencyCommand command)
         => await Handle(command);

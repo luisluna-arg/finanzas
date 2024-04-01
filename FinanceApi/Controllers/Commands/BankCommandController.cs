@@ -1,29 +1,17 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.Banks;
 using FinanceApi.Application.Dtos.Banks;
-using FinanceApi.Application.Queries.Banks;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Commands;
 
 [Route("api/banks")]
-public class BankController : ApiBaseController<Bank?, Guid, BankDto>
+public class BankCommandController(IMapper mapper, IMediator mediator)
+    : ApiBaseCommandController<Bank?, Guid, BankDto>(mapper, mediator)
 {
-    public BankController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllBanksQuery request)
-        => await Handle(request);
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetBankQuery request)
-        => await Handle(request);
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateBankCommand command)
         => await Handle(command);

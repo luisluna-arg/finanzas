@@ -2,30 +2,17 @@ using System.ComponentModel;
 using AutoMapper;
 using FinanceApi.Application.Commands.Debits;
 using FinanceApi.Application.Dtos.Debits;
-using FinanceApi.Application.Queries.Debits;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Commands;
 
 [Route("api/debits")]
-public class DebitController : ApiBaseController<Debit?, Guid, DebitDto>
+public class DebitCommandController(IMapper mapper, IMediator mediator)
+    : ApiBaseCommandController<Debit?, Guid, DebitDto>(mapper, mediator)
 {
-    public DebitController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllDebitsQuery request)
-        => await Handle(request);
-
-    [HttpGet]
-    [Route("latest")]
-    public async Task<IActionResult> Latest([FromQuery] GetLatestDebitsQuery request)
-        => await Handle(request);
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateDebitCommand command)
         => await Handle(command);
@@ -49,8 +36,4 @@ public class DebitController : ApiBaseController<Debit?, Guid, DebitDto>
     [HttpPatch("deactivate/{id}")]
     public async Task<IActionResult> Deactivate(Guid id)
         => await Handle404(new DeactivateDebitCommand { Id = id });
-
-    [HttpGet("paginated")]
-    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedDebitsQuery request)
-        => await Handle(request);
 }

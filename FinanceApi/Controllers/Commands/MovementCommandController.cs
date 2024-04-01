@@ -2,37 +2,17 @@ using System.ComponentModel;
 using AutoMapper;
 using FinanceApi.Application.Commands.Movements;
 using FinanceApi.Application.Dtos.Movements;
-using FinanceApi.Application.Queries.Movements;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Commands;
 
 [Route("api/movements")]
-public class MovementController : ApiBaseController<Movement?, Guid, MovementDto>
+public class MovementCommandController(IMapper mapper, IMediator mediator)
+    : ApiBaseCommandController<Movement?, Guid, MovementDto>(mapper, mediator)
 {
-    public MovementController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetMovementsQuery request)
-        => await Handle(request);
-
-    [HttpGet("paginated")]
-    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedMovementsQuery request)
-        => await Handle(request);
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetSingleMovementQuery request)
-        => await Handle(request);
-
-    [HttpGet("latest/{appModuleId}")]
-    public async Task<IActionResult> Latest(Guid appModuleId)
-        => await Handle(new GetLatestMovementQuery(appModuleId));
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateMovementCommand command)
         => await Handle(command);

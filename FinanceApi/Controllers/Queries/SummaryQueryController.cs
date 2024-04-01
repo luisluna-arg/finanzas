@@ -1,29 +1,26 @@
 using AutoMapper;
 using FinanceApi.Application.Dtos.Banks;
 using FinanceApi.Application.Queries.Summary;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Queries;
 
 [Route("api/summary")]
-public class SummaryController : ApiBaseController<Bank?, Guid, BankDto>
+public class SummaryQueryController(IMapper mapper, IMediator mediator)
+    : ApiBaseQueryController<Bank?, Guid, BankDto>(mapper, mediator)
 {
-    public SummaryController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
     [HttpGet("currentFunds")]
     public async Task<IActionResult> TotalFunds([FromQuery] GetCurrentFundsQuery request)
-        => Ok(await mediator.Send(request));
+        => Ok(await Mediator.Send(request));
 
     [HttpGet("totalExpenses")]
     public async Task<IActionResult> TotalExpenses([FromQuery] GetTotalExpensesQuery request)
-        => Ok(await mediator.Send(request));
+        => Ok(await Mediator.Send(request));
 
     [HttpGet("currentInvestments")]
     public async Task<IActionResult> CurrentInvestments([FromQuery] GetCurrentInvestmentsQuery request)
-        => Ok(await mediator.Send(request));
+        => Ok(await Mediator.Send(request));
 }

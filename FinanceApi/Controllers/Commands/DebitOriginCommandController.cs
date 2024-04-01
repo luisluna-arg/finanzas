@@ -1,29 +1,17 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.DebitOrigins;
 using FinanceApi.Application.Dtos.DebitOrigins;
-using FinanceApi.Application.Queries.DebitOrigins;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Commands;
 
 [Route("api/debit-origins")]
-public class DebitOriginController : ApiBaseController<DebitOrigin?, Guid, DebitOriginDto>
+public class DebitOriginCommandController(IMapper mapper, IMediator mediator)
+    : ApiBaseCommandController<DebitOrigin?, Guid, DebitOriginDto>(mapper, mediator)
 {
-    public DebitOriginController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllDebitOriginsQuery request)
-        => await Handle(request);
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetDebitOriginQuery request)
-        => await Handle(request);
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateDebitOriginCommand command)
         => await Handle(command);

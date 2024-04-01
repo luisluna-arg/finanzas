@@ -1,21 +1,17 @@
 using AutoMapper;
-using FinanceApi.Application.Commands.Funds;
 using FinanceApi.Application.Dtos.Funds;
 using FinanceApi.Application.Queries.Funds;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Queries;
 
 [Route("api/funds")]
-public class FundController : ApiBaseController<Fund?, Guid, FundDto>
+public class FundQueryController(IMapper mapper, IMediator mediator)
+    : ApiBaseQueryController<Fund?, Guid, FundDto>(mapper, mediator)
 {
-    public FundController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetFundsQuery request)
         => await Handle(request);
@@ -31,16 +27,4 @@ public class FundController : ApiBaseController<Fund?, Guid, FundDto>
     [HttpGet("latest/{appModuleId}")]
     public async Task<IActionResult> Latest(Guid appModuleId)
         => await Handle(new GetLatestFundQuery(appModuleId));
-
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateFundCommand command)
-        => await Handle(command);
-
-    [HttpPut]
-    public async Task<IActionResult> Update(UpdateFundCommand command)
-        => await Handle(command);
-
-    [HttpDelete]
-    public async Task<IActionResult> Delete(DeleteFundsCommand request)
-        => await Handle(request);
 }

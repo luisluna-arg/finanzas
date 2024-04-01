@@ -1,38 +1,17 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.CurrencyExchangeRates;
 using FinanceApi.Application.Dtos;
-using FinanceApi.Application.Queries.CurrencyExchangeRates;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Commands;
 
 [Route("api/currencies/exchange-rates")]
-public class CurrencyExchangeRateController : ApiBaseController<CurrencyExchangeRate?, Guid, CurrencyExchangeRateDto>
+public class CurrencyExchangeRateController(IMapper mapper, IMediator mediator)
+    : ApiBaseCommandController<CurrencyExchangeRate?, Guid, CurrencyExchangeRateDto>(mapper, mediator)
 {
-    public CurrencyExchangeRateController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllCurrencyExchangeRatesQuery request)
-        => await Handle(request);
-
-    [HttpGet("paginated")]
-    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCurrencyExchangeRatesQuery request)
-        => await Handle(request);
-
-    [HttpGet]
-    [Route("latest")]
-    public async Task<IActionResult> Latest([FromQuery] GetLatestCurrencyExchangeRatesQuery request)
-        => await Handle(request);
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetCurrencyExchangeRateQuery request)
-        => await Handle(request);
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateCurrencyExchangeRateCommand command)
         => await Handle(command);

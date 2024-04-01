@@ -1,29 +1,17 @@
 using AutoMapper;
 using FinanceApi.Application.Commands.AppModules;
 using FinanceApi.Application.Dtos.AppModules;
-using FinanceApi.Application.Queries.AppModules;
+using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FinanceApi.Controllers;
+namespace FinanceApi.Controllers.Commands;
 
 [Route("api/app-modules")]
-public class AppModuleController : ApiBaseController<AppModule?, Guid, AppModuleDto>
+public class AppModuleCommandController(IMapper mapper, IMediator mediator)
+    : ApiBaseCommandController<AppModule?, Guid, AppModuleDto>(mapper, mediator)
 {
-    public AppModuleController(IMapper mapper, IMediator mediator)
-        : base(mapper, mediator)
-    {
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllAppModulesQuery request)
-        => await Handle(request);
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetAppModuleQuery request)
-        => await Handle(request);
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateAppModuleCommand command)
         => await Handle(command);

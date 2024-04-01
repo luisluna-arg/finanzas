@@ -1,0 +1,31 @@
+using AutoMapper;
+using FinanceApi.Application.Dtos;
+using FinanceApi.Application.Queries.CurrencyExchangeRates;
+using FinanceApi.Controllers.Base;
+using FinanceApi.Domain.Models;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace FinanceApi.Controllers.Queries;
+
+[Route("api/currencies/exchange-rates")]
+public class CurrencyExchangeRateQueryController(IMapper mapper, IMediator mediator)
+    : ApiBaseQueryController<CurrencyExchangeRate?, Guid, CurrencyExchangeRateDto>(mapper, mediator)
+{
+    [HttpGet]
+    public async Task<IActionResult> Get([FromQuery] GetAllCurrencyExchangeRatesQuery request)
+        => await Handle(request);
+
+    [HttpGet("paginated")]
+    public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCurrencyExchangeRatesQuery request)
+        => await Handle(request);
+
+    [HttpGet]
+    [Route("latest")]
+    public async Task<IActionResult> Latest([FromQuery] GetLatestCurrencyExchangeRatesQuery request)
+        => await Handle(request);
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById([FromQuery] GetCurrencyExchangeRateQuery request)
+        => await Handle(request);
+}
