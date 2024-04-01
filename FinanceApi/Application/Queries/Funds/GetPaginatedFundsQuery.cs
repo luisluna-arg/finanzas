@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.Funds;
 
-public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQuery, PaginatedResult<Fund?>>
+public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQuery, PaginatedResult<Fund>>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -17,9 +17,9 @@ public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQu
         this.dbContext = dbContext;
     }
 
-    public async Task<PaginatedResult<Fund?>> Handle(GetPaginatedFundsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<Fund>> Handle(GetPaginatedFundsQuery request, CancellationToken cancellationToken)
     {
-        IQueryable<Fund?> query = dbContext
+        IQueryable<Fund> query = dbContext
             .Fund
             .Include(o => o.Bank)
             .Include(o => o.Currency)
@@ -62,11 +62,11 @@ public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQu
             .Take(pageSize)
             .ToListAsync();
 
-        return new PaginatedResult<Fund?>(paginatedItems, page, pageSize, totalItems);
+        return new PaginatedResult<Fund>(paginatedItems, page, pageSize, totalItems);
     }
 }
 
-public class GetPaginatedFundsQuery : GetPaginatedQuery<Fund?>
+public class GetPaginatedFundsQuery : GetPaginatedQuery<Fund>
 {
     public Guid? CurrencyId { get; set; }
 

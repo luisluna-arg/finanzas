@@ -25,8 +25,6 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
             .Where(o => !o.Deactivated)
             .GroupBy(o => new { o.BankId, o.CurrencyId })
             .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
-            // .OrderBy(o => o.Bank!.Name)
-            // .ThenBy(o => o.Currency!.Name)
             .ToArrayAsync(cancellationToken);
 
         result.Funds.AddRange(funds.Select(o => new Fund($"{o.Id}", $"{o.Bank!.Name} {o.Currency!.Name}", o.Amount)));

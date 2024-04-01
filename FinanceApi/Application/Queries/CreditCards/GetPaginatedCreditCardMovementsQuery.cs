@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Application.Queries.CreditCards;
 
-public class GetPaginatedCreditCardMovementsQueryHandler : IRequestHandler<GetPaginatedCreditCardMovementsQuery, PaginatedResult<CreditCardMovement?>>
+public class GetPaginatedCreditCardMovementsQueryHandler : IRequestHandler<GetPaginatedCreditCardMovementsQuery, PaginatedResult<CreditCardMovement>>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -17,7 +17,7 @@ public class GetPaginatedCreditCardMovementsQueryHandler : IRequestHandler<GetPa
         this.dbContext = dbContext;
     }
 
-    public async Task<PaginatedResult<CreditCardMovement?>> Handle(GetPaginatedCreditCardMovementsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<CreditCardMovement>> Handle(GetPaginatedCreditCardMovementsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<CreditCardMovement> query = dbContext.Set<CreditCardMovement>()
             .AsQueryable();
@@ -53,13 +53,13 @@ public class GetPaginatedCreditCardMovementsQueryHandler : IRequestHandler<GetPa
             .Take(pageSize)
             .ToListAsync();
 
-        var paginatedResult = new PaginatedResult<CreditCardMovement?>(paginatedItems, page, pageSize, totalItems);
+        var paginatedResult = new PaginatedResult<CreditCardMovement>(paginatedItems, page, pageSize, totalItems);
 
         return paginatedResult;
     }
 }
 
-public class GetPaginatedCreditCardMovementsQuery : GetPaginatedQuery<CreditCardMovement?>
+public class GetPaginatedCreditCardMovementsQuery : GetPaginatedQuery<CreditCardMovement>
 {
     public string? CreditCardId { get; set; }
 
