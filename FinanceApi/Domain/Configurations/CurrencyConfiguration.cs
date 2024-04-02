@@ -13,5 +13,13 @@ public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
 
         builder
             .HasIndex(o => o.ShortName).IsUnique();
+
+        builder
+            .HasMany(o => o.BaseExchangeRates)
+            .WithOne(o => o.BaseCurrency);
+
+        builder
+            .HasMany(o => o.QuoteExchangeRates)
+            .WithOne(o => o.QuoteCurrency);
     }
 }

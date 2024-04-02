@@ -23,5 +23,13 @@ public class CurrencyExchangeRateConfiguration : IEntityTypeConfiguration<Curren
 
         builder
             .HasIndex(o => new { o.BaseCurrencyId, o.QuoteCurrencyId, o.TimeStamp }).IsUnique();
+
+        builder
+            .HasOne(o => o.BaseCurrency)
+            .WithMany(o => o.BaseExchangeRates);
+
+        builder
+            .HasOne(o => o.QuoteCurrency)
+            .WithMany(o => o.QuoteExchangeRates);
     }
 }
