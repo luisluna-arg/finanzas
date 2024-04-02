@@ -69,6 +69,14 @@ public struct Money : IComparable<Money>
 
     public static bool operator ==(Money left, Money right) => left.value!.Equals(right.value);
 
+    public static Money operator *(Money left, Money right) => new Money(left.value * right.value);
+
+    public static Money operator /(Money left, Money right) => new Money(left.value / right.value);
+
+    public static Money operator +(Money left, Money right) => new Money(left.value + right.value);
+    
+    public static Money operator -(Money left, Money right) => new Money(left.value - right.value);
+
     public override bool Equals(object? obj) => obj is Money other && Equals(other);
 
     public bool Equals(Money other) => EqualityComparer<object>.Default.Equals(value, other.value);
