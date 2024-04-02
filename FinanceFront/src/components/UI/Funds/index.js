@@ -15,7 +15,7 @@ function Funds() {
 
   const dateFormat = "DD/MM/YYYY";
 
-  const updateMovementsEndpoint = (bankId, currencyId) => {
+  const updateFundsEndpoint = (bankId, currencyId) => {
     const params = CommonUtils.Params({
       BankId: bankId,
       CurrencyId: currencyId
@@ -125,9 +125,7 @@ function Funds() {
 
   useEffect(() => {
     if (selectedBankId && selectedCurrencyId) {
-      console.log(`selectedBankId: ${selectedBankId}`);
-      console.log(`selectedCurrencyId: ${selectedCurrencyId}`);
-      updateMovementsEndpoint(selectedBankId, selectedCurrencyId);
+      updateFundsEndpoint(selectedBankId, selectedCurrencyId);
     }
   }, [selectedBankId, selectedCurrencyId]);
 
@@ -159,6 +157,8 @@ function Funds() {
           <div className={"container centered"}>Cargando datos</div>}
         {fundsEndpoint && <PaginatedTable
           name={tableName}
+          url={fundsEndpoint}
+          columns={TableColumns}
           admin={{
             endpoint: urls.funds.endpoint,
             key: [
@@ -172,8 +172,6 @@ function Funds() {
               }
             ]
           }}
-          url={fundsEndpoint}
-          columns={TableColumns}
         />}
       </div>
     </>

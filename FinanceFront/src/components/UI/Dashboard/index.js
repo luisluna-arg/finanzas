@@ -112,7 +112,7 @@ const ExpensesTableSettings = {
     },
     {
       id: "value",
-      label: "Monto",
+      label: "Monto ($)",
       class: ["text-end"],
       headerClass: ["text-end"],
       mapper: (r) => r ? r.value : 0,
