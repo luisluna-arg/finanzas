@@ -2,17 +2,18 @@ namespace FinanceApi.Application.Dtos.Summary;
 
 public class TotalFunds
 {
-    private readonly List<Fund> fund;
+    private List<Fund> funds;
 
     public TotalFunds()
     {
-        fund = new List<Fund>();
+        funds = new List<Fund>();
     }
 
-    public List<Fund> Funds { get => fund; }
+    public List<Fund> Funds { get => funds; }
 
     public void Add(Fund expense)
     {
-        this.fund.Add(expense);
+        this.funds.Add(expense);
+        this.funds = this.funds.OrderBy(o => o.Label).ToList();
     }
 }
