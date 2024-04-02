@@ -13,6 +13,10 @@ public class Currency : Entity<Guid>
 
     required public string ShortName { get; set; } = string.Empty;
 
+    public virtual ICollection<CurrencyExchangeRate> BaseExchangeRates { get; set; } = new List<CurrencyExchangeRate>();
+
+    public virtual ICollection<CurrencyExchangeRate> QuoteExchangeRates { get; set; } = new List<CurrencyExchangeRate>();
+
     public static Currency Default()
     {
         return new Currency()
