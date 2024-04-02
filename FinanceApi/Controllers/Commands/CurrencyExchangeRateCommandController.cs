@@ -21,8 +21,8 @@ public class CurrencyExchangeRateController(IMapper mapper, IMediator mediator)
         => await Handle(command);
 
     [HttpDelete]
-    public async Task<IActionResult> Delete(Guid[] ids)
-        => await Handle(new DeleteCurrencyExchangeRateCommand() { Ids = ids });
+    public async Task<IActionResult> Delete(DeleteCurrencyExchangeRateCommand command)
+        => await Handle(command);
 
     [HttpPatch("activate/{id}")]
     public async Task<IActionResult> Activate(Guid id)
