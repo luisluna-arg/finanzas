@@ -12,48 +12,37 @@ function CurrencyExchangeRates() {
     const [CurrencyExchangeRatesEndpoint, setCurrencyExchangeRatesEndpoint] = useState(`${urls.currencyExchangeRates.endpoint}`);
     const [CurrencyExchangeRatesPaginatedEndpoint, setCurrencyExchangeRatesPaginatedEndpoint] = useState(`${urls.currencyExchangeRates.paginated}`);
 
-    const refreshEndpoints = () => {
-        if (selectedQuoteCurrencyId && selectedBaseCurrencyId) {
-            const urlParams = CommonUtils.Params({
-                BaseCurrencyId: selectedBaseCurrencyId,
-                QuoteCurrencyId: selectedQuoteCurrencyId,
-                DateTimeKind: "Local"
-            });
-            setCurrencyExchangeRatesEndpoint(`${urls.currencyExchangeRates.paginated}?${urlParams}`);
-        }
-    }
-
-    const onBaseCurrencyPickerChange = (picker) => {
-        setSelectedBaseCurrencyId(picker.value);
-        refreshEndpoints();
+    const updatePaginatedEndpoint = (baseCurrencyId, quoteCurrencyId) => {
+        const params = CommonUtils.Params({
+            BaseCurrencyId: baseCurrencyId,
+            QuoteCurrencyId: quoteCurrencyId
+        });
+        setCurrencyExchangeRatesPaginatedEndpoint(`${urls.currencyExchangeRates.paginated}?${params}`);
     };
 
-    const onBaseCurrencyPickerFetch = (data) => {
-        setSelectedBaseCurrencyId(data.data[0].id);
-        refreshEndpoints();
+    const onBaseCurrencyPickerChange = (picker) => {
+        var newBaseCurrencyId = selectedBaseCurrencyId !== picker.value ? picker.value : selectedBaseCurrencyId;
+        setSelectedBaseCurrencyId(newBaseCurrencyId);
+    };
+
+    const onBaseCurrencyPickerFetch = ({ data }) => {
+        var newBaseCurrencyId = data[0].id;
+        setSelectedBaseCurrencyId(newBaseCurrencyId);
     };
 
     const onQuoteCurrencyPickerChange = (picker) => {
-        setSelectedQuoteCurrencyId(picker.value);
-        refreshEndpoints();
+        var newQuoteCurrencyId = selectedQuoteCurrencyId !== picker.value ? picker.value : selectedQuoteCurrencyId;
+        setSelectedQuoteCurrencyId(newQuoteCurrencyId);
     };
 
-    const onQuoteCurrencyPickerFetch = (data) => {
-        setSelectedQuoteCurrencyId(data.data[0].id);
-        refreshEndpoints();
+    const onQuoteCurrencyPickerFetch = ({ data }) => {
+        var newQuoteCurrencyId = data[0].id;
+        setSelectedQuoteCurrencyId(newQuoteCurrencyId);
     };
 
     const onFetchCurrencyExchangeRatesTable = (data) => {
 
     }
-
-    useEffect(() => {
-        refreshEndpoints();
-    }, [
-        selectedBaseCurrencyId,
-        selectedQuoteCurrencyId,
-        refreshEndpoints
-    ]);
 
     const placeholder = "Ingrese un valor";
 
@@ -104,7 +93,7 @@ function CurrencyExchangeRates() {
             placeholder,
             type: InputControlTypes.Dropdown,
             endpoint: currenciesEndpoint,
-            editable: true,
+            editable: false,
             style: textStyle,
             mapper: {
                 id: "id",
@@ -118,7 +107,7 @@ function CurrencyExchangeRates() {
             placeholder,
             type: InputControlTypes.Dropdown,
             endpoint: currenciesEndpoint,
-            editable: true,
+            editable: false,
             style: textStyle,
             mapper: {
                 id: "id",
@@ -149,17 +138,51 @@ function CurrencyExchangeRates() {
         },
     ];
 
-    let enabled = CurrencyExchangeRatesEndpoint
-        && currenciesEndpoint;
+    useEffect(() => {
+        if (selectedBaseCurrencyId && selectedQuoteCurrencyId) {
+            updatePaginatedEndpoint(selectedBaseCurrencyId, selectedQuoteCurrencyId);
+        }
+    }, [selectedBaseCurrencyId, selectedQuoteCurrencyId]);
 
     return (
         <>
             <div className="container pt-3 pb-3">
-                {!enabled && <div>Cargando...</div>}
-                {enabled && <div>
+                <div className="row">
+                    <div className="col-6 row row-cols-3">
+                        <div className="col-2 mt-2">
+                            <span className="fw-bold">Base</span>
+                        </div>
+                        <div className="col-10">
+                            <Picker
+                                id={"base-currency-picker"}
+                                url={urls.currencies.endpoint}
+                                mapper={{ id: "id", label: record => `${record.name}` }}
+                                onChange={onBaseCurrencyPickerChange}
+                                onFetch={onBaseCurrencyPickerFetch}
+                            />
+                        </div>
+                    </div>
+                    <div className="col-6 row row-cols-3">
+                        <div className="col-2 mt-2">
+                            <span className="fw-bold">Cotización</span>
+                        </div>
+                        <div className="col-10">
+                            <Picker
+                                id={"quote-currency-picker"}
+                                url={urls.currencies.endpoint}
+                                mapper={{ id: "id", label: record => `${record.name}` }}
+                                onChange={onQuoteCurrencyPickerChange}
+                                onFetch={onQuoteCurrencyPickerFetch}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <hr className="py-1" />
+                {CurrencyExchangeRatesPaginatedEndpoint && <div>
                     <PaginatedTable
                         name={"currency-rates-table"}
                         url={CurrencyExchangeRatesPaginatedEndpoint}
+                        columns={CurrencyExchangeRatesTableColumns}
                         admin={{
                             endpoint: CurrencyExchangeRatesEndpoint,
                             key: [
@@ -174,7 +197,7 @@ function CurrencyExchangeRates() {
                             ]
                         }}
                         onFetch={onFetchCurrencyExchangeRatesTable}
-                        columns={CurrencyExchangeRatesTableColumns} />
+                    />
                 </div>
                 }
             </div>
