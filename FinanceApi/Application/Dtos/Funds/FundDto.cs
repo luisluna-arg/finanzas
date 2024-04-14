@@ -15,4 +15,6 @@ public record FundDto : Dto<Guid>
     public DateTime TimeStamp { get; set; }
 
     public Money Amount { get; set; } = 0m;
+
+    public bool DailyUse { get; set; }
 }

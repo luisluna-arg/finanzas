@@ -26,6 +26,11 @@ public class GetLatestFundQueryHandler : BaseResponseHandler<GetLatestFundQuery,
             .Include(o => o.Currency)
             .AsQueryable();
 
+        if (request.DailyUse.HasValue)
+        {
+            query = query.Where(o => o.DailyUse == request.DailyUse.Value);
+        }
+
         return await query.FirstOrDefaultAsync(o => o.CurrencyId == request.BankId);
     }
 }
@@ -40,4 +45,6 @@ public class GetLatestFundQuery : IRequest<Fund>
     }
 
     public Guid BankId { get => bankId; }
+
+    public bool? DailyUse { get; set; }
 }

@@ -23,10 +23,17 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
 
         var pesosCurrency = Guid.Parse(CurrencyConstants.PesoId);
 
-        var funds = await db.Fund
+        var fundsQuery = db.Fund
             .Include(o => o.Bank)
             .Include(o => o.Currency)
-            .Where(o => !o.Deactivated)
+            .Where(o => !o.Deactivated);
+
+        if (request.DailyUse.HasValue)
+        {
+            fundsQuery = fundsQuery.Where(o => o.DailyUse == request.DailyUse.Value);
+        }
+
+        var funds = await fundsQuery
             .GroupBy(o => new { o.BankId, o.CurrencyId })
             .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
             .ToArrayAsync(cancellationToken);
@@ -73,4 +80,5 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
 
 public class GetCurrentFundsQuery : IRequest<TotalFunds>
 {
+    public bool? DailyUse { get; set; }
 }

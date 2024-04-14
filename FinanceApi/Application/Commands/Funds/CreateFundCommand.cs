@@ -39,7 +39,8 @@ public class CreateFundCommandHandler : BaseResponseHandler<CreateFundCommand, F
             Amount = command.Amount,
             TimeStamp = command.TimeStamp,
             CreatedAt = DateTime.UtcNow,
-            Deactivated = false
+            Deactivated = false,
+            DailyUse = command.DailyUse ?? false
         };
 
         await this.fundRepository.AddAsync(newFund, cancellationToken);
@@ -57,4 +58,6 @@ public class CreateFundCommand : IRequest<Fund>
     required public DateTime TimeStamp { get; set; }
 
     required public decimal Amount { get; set; }
+
+    public bool? DailyUse { get; set; }
 }

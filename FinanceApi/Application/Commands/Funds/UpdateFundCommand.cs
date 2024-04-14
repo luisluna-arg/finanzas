@@ -40,6 +40,7 @@ public class UpdateFundCommandHandler : BaseResponseHandler<UpdateFundCommand, F
         fund.Bank = bank;
         fund.Amount = command.Amount;
         fund.TimeStamp = command.TimeStamp;
+        fund.DailyUse = command.DailyUse ?? false;
 
         await fundRepository.UpdateAsync(fund, cancellationToken);
 
@@ -58,4 +59,6 @@ public class UpdateFundCommand : IRequest<Fund>
     required public DateTime TimeStamp { get; set; }
 
     required public Money Amount { get; set; }
+
+    public bool? DailyUse { get; set; }
 }

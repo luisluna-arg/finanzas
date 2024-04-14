@@ -51,6 +51,11 @@ public class GetFundsQueryHandler : BaseCollectionHandler<GetFundsQuery, Fund?>
             query = query.Where(o => o.BankId == request.BankId.Value);
         }
 
+        if (request.DailyUse.HasValue)
+        {
+            query = query.Where(o => o.DailyUse == request.DailyUse.Value);
+        }
+
         return await query.ToArrayAsync();
     }
 }
@@ -70,4 +75,6 @@ public class GetFundsQuery : GetAllQuery<Fund?>
     public Guid? CurrencyId { get; set; }
 
     public Guid? BankId { get; set; }
+
+    public bool? DailyUse { get; set; }
 }
