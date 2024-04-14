@@ -167,7 +167,7 @@ const Dashboard = () => {
     let endpoints = debitModules.map(moduleId => `${urls.debits.latest}?AppModuleId=${moduleId}&IncludeDeactivated=false`)
 
     endpoints.push(urls.creditCards.get);
-    endpoints.push(urls.summary.currentFunds);
+    endpoints.push(`${urls.summary.currentFunds}?DailyUse=true`);
     endpoints.push(urls.summary.totalExpenses);
     endpoints.push(urls.summary.currentInvestments);
 

@@ -295,6 +295,31 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
         setDeleteEnabled(inputs.length > 0);
     };
 
+    const DisplayRow = ({ index, record, column }) => {
+        const columnId = column.key ?? column.id;
+        const value = getColumnValue(column, record);
+        const displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
+        const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[columnId]);
+        const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
+
+        if (column.type == InputControlTypes.Boolean) {
+            return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>
+                <Form.Check
+                    id={`${record[admin.key ?? "id"]}`}
+                    type="checkbox"
+                    className="id-checkbox"
+                    disabled={true}
+                    checked={displayValue}
+                />
+            </td>);
+        }
+        else {
+            return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>
+                <span className={cssClasses}>{displayValue}</span>
+            </td>);
+        }
+    };
+
     const EditRow = () => {
         return (<tr id={adminRowId} className={`${name}-edit-row`}>
             <td></td>
@@ -398,17 +423,9 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
                                     onClick={onItemSelect}
                                 />
                             </td>)}
-                            {columns && columns.map((column, index) => {
-                                const columnId = column.key ?? column.id;
-                                const value = getColumnValue(column, record);
-                                const displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
-                                const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[columnId]);
-                                const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
-
-                                return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>
-                                    <span className={cssClasses}>{displayValue}</span>
-                                </td>);
-                            })}
+                            {columns && columns.map((column, index) =>
+                                <DisplayRow key={`${record.id}-${index}`} record={record} column={column} index={index} />
+                            )}
                             {admin && adminDeletedEnabled && (<td className={"align-middle"}>
                                 <ActionButton text={'-'} action={onDelete} dataId={record.id} variant={"outline-danger"} />
                             </td>)}

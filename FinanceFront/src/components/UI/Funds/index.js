@@ -120,6 +120,24 @@ function Funds() {
     },
     mapper: valueMapper,
     conditionalClass: valueConditionalClass
+  },
+  {
+    id: "dailyUse",
+    label: "Use diario",
+    placeholder: "Use diario",
+    type: InputControlTypes.Boolean,
+    header: {
+      classes: "",
+      style: {
+        width: "80px"
+      }
+    },
+    class: "text-center",
+    editable: {
+      defaultValue: false
+    },
+    // mapper: valueMapper,
+    // conditionalClass: valueConditionalClass
   }
   ];
 
