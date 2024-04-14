@@ -21,12 +21,12 @@ public class UpdateBankCommandHandler : BaseResponseHandler<UpdateBankCommand, B
 
     public override async Task<Bank> Handle(UpdateBankCommand command, CancellationToken cancellationToken)
     {
-        var bank = await bankRepository.GetById(command.Id);
+        var bank = await bankRepository.GetByIdAsync(command.Id, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
 
         bank.Name = command.Name;
 
-        await bankRepository.Update(bank);
+        await bankRepository.UpdateAsync(bank, cancellationToken);
 
         return await Task.FromResult(bank);
     }

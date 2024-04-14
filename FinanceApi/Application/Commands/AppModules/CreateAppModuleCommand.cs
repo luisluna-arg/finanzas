@@ -27,10 +27,10 @@ public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModule
 
     public override async Task<AppModule> Handle(CreateAppModuleCommand command, CancellationToken cancellationToken)
     {
-        var currency = await currencyRepository.GetById(command.CurrencyId);
+        var currency = await currencyRepository.GetByIdAsync(command.CurrencyId, cancellationToken);
         if (currency == null) throw new Exception("Currency not found");
 
-        var appModuleType = await appModuleTypeRepository.GetById(command.AppModuleTypeId);
+        var appModuleType = await appModuleTypeRepository.GetByIdAsync(command.AppModuleTypeId, cancellationToken);
         if (appModuleType == null) throw new Exception("App module type not found");
 
         var newAppModule = new AppModule()
@@ -41,7 +41,7 @@ public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModule
             Type = appModuleType
         };
 
-        await appModuleRepository.Add(newAppModule);
+        await appModuleRepository.AddAsync(newAppModule, cancellationToken);
 
         return await Task.FromResult(newAppModule);
     }

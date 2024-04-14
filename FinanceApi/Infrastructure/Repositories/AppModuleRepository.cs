@@ -13,24 +13,24 @@ public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRe
     {
     }
 
-    public async Task<AppModule> GetFunds()
+    public async Task<AppModule> GetFundsAsync(CancellationToken cancellationToken)
     {
-        var appModule = await GetModule(AppModuleConstants.FundsId);
+        var appModule = await GetModuleAsync(AppModuleConstants.FundsId, cancellationToken);
 
         if (appModule == null) throw new Exception("Funds App Module not found");
 
         return appModule;
     }
 
-    public async Task<AppModule> GetDollarFunds()
+    public async Task<AppModule> GetDollarFundsAsync(CancellationToken cancellationToken)
     {
-        var appModule = await GetModule(AppModuleConstants.DollarFundsId);
+        var appModule = await GetModuleAsync(AppModuleConstants.DollarFundsId, cancellationToken);
 
         if (appModule == null) throw new Exception("Dollar Funds App Module not found");
 
         return appModule;
     }
 
-    private async Task<AppModule?> GetModule(string appModuleId)
-        => await GetAllBy("Id", new Guid(appModuleId)).Include(o => o.Currency).FirstOrDefaultAsync();
+    private async Task<AppModule?> GetModuleAsync(string appModuleId, CancellationToken cancellationToken)
+        => await GetAllBy("Id", new Guid(appModuleId)).Include(o => o.Currency).FirstOrDefaultAsync(cancellationToken);
 }

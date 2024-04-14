@@ -15,7 +15,7 @@ public class ActivateCurrencyCommandHandler : IRequestHandler<ActivateCurrencyCo
     }
 
     public async Task<Currency?> Handle(ActivateCurrencyCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivated(request.Id, false);
+        => await service.SetDeactivatedAsync(request.Id, false, cancellationToken);
 }
 
 public class ActivateCurrencyCommand : IRequest<Currency?>

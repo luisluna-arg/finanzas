@@ -15,7 +15,7 @@ public class DeleteDebitOriginCommandHandler : IRequestHandler<DeleteDebitOrigin
     }
 
     public async Task Handle(DeleteDebitOriginCommand request, CancellationToken cancellationToken)
-        => await service.Delete(request.Ids);
+        => await service.DeleteAsync(request.Ids, cancellationToken);
 }
 
 public class DeleteDebitOriginCommand : IRequest

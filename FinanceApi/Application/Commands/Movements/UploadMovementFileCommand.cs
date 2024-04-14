@@ -30,10 +30,10 @@ public class UploadMovementsFileCommandHandler : BaseResponselessHandler<UploadM
 
     public override async Task Handle(UploadMovementsFileCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetBy("Id", command.AppModuleId);
+        var appModule = await appModuleRepository.GetByAsync("Id", command.AppModuleId, cancellationToken);
         if (appModule == null) throw new Exception($"App Module not found, Id: {command.AppModuleId}");
 
-        var bank = await bankRepository.GetBy("Id", command.BankId);
+        var bank = await bankRepository.GetByAsync("Id", command.BankId, cancellationToken);
         if (bank == null) throw new Exception($"Bank not found, Id: {command.BankId}");
 
         var dateKind = command.DateKind;
@@ -58,7 +58,7 @@ public class UploadMovementsFileCommandHandler : BaseResponselessHandler<UploadM
             .Where(o => existingRecords.All(x => !movementComparer.Equals(x, o)))
             .ToArray();
 
-        await movementRepository.AddRange(newRecords, true);
+        await movementRepository.AddRangeAsync(newRecords, cancellationToken, true);
     }
 }
 

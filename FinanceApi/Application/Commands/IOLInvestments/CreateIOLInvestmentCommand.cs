@@ -29,7 +29,7 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
     {
         var newInvestmentAssetIOL = new IOLInvestment()
         {
-            Asset = await GetAsset(command.AssetSymbol),
+            Asset = await GetAssetAsync(command.AssetSymbol, cancellationToken),
             CreatedAt = DateTime.UtcNow,
             TimeStamp = DateTime.UtcNow,
             Alarms = command.Alarms,
@@ -43,18 +43,18 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
             Valued = command.Valued
         };
 
-        await investmentAssetIOLRecordRepository.Add(newInvestmentAssetIOL);
+        await investmentAssetIOLRecordRepository.AddAsync(newInvestmentAssetIOL, cancellationToken);
 
         return await Task.FromResult(newInvestmentAssetIOL);
     }
 
-    private async Task<IOLInvestmentAsset> GetAsset(string assetSymbol)
+    private async Task<IOLInvestmentAsset> GetAssetAsync(string assetSymbol, CancellationToken cancellationToken)
     {
-        var asset = await investmentAssetIOLRepository.GetBy("Symbol", assetSymbol);
+        var asset = await investmentAssetIOLRepository.GetByAsync("Symbol", assetSymbol, cancellationToken);
 
         if (asset == null)
         {
-            var assetType = await investmentAssetIOLTypeRepository.GetBy("Name", IOLInvestmentAssetType.Default);
+            var assetType = await investmentAssetIOLTypeRepository.GetByAsync("Name", IOLInvestmentAssetType.Default, cancellationToken);
 
             if (assetType == null)
             {

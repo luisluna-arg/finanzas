@@ -19,7 +19,7 @@ public class GetBankQueryHandler : BaseResponseHandler<GetBankQuery, Bank?>
     }
 
     public override async Task<Bank?> Handle(GetBankQuery request, CancellationToken cancellationToken)
-        => await bankRepository.GetById(request.Id);
+        => await bankRepository.GetByIdAsync(request.Id, cancellationToken);
 }
 
 public class GetBankQuery : GetSingleByIdQuery<Bank?, Guid>

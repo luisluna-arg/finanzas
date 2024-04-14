@@ -20,15 +20,16 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
 
     public DbSet<TEntity> GetDbSet() => dbSet;
 
-    public async Task<TEntity[]> GetAll() => await dbSet.ToArrayAsync();
+    public async Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken) => await dbSet.ToArrayAsync(cancellationToken);
 
-    public async Task<TEntity?> GetById(TId id) => await dbSet.FindAsync(id);
+    public async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
+        => await dbSet.FindAsync(new Dictionary<string, object>() { { "Id", id! } }, cancellationToken);
 
-    public async Task<TEntity?> GetBy(string searchCriteria, object searchValue)
-        => await GetBy(new Dictionary<string, object>() { { searchCriteria, searchValue } });
+    public async Task<TEntity?> GetByAsync(string searchCriteria, object searchValue, CancellationToken cancellationToken)
+        => await GetByAsync(new Dictionary<string, object>() { { searchCriteria, searchValue } }, cancellationToken);
 
-    public async Task<TEntity?> GetBy(IDictionary<string, object> searchCriteria)
-        => await GetAllBy(searchCriteria).FirstOrDefaultAsync();
+    public async Task<TEntity?> GetByAsync(IDictionary<string, object> searchCriteria, CancellationToken cancellationToken)
+        => await GetAllBy(searchCriteria).FirstOrDefaultAsync(cancellationToken);
 
     public IQueryable<TEntity> GetAllBy(string searchCriteria, object searchValue)
         => GetAllBy(new Dictionary<string, object>() { { searchCriteria, searchValue } });
@@ -80,37 +81,37 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         return dbSet.Where(Expression.Lambda<Func<TEntity, bool>>(operation, parameter));
     }
 
-    public async Task Add(TEntity entity, bool persist = true)
+    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
     {
         dbSet.Add(entity);
-        if (persist) await dbContext.SaveChangesAsync();
+        if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task AddRange(IEnumerable<TEntity> entities, bool persist = true)
+    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken, bool persist = true)
     {
         dbSet.AddRange(entities);
-        if (persist) await dbContext.SaveChangesAsync();
+        if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task Update(TEntity entity, bool persist = true)
+    public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
     {
         dbSet.Attach(entity);
         dbContext.Entry(entity).State = EntityState.Modified;
-        if (persist) await dbContext.SaveChangesAsync();
+        if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task Delete(TId entityId, bool persist = true)
+    public async Task DeleteAsync(TId entityId, CancellationToken cancellationToken, bool persist = true)
     {
-        var entity = await GetById(entityId);
+        var entity = await GetByIdAsync(entityId, cancellationToken);
         if (entity != null)
-            await Delete(entity, persist);
+            await DeleteAsync(entity, cancellationToken, persist);
     }
 
-    public async Task Delete(TEntity entity, bool persist = true)
+    public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
     {
         dbSet.Remove(entity);
-        if (persist) await dbContext.SaveChangesAsync();
+        if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task Persist() => await dbContext.SaveChangesAsync();
+    public async Task PersistAsync(CancellationToken cancellationToken) => await dbContext.SaveChangesAsync(cancellationToken);
 }

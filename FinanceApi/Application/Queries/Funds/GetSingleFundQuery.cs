@@ -19,7 +19,7 @@ public class GetSingleFundQueryHandler : BaseResponseHandler<GetSingleFundQuery,
     }
 
     public override async Task<Fund?> Handle(GetSingleFundQuery request, CancellationToken cancellationToken)
-        => await fundRepository.GetById(request.Id);
+        => await fundRepository.GetByIdAsync(request.Id, cancellationToken);
 }
 
 public class GetSingleFundQuery : GetSingleByIdQuery<Fund?, Guid>

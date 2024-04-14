@@ -8,29 +8,29 @@ public interface IRepository<TEntity, TId>
 {
     DbSet<TEntity> GetDbSet();
 
-    Task<TEntity[]> GetAll();
+    Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken);
 
     IQueryable<TEntity> GetAllBy(string searchCriteria, object searchValue);
 
     IQueryable<TEntity> GetAllBy(IDictionary<string, object> searchCriteria);
 
-    Task<TEntity?> GetById(TId id);
+    Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken);
 
-    Task<TEntity?> GetBy(string searchCriteria, object searchValue);
+    Task<TEntity?> GetByAsync(string searchCriteria, object searchValue, CancellationToken cancellationToken);
 
-    Task<TEntity?> GetBy(IDictionary<string, object> searchCriteria);
+    Task<TEntity?> GetByAsync(IDictionary<string, object> searchCriteria, CancellationToken cancellationToken);
 
     IQueryable<TEntity> FilterBy(string searchCriteria, ExpressionOperator expressionOperator, object searchValue);
 
-    Task Add(TEntity entity, bool persist = true);
+    Task AddAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true);
 
-    Task AddRange(IEnumerable<TEntity> entities, bool persist = true);
+    Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken, bool persist = true);
 
-    Task Update(TEntity entity, bool persist = true);
+    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true);
 
-    Task Delete(TId entityId, bool persist = true);
+    Task DeleteAsync(TId entityId, CancellationToken cancellationToken, bool persist = true);
 
-    Task Delete(TEntity entity, bool persist = true);
+    Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true);
 
-    Task Persist();
+    Task PersistAsync(CancellationToken cancellationToken);
 }

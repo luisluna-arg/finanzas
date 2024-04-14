@@ -31,7 +31,7 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
 
     public override async Task Handle(UploadDebitsFileCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetById(command.AppModuleId);
+        var appModule = await appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
         if (appModule == null) throw new Exception($"App module not found, Id: {command.AppModuleId}");
 
         var dateKind = command.DateKind;
@@ -58,7 +58,7 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
 
             var origin = origins.ContainsKey(record.Origin.Name) ?
                 origins[record.Origin.Name] :
-                await originRepository.GetBy("Name", record.Origin.Name);
+                await originRepository.GetByAsync("Name", record.Origin.Name, cancellationToken);
 
             if (origin != null)
             {
@@ -69,7 +69,7 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
                 origins.Add(record.Origin.Name, record.Origin);
             }
 
-            await repository.Add(record, false);
+            await repository.AddAsync(record, cancellationToken, false);
         }
 
         var timeStampProperty = "TimeStamp";
@@ -88,7 +88,7 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
                 x.Amount != o.Amount))
             .ToArray();
 
-        await repository.AddRange(newRecords, true);
+        await repository.AddRangeAsync(newRecords, cancellationToken, true);
     }
 }
 

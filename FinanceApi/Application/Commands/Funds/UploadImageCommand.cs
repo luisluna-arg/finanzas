@@ -18,7 +18,7 @@ public class UploadImageCommandHandler : BaseResponselessHandler<UploadImageComm
     }
 
     public override async Task Handle(UploadImageCommand command, CancellationToken cancellationToken)
-        => await appModuleRepository.GetFunds();
+        => await appModuleRepository.GetFundsAsync(cancellationToken);
 }
 
 public class UploadImageCommand : IRequest

@@ -27,13 +27,13 @@ public class UpdateFundCommandHandler : BaseResponseHandler<UpdateFundCommand, F
 
     public override async Task<Fund> Handle(UpdateFundCommand command, CancellationToken cancellationToken)
     {
-        var fund = await fundRepository.GetById(command.Id);
+        var fund = await fundRepository.GetByIdAsync(command.Id, cancellationToken);
         if (fund == null) throw new Exception("Fund not found");
 
-        var currency = await currencyRepository.GetById(command.CurrencyId);
+        var currency = await currencyRepository.GetByIdAsync(command.CurrencyId, cancellationToken);
         if (currency == null) throw new Exception("Currency not found");
 
-        var bank = await bankRepository.GetById(command.BankId);
+        var bank = await bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
 
         fund.Currency = currency;
@@ -41,7 +41,7 @@ public class UpdateFundCommandHandler : BaseResponseHandler<UpdateFundCommand, F
         fund.Amount = command.Amount;
         fund.TimeStamp = command.TimeStamp;
 
-        await fundRepository.Update(fund);
+        await fundRepository.UpdateAsync(fund, cancellationToken);
 
         return await Task.FromResult(fund);
     }

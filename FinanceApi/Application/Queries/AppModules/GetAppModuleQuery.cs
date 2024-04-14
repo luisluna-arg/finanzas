@@ -19,7 +19,7 @@ public class GetAppModuleQueryHandler : BaseResponseHandler<GetAppModuleQuery, A
     }
 
     public override async Task<AppModule?> Handle(GetAppModuleQuery request, CancellationToken cancellationToken)
-        => await appModuleRepository.GetById(request.Id);
+        => await appModuleRepository.GetByIdAsync(request.Id, cancellationToken);
 }
 
 public class GetAppModuleQuery : GetSingleByIdQuery<AppModule?, Guid>

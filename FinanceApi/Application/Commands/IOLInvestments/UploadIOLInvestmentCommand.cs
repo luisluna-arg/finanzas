@@ -51,7 +51,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
 
                 var assetType = assetTypes.ContainsKey(record.Asset.Type.Name) ?
                     assetTypes[record.Asset.Type.Name] :
-                    await assetTypeRepository.GetBy("Name", record.Asset.Type.Name);
+                    await assetTypeRepository.GetByAsync("Name", record.Asset.Type.Name, cancellationToken);
 
                 if (assetType != null)
                 {
@@ -64,7 +64,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
 
                 var asset = assets.ContainsKey(record.Asset.Symbol) ?
                     assets[record.Asset.Symbol] :
-                    await assetRepository.GetBy("Symbol", record.Asset.Symbol);
+                    await assetRepository.GetByAsync("Symbol", record.Asset.Symbol, cancellationToken);
 
                 if (asset != null)
                 {
@@ -75,10 +75,10 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
                     assets.Add(record.Asset.Symbol, record.Asset);
                 }
 
-                await repository.Add(record, false);
+                await repository.AddAsync(record, cancellationToken, false);
             }
 
-            await repository.Persist();
+            await repository.PersistAsync(cancellationToken);
         }
     }
 }

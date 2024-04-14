@@ -15,7 +15,7 @@ public class DeleteDebitCommandHandler : IRequestHandler<DeleteDebitCommand>
     }
 
     public async Task Handle(DeleteDebitCommand request, CancellationToken cancellationToken)
-        => await service.Delete(request.Ids);
+        => await service.DeleteAsync(request.Ids, cancellationToken);
 }
 
 public class DeleteDebitCommand : IRequest

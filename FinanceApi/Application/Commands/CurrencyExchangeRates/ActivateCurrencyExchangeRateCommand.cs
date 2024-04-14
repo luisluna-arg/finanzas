@@ -15,7 +15,7 @@ public class ActivateCurrencyExchangeRateCommandHandler : IRequestHandler<Activa
     }
 
     public async Task<CurrencyExchangeRate?> Handle(ActivateCurrencyExchangeRateCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivated(request.Id, false);
+        => await service.SetDeactivatedAsync(request.Id, false, cancellationToken);
 }
 
 public class ActivateCurrencyExchangeRateCommand : IRequest<CurrencyExchangeRate?>

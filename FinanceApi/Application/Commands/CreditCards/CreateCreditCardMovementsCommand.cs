@@ -23,7 +23,7 @@ public class CreateCreditCardMovementCommandHandler : BaseResponseHandler<Create
 
     public override async Task<CreditCardMovement> Handle(CreateCreditCardMovementCommand command, CancellationToken cancellationToken)
     {
-        var creditCard = await creditCardRepository.GetById(command.CreditCardId);
+        var creditCard = await creditCardRepository.GetByIdAsync(command.CreditCardId, cancellationToken);
         if (creditCard == null) throw new Exception($"Credit Card not found, Id: {command.CreditCardId}");
 
         var newCreditCardMovement = new CreditCardMovement()
@@ -38,7 +38,7 @@ public class CreateCreditCardMovementCommandHandler : BaseResponseHandler<Create
             AmountDollars = command.AmountDollars,
         };
 
-        await creditCardMovementRepository.Add(newCreditCardMovement);
+        await creditCardMovementRepository.AddAsync(newCreditCardMovement, cancellationToken);
 
         return await Task.FromResult(newCreditCardMovement);
     }

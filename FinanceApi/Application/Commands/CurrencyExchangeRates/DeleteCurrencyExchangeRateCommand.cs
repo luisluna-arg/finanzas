@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using FinanceApi.Application.Base.Handlers;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
@@ -23,7 +22,7 @@ public class DeleteCurrencyExchangeRateCommandHandler : BaseResponselessHandler<
     {
         foreach (Guid id in command.Ids)
         {
-            await currencyRepository.Delete(id);
+            await currencyRepository.DeleteAsync(id, cancellationToken);
         }
     }
 }

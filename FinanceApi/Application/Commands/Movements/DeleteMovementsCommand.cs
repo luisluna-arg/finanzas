@@ -15,7 +15,7 @@ public class DeleteMovementsCommandHandler : IRequestHandler<DeleteMovementsComm
     }
 
     public async Task Handle(DeleteMovementsCommand request, CancellationToken cancellationToken)
-        => await service.Delete(request.Ids);
+        => await service.DeleteAsync(request.Ids, cancellationToken);
 }
 
 public class DeleteMovementsCommand : IRequest

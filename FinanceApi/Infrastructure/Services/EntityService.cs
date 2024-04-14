@@ -15,31 +15,31 @@ public class EntityService<TEntity, TId>
         this.repository = repository;
     }
 
-    public async Task<TEntity?> SetDeactivated(TId id, bool value)
+    public async Task<TEntity?> SetDeactivatedAsync(TId id, bool value, CancellationToken cancellationToken)
     {
-        var entity = await repository.GetById(id);
+        var entity = await repository.GetByIdAsync(id, cancellationToken);
         if (entity != null)
         {
             entity.Deactivated = value;
-            await repository.Update(entity);
+            await repository.UpdateAsync(entity, cancellationToken);
         }
 
         return entity;
     }
 
-    public async Task Delete(TId id)
+    public async Task DeleteAsync(TId id, CancellationToken cancellationToken)
     {
-        await repository.Delete(id);
-        await repository.Persist();
+        await repository.DeleteAsync(id, cancellationToken);
+        await repository.PersistAsync(cancellationToken);
     }
 
-    public async Task Delete(ICollection<TId> ids)
+    public async Task DeleteAsync(ICollection<TId> ids, CancellationToken cancellationToken)
     {
         foreach (TId id in ids)
         {
-            await repository.Delete(id);
+            await repository.DeleteAsync(id, cancellationToken);
         }
 
-        await repository.Persist();
+        await repository.PersistAsync(cancellationToken);
     }
 }

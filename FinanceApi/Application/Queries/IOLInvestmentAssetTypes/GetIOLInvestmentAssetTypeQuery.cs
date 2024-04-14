@@ -19,7 +19,7 @@ public class GetIOLInvestmentAssetTypeQueryHandler : BaseResponseHandler<GetIOLI
     }
 
     public override async Task<IOLInvestmentAssetType?> Handle(GetIOLInvestmentAssetTypeQuery request, CancellationToken cancellationToken)
-        => await investmentAssetIOLTypeRepository.GetById(request.Id);
+        => await investmentAssetIOLTypeRepository.GetByIdAsync(request.Id, cancellationToken);
 }
 
 public class GetIOLInvestmentAssetTypeQuery : GetSingleByIdQuery<IOLInvestmentAssetType?, ushort>

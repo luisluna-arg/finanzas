@@ -21,13 +21,13 @@ public class UpdateCurrencyExchangeRateCommandHandler : BaseResponseHandler<Upda
 
     public override async Task<CurrencyExchangeRate> Handle(UpdateCurrencyExchangeRateCommand command, CancellationToken cancellationToken)
     {
-        var currencyExchangeRate = await currencyExchangeRateRepository.GetById(command.Id);
+        var currencyExchangeRate = await currencyExchangeRateRepository.GetByIdAsync(command.Id, cancellationToken);
         if (currencyExchangeRate == null) throw new Exception("Currency exchange rate not found");
 
         currencyExchangeRate.BuyRate = command.BuyRate;
         currencyExchangeRate.SellRate = command.SellRate;
 
-        await currencyExchangeRateRepository.Update(currencyExchangeRate);
+        await currencyExchangeRateRepository.UpdateAsync(currencyExchangeRate, cancellationToken);
 
         return await Task.FromResult(currencyExchangeRate);
     }

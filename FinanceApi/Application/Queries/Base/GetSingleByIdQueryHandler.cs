@@ -20,5 +20,5 @@ public class GetSingleByIdQueryHandler<TEntity, TId> : BaseResponseHandler<GetSi
     }
 
     public override async Task<TEntity?> Handle(GetSingleByIdQuery<TEntity?, TId> request, CancellationToken cancellationToken)
-        => await repository.GetById(request.Id);
+        => await repository.GetByIdAsync(request.Id, cancellationToken);
 }

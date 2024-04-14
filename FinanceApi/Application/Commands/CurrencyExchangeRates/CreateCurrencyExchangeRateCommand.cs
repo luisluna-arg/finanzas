@@ -24,10 +24,10 @@ public class CreateCurrencyExchangeRateCommandHandler : BaseResponseHandler<Crea
 
     public override async Task<CurrencyExchangeRate> Handle(CreateCurrencyExchangeRateCommand command, CancellationToken cancellationToken)
     {
-        var baseCurrency = await currencyRepository.GetById(command.BaseCurrencyId);
+        var baseCurrency = await currencyRepository.GetByIdAsync(command.BaseCurrencyId, cancellationToken);
         if (baseCurrency == null) throw new Exception("Base currency not found");
 
-        var quoteCurrency = await currencyRepository.GetById(command.QuoteCurrencyId);
+        var quoteCurrency = await currencyRepository.GetByIdAsync(command.QuoteCurrencyId, cancellationToken);
         if (quoteCurrency == null) throw new Exception("Quote currency not found");
 
         var newCurrency = new CurrencyExchangeRate()
@@ -39,7 +39,7 @@ public class CreateCurrencyExchangeRateCommandHandler : BaseResponseHandler<Crea
             TimeStamp = command.TimeStamp.Ticks == 0 ? command.TimeStamp : DateTime.Now
         };
 
-        await currencyExchangeRateRepository.Add(newCurrency);
+        await currencyExchangeRateRepository.AddAsync(newCurrency, cancellationToken);
 
         return await Task.FromResult(newCurrency);
     }

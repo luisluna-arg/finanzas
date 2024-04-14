@@ -32,11 +32,13 @@ public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand,
     {
         var originName = command.Origin.Trim();
 
-        var origin = await debitOriginRepository.GetBy(new Dictionary<string, object>()
-        {
-            { "Name", originName },
-            { "AppModuleId", command.AppModuleId }
-        });
+        var origin = await debitOriginRepository.GetByAsync(
+            new Dictionary<string, object>()
+            {
+                { "Name", originName },
+                { "AppModuleId", command.AppModuleId }
+            },
+            cancellationToken);
 
         if (origin == null)
         {
@@ -56,7 +58,7 @@ public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand,
             TimeStamp = DateTime.UtcNow
         };
 
-        await debitRepository.Add(newDebit);
+        await debitRepository.AddAsync(newDebit, cancellationToken);
 
         return await Task.FromResult(newDebit);
     }

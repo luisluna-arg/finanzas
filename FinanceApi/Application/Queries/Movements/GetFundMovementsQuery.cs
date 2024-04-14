@@ -24,7 +24,7 @@ public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovemen
 
     public override async Task<ICollection<Movement?>> Handle(GetFundMovementsQuery request, CancellationToken cancellationToken)
     {
-        var fundModule = await appModuleRepository.GetFunds();
+        var fundModule = await appModuleRepository.GetFundsAsync(cancellationToken);
         if (fundModule == null) throw new Exception($"Funds module not found");
 
         IQueryable<Movement> query = repository.GetDbSet()

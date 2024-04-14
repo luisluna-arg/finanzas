@@ -26,7 +26,7 @@ public class CreateBankCommandHandler : BaseResponseHandler<CreateBankCommand, B
             Name = command.Name
         };
 
-        await bankRepository.Add(newBank);
+        await bankRepository.AddAsync(newBank, cancellationToken);
 
         return await Task.FromResult(newBank);
     }

@@ -19,7 +19,7 @@ public class GetSingleMovementQueryHandler : BaseResponseHandler<GetSingleMoveme
     }
 
     public override async Task<Movement?> Handle(GetSingleMovementQuery request, CancellationToken cancellationToken)
-        => await movementRepository.GetById(request.Id);
+        => await movementRepository.GetByIdAsync(request.Id, cancellationToken);
 }
 
 public class GetSingleMovementQuery : GetSingleByIdQuery<Movement?, Guid>

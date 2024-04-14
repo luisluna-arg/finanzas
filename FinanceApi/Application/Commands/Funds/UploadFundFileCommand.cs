@@ -30,12 +30,12 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
 
     public override async Task Handle(UploadFundFileCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetFunds();
+        var appModule = await appModuleRepository.GetFundsAsync(cancellationToken);
 
         var dateKind = command.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
 
-        var bank = await bankRepository.GetBy("Id", command.BankId);
+        var bank = await bankRepository.GetByAsync("Id", command.BankId, cancellationToken);
         if (bank == null) throw new Exception($"Bank not found, Id: {command.BankId}");
 
         var newRecords = excelHelper.Read(command.File, appModule, bank, dateKind);
@@ -56,7 +56,7 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
             .Where(o => existingRecords.All(x => movementComparer.Equals(x, o)))
             .ToArray();
 
-        await movementRepository.AddRange(newRecords, true);
+        await movementRepository.AddRangeAsync(newRecords, cancellationToken, true);
     }
 }
 

@@ -15,7 +15,7 @@ public class DeactivateIOLInvestmentAssetTypeCommandHandler : IRequestHandler<De
     }
 
     public async Task<IOLInvestmentAssetType?> Handle(DeactivateIOLInvestmentAssetTypeCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivated(request.Id, true);
+        => await service.SetDeactivatedAsync(request.Id, true, cancellationToken);
 }
 
 public class DeactivateIOLInvestmentAssetTypeCommand : IRequest<IOLInvestmentAssetType?>

@@ -24,18 +24,18 @@ public class UpdateCreditCardCommandHandler : BaseResponseHandler<UpdateCreditCa
 
     public override async Task<CreditCard> Handle(UpdateCreditCardCommand command, CancellationToken cancellationToken)
     {
-        var bank = await bankRepository.GetById(command.BankId);
+        var bank = await bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
 
-        var creditCard = await creditCardRepository.GetById(command.Id);
+        var creditCard = await creditCardRepository.GetByIdAsync(command.Id, cancellationToken);
         if (creditCard == null) throw new Exception("Credit Card Issuer not found");
 
         creditCard.Bank = bank;
         creditCard.Name = command.Name;
         creditCard.Deactivated = command.Deactivated;
 
-        await creditCardRepository.Update(creditCard);
-        await creditCardRepository.Persist();
+        await creditCardRepository.UpdateAsync(creditCard, cancellationToken);
+        await creditCardRepository.PersistAsync(cancellationToken);
 
         return await Task.FromResult(creditCard);
     }

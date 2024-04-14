@@ -27,10 +27,10 @@ public class UpdateIOLInvestmentCommandHandler : BaseResponseHandler<UpdateIOLIn
 
     public override async Task<IOLInvestment> Handle(UpdateIOLInvestmentCommand command, CancellationToken cancellationToken)
     {
-        var iolInvestmentAsset = await iolInvestmentRepository.GetById(command.Id);
+        var iolInvestmentAsset = await iolInvestmentRepository.GetByIdAsync(command.Id, cancellationToken);
         if (iolInvestmentAsset == null) throw new Exception("IOL Investment Asset not found");
 
-        iolInvestmentAsset.Asset = await GetAsset(command.AssetSymbol);
+        iolInvestmentAsset.Asset = await GetAssetAsync(command.AssetSymbol, cancellationToken);
         iolInvestmentAsset.Alarms = command.Alarms;
         iolInvestmentAsset.Quantity = command.Quantity;
         iolInvestmentAsset.Assets = command.Assets;
@@ -41,18 +41,18 @@ public class UpdateIOLInvestmentCommandHandler : BaseResponseHandler<UpdateIOLIn
         iolInvestmentAsset.AverageReturn = command.AverageReturn;
         iolInvestmentAsset.Valued = command.Valued;
 
-        await iolInvestmentRepository.Update(iolInvestmentAsset);
+        await iolInvestmentRepository.UpdateAsync(iolInvestmentAsset, cancellationToken);
 
         return await Task.FromResult(iolInvestmentAsset);
     }
 
-    private async Task<IOLInvestmentAsset> GetAsset(string assetSymbol)
+    private async Task<IOLInvestmentAsset> GetAssetAsync(string assetSymbol, CancellationToken cancellationToken)
     {
-        var asset = await iolInvestmentAssetRepository.GetBy("Symbol", assetSymbol);
+        var asset = await iolInvestmentAssetRepository.GetByAsync("Symbol", assetSymbol, cancellationToken);
 
         if (asset == null)
         {
-            var assetType = await iolInvestmentAssetTypeRepository.GetBy("Name", IOLInvestmentAssetType.Default);
+            var assetType = await iolInvestmentAssetTypeRepository.GetByAsync("Name", IOLInvestmentAssetType.Default, cancellationToken);
 
             if (assetType == null)
             {

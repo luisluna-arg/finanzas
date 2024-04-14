@@ -22,7 +22,7 @@ public class GetAllAppModuleTypesQueryHandler : BaseCollectionHandler<GetAllAppM
     public override async Task<ICollection<AppModuleType?>> Handle(GetAllAppModuleTypesQuery request, CancellationToken cancellationToken)
         => await (request.IncludeDeactivated ?
             this.appModuleTypeRepository.GetAllBy(new Dictionary<string, object>() { { "Deactivated", request.IncludeDeactivated } }).ToArrayAsync() :
-            this.appModuleTypeRepository.GetAll());
+            this.appModuleTypeRepository.GetAllAsync(cancellationToken));
 }
 
 public class GetAllAppModuleTypesQuery : GetAllQuery<AppModuleType?>

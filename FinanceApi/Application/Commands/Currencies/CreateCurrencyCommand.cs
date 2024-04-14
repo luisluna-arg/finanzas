@@ -27,7 +27,7 @@ public class CreateCurrencyCommandHandler : BaseResponseHandler<CreateCurrencyCo
             Name = command.Name
         };
 
-        await currencyRepository.Add(newCurrency);
+        await currencyRepository.AddAsync(newCurrency, cancellationToken);
 
         return await Task.FromResult(newCurrency);
     }

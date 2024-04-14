@@ -4,6 +4,7 @@ namespace FinanceApi.Infrastructure.Repositories;
 
 public interface IAppModuleRepository : IRepository<AppModule, Guid>
 {
-    Task<AppModule> GetFunds();
-    Task<AppModule> GetDollarFunds();
+    Task<AppModule> GetFundsAsync(CancellationToken cancellationToken);
+
+    Task<AppModule> GetDollarFundsAsync(CancellationToken cancellationToken);
 }

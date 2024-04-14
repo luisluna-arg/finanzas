@@ -15,7 +15,7 @@ public class ActivateMovementCommandHandler : IRequestHandler<ActivateMovementCo
     }
 
     public async Task<Movement?> Handle(ActivateMovementCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivated(request.Id, false);
+        => await service.SetDeactivatedAsync(request.Id, false, cancellationToken);
 }
 
 public class ActivateMovementCommand : IRequest<Movement?>

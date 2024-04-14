@@ -15,7 +15,7 @@ public class DeleteIOLInvestmentCommandHandler : IRequestHandler<DeleteIOLInvest
     }
 
     public async Task Handle(DeleteIOLInvestmentCommand request, CancellationToken cancellationToken)
-        => await service.Delete(request.Ids);
+        => await service.DeleteAsync(request.Ids, cancellationToken);
 }
 
 public class DeleteIOLInvestmentCommand : IRequest

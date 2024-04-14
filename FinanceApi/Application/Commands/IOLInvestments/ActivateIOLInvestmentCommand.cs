@@ -15,7 +15,7 @@ public class ActivateIOLInvestmentCommandHandler : IRequestHandler<ActivateIOLIn
     }
 
     public async Task<IOLInvestment?> Handle(ActivateIOLInvestmentCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivated(request.Id, false);
+        => await service.SetDeactivatedAsync(request.Id, false, cancellationToken);
 }
 
 public class ActivateIOLInvestmentCommand : IRequest<IOLInvestment?>

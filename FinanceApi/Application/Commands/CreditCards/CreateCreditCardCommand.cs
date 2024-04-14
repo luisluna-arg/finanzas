@@ -24,7 +24,7 @@ public class CreateCreditCardCommandHandler : BaseResponseHandler<CreateCreditCa
 
     public override async Task<CreditCard> Handle(CreateCreditCardCommand command, CancellationToken cancellationToken)
     {
-        var bank = await bankRepository.GetById(command.BankId);
+        var bank = await bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
 
         var newCreditCard = new CreditCard()
@@ -34,7 +34,7 @@ public class CreateCreditCardCommandHandler : BaseResponseHandler<CreateCreditCa
             Deactivated = command.Deactivated
         };
 
-        await creditCardRepository.Add(newCreditCard);
+        await creditCardRepository.AddAsync(newCreditCard, cancellationToken);
 
         return await Task.FromResult(newCreditCard);
     }

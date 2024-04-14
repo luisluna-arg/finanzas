@@ -5,9 +5,9 @@ namespace FinanceApi.Infrastructure.Services;
 public interface IEntityService<TEntity, TId>
     where TEntity : Entity<TId>
 {
-    Task<TEntity?> SetDeactivated(TId id, bool value);
+    Task<TEntity?> SetDeactivatedAsync(TId id, bool value, CancellationToken cancellationToken);
 
-    Task Delete(TId id);
+    Task DeleteAsync(TId id, CancellationToken cancellationToken);
 
-    Task Delete(ICollection<TId> ids);
+    Task DeleteAsync(ICollection<TId> ids, CancellationToken cancellationToken);
 }

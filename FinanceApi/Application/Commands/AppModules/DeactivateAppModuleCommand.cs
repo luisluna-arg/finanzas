@@ -15,7 +15,7 @@ public class DeactivateAppModuleCommandHandler : IRequestHandler<DeactivateAppMo
     }
 
     public async Task<AppModule?> Handle(DeactivateAppModuleCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivated(request.Id, true);
+        => await service.SetDeactivatedAsync(request.Id, true, cancellationToken);
 }
 
 public class DeactivateAppModuleCommand : IRequest<AppModule?>

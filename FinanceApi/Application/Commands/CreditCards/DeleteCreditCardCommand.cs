@@ -15,7 +15,7 @@ public class DeleteCreditCardCommandHandler : IRequestHandler<DeleteCreditCardCo
     }
 
     public async Task Handle(DeleteCreditCardCommand request, CancellationToken cancellationToken)
-        => await service.Delete(request.Ids);
+        => await service.DeleteAsync(request.Ids, cancellationToken);
 }
 
 public class DeleteCreditCardCommand : IRequest

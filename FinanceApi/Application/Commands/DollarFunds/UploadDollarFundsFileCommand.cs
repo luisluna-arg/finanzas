@@ -30,12 +30,12 @@ public class UploadDollarFundsFileCommandHandler : BaseResponselessHandler<Uploa
 
     public override async Task Handle(UploadDollarFundsFileCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetDollarFunds();
+        var appModule = await appModuleRepository.GetDollarFundsAsync(cancellationToken);
 
         var dateKind = command.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
 
-        var bank = await bankRepository.GetBy("Id", command.BankId);
+        var bank = await bankRepository.GetByAsync("Id", command.BankId, cancellationToken);
         if (bank == null) throw new Exception($"Bank not found, Id: {command.BankId}");
 
         var newRecords = excelHelper.Read(command.File, appModule, bank, dateKind);
@@ -61,7 +61,7 @@ public class UploadDollarFundsFileCommandHandler : BaseResponselessHandler<Uploa
                 x.Concept2 != o.Concept2))
             .ToArray();
 
-        await movementRepository.AddRange(newRecords, true);
+        await movementRepository.AddRangeAsync(newRecords, cancellationToken, true);
     }
 }
 

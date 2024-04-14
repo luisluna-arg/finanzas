@@ -15,7 +15,7 @@ public class DeactivateDebitCommandHandler : IRequestHandler<DeactivateDebitComm
     }
 
     public async Task<Debit?> Handle(DeactivateDebitCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivated(request.Id, true);
+        => await service.SetDeactivatedAsync(request.Id, true, cancellationToken);
 }
 
 public class DeactivateDebitCommand : IRequest<Debit?>

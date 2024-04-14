@@ -28,7 +28,7 @@ public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<Upload
 
     public override async Task Handle(UploadCreditCardFileCommand command, CancellationToken cancellationToken)
     {
-        var issuer = await issuerRepository.GetById(command.CreditCardId);
+        var issuer = await issuerRepository.GetByIdAsync(command.CreditCardId, cancellationToken);
         if (issuer == null) throw new Exception($"Credit Card Issuer not found, Id: {command.CreditCardId}");
 
         var dateKind = command.DateKind;
@@ -57,7 +57,7 @@ public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<Upload
                 x.AmountDollars != o.AmountDollars))
             .ToArray();
 
-        await repository.AddRange(newRecords, true);
+        await repository.AddRangeAsync(newRecords, cancellationToken, true);
     }
 }
 

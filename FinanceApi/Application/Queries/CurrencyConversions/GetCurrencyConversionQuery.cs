@@ -19,7 +19,7 @@ public class GetCurrencyConversionQueryHandler : BaseResponseHandler<GetCurrency
     }
 
     public override async Task<CurrencyConversion?> Handle(GetCurrencyConversionQuery request, CancellationToken cancellationToken)
-        => await currencyRepository.GetById(request.Id);
+        => await currencyRepository.GetByIdAsync(request.Id, cancellationToken);
 }
 
 public class GetCurrencyConversionQuery : GetSingleByIdQuery<CurrencyConversion?, Guid>

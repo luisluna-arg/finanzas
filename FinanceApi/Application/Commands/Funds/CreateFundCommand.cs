@@ -26,10 +26,10 @@ public class CreateFundCommandHandler : BaseResponseHandler<CreateFundCommand, F
 
     public override async Task<Fund> Handle(CreateFundCommand command, CancellationToken cancellationToken)
     {
-        Bank? bank = await bankRepository.GetById(command.BankId);
+        Bank? bank = await bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
 
-        Currency? currency = await currencyRepository.GetById(command.CurrencyId);
+        Currency? currency = await currencyRepository.GetByIdAsync(command.CurrencyId, cancellationToken);
         if (currency == null) throw new Exception("Currency not found");
 
         var newFund = new Fund()
@@ -42,7 +42,7 @@ public class CreateFundCommandHandler : BaseResponseHandler<CreateFundCommand, F
             Deactivated = false
         };
 
-        await this.fundRepository.Add(newFund);
+        await this.fundRepository.AddAsync(newFund, cancellationToken);
 
         return await Task.FromResult(newFund);
     }

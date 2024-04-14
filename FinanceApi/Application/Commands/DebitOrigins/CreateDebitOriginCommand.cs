@@ -25,7 +25,7 @@ public class CreateDebitOriginCommandHandler : BaseResponseHandler<CreateDebitOr
 
     public override async Task<DebitOrigin> Handle(CreateDebitOriginCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetById(command.AppModuleId);
+        var appModule = await appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
         if (appModule == null) throw new Exception("App module not found");
 
         var newDebitOrigin = new DebitOrigin()
@@ -35,7 +35,7 @@ public class CreateDebitOriginCommandHandler : BaseResponseHandler<CreateDebitOr
             Deactivated = command.Deactivated
         };
 
-        await debitOriginRepository.Add(newDebitOrigin);
+        await debitOriginRepository.AddAsync(newDebitOrigin, cancellationToken);
 
         return await Task.FromResult(newDebitOrigin);
     }

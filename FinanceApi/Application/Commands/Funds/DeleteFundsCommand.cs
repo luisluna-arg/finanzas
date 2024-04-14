@@ -15,7 +15,7 @@ public class DeleteFundsCommandHandler : IRequestHandler<DeleteFundsCommand>
     }
 
     public async Task Handle(DeleteFundsCommand request, CancellationToken cancellationToken)
-        => await service.Delete(request.Ids);
+        => await service.DeleteAsync(request.Ids, cancellationToken);
 }
 
 public class DeleteFundsCommand : IRequest

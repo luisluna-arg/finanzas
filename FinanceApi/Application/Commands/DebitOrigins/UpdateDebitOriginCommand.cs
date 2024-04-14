@@ -25,17 +25,17 @@ public class UpdateDebitOriginCommandHandler : BaseResponseHandler<UpdateDebitOr
 
     public override async Task<DebitOrigin> Handle(UpdateDebitOriginCommand command, CancellationToken cancellationToken)
     {
-        var debitOrigin = await debitOriginRepository.GetById(command.Id);
+        var debitOrigin = await debitOriginRepository.GetByIdAsync(command.Id, cancellationToken);
         if (debitOrigin == null) throw new Exception("Debit Origin not found");
 
-        var appModule = await appModuleRepository.GetById(command.AppModuleId);
+        var appModule = await appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
         if (appModule == null) throw new Exception("App module not found");
 
         debitOrigin.AppModule = appModule;
         debitOrigin.Name = command.Name;
         debitOrigin.Deactivated = command.Deactivated;
 
-        await debitOriginRepository.Update(debitOrigin);
+        await debitOriginRepository.UpdateAsync(debitOrigin, cancellationToken);
 
         return await Task.FromResult(debitOrigin);
     }

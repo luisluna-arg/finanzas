@@ -20,7 +20,7 @@ public class DeleteCurrencyCommandHandler : BaseResponselessHandler<DeleteCurren
     }
 
     public override async Task Handle(DeleteCurrencyCommand command, CancellationToken cancellationToken)
-        => await currencyRepository.Delete(command.Id);
+        => await currencyRepository.DeleteAsync(command.Id, cancellationToken);
 }
 
 public class DeleteCurrencyCommand : IRequest
