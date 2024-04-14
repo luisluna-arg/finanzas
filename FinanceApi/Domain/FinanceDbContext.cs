@@ -24,6 +24,7 @@ public class FinanceDbContext : DbContext
     public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetType => Set<IOLInvestmentAssetType>();
     public DbSet<CreditCardMovement> CreditCardMovement => Set<CreditCardMovement>();
     public DbSet<CreditCard> CreditCard => Set<CreditCard>();
+    public DbSet<CreditCardStatement> CreditCardStatement => Set<CreditCardStatement>();
     public DbSet<Fund> Fund => Set<Fund>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

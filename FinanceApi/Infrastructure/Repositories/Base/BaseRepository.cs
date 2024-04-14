@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
 using FinanceApi.Domain;
+using FinanceApi.Domain.Models.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinanceApi.Infrastructure.Repositories.Base;
 
 public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
-    where TEntity : class
+    where TEntity : Entity<TId>
 {
     private readonly FinanceDbContext dbContext;
     private readonly DbSet<TEntity> dbSet;
@@ -19,6 +20,9 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
     protected FinanceDbContext DbContext { get => dbContext; }
 
     public DbSet<TEntity> GetDbSet() => dbSet;
+
+    public async Task<bool> ExistsAsync(TId id, CancellationToken cancellationToken)
+        => await dbSet.AnyAsync(o => o.Id!.Equals(id), cancellationToken);
 
     public async Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken) => await dbSet.ToArrayAsync(cancellationToken);
 

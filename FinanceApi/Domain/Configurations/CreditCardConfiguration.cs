@@ -12,5 +12,10 @@ public class CreditCardConfiguration : IEntityTypeConfiguration<CreditCard>
             .HasMany(o => o.Movements)
             .WithOne(o => o.CreditCard)
             .IsRequired();
+
+        builder
+            .HasOne(o => o.CreditCardStatement)
+            .WithOne(o => o.CreditCard)
+            .HasForeignKey<CreditCard>(c => c.CreditCardStatementId);
     }
 }

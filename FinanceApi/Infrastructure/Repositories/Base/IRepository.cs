@@ -8,6 +8,8 @@ public interface IRepository<TEntity, TId>
 {
     DbSet<TEntity> GetDbSet();
 
+    Task<bool> ExistsAsync(TId id, CancellationToken cancellationToken);
+
     Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken);
 
     IQueryable<TEntity> GetAllBy(string searchCriteria, object searchValue);
