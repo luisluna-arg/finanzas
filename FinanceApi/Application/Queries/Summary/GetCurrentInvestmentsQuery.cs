@@ -28,7 +28,7 @@ public class GetCurrentInvestmentsQueryHandler : IRequestHandler<GetCurrentInves
             .OrderBy(o => o.Asset.Symbol)
             .ToArray();
 
-        result.Investments.AddRange(investments.Select(o => new Investment($"{o.Id}", o.Asset.Symbol, o.AverageReturn, o.Valued)));
+        result.Items.AddRange(investments.Select(o => new Investment($"{o.Id}", o.Asset.Symbol, o.AverageReturn, o.Valued)));
 
         return Task.FromResult(result);
     }

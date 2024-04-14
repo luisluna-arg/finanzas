@@ -2,7 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { InputControlTypes } from "../../utils/InputControl";
 import dates from "../../../utils/dates";
 
-const FetchTable = ({ name, classes, wrapper, title, data, url, columns, hideIfEmpty, onFetch }) => {
+const FetchTable = ({
+    name,
+    classes,
+    wrapper,
+    title, data,
+    url,
+    columns,
+    hideIfEmpty,
+    onFetch,
+    showTotals = true
+    }) => {
     const [internalData, setInternalData] = useState(data ?? []);
 
     const fetchData = async (dataUrl) => {
@@ -69,7 +79,7 @@ const FetchTable = ({ name, classes, wrapper, title, data, url, columns, hideIfE
                     </tr>
                 }
             </tbody>
-            {internalData && internalData.length > 0 && columns.filter(o => o.totals != null).length > 0 && (
+            {showTotals && internalData && internalData.length > 0 && columns.filter(o => o.totals != null).length > 0 && (
                 <tfoot style={{ borderTop: "2px solid" }}>
                     <tr key={`${name}-totals-row`}>
                         {columns && columns.map((column, index) => {

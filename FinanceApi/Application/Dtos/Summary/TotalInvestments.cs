@@ -1,17 +1,9 @@
 namespace FinanceApi.Application.Dtos.Summary;
 
-public class TotalInvestments
+public class TotalInvestments : BaseSummaryTotals<Investment>
 {
-    private readonly List<Investment> investment;
     public TotalInvestments()
+        : base()
     {
-        investment = new List<Investment>();
-    }
-
-    public List<Investment> Investments { get => investment; }
-
-    public void Add(Investment expense)
-    {
-        this.investment.Add(expense);
     }
 }

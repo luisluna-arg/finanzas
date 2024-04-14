@@ -104,6 +104,16 @@ const FundsTableSettings = {
   ],
 };
 
+const SummaryTableSettings = {
+  columns: [
+    {
+      id: "label",
+      label: "Dato"
+    },
+    NumericColumn("value", "Monto")
+  ],
+};
+
 const ExpensesTableSettings = {
   columns: [
     {
@@ -159,6 +169,7 @@ debitTableTitles[debitModuleDollars] = "Débitos Dólares";
 const Dashboard = () => {
   const [creditCardData, setCreditCardData] = useState(null);
   const [fundsData, setFundsData] = useState(null);
+  const [summaryGeneralData, setSummaryGeneralData] = useState(null);
   const [expensesData, setExpensesData] = useState(null);
   const [investmentsData, setInvestmentsData] = useState(null);
   const [debitsData, setDebitsData] = useState(null);
@@ -170,6 +181,7 @@ const Dashboard = () => {
     endpoints.push(`${urls.summary.currentFunds}?DailyUse=true`);
     endpoints.push(urls.summary.totalExpenses);
     endpoints.push(urls.summary.currentInvestments);
+    endpoints.push(`${urls.summary.general}?DailyUse=true`);
 
     const fetchData = async (fetchUrls) => {
       try {
@@ -193,6 +205,7 @@ const Dashboard = () => {
       setFundsData(data[3])
       setExpensesData(data[4])
       setInvestmentsData(data[5])
+      setSummaryGeneralData(data[6])
     }
 
     getData();
@@ -251,27 +264,41 @@ const Dashboard = () => {
     <div className="container-fluid">
       <div className='row'>
         <div className="col-3 column flex-wrap">
-          {fundsData && fundsData.funds && <div className="w-auto me-2 overflow-hidden">
+          {summaryGeneralData && summaryGeneralData.items && <div className="w-auto me-2 overflow-hidden">
+            <FetchTable
+              name={`Summary`}
+              title={{
+                text: `Resúmen`,
+                class: `text-center cornflowerblue-bg text-light`
+              }}
+              data={summaryGeneralData.items}
+              columns={SummaryTableSettings.columns}
+              classes={tableClasses}
+              showTotals={false}
+            />
+          </div>
+          }
+          {fundsData && fundsData.items && <div className="w-auto me-2 overflow-hidden">
             <FetchTable
               name={`Funds`}
               title={{
                 text: `Fondos`,
                 class: `text-center coral-bg text-light`
               }}
-              data={fundsData.funds}
+              data={fundsData.items}
               columns={FundsTableSettings.columns}
               classes={tableClasses}
             />
           </div>
           }
-          {expensesData && expensesData.expenses && <div className="w-auto me-2 overflow-hidden">
+          {expensesData && expensesData.items && <div className="w-auto me-2 overflow-hidden">
             <FetchTable
               name={`Expenses`}
               title={{
                 text: `Gastos`,
                 class: `text-center red-bg text-light`
               }}
-              data={expensesData.expenses}
+              data={expensesData.items}
               columns={ExpensesTableSettings.columns}
               classes={tableClasses}
             />
@@ -311,14 +338,14 @@ const Dashboard = () => {
           }
         </div>
         <div className="col-3 column flex-wrap justify-content-center">
-          {investmentsData && investmentsData.investments && <div className="w-auto me-2 overflow-hidden">
+          {investmentsData && investmentsData.items && <div className="w-auto me-2 overflow-hidden">
             <FetchTable
               name={`Investments`}
               title={{
                 text: `Inversiones`,
                 class: `text-center mediumpurple-bg text-light`
               }}
-              data={investmentsData.investments}
+              data={investmentsData.items}
               columns={InvestmentsTableSettings.columns}
               classes={tableClasses}
             />

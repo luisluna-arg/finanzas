@@ -51,7 +51,7 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
 
         Func<Domain.Models.Fund, string> nameFormater = (o) => $"{o.Bank!.Name} {o.Currency!.Name}";
 
-        result.Funds.AddRange(funds
+        result.Items.AddRange(funds
             .Where(o => o.CurrencyId == pesosCurrency)
             .Select(o => new FundDto($"{o.Id}", nameFormater(o), o.Amount)));
 

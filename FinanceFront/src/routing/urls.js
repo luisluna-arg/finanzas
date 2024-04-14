@@ -1,61 +1,63 @@
-const baseUrl = "https://localhost:7005/";
+const baseUrl = "https://localhost:7005";
+const apiBaseUrl = `${baseUrl}/api`;
 
 const urls = {
   appModules: {
-    endpoint: `${baseUrl}api/app-modules/`,
+    endpoint: `${apiBaseUrl}/app-modules/`,
   },
   banks: {
-    endpoint: `${baseUrl}api/banks/`,
+    endpoint: `${apiBaseUrl}/banks/`,
   },
   currencies: {
-    endpoint: `${baseUrl}api/currencies/`,
+    endpoint: `${apiBaseUrl}/currencies/`,
   },
   currencyExchangeRates: {
-    endpoint: `${baseUrl}api/currencies/exchange-rates`,
-    paginated: `${baseUrl}api/currencies/exchange-rates/paginated`,
+    endpoint: `${apiBaseUrl}/currencies/exchange-rates`,
+    paginated: `${apiBaseUrl}/currencies/exchange-rates/paginated`,
   },
   creditCards: {
-    get: `${baseUrl}api/credit-cards/`,
+    get: `${apiBaseUrl}/credit-cards/`,
   },
   creditCardMovements: {
-    endpoint: `${baseUrl}api/credit-card-movements`,
-    latest: `${baseUrl}api/credit-card-movements/latest`,
-    paginated: `${baseUrl}api/credit-card-movements/paginated`,
-    upload: `${baseUrl}api/credit-card-movements/upload`,
+    endpoint: `${apiBaseUrl}/credit-card-movements`,
+    latest: `${apiBaseUrl}/credit-card-movements/latest`,
+    paginated: `${apiBaseUrl}/credit-card-movements/paginated`,
+    upload: `${apiBaseUrl}/credit-card-movements/upload`,
   },
   debits: {
-    endpoint: `${baseUrl}api/debits/`,
-    paginated: `${baseUrl}api/debits/paginated`,
-    latest: `${baseUrl}api/debits/latest`,
+    endpoint: `${apiBaseUrl}/debits/`,
+    paginated: `${apiBaseUrl}/debits/paginated`,
+    latest: `${apiBaseUrl}/debits/latest`,
   },
   debitOrigins: {
-    endpoint: `${baseUrl}api/debit-origins`
+    endpoint: `${apiBaseUrl}/debit-origins`
   },
   funds: {
-    endpoint: `${baseUrl}api/funds/`,
-    upload: `${baseUrl}api/funds/upload`,
-    paginated: `${baseUrl}api/funds/paginated`,
+    endpoint: `${apiBaseUrl}/funds/`,
+    upload: `${apiBaseUrl}/funds/upload`,
+    paginated: `${apiBaseUrl}/funds/paginated`,
   },
   iolInvestments: {
-    endpoint: `${baseUrl}api/iol-investment/`,
-    upload: `${baseUrl}api/iol-investment/upload`,
-    paginated: `${baseUrl}api/iol-investment/paginated`,
+    endpoint: `${apiBaseUrl}/iol-investment/`,
+    upload: `${apiBaseUrl}/iol-investment/upload`,
+    paginated: `${apiBaseUrl}/iol-investment/paginated`,
   },
   iolInvestmentAssets: {
-    endpoint: `${baseUrl}api/iol-investment-asset/`
+    endpoint: `${apiBaseUrl}/iol-investment-asset/`
   },
   iolInvestmentAssetTypes: {
-    endpoint: `${baseUrl}api/iol-investment-asset-type/`
+    endpoint: `${apiBaseUrl}/iol-investment-asset-type/`
   },
   movements: {
-    endpoint: `${baseUrl}api/movements/`,
-    paginated: `${baseUrl}api/movements/paginated`,
-    upload: `${baseUrl}api/movements/upload`,
+    endpoint: `${apiBaseUrl}/movements/`,
+    paginated: `${apiBaseUrl}/movements/paginated`,
+    upload: `${apiBaseUrl}/movements/upload`,
   },
   summary: {
-    currentFunds: `${baseUrl}api/summary/currentFunds`,
-    totalExpenses: `${baseUrl}api/summary/totalExpenses`,
-    currentInvestments: `${baseUrl}api/summary/currentInvestments`
+    currentFunds: `${apiBaseUrl}/summary/currentFunds`,
+    totalExpenses: `${apiBaseUrl}/summary/totalExpenses`,
+    currentInvestments: `${apiBaseUrl}/summary/currentInvestments`,
+    general: `${apiBaseUrl}/summary/general`
   }
 };
 

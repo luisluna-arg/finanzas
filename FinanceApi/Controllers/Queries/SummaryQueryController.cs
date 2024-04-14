@@ -23,4 +23,8 @@ public class SummaryQueryController(IMapper mapper, IMediator mediator)
     [HttpGet("currentInvestments")]
     public async Task<IActionResult> CurrentInvestments([FromQuery] GetCurrentInvestmentsQuery request)
         => Ok(await Mediator.Send(request));
+
+    [HttpGet("general")]
+    public async Task<IActionResult> General([FromQuery] GetGeneralSummaryQuery request)
+        => Ok(await Mediator.Send(request));
 }
