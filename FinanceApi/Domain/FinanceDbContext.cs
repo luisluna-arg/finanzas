@@ -26,6 +26,7 @@ public class FinanceDbContext : DbContext
     public DbSet<CreditCard> CreditCard => Set<CreditCard>();
     public DbSet<CreditCardStatement> CreditCardStatement => Set<CreditCardStatement>();
     public DbSet<Fund> Fund => Set<Fund>();
+    public DbSet<Income> Income => Set<Income>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
