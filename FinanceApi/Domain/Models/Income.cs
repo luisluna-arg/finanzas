@@ -1,9 +1,10 @@
 using FinanceApi.Core.SpecialTypes;
 using FinanceApi.Domain.Models.Base;
+using FinanceApi.Domain.Models.Interfaces;
 
 namespace FinanceApi.Domain.Models;
 
-public class Income : Entity<Guid>
+public class Income : Entity<Guid>, IAmountHolder
 {
     public Guid BankId { get; set; }
 

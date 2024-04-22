@@ -1,6 +1,8 @@
 using Castle.DynamicProxy.Internal;
+using FinanceApi.Domain.DataConverters;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories;
+using FinanceApi.Infrastructure.Services;
 
 namespace FinanceApi.Core.Config;
 
@@ -8,16 +10,19 @@ public static class ConfigExtensions
 {
     public static void MainServices(this IServiceCollection services)
     {
-        services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
         services.AddAutoMapper(typeof(Program));
 
         var assembly = typeof(Program).Assembly;
+
+        services.AddMediatR(o => o.RegisterServicesFromAssembly(assembly));
+
         var assemblyTypes = assembly.GetTypes();
 
         services.AddRepositories(assemblyTypes);
 
         services.AddEntityServices(assemblyTypes);
+
+        services.AddScoped<ICurrencyConverter, CurrencyConverter>();
     }
 
     private static void AddRepositories(
@@ -44,6 +49,7 @@ public static class ConfigExtensions
 
         services.AddScoped<IAppModuleRepository, AppModuleRepository>();
         services.AddScoped<IRepository<AppModule, Guid>, AppModuleRepository>();
+        services.AddScoped<CurrencyConversionService>();
     }
 
     private static void AddEntityServices(
@@ -51,7 +57,8 @@ public static class ConfigExtensions
         IEnumerable<Type> assemblyTypes)
     {
         var servicesTypes = assemblyTypes.Where(t =>
-            t.Namespace == "FinanceApi.Infrastructure.Services");
+            t.Namespace == "FinanceApi.Infrastructure.Services" &&
+            t.GetAllInterfaces().Any(i => i.Name.StartsWith("IEntityService")));
 
         var serviceInterface = servicesTypes.First(t => t.IsInterface);
 

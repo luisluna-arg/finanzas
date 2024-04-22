@@ -6,4 +6,9 @@ public class TotalGeneralSummary : BaseSummaryTotals<GeneralSummary>
         : base()
     {
     }
+
+    public TotalGeneralSummary(ICollection<GeneralSummary> items)
+        : base(items)
+    {
+    }
 }
