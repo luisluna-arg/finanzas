@@ -3,6 +3,7 @@ using FinanceApi.Application.Dtos.Banks;
 using FinanceApi.Application.Queries.Summary;
 using FinanceApi.Controllers.Base;
 using FinanceApi.Domain.Models;
+using FinanceApiApplication.Queries.Summary;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,10 @@ public class SummaryQueryController(IMapper mapper, IMediator mediator)
 
     [HttpGet("totalExpenses")]
     public async Task<IActionResult> TotalExpenses([FromQuery] GetTotalExpensesQuery request)
+        => Ok(await Mediator.Send(request));
+
+    [HttpGet("currentIncomes")]
+    public async Task<IActionResult> CurrentIncomes([FromQuery] GetCurrentIncomesQuery request)
         => Ok(await Mediator.Send(request));
 
     [HttpGet("currentInvestments")]

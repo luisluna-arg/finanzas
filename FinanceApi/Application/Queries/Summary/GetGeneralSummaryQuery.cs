@@ -1,7 +1,7 @@
 using FinanceApi.Application.Dtos.Summary;
-using FinanceApi.Application.Queries.Incomes;
 using FinanceApi.Domain.Models.Interfaces;
 using FinanceApi.Infrastructure.Services;
+using FinanceApiApplication.Queries.Summary;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static FinanceApi.Core.Config.DatabaseSeeder;

@@ -18,5 +18,5 @@ public class Income : Entity<Guid>, IAmountHolder
 
     public DateTime TimeStamp { get; set; }
 
-    public Money Amount { get; set; } = 0m;
+    public Money Amount { get; set; }
 }

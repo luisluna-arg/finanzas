@@ -5,26 +5,27 @@ using FinanceApi.Infrastructure.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinanceApi.Application.Queries.Incomes;
+namespace FinanceApiApplication.Queries.Summary;
 
 public class GetCurrentIncomesQueryHandler : BaseResponseHandler<GetCurrentIncomesQuery, ICollection<Income>>
 {
-    private readonly IRepository<Income, Guid> movementRepository;
+    private readonly IRepository<Income, Guid> incomeRepository;
 
     public GetCurrentIncomesQueryHandler(
         FinanceDbContext db,
-        IRepository<Income, Guid> movementRepository)
+        IRepository<Income, Guid> incomeRepository)
         : base(db)
     {
-        this.movementRepository = movementRepository;
+        this.incomeRepository = incomeRepository;
     }
 
     public override async Task<ICollection<Income>> Handle(GetCurrentIncomesQuery request, CancellationToken cancellationToken)
     {
-        var query = movementRepository.GetDbSet()
+        var query = incomeRepository.GetDbSet()
             .Include(o => o.Bank)
             .Include(o => o.Currency)
             .AsQueryable();
+
         if (request.BankId.HasValue)
         {
             query = query.Where(q => q.BankId == request.BankId.Value);
@@ -44,11 +45,16 @@ public class GetCurrentIncomesQueryHandler : BaseResponseHandler<GetCurrentIncom
     }
 }
 
-public class GetCurrentIncomesQuery(
-    Guid? bankId = default,
-    Guid? currencyId = default)
-    : IRequest<ICollection<Income>>
+public class GetCurrentIncomesQuery : IRequest<ICollection<Income>>
 {
-    public Guid? BankId { get => bankId; }
-    public Guid? CurrencyId { get => currencyId; }
+    public GetCurrentIncomesQuery(
+        Guid? bankId = default,
+        Guid? currencyId = default)
+    {
+        BankId = bankId;
+        CurrencyId = currencyId;
+    }
+
+    public Guid? BankId { get; private set; }
+    public Guid? CurrencyId { get; private set; }
 }
