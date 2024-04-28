@@ -38,7 +38,7 @@ public class GetCurrentIncomesQueryHandler : BaseResponseHandler<GetCurrentIncom
 
         query = query
             .GroupBy(g => new { g.BankId, g.CurrencyId })
-            .Select(g => g.OrderByDescending(i => i.TimeStamp).First())
+            .Select(g => g.OrderByDescending(i => i.TimeStamp).ThenBy(i => i.Id).First())
             .AsQueryable();
 
         return await query.ToArrayAsync();
