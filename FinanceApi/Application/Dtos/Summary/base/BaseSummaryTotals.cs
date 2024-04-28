@@ -10,6 +10,11 @@ public class BaseSummaryTotals<TItem>
         items = new List<TItem>();
     }
 
+    protected BaseSummaryTotals(ICollection<TItem> items)
+    {
+        this.items = new List<TItem>(items);
+    }
+
     public List<TItem> Items { get => items; }
 
     public List<TItem> Add(TItem item)
