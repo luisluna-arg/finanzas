@@ -19,6 +19,7 @@ public class GetTotalExpensesQueryHandler : IRequestHandler<GetTotalExpensesQuer
     {
         var result = new TotalExpenses();
 
+        var total = 0;
         var creditCards = db.CreditCard.Include(o => o.Bank).Where(o => !o.Deactivated).ToArray();
         foreach (var creditCard in creditCards)
         {
@@ -27,10 +28,11 @@ public class GetTotalExpensesQueryHandler : IRequestHandler<GetTotalExpensesQuer
             if (count > 0)
             {
                 var timeStamp = await baseQuery.MaxAsync(o => o.TimeStamp);
-                var total = await baseQuery.Where(o => o.TimeStamp == timeStamp).SumAsync(o => o.Amount);
-                result.Add(new Expense(creditCard.Id.ToString(), $"{creditCard.Bank.Name} {creditCard.Name}", total));
+                total += await baseQuery.Where(o => o.TimeStamp == timeStamp).SumAsync(o => o.Amount);
             }
         }
+
+        result.Add(new Expense("creditCards", "Tarjetas de crédito", total));
 
         var debitOrigins = db.DebitOrigin.Where(o => !o.Deactivated).ToArray();
         var debitTotal = 0m;
