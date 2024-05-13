@@ -27,15 +27,24 @@ public class GetGeneralSummaryQueryHandler : IRequestHandler<GetGeneralSummaryQu
 
         var currentIncomes = (await mediator.Send(new GetCurrentIncomesQuery())) as ICollection<IAmountHolder>;
 
-        var funds = (await currencyConverterService.ConvertCollection(currentIncomes!, pesosCurrencyId)).Sum(m => m);
+        var convertedIncomes = (await currencyConverterService.ConvertCollection(currentIncomes!, pesosCurrencyId)).Sum(m => m);
 
         var expenses = (await mediator.Send(new GetTotalExpensesQuery())).Items.Sum(e => e.Value);
 
+        var investments = (await mediator.Send(new GetCurrentInvestmentsQuery())).Items.Sum(e => e.Valued);
+
+        var totalFunds = (await mediator.Send(new GetCurrentFundsQuery())).Items
+            .Concat((await mediator.Send(new GetCurrentFundsQuery() { DailyUse = true })).Items)
+            .Sum(e => e.Value) +
+            investments;
+
         var result = new TotalGeneralSummary(
         [
-            new GeneralSummary(Guid.NewGuid().ToString(), "Ingresos", funds),
+            new GeneralSummary(Guid.NewGuid().ToString(), "Ingresos", convertedIncomes),
             new GeneralSummary(Guid.NewGuid().ToString(), "Gastos", expenses),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Diferencia", funds - expenses)
+            new GeneralSummary(Guid.NewGuid().ToString(), "Diferencia", convertedIncomes - expenses),
+            new GeneralSummary(Guid.NewGuid().ToString(), "Inversiones", investments),
+            new GeneralSummary(Guid.NewGuid().ToString(), "Dinero total", totalFunds)
         ]);
 
         return result;

@@ -21,8 +21,6 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
     {
         var result = new TotalFunds();
 
-        var pesosCurrency = Guid.Parse(CurrencyConstants.PesoId);
-
         var fundsQuery = db.Fund
             .Include(o => o.Bank)
             .Include(o => o.Currency)
@@ -52,10 +50,10 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
         Func<Domain.Models.Fund, string> nameFormater = (o) => $"{o.Bank!.Name} {o.Currency!.Name}";
 
         result.Items.AddRange(funds
-            .Where(o => o.CurrencyId == pesosCurrency)
+            .Where(o => o.CurrencyId == request.CurrencyId)
             .Select(o => new FundDto($"{o.Id}", nameFormater(o), o.Amount)));
 
-        foreach (var fund in funds.Where(o => o.CurrencyId != pesosCurrency))
+        foreach (var fund in funds.Where(o => o.CurrencyId != request.CurrencyId))
         {
             var currencyRate = currencyRates2
                 .FirstOrDefault(o => o.BaseCurrencyId == fund.CurrencyId || o.QuoteCurrencyId == fund.CurrencyId);
@@ -81,4 +79,5 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
 public class GetCurrentFundsQuery : IRequest<TotalFunds>
 {
     public bool? DailyUse { get; set; }
+    public Guid? CurrencyId { get; set; } = Guid.Parse(CurrencyConstants.PesoId);
 }
