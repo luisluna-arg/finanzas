@@ -169,6 +169,7 @@ debitTableTitles[debitModuleDollars] = "Débitos Dólares";
 const Dashboard = () => {
   const [creditCardData, setCreditCardData] = useState(null);
   const [fundsData, setFundsData] = useState(null);
+  const [otherFundsData, setOtherFundsData] = useState(null);
   const [summaryGeneralData, setSummaryGeneralData] = useState(null);
   const [expensesData, setExpensesData] = useState(null);
   const [investmentsData, setInvestmentsData] = useState(null);
@@ -182,7 +183,8 @@ const Dashboard = () => {
     endpoints.push(urls.summary.totalExpenses);
     endpoints.push(urls.summary.currentInvestments);
     endpoints.push(`${urls.summary.general}?DailyUse=true`);
-
+    endpoints.push(`${urls.summary.currentFunds}?DailyUse=false`);
+    
     const fetchData = async (fetchUrls) => {
       try {
         return await Promise.all(fetchUrls.map(url => fetch(url).then(response => response.json())));
@@ -206,6 +208,7 @@ const Dashboard = () => {
       setExpensesData(data[4])
       setInvestmentsData(data[5])
       setSummaryGeneralData(data[6])
+      setOtherFundsData(data[7])
     }
 
     getData();
@@ -286,6 +289,19 @@ const Dashboard = () => {
                 class: `text-center coral-bg text-light`
               }}
               data={fundsData.items}
+              columns={FundsTableSettings.columns}
+              classes={tableClasses}
+            />
+          </div>
+          }
+          {otherFundsData && otherFundsData.items && <div className="w-auto me-2 overflow-hidden">
+            <FetchTable
+              name={`OtherFunds`}
+              title={{
+                text: `Otros Fondos`,
+                class: `text-center coral-bg text-light`
+              }}
+              data={otherFundsData.items}
               columns={FundsTableSettings.columns}
               classes={tableClasses}
             />
