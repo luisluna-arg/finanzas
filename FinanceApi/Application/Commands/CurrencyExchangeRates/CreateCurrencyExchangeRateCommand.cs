@@ -36,7 +36,7 @@ public class CreateCurrencyExchangeRateCommandHandler : BaseResponseHandler<Crea
             QuoteCurrency = quoteCurrency,
             BuyRate = command.BuyRate,
             SellRate = command.SellRate,
-            TimeStamp = command.TimeStamp.Ticks == 0 ? command.TimeStamp : DateTime.Now
+            TimeStamp = command.TimeStamp.Ticks != 0 ? command.TimeStamp : DateTime.Now
         };
 
         await currencyExchangeRateRepository.AddAsync(newCurrency, cancellationToken);
