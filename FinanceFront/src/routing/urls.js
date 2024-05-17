@@ -14,6 +14,7 @@ const urls = {
   currencyExchangeRates: {
     endpoint: `${apiBaseUrl}/currencies/exchange-rates`,
     paginated: `${apiBaseUrl}/currencies/exchange-rates/paginated`,
+    latestByShortName: `${apiBaseUrl}/currencies/exchange-rates`,
   },
   creditCards: {
     get: `${apiBaseUrl}/credit-cards/`,

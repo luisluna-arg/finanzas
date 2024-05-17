@@ -28,4 +28,8 @@ public class CurrencyExchangeRateQueryController(IMapper mapper, IMediator media
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromQuery] GetCurrencyExchangeRateQuery request)
         => await Handle(request);
+
+    [HttpGet("{QuoteCurrencyShortName}/latest")]
+    public async Task<IActionResult> LatestByShortName([FromRoute] GetLatestCurrencyExchangeRateByShortNameQuery request)
+        => await Handle(request);
 }

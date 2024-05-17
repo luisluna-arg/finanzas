@@ -80,13 +80,13 @@ const FetchTable = ({
                 }
             </tbody>
             {showTotals && internalData && internalData.length > 0 && columns.filter(o => o.totals != null).length > 0 && (
-                <tfoot style={{ borderTop: "2px solid" }}>
+                <tfoot>
                     <tr key={`${name}-totals-row`}>
                         {columns && columns.map((column, index) => {
                             const cellKey = `${name}-total-${column.id}-${index}`;
                             const isNumericCol = [InputControlTypes.Decimal, InputControlTypes.Integer].indexOf(column.type) > -1;
 
-                            if (!column.totals && !isNumericCol) return <td key={cellKey}></td>
+                            if (!column.totals && !isNumericCol) return <td key={cellKey} style={{ borderTop: "3px solid" }}></td>
 
                             let value = internalData.reduce((acc, curr) => acc + column.totals.reducer(curr), 0);
                             const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(value);
@@ -94,7 +94,7 @@ const FetchTable = ({
 
                             if (column.formatter) value = column.formatter(value);
 
-                            return (<td className={column.class} key={cellKey}>
+                            return (<td className={column.class} style={{ borderTop: "3px solid" }} key={cellKey}>
                                 <span className={cssClasses}>{value}</span>
                             </td>);
                         })}

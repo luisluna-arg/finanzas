@@ -60,6 +60,10 @@ const CreditCardTableSettings = {
       label: "Nro. Cuota",
       class: ["text-end"],
       headerClass: ["text-end"],
+      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      totals: {
+        reducer: (r) => r ? r.amount.value * r.paymentNumber : 0
+      }
     },
     {
       id: "planSize",
@@ -174,6 +178,7 @@ const Dashboard = () => {
   const [expensesData, setExpensesData] = useState(null);
   const [investmentsData, setInvestmentsData] = useState(null);
   const [debitsData, setDebitsData] = useState(null);
+  const [creditCardDollarConversion, setCreditCardDollarConversion] = useState(null);
 
   useEffect(() => {
     let endpoints = debitModules.map(moduleId => `${urls.debits.latest}?AppModuleId=${moduleId}&IncludeDeactivated=false`)
@@ -184,6 +189,7 @@ const Dashboard = () => {
     endpoints.push(urls.summary.currentInvestments);
     endpoints.push(`${urls.summary.general}?DailyUse=true`);
     endpoints.push(`${urls.summary.currentFunds}?DailyUse=false`);
+    endpoints.push(`${urls.currencyExchangeRates.latestByShortName}/USDTC/latest`);
     
     const fetchData = async (fetchUrls) => {
       try {
@@ -209,6 +215,30 @@ const Dashboard = () => {
       setInvestmentsData(data[5])
       setSummaryGeneralData(data[6])
       setOtherFundsData(data[7])
+
+      var creditCardConversion = data[8];
+      setCreditCardDollarConversion(creditCardConversion)
+
+      Object.assign(CreditCardTableSettings.columns[3], {
+        mapper: (r) => r ? r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate) : 0,
+        totals: 
+        {
+          reducer: (r) => r ? r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate) : 0
+        }
+      });
+
+      Object.assign(CreditCardTableSettings.columns[4], {
+        totals: {
+          reducer: (r) => r ? (r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate)) * r.paymentNumber : 0
+        }
+      });
+
+      Object.assign(CreditCardTableSettings.columns[4], {
+        totals:
+        {
+          reducer: (r) => r ? (r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate)) * r.planSize : 0
+        }
+      });
     }
 
     getData();
