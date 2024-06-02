@@ -1,4 +1,4 @@
-const baseUrl = "https://localhost:7005";
+const baseUrl = process.env.REACT_APP_SERVER_ENDPOINT;
 const apiBaseUrl = `${baseUrl}/api`;
 
 const urls = {

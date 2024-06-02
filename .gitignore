@@ -12,4 +12,6 @@
 /**/.vscode
 !/.vscode
 
+**/.env.development
+
 finanzas.sln
