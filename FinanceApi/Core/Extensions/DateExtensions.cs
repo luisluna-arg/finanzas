@@ -13,4 +13,16 @@ public static class DateExtensions
                         referenceDate.Second,
                         referenceDate.Kind);
     }
+
+    public static DateTime CurrentMonth(this DateTime referenceDate)
+    {
+        return new DateTime(
+                        referenceDate.Year,
+                        referenceDate.Month,
+                        1,
+                        0,
+                        0,
+                        0,
+                        referenceDate.Kind);
+    }
 }

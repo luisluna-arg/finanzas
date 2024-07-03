@@ -1,4 +1,5 @@
 using FinanceApi.Application.Dtos.Summary;
+using FinanceApi.Domain.Models;
 using FinanceApi.Domain.Models.Interfaces;
 using FinanceApi.Infrastructure.Services;
 using FinanceApiApplication.Queries.Summary;
@@ -26,6 +27,11 @@ public class GetGeneralSummaryQueryHandler : IRequestHandler<GetGeneralSummaryQu
         var pesosCurrencyId = Guid.Parse(CurrencyConstants.PesoId);
 
         var currentIncomes = (await mediator.Send(new GetCurrentIncomesQuery())) as ICollection<IAmountHolder>;
+
+        currentIncomes = currentIncomes!.GroupBy(g => g.CurrencyId).Select(g =>
+        {
+            return new Income() { CurrencyId = g.First().CurrencyId, Amount = g.Sum(a => a.Amount) };
+        }).ToArray();
 
         var convertedIncomes = (await currencyConverterService.ConvertCollection(currentIncomes!, pesosCurrencyId)).Sum(m => m);
 

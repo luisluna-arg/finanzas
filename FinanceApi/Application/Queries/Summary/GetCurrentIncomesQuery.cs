@@ -1,4 +1,5 @@
 using FinanceApi.Application.Base.Handlers;
+using FinanceApi.Core.Extensions;
 using FinanceApi.Domain;
 using FinanceApi.Domain.Models;
 using FinanceApi.Infrastructure.Repositories;
@@ -36,12 +37,20 @@ public class GetCurrentIncomesQueryHandler : BaseResponseHandler<GetCurrentIncom
             query = query.Where(q => q.CurrencyId == request.CurrencyId.Value);
         }
 
-        query = query
-            .GroupBy(g => new { g.BankId, g.CurrencyId })
-            .Select(g => g.OrderByDescending(i => i.TimeStamp).ThenBy(i => i.Id).First())
-            .AsQueryable();
+        var dateFilter = DateTime.UtcNow.CurrentMonth().AddMonths(-2);
 
-        return await query.ToArrayAsync();
+        var data = await query.Where(q => q.TimeStamp >= dateFilter).ToArrayAsync();
+
+        data = data.GroupBy(g => new { g.BankId, g.CurrencyId })
+            .SelectMany(g =>
+            {
+                var current = g.OrderByDescending(i => i.TimeStamp).ThenBy(i => i.Id).First();
+                var refDate = current.TimeStamp.CurrentMonth();
+                return g.Where(o => o.TimeStamp >= refDate).OrderByDescending(i => i.TimeStamp).ThenBy(i => i.Id).ToArray();
+            })
+            .ToArray();
+
+        return data;
     }
 }
 
