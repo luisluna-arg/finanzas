@@ -234,17 +234,11 @@ const Dashboard = () => {
       const dollarCalculator = (r) => r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate);
 
       CreditCardTableSettings.columns[3].mapper = (r) => r ? dollarCalculator(r) : 0;
-      Object.assign(CreditCardTableSettings.columns[3].totals, {
-        reducer: (r) => r ? dollarCalculator(r) : 0
-      });
+      CreditCardTableSettings.columns[3].totals.reducer = (r) => r ? dollarCalculator(r) : 0;
 
-      Object.assign(CreditCardTableSettings.columns[4].totals, {
-        reducer: (r) => r ? dollarCalculator(r) * r.paymentNumber : 0
-      });
+      CreditCardTableSettings.columns[4].totals.reducer = (r) => r ? dollarCalculator(r) * r.paymentNumber : 0;
 
-      Object.assign(CreditCardTableSettings.columns[5].totals, {
-        reducer: (r) => r ? dollarCalculator(r) * r.planSize : 0
-      });
+      CreditCardTableSettings.columns[5].totals.reducer = (r) => r ? dollarCalculator(r) * r.planSize : 0;
     }
 
     getData();
