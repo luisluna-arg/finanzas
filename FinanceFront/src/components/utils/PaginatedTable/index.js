@@ -32,7 +32,6 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
     const [data, setData] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(rowCount ?? 10);
     const [canPreviousPage, setCanPreviousPage] = useState(false);
     const [canNextPage, setCanNextPage] = useState(false);
     const [reload, setReload] = useState(true);
@@ -41,7 +40,9 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
     const [allSelected, setAllSelected] = useState(false);
     const [deleteEnabled, setDeleteEnabled] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [requestStatus, setRequestStatus] = useState(null);
+    // const [requestStatus, setRequestStatus] = useState(null);
+
+    const pageSize = rowCount ?? 10;
 
     const adminRowId = `${name}-edit-row`;
 
@@ -193,10 +194,10 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
         let ids = getSelectCheckboxes(true).map((i) => i.id);
         await handleDelete({ ids });
 
-        if (!requestStatus) {
+        // if (!requestStatus) {
             setShowDeleteModal(false);
             fetchData();
-        }
+        // }
 
         setShowDeleteModal(false);
         setAllSelected(false);

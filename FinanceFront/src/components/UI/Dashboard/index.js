@@ -178,7 +178,6 @@ const Dashboard = () => {
   const [expensesData, setExpensesData] = useState(null);
   const [investmentsData, setInvestmentsData] = useState(null);
   const [debitsData, setDebitsData] = useState(null);
-  const [creditCardDollarConversion, setCreditCardDollarConversion] = useState(null);
 
   useEffect(() => {
     let endpoints = debitModules.map(moduleId => `${urls.debits.latest}?AppModuleId=${moduleId}&IncludeDeactivated=false`)
@@ -217,7 +216,6 @@ const Dashboard = () => {
       setOtherFundsData(data[7])
 
       var creditCardConversion = data[8];
-      setCreditCardDollarConversion(creditCardConversion)
 
       Object.assign(CreditCardTableSettings.columns[3], {
         mapper: (r) => r ? r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate) : 0,

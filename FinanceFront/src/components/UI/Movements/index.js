@@ -12,7 +12,8 @@ function Movements() {
   const [selectedAppModuleId, setSelectedAppModuleId] = useState(null);
   const [fundsUploadEndpoint, setFundsUploadEndpoint] = useState(null);
   const [movementsEndpoint, setMovementsEndpoint] = useState(null);
-  const [appModulesEndpoint, setAppModulesEndpoint] = useState(`${urls.appModules.endpoint}?AppModuleType=${AppModuleTypeEnumFundsId}`);
+  
+  const appModulesEndpoint = `${urls.appModules.endpoint}?AppModuleType=${AppModuleTypeEnumFundsId}`;
 
   const refreshEndpoints = () => {
     if (selectedAppModuleId && selectedBankId) {
