@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import FetchTable from "../../utils/FetchTable";
 import urls from "../../../routing/urls";
 
+function intFormatter(r) { return r ? r : 0; }
+
+function moneyFormatter(r) { return (r ? r : 0).toFixed(2); }
+
+function getSafeValue(v) { return v ? v.value : 0; }
+
 const NumericColumn = (id, label) => {
   return {
     id: id,
@@ -9,8 +15,9 @@ const NumericColumn = (id, label) => {
     class: ["text-end"],
     headerClass: ["text-end"],
     mapper: (r) => r && r[id] ? r[id] : 0,
-    formatter: (v) => v ? parseFloat(v.toFixed(2)) : 0,
+    formatter: (v) => moneyFormatter(v),
     totals: {
+      formatter: (v) => moneyFormatter(v),
       reducer: (r) => r && r[id] ? r[id] : 0
     }
   };
@@ -27,10 +34,11 @@ const CreditCardTableSettings = {
       label: "Monto",
       class: ["text-end"],
       headerClass: ["text-end"],
-      mapper: (r) => r ? r.amount.value : 0,
-      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      mapper: (r) => getSafeValue(r.amount),
+      formatter: (v) => moneyFormatter(v),
       totals: {
-        reducer: (r) => r ? r.amount.value : 0
+        formatter: (v) => moneyFormatter(v),
+        reducer: (r) => getSafeValue(r.amount)
       }
     },
     {
@@ -38,10 +46,11 @@ const CreditCardTableSettings = {
       label: "Dólares",
       class: ["text-end"],
       headerClass: ["text-end"],
-      mapper: (r) => r ? r.amountDollars.value : 0,
-      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      mapper: (r) => getSafeValue(r.amountDollars),
+      formatter: (v) => moneyFormatter(v),
       totals: {
-        reducer: (r) => r ? r.amountDollars.value : 0
+        formatter: (v) => moneyFormatter(v),
+        reducer: (r) => getSafeValue(r.amountDollars)
       }
     },
     {
@@ -49,10 +58,11 @@ const CreditCardTableSettings = {
       label: "Total",
       class: ["text-end"],
       headerClass: ["text-end"],
-      mapper: (r) => r ? r.amount.value : 0,
-      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      mapper: (r) => getSafeValue(r.amount),
+      formatter: (v) => moneyFormatter(v),
       totals: {
-        reducer: (r) => r ? r.amount.value : 0
+        formatter: (v) => moneyFormatter(v),
+        reducer: (r) => getSafeValue(r.amount)
       }
     },
     {
@@ -60,8 +70,9 @@ const CreditCardTableSettings = {
       label: "Nro. Cuota",
       class: ["text-end"],
       headerClass: ["text-end"],
-      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      formatter: intFormatter,
       totals: {
+        formatter: (v) => moneyFormatter(v),
         reducer: (r) => r ? r.amount.value * r.paymentNumber : 0
       }
     },
@@ -70,8 +81,9 @@ const CreditCardTableSettings = {
       label: "Cuotas",
       class: ["text-end"],
       headerClass: ["text-end"],
-      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      formatter: intFormatter,
       totals: {
+        formatter: (v) => moneyFormatter(v),
         reducer: (r) => r ? r.amount.value * r.planSize : 0
       }
     }
@@ -89,10 +101,11 @@ const DebitTableSettings = {
       label: "Monto",
       class: ["text-end"],
       headerClass: ["text-end"],
-      mapper: (r) => r ? r.amount.value : 0,
-      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      mapper: (r) => getSafeValue(r.amount),
+      formatter: (v) => moneyFormatter(v),
       totals: {
-        reducer: (r) => r ? r.amount.value : 0
+        formatter: (v) => moneyFormatter(v),
+        reducer: (r) => getSafeValue(r.amount)
       }
     }
   ],
@@ -129,10 +142,11 @@ const ExpensesTableSettings = {
       label: "Monto ($)",
       class: ["text-end"],
       headerClass: ["text-end"],
-      mapper: (r) => r ? r.value : 0,
-      formatter: (r) => r ? parseFloat(r.toFixed(2)) : 0,
+      mapper: getSafeValue,
+      formatter: (v) => moneyFormatter(v),
       totals: {
-        reducer: (r) => r ? r.value : 0
+        formatter: (v) => moneyFormatter(v),
+        reducer: getSafeValue
       }
     }
   ],
@@ -189,7 +203,7 @@ const Dashboard = () => {
     endpoints.push(`${urls.summary.general}?DailyUse=true`);
     endpoints.push(`${urls.summary.currentFunds}?DailyUse=false`);
     endpoints.push(`${urls.currencyExchangeRates.latestByShortName}/USDTC/latest`);
-    
+
     const fetchData = async (fetchUrls) => {
       try {
         return await Promise.all(fetchUrls.map(url => fetch(url).then(response => response.json())));
@@ -217,25 +231,19 @@ const Dashboard = () => {
 
       var creditCardConversion = data[8];
 
-      Object.assign(CreditCardTableSettings.columns[3], {
-        mapper: (r) => r ? r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate) : 0,
-        totals: 
-        {
-          reducer: (r) => r ? r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate) : 0
-        }
+      const dollarCalculator = (r) => r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate);
+
+      CreditCardTableSettings.columns[3].mapper = (r) => r ? dollarCalculator(r) : 0;
+      Object.assign(CreditCardTableSettings.columns[3].totals, {
+        reducer: (r) => r ? dollarCalculator(r) : 0
       });
 
-      Object.assign(CreditCardTableSettings.columns[4], {
-        totals: {
-          reducer: (r) => r ? (r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate)) * r.paymentNumber : 0
-        }
+      Object.assign(CreditCardTableSettings.columns[4].totals, {
+        reducer: (r) => r ? dollarCalculator(r) * r.paymentNumber : 0
       });
 
-      Object.assign(CreditCardTableSettings.columns[4], {
-        totals:
-        {
-          reducer: (r) => r ? (r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate)) * r.planSize : 0
-        }
+      Object.assign(CreditCardTableSettings.columns[5].totals, {
+        reducer: (r) => r ? dollarCalculator(r) * r.planSize : 0
       });
     }
 

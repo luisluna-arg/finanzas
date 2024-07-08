@@ -12,7 +12,7 @@ const FetchTable = ({
     hideIfEmpty,
     onFetch,
     showTotals = true
-    }) => {
+}) => {
     const [internalData, setInternalData] = useState(data ?? []);
 
     const fetchData = async (dataUrl) => {
@@ -92,7 +92,7 @@ const FetchTable = ({
                             const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(value);
                             const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
 
-                            if (column.formatter) value = column.formatter(value);
+                            if (column.totals.formatter) value = column.totals.formatter(value);
 
                             return (<td className={column.class} style={{ borderTop: "3px solid" }} key={cellKey}>
                                 <span className={cssClasses}>{value}</span>
