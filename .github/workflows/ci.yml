@@ -27,13 +27,13 @@ jobs:
           ConnectionStrings.PostgresDb: "${{ secrets.DB_CONNECTION }}"
       - name: Build with dotnet
         run: dotnet build
-        working-directory: FinanceApi
+        working-directory: FinanceBackEnd/FinanceApi
       - name: Apply database migrations
         run: |
           dotnet tool install --global dotnet-ef
           dotnet tool restore
           dotnet ef database update
-        working-directory: FinanceApi
+        working-directory: FinanceBackEnd/FinanceApi
       # - name: Test
       #   run: dotnet test
-      #   working-directory: FinanceApi
+      #   working-directory: FinanceBackEnd/FinanceApi

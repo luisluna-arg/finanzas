@@ -1,8 +1,7 @@
 /*
 !/.github/
-!/FinanceApi/
-!/FinanceApiUnitTests/
-!/FinanceFront/
+!/FinanceFrontEnd/
+!/FinanceBackEnd/
 
 /sql
 **/bin
