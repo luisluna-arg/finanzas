@@ -195,8 +195,8 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
         await handleDelete({ ids });
 
         // if (!requestStatus) {
-            setShowDeleteModal(false);
-            fetchData();
+        setShowDeleteModal(false);
+        fetchData();
         // }
 
         setShowDeleteModal(false);
@@ -296,12 +296,34 @@ const PaginatedTable = ({ name, url, admin, rowCount, columns, onFetch, reloadDa
         setDeleteEnabled(inputs.length > 0);
     };
 
+    const getConditionalClasses = (column, record) => {
+        if (!(column.conditionalClass)) {
+            return [];
+        }
+
+        const value = getColumnValue(column, record);
+
+        let evaluate = (evaluator, columnValue) => evaluator(columnValue);
+
+        let rules = Array.isArray(column.conditionalClass) ? column.conditionalClass : [column.conditionalClass];
+
+        var result = [];
+        for (let i = 0; i < rules.length; i++) {
+            const conditional = rules[i];
+
+            if (evaluate(conditional.eval, value)) {
+                result = result.concat(conditional.class.split(" "));
+            }
+        }
+
+        return result.join(" ");
+    };
+
     const DisplayRow = ({ index, record, column }) => {
         const columnId = column.key ?? column.id;
         const value = getColumnValue(column, record);
         const displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
-        const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(record[columnId]);
-        const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
+        const cssClasses = getConditionalClasses(column, record);
 
         if (column.type == InputControlTypes.Boolean) {
             return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>

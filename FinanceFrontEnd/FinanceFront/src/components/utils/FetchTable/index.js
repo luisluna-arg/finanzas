@@ -30,6 +30,45 @@ const FetchTable = ({
         }
     };
 
+    const getColumnValue = (columnSettings, record) => {
+        const columnId = columnSettings.id ?? columnSettings.key;
+
+        const mapper = columnSettings.mapper;
+
+        if (mapper) {
+            if (typeof mapper == 'function') return mapper(record[columnId]);
+
+            if (mapper.hasOwnProperty("label")) {
+                return record[columnSettings.id][mapper["label"]];
+            }
+        }
+
+        return record[columnId];
+    }
+
+    const getConditionalClasses = (column, record) => {
+        if (!(column.conditionalClass)) {
+            return [];
+        }
+
+        const value = getColumnValue(column, record);
+
+        let evaluate = (evaluator, columnValue) => evaluator(columnValue);
+
+        let rules = Array.isArray(column.conditionalClass) ? column.conditionalClass : [column.conditionalClass];
+
+        var result = [];
+        for (let i = 0; i < rules.length; i++) {
+            const conditional = rules[i];
+
+            if (evaluate(conditional.eval, value)) {
+                result = result.concat(conditional.class.split(" "));
+            }
+        }
+
+        return result.join(" ");
+    };
+
     useEffect(() => {
         if (url) {
             fetchData(url);
@@ -58,9 +97,8 @@ const FetchTable = ({
                     return (
                         <tr key={record.id}>
                             {columns && columns.map((column, index) => {
-                                const value = column.mapper ? column.mapper(record) : record[column.id];
-                                const useConditionalClass = column.conditionalClass && column.conditionalClass.eval(value);
-                                const cssClasses = useConditionalClass ? column.conditionalClass.class : "";
+                                const value = getColumnValue(column, record);
+                                const cssClasses = getConditionalClasses(column, record);
                                 let displayValue = column.type && column.type === InputControlTypes.DateTime ? dates.toDisplay(value) : value;
                                 if (column.formatter) displayValue = column.formatter(displayValue);
                                 return (<td className={column.class} key={`${name}-${column.id}-${index}`}>

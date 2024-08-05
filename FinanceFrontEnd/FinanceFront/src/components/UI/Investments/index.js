@@ -29,10 +29,16 @@ function Movements() {
     class: "text-end",
     editable: true,
     mapper: (field) => parseFloat(field.toFixed(2)),
-    conditionalClass: {
-      class: "text-success fw-bold",
-      eval: (field) => field > 0
-    }
+    conditionalClass: [
+      {
+        class: "text-success fw-bold",
+        eval: (field) => field > 0
+      },
+      {
+        class: "text-danger fw-bold",
+        eval: (field) => field < 0
+      }
+    ]
   });
 
   const placeholder = "Ingrese un valor";
