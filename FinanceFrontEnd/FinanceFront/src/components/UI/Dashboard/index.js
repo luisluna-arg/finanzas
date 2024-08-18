@@ -1,26 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import FetchTable from "../../utils/FetchTable";
+import { InputControlTypes } from "../../utils/InputControl";
 import urls from "../../../routing/urls";
 
-function intFormatter(r) { return r ? r : 0; }
+const intFormatter = (r) => r ? r : 0;
 
-function moneyFormatter(r) { return (r ? r : 0).toFixed(2); }
+const moneyFormatter = r => (r ? r : 0).toFixed(2);
 
-function getSafeValue(v) { return v ? v.value : 0; }
+const getSafeValue = (v) => v?.value ?? (v ?? 0);
 
-const NumericColumn = (id, label) => {
+const PaymentPlanColumn = (columnName, label, mapper, totalsReducer) => {
   return {
+    id: columnName,
+    label: label,
+    type: InputControlTypes.Integer,
+    class: ["text-end"],
+    headerClass: ["text-end"],
+    mapper: mapper ?? getSafeValue,
+    formatter: intFormatter,
+    totals: {
+      formatter: moneyFormatter,
+      reducer: totalsReducer
+    }
+  };
+};
+
+const DecimalColumn = (id, label, mapper, totalsReducer) => {
+  let localMapper = (r) => {
+    console.log("   id", id);
+    console.log("   mapper", mapper);
+    console.log("   getSafeValue", getSafeValue);
+    // console.log("DecimalColumn.localMapper", "(mapper ?? getSafeValue)(r)", (mapper ?? getSafeValue)(r), "r", r);
+    console.log("   (mapper ?? getSafeValue)(r)", (mapper ?? getSafeValue)(r), "r", r);
+    return (mapper ?? getSafeValue)(r);
+  };
+
+  localMapper = mapper ?? getSafeValue;
+
+  let localTotalsReducer =
+    totalsReducer ??
+    ((acc, r) => acc + localMapper(r));
+
+  var result = {
     id: id,
     label: label,
     class: ["text-end"],
     headerClass: ["text-end"],
-    mapper: (r) => r && r[id] ? r[id] : 0,
-    formatter: (v) => moneyFormatter(v),
+    type: InputControlTypes.Decimal,
+    mapper,
+    formatter: moneyFormatter,
     totals: {
-      formatter: (v) => moneyFormatter(v),
-      reducer: (r) => r && r[id] ? r[id] : 0
+      formatter: moneyFormatter,
+      reducer: localTotalsReducer
     }
   };
+
+  return result;
 };
 
 const CreditCardTableSettings = {
@@ -29,64 +64,11 @@ const CreditCardTableSettings = {
       id: "concept",
       label: "Concepto"
     },
-    {
-      id: "amount",
-      label: "Monto",
-      class: ["text-end"],
-      headerClass: ["text-end"],
-      mapper: (r) => getSafeValue(r.amount),
-      formatter: (v) => moneyFormatter(v),
-      totals: {
-        formatter: (v) => moneyFormatter(v),
-        reducer: (r) => getSafeValue(r.amount)
-      }
-    },
-    {
-      id: "amountDollars",
-      label: "Dólares",
-      class: ["text-end"],
-      headerClass: ["text-end"],
-      mapper: (r) => getSafeValue(r.amountDollars),
-      formatter: (v) => moneyFormatter(v),
-      totals: {
-        formatter: (v) => moneyFormatter(v),
-        reducer: (r) => getSafeValue(r.amountDollars)
-      }
-    },
-    {
-      id: "totalAmount",
-      label: "Total",
-      class: ["text-end"],
-      headerClass: ["text-end"],
-      mapper: (r) => getSafeValue(r.amount),
-      formatter: (v) => moneyFormatter(v),
-      totals: {
-        formatter: (v) => moneyFormatter(v),
-        reducer: (r) => getSafeValue(r.amount)
-      }
-    },
-    {
-      id: "paymentNumber",
-      label: "Nro. Cuota",
-      class: ["text-end"],
-      headerClass: ["text-end"],
-      formatter: intFormatter,
-      totals: {
-        formatter: (v) => moneyFormatter(v),
-        reducer: (r) => r ? r.amount.value * r.paymentNumber : 0
-      }
-    },
-    {
-      id: "planSize",
-      label: "Cuotas",
-      class: ["text-end"],
-      headerClass: ["text-end"],
-      formatter: intFormatter,
-      totals: {
-        formatter: (v) => moneyFormatter(v),
-        reducer: (r) => r ? r.amount.value * r.planSize : 0
-      }
-    }
+    DecimalColumn("amount", "Monto", r => r?.amount?.value),
+    DecimalColumn("amountDollars", "Dólares", (r) => r?.amountDollars?.value ?? 0),
+    DecimalColumn("totalAmount", "Total"),
+    PaymentPlanColumn("paymentNumber", "Nro. Cuota", (r) => r.paymentNumber),
+    PaymentPlanColumn("planSize", "Cuotas", (r) => r.planSize)
   ],
 };
 
@@ -96,18 +78,7 @@ const DebitTableSettings = {
       id: "origin",
       label: "Débito/Servicio"
     },
-    {
-      id: "amount",
-      label: "Monto",
-      class: ["text-end"],
-      headerClass: ["text-end"],
-      mapper: (r) => getSafeValue(r.amount),
-      formatter: (v) => moneyFormatter(v),
-      totals: {
-        formatter: (v) => moneyFormatter(v),
-        reducer: (r) => getSafeValue(r.amount)
-      }
-    }
+    DecimalColumn("amount", "Monto", a => a?.amount?.value)
   ],
 };
 
@@ -117,7 +88,7 @@ const FundsTableSettings = {
       id: "label",
       label: "Origen"
     },
-    NumericColumn("value", "Monto")
+    DecimalColumn("value", "Monto", getSafeValue)
   ],
 };
 
@@ -127,7 +98,7 @@ const SummaryTableSettings = {
       id: "label",
       label: "Dato"
     },
-    NumericColumn("value", "Monto")
+    DecimalColumn("value", "Monto", getSafeValue)
   ],
 };
 
@@ -137,18 +108,7 @@ const ExpensesTableSettings = {
       id: "label",
       label: "Gasto/Servicio"
     },
-    {
-      id: "value",
-      label: "Monto ($)",
-      class: ["text-end"],
-      headerClass: ["text-end"],
-      mapper: getSafeValue,
-      formatter: (v) => moneyFormatter(v),
-      totals: {
-        formatter: (v) => moneyFormatter(v),
-        reducer: getSafeValue
-      }
-    }
+    DecimalColumn("value", "Monto ($)", getSafeValue)
   ],
 };
 
@@ -158,8 +118,8 @@ const InvestmentsTableSettings = {
       id: "symbol",
       label: "Activo"
     },
-    NumericColumn("averageReturn", "Rend. prom."),
-    NumericColumn("valued", "Valorado")
+    DecimalColumn("averageReturn", "Rend. prom.", (v) => v.averageReturn),
+    DecimalColumn("valued", "Valorado", (v) => v.valued)
   ],
 };
 
@@ -231,14 +191,29 @@ const Dashboard = () => {
 
       var creditCardConversion = data[8];
 
-      const dollarCalculator = (r) => r.amount.value + (r.amountDollars.value * creditCardConversion.sellRate);
+      const dollarCalculator = function (r) { 
+        console.log("dollarCalculator.r", r)
+        return r.value * creditCardConversion.sellRate; };
 
-      CreditCardTableSettings.columns[3].mapper = (r) => r ? dollarCalculator(r) : 0;
-      CreditCardTableSettings.columns[3].totals.reducer = (r) => r ? dollarCalculator(r) : 0;
+      let columnIndex = 2;
 
-      CreditCardTableSettings.columns[4].totals.reducer = (r) => r ? dollarCalculator(r) * r.paymentNumber : 0;
+      CreditCardTableSettings.columns[columnIndex].mapper = function (r) { return r ? dollarCalculator(r) : 0 };
+      CreditCardTableSettings.columns[columnIndex].totals.reducer = function (acc, r) { return acc + CreditCardTableSettings.columns[columnIndex].mapper(r); };
 
-      CreditCardTableSettings.columns[5].totals.reducer = (r) => r ? dollarCalculator(r) * r.planSize : 0;
+      CreditCardTableSettings.columns[++columnIndex].mapper = function (r) { return r ? r.amount.value + dollarCalculator(r) : 0 };
+      CreditCardTableSettings.columns[columnIndex].totals.reducer = function (acc, r) { return acc + CreditCardTableSettings.columns[columnIndex].mapper(r); };
+
+      let totalsMapper = function (r) { 
+        return r.amount.value + dollarCalculator(r);
+       };
+
+      CreditCardTableSettings.columns[++columnIndex].totals.reducer = function (acc, r) {
+        return acc + r ? totalsMapper(r) * r.paymentNumber : 0;
+      };
+
+      CreditCardTableSettings.columns[++columnIndex].totals.reducer = function (acc, r) {
+        return acc + r ? totalsMapper(r) * r.planSize : 0;
+      };
     }
 
     getData();
@@ -295,6 +270,7 @@ const Dashboard = () => {
 
   return (
     <div className="container-fluid">
+      <h5>BROKEN CONTENT</h5>
       <div className='row'>
         <div className="col-3 column flex-wrap">
           {summaryGeneralData && summaryGeneralData.items && <div className="w-auto me-2 overflow-hidden">

@@ -6,6 +6,24 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import { redirect, LoaderFunction } from "@remix-run/node";
+
+import "@/styles/index.scss";
+import '@/styles/App.scss';
+import Navigation from "./components/ui/Navbar/Navbar";
+
+// Conditional redirect based on the current path
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+
+  if (url.pathname === "/") {
+    return redirect('/dashboard');
+  }
+
+  return null; // No redirect, allow normal processing
+};
+
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -16,6 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <Navigation />
         {children}
         <ScrollRestoration />
         <Scripts />
