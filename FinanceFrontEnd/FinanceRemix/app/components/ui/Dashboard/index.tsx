@@ -1,11 +1,11 @@
-import { InputType } from '@/app/components/ui/utils/InputType';
-import FetchTable from '@/app/components/ui/utils/FetchTable';
-import urls from '@/app/utils/urls';
-import { Outlet } from '@remix-run/react';
-import { loader } from '@/app/routes/dashboard';
-import { useLoaderData } from '@remix-run/react';
 import { Dictionary } from "@/app/utils/common";
 import { FetchTableColumn } from '@/app/components/ui/utils/FetchTableColumn';
+import { InputType } from '@/app/components/ui/utils/InputType';
+import { loader } from '@/app/routes/dashboard';
+import { Outlet } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
+import FetchTable from '@/app/components/ui/utils/FetchTable';
+import urls from '@/app/utils/urls';
 
 interface ValueHolder {
     value?: number
