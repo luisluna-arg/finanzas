@@ -2,10 +2,10 @@ import urls from "@/app/utils/urls";
 import { Agent } from "https";
 import { BaseQuery } from "./base/BaseQuery";
 
-export class CurrencyExchangeRatesQuery extends BaseQuery {
+export class BanksQuery extends BaseQuery {
   constructor(httpsAgent: Agent) {
     super(httpsAgent, {
-      get: `${urls.currencyExchangeRates.latestByShortName}/USDTC/latest`,
+      get: urls.banks.endpoint
     });
   }
 }

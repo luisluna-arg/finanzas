@@ -1,24 +1,11 @@
 import urls from "@/app/utils/urls";
-import axios from "axios";
 import { Agent } from "https";
+import { BaseQuery } from "./base/BaseQuery";
 
-export class CreditCardQuery {
-  httpsAgent: Agent;
-
+export class CreditCardQuery extends BaseQuery {
   constructor(httpsAgent: Agent) {
-    this.httpsAgent = httpsAgent;
-  }
-
-  async getCreditCards() {
-    try {
-      const response = await axios.get(urls.creditCards.get, {
-        httpsAgent: this.httpsAgent,
-      });
-
-      return response.data;
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
-    }
+    super(httpsAgent, {
+      get: urls.creditCards.get
+    });
   }
 }
