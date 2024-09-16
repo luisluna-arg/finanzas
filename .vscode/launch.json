@@ -34,9 +34,10 @@
       "name": "React App Launch",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/FinanceFront",
+      "cwd": "${workspaceFolder}/FinanceFrontEnd/FinanceRemix",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"]
+      "runtimeArgs": ["run"],
+      "args": ["dev"]
     }
   ],
   "compounds": [
