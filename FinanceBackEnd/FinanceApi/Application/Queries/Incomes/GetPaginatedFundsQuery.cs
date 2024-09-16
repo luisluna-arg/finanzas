@@ -52,13 +52,15 @@ public class GetPaginatedIncomesQueryHandler : IRequestHandler<GetPaginatedIncom
 
         // Pagination
         int page = request.Page;
-        int pageSize = request.PageSize;
+        int pageSize = request.PageSize > 0 ? request.PageSize : await query.CountAsync();
         int totalItems = await query.CountAsync();
+        int skip = (page - 1) * pageSize;
+        skip = skip < 0 ? 0 : skip;
 
         var paginatedItems = await query
             .OrderByDescending(o => o.TimeStamp)
             .ThenBy(o => o.Id)
-            .Skip((page - 1) * pageSize)
+            .Skip(skip)
             .Take(pageSize)
             .ToListAsync();
 
