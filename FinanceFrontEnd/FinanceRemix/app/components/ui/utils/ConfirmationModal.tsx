@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Modal } from "react-bootstrap";
-import Button from "@/app/components/ui/utils/Button";
+import ActionButton from "@/app/components/ui/utils/ActionButton";
 
 interface ConfirmationModalProps {
   text: React.ReactNode;
@@ -37,11 +37,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button text="Aceptar" variant="success" onClickAction={handleAccept} />
-        <Button
+        <ActionButton text="Aceptar" variant="success" action={handleAccept} />
+        <ActionButton
           text="Cancelar"
           variant="secondary"
-          onClickAction={handleCancel}
+          action={handleCancel}
         />
       </Modal.Footer>
     </Modal>

@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button as BootstrapButton } from 'react-bootstrap';
-import dates from "../../../utils/dates";
-import ConfirmationModal from "@/app/components/ui/utils/ConfirmationModal";
-import { InputType } from '@/app/components/ui/utils/InputType';
-import { Form } from "react-bootstrap";
+import { Form, FormCheck } from "react-bootstrap";
 import moment from 'moment';
+import dates from "@/app/utils/dates";
+import { InputType } from '@/app/components/ui/utils/InputType';
+import ConfirmationModal from "@/app/components/ui/utils/ConfirmationModal";
+import ActionButton from '@/app/components/ui/utils/ActionButton';
+import Pagination from '@/app/components/ui/utils/Pagination';
+import { VARIANTS } from '@/app/components/ui/utils/Bootstrap/ColorVariants';
+
+
+// TODO: PaginatedTable - Actions still need implementation
 
 // Type Definitions
 interface Admin {
@@ -41,7 +46,7 @@ export interface Column {
     datetime?: {
         timeFormat: "HH:mm",
         timeIntervals: number,
-        dateFormat: "DD/MM/YYYY" | "MM/DD/YYYY",
+        dateFormat: "DD/MM/YYYY" | "MM/DD/YYYY" | "DD/MM/yyyy" | "MM/DD/yyyy",
         placeholder: string,
     }
 }
@@ -100,8 +105,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     const [data, setData] = useState<Data>({ items: [], totalPages: 0 });
     const [totalPages, setTotalPages] = useState<number>(0);
     const [page, setPage] = useState<number>(1);
-    const [canPreviousPage, setCanPreviousPage] = useState<boolean>(false);
-    const [canNextPage, setCanNextPage] = useState<boolean>(false);
     const [adminAddEnabled] = useState<boolean>(admin?.addEnabled ?? true);
     const [adminDeletedEnabled] = useState<boolean>(admin?.deleteEnabled ?? true);
     const [allSelected, setAllSelected] = useState<boolean>(false);
@@ -110,24 +113,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
 
     const pageSize = rowCount ?? 10;
     const adminRowId = `${name}-edit-row`;
-
-    const updatePage = (pageNumber: number, pageCount?: number) => {
-        setPage(pageNumber);
-        setCanPreviousPage(pageNumber > 1);
-        setCanNextPage(pageNumber < (pageCount ?? totalPages));
-    }
-
-    const goToPreviousPage = () => {
-        updatePage(page <= 1 ? 1 : page - 1);
-    }
-
-    const goToNextPage = () => {
-        updatePage(page >= totalPages ? totalPages : page + 1);
-    }
-
-    const goToPage = (newPage: number) => {
-        updatePage(newPage);
-    }
 
     const fetchData = useCallback(async (fetchUrl: string) => {
         setData({ items: [], totalPages: 0 });
@@ -142,7 +127,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                 const newData = await (await fetch(paginatedUrl)).json();
                 setData(newData);
                 setTotalPages(newData.totalPages);
-                updatePage(page, newData.totalPages);
 
                 onFetch && onFetch(newData);
             }
@@ -274,6 +258,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         if (columnSettings.datetime && columnValue) {
             let dateFormat = columnSettings.datetime.dateFormat ?? "";
             let timeFormat = columnSettings.datetime.timeFormat ?? "";
+            console.log(`${dateFormat} ${timeFormat}`);
             return moment(columnValue).format(`${dateFormat} ${timeFormat}`);
         }
         else if (columnSettings.mapper) {
@@ -304,112 +289,111 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         return columnEditable.defaultValue;
     };
 
-    const ActionButton: React.FC<{
-        text: string;
-        action: () => void;
-        disabled?: boolean;
-        dataId?: string;
-        variant?: string;
-        width?: string;
-        height?: string;
-    }> = ({ text, action, disabled, dataId, variant, width, height }) => {
-        const buttonStyle: React.CSSProperties = {
-            width: width || 'auto',
-            height: height || 'auto',
-        };
+    const handleSelectAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAllSelected(e.target.checked);
+    };
 
-        return (
-            <BootstrapButton
-                onClick={action}
-                disabled={disabled}
-                variant={variant}
-                style={buttonStyle}
-                data-id={dataId}
-            >
-                {text}
-            </BootstrapButton>
+
+    type ActionsRowProps = {
+        header?: boolean;
+    };
+
+    const ActionsRow = ({ header = false }: ActionsRowProps) => {
+        const AddButton = () => (adminAddEnabled &&
+            <ActionButton
+                text="Agregar"
+                classes={["me-2"]}
+                action={onAdd}
+            />
         );
+
+        const DeleteButton = () => (adminDeletedEnabled &&
+            <ActionButton
+                text="Eliminar"
+                action={handleDeleteModalShow}
+                disabled={!getSelectCheckboxes(true).length}
+            />
+        );
+
+        return <tr>
+            {
+                header ?
+                    (<th colSpan={columnCount}><AddButton /><DeleteButton /></th>) :
+                    (<td colSpan={columnCount}><AddButton /><DeleteButton /></td>)
+            }
+        </tr>;
     }
 
+    const adminEnabled = adminAddEnabled || adminDeletedEnabled;
+    const columnCount = columns.length + (adminEnabled ? 2 : 0)
+
     return (
-        <div className="paginated-table">
+        <div className="paginated-table ">
             <Form>
-                <table id={name}>
+                <table id={name} className='table table-striped'>
                     <thead>
+                        <ActionsRow header={true} />
                         <tr>
-                            {adminAddEnabled && <th></th>}
+                            {adminEnabled && <th style={{ width: "40px" }}>
+                                <FormCheck id={`${name}-select-all`} checked={allSelected} onChange={handleSelectAllChange} />
+                            </th>}
                             {columns.map((column, index) => {
                                 let classes = column?.header?.classes;
                                 classes = Array.isArray(classes) ? classes.join(" ") : classes;
                                 return (
-                                    <th key={index} className={classes}>
+                                    <th scope="col" key={index} className={classes}>
                                         {column.label}
                                     </th>
                                 );
                             })}
+                            {adminEnabled && <th />}
                         </tr>
                     </thead>
                     <tbody>
-                        {data.items.map((record, index) => (
-                            <tr key={index} className={`${name}-data-row`}>
-                                {adminAddEnabled && (
-                                    <td>
-                                        <ActionButton
-                                            text="Edit"
-                                            action={() => { }}
-                                            dataId={record.id}
-                                        />
-                                    </td>
-                                )}
-                                {columns.map((column, index) => (
-                                    <td key={index} className={column.class}>
-                                        {getColumnValue(column, record)}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
+                        {data.items.map((record, index) => {
+                            const rowId = `${name}-data-row-${index}`;
+                            return (
+                                <tr key={rowId} id={rowId} className={`${name}-data-row`}>
+                                    {adminEnabled && <td><FormCheck /></td>}
+                                    {columns.map((column, index) => (
+                                        <td key={index} className={column.class}>
+                                            {getColumnValue(column, record)}
+                                        </td>))}
+                                    {adminAddEnabled && (
+                                        <td style={{ width: "100px" }}>
+                                            <ActionButton
+                                                text="Editar"
+                                                variant={VARIANTS.WARNING}
+                                                action={() => { }}
+                                                dataId={record.id}
+                                            />
+                                        </td>
+                                    )}
+                                </tr>
+                            );
+                        })}
                     </tbody>
+                    <tfoot>
+                        <ActionsRow header={true} />
+                    </tfoot>
                 </table>
             </Form>
 
-            {adminAddEnabled && (
-                <ActionButton
-                    text="Add"
-                    action={onAdd}
+            <div className="pagination-controls pagination">
+                <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    action={(newPage: number) => setPage(newPage)}
                 />
-            )}
-
-            {adminDeletedEnabled && (
-                <ActionButton
-                    text="Delete"
-                    action={handleDeleteModalShow}
-                    disabled={!getSelectCheckboxes(true).length}
-                />
-            )}
+            </div>
 
             <ConfirmationModal
                 show={showDeleteModal}
                 handleAccept={handleDeleteModalAccept}
                 handleCancel={handleDeleteModalCancel}
-                title="Confirm Delete"
-                text="Are you sure you want to delete the selected items?"
+                title="Confirmar eliminación"
+                text="¿Estás seguro de que deseas eliminar los elementos seleccionados?"
             />
-
-            <div className="pagination-controls">
-                <ActionButton
-                    text="Previous"
-                    action={goToPreviousPage}
-                    disabled={!canPreviousPage}
-                />
-                <span>
-                    Page {page} of {totalPages}
-                </span>
-                <ActionButton
-                    text="Next"
-                    action={goToNextPage}
-                    disabled={!canNextPage}
-                />
-            </div>
         </div>
     );
 };
