@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
+import { useLoaderData } from "@remix-run/react";
 import moment from "moment";
 import urls from "@/app/utils/urls";
+import CommonUtils from "@/app/utils/common";
+import { InputType } from "@/app/components/ui/utils/InputType";
 import Picker from "@/app/components/ui/utils/Picker";
 import PaginatedTable, { Column, ConditionalClass } from "@/app/components/ui/utils/PaginatedTable";
-import CommonUtils from "../../../utils/common";
-import { useLoaderData } from "@remix-run/react";
-import { InputType } from "../utils/InputType";
 
 // Define types for the props and states
 interface PickerData {
@@ -18,7 +18,7 @@ interface LoaderData {
   currencies: PickerData[];
 }
 
-const dateFormat = "DD/MM/YYYY";
+const dateFormat = "DD/MM/yyyy";
 
 const buildIncomesEnpoint = (bankId: string, currencyId: string) => {
   const params = CommonUtils.Params({
@@ -75,7 +75,7 @@ const Incomes: React.FC = () => {
 
   const TableColumns: Column[] = [
     {
-      id: "timeStamp",
+      id: "createdAt",
       label: "Fecha",
       placeholder: "Fecha",
       type: InputType.DateTime,
