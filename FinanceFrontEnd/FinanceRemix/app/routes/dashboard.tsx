@@ -9,8 +9,8 @@ export const loader = async () => {
             creditCards,
             latestCurrencyExchangeRates
         ] = await Promise.all([
-            backendClient.CreditCardsQuery.getCreditCards(),
-            backendClient.CurrencyExchangeRatesQuery.getLatest()
+            backendClient.CreditCardsQuery.get(),
+            backendClient.CurrencyExchangeRatesQuery.get()
         ]);
 
         return {
