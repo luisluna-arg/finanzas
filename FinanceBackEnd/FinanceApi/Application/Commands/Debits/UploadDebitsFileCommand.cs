@@ -51,9 +51,11 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
 
         foreach (var record in newRecords)
         {
+            record.Frequency = command.Frequency;
+
             var existingRecord = records
                 .FirstOrDefault(x => x.Origin.Name.Equals(record.Origin.Name, StringComparison.InvariantCultureIgnoreCase) &&
-                    x.TimeStamp == record.TimeStamp);
+                    x.TimeStamp == record.TimeStamp && x.Frequency == record.Frequency);
             if (existingRecord != null) continue;
 
             var origin = origins.ContainsKey(record.Origin.Name) ?
@@ -77,7 +79,7 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
             .FilterBy(timeStampProperty, ExpressionOperator.GreaterThanOrEqual, minDate)
             .FilterBy(timeStampProperty, ExpressionOperator.LessThanOrEqual, maxDate)
             .Include(o => o.Origin)
-            .Where(o => o.Origin.AppModuleId == appModule.Id)
+            .Where(o => o.Origin.AppModuleId == appModule.Id && o.Frequency == command.Frequency)
             .ToArray();
 
         newRecords = newRecords
@@ -94,14 +96,16 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
 
 public class UploadDebitsFileCommand : IRequest
 {
-    public UploadDebitsFileCommand(IFormFile file, string appModuleId, DateTimeKind dateKind)
+    public UploadDebitsFileCommand(IFormFile file, string appModuleId, DateTimeKind dateKind, FrequencyEnum frequency)
     {
         this.File = file;
         this.AppModuleId = new Guid(appModuleId);
         this.DateKind = dateKind;
+        this.Frequency = frequency;
     }
 
     public IFormFile File { get; set; }
     public Guid AppModuleId { get; set; }
     public DateTimeKind DateKind { get; set; }
+    public FrequencyEnum Frequency { get; set; }
 }

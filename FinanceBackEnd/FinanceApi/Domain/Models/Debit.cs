@@ -12,4 +12,6 @@ public class Debit : Entity<Guid>
     public DateTime TimeStamp { get; set; } = DateTime.MinValue;
 
     public Money Amount { get; set; } = 0m;
+
+    public FrequencyEnum Frequency { get; set; }
 }

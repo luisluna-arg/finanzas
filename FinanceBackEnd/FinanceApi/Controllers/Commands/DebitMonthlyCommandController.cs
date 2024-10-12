@@ -1,0 +1,24 @@
+using System.ComponentModel;
+using AutoMapper;
+using FinanceApi.Application.Commands.Debits;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace FinanceApi.Controllers.Commands;
+
+[Route("api/debits/monthly")]
+public class MonthlyDebitCommandController(IMapper mapper, IMediator mediator)
+    : DebitCommandController(mapper, mediator)
+{
+    [HttpPost]
+    public new async Task<IActionResult> Create(CreateDebitCommand command)
+    {
+        command.Frequency = FrequencyEnum.Monthly;
+        return await base.Create(command);
+    }
+
+    [HttpPost]
+    [Route("upload")]
+    public async Task<IActionResult> Upload(IFormFile file, string appModuleId, [DefaultValue("Local")] string dateKind)
+        => await Upload(file, appModuleId, dateKind, FrequencyEnum.Monthly);
+}

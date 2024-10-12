@@ -55,7 +55,8 @@ public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand,
         {
             Origin = origin!,
             Amount = command.Amount,
-            TimeStamp = DateTime.UtcNow
+            TimeStamp = DateTime.UtcNow,
+            Frequency = command.Frequency
         };
 
         await debitRepository.AddAsync(newDebit, cancellationToken);
@@ -76,4 +77,7 @@ public class CreateDebitCommand : IRequest<Debit>
 
     [Required]
     public bool Deactivated { get; set; }
+
+    [Required]
+    public FrequencyEnum Frequency { get; set; }
 }

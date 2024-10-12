@@ -81,4 +81,6 @@ public class GetPaginatedDebitsQuery : GetPaginatedQuery<Debit>
     public Guid? OriginId { get; set; }
 
     public AppModuleTypeEnum? AppModuleType { get; set; }
+
+    public FrequencyEnum Frequency { get; set; }
 }

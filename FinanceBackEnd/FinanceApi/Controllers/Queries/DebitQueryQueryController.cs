@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceApi.Controllers.Queries;
 
-[Route("api/debits")]
+[Route("api/debits/{frequency}")]
 public class DebitQueryController(IMapper mapper, IMediator mediator)
     : ApiBaseQueryController<Debit?, Guid, DebitDto>(mapper, mediator)
 {
