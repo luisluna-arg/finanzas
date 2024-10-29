@@ -2,7 +2,7 @@ import React from "react";
 
 const ActionLink: React.FC<{
   text: string;
-  action: () => void;
+  action: (e?: any) => void;
   isActive?: boolean;
   isEnabled?: boolean;
   classes?: string[];
@@ -13,10 +13,13 @@ const ActionLink: React.FC<{
     localClasses.push("active")
   }
 
-  console.log("text:", text, "isEnabled", isEnabled);
+  function onClick(e: any) {
+    e.preventDefault();
+    action();
+  }
 
   return (
-    <a className={localClasses?.join(" ")} href="#" onClick={action} aria-disabled={!isEnabled}>{text}</a>
+    <a className={localClasses?.join(" ")} href="#" onClick={onClick} aria-disabled={!isEnabled}>{text}</a>
   );
 }
 

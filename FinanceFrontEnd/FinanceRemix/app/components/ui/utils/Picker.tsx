@@ -7,14 +7,14 @@ type MapperObject = {
 };
 
 // Define the Mapper type to be either a function or an object
-type MapperType = ((record: any) => string | number) | MapperObject;
+export type MapperType = ((record: any) => string | number) | MapperObject;
 
 interface PickerProps {
   id: string;
   value?: string | number;
   url?: string;
   data?: any[];
-  mapper: MapperType;
+  mapper?: MapperType;
   onChange?: ((event: { value: string | number }) => void) | ((picker: { value: string; }) => void);
   onFetch?: any;
 }
@@ -27,11 +27,11 @@ const Picker: React.FC<PickerProps> = ({ id, value, url, data, mapper, onChange,
       return mapper(record);
     }
 
-    if (typeof mapper.id === "function") {
+    if (typeof mapper?.id === "function") {
       return mapper.id(record);
     }
 
-    return record[mapper.id];
+    return record[mapper?.id ?? ""];
   };
 
   const getRecordLabel = (record: any): string => {
@@ -39,11 +39,11 @@ const Picker: React.FC<PickerProps> = ({ id, value, url, data, mapper, onChange,
       return String(mapper(record)); // If mapper is a function, return the result directly
     }
 
-    if (typeof mapper.label === "function") {
+    if (typeof mapper?.label === "function") {
       return mapper.label(record);
     }
 
-    return record[mapper.label as string];
+    return record[mapper?.label as string];
   };
 
   if (url) {

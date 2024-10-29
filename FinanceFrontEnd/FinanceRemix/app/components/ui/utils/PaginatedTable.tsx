@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Form, FormCheck } from "react-bootstrap";
 import moment from 'moment';
+
 import dates from "@/app/utils/dates";
-import { InputType } from '@/app/components/ui/utils/InputType';
-import ConfirmationModal from "@/app/components/ui/utils/ConfirmationModal";
+import { text } from "@/app/utils/textConstants";
 import ActionButton from '@/app/components/ui/utils/ActionButton';
-import Pagination from '@/app/components/ui/utils/Pagination';
-import { VARIANTS } from '@/app/components/ui/utils/Bootstrap/ColorVariants';
+import ConfirmationModal from '@/app/components/ui/utils/ConfirmationModal';
+import Input from '@/app/components/ui/utils/Input';
+import LoadingSpinner from "@/app/components/ui/utils/LoadingSpinner";
+import PaginationBar from '@/app/components/ui/utils/PaginationBar';
+import { InputType } from '@/app/components/ui/utils/InputType';
+import { OUTLINE_VARIANTS } from '@/app/components/ui/utils/Bootstrap/ColorVariants';
+import { fetchData } from '@/app/components/data/fetchData';
+import { fetchPaginatedData } from '@/app/components/data/fetchPaginatedData';
+import { handleRequest } from '@/app/components/data/handleRequest';
 
 
 // TODO: PaginatedTable - Actions still need implementation
@@ -71,28 +78,6 @@ interface Data {
     totalPages: number;
 }
 
-const parseUrl = (url: string): {
-    queryParams: {
-        [k: string]: string;
-    },
-    baseUrl: string
-} => {
-    const urlObject = new URL(url);
-    const queryParams = Object.fromEntries(urlObject.searchParams.entries());
-    const baseUrl = urlObject.origin + urlObject.pathname + urlObject.hash;
-    return { queryParams, baseUrl };
-}
-
-const objectToUrlParams = (params: Record<string, string | number>) => {
-    const urlSearchParams = new URLSearchParams();
-    for (const key in params) {
-        if (params.hasOwnProperty(key)) {
-            urlSearchParams.append(key, params[key].toString());
-        }
-    }
-    return urlSearchParams.toString();
-}
-
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
     name,
     url,
@@ -110,30 +95,30 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     const [allSelected, setAllSelected] = useState<boolean>(false);
     const [deleteEnabled, setDeleteEnabled] = useState<boolean>(false);
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+    const [loading, setLoading] = useState(true);
 
     const pageSize = rowCount ?? 10;
     const adminRowId = `${name}-edit-row`;
 
-    const fetchData = useCallback(async (fetchUrl: string) => {
-        setData({ items: [], totalPages: 0 });
-        try {
-            if (fetchUrl) {
-                const { queryParams, baseUrl } = parseUrl(fetchUrl);
-                queryParams["Page"] = page.toString();
-                queryParams["PageSize"] = pageSize.toString();
-                const params = objectToUrlParams(queryParams);
-                const paginatedUrl = `${baseUrl}?${params}`;
+    useEffect(() => {
+        setLoading(true);
 
-                const newData = await (await fetch(paginatedUrl)).json();
-                setData(newData);
-                setTotalPages(newData.totalPages);
+        fetchPaginatedData<any>(url, page, 10)
+            .then((data) => {
+                const extendedItems = data.items.map((item: Omit<any, 'isSelected'>) => ({
+                    ...item,
+                    isSelected: false
+                }));
 
-                onFetch && onFetch(newData);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [page, pageSize, onFetch]);
+                setData({
+                    ...data,
+                    items: extendedItems,
+                });
+                setTotalPages(data.totalPages);
+
+                setLoading(false);
+            });
+    }, [url, page, pageSize]);
 
     const getEditRowInputs = () => {
         const row = document.getElementById(adminRowId);
@@ -182,39 +167,12 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         }
     };
 
-    const handleRequest = async (method: string, record: any) => {
-        try {
-            const headers: HeadersInit = {
-                "Content-Type": "application/json",
-            };
-            if (method === "DELETE") {
-                headers["accept"] = "application/octet-stream";
-            }
-
-            const response = await fetch(admin?.endpoint ?? '', {
-                method: method,
-                headers: headers,
-                body: JSON.stringify(record),
-            });
-
-            if (response.ok) {
-                // Handle successful response
-            } else {
-                // Handle error response
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        } finally {
-            if (url) fetchData(url);
-        }
-    };
-
     const handleCreate = async (inputs: Record<string, any>) => {
-        await handleRequest("POST", inputs);
+        await handleRequest(admin?.endpoint ?? '', "POST", inputs);
     };
 
     const handleDelete = async (inputs: { ids: string[] }) => {
-        await handleRequest("DELETE", inputs);
+        await handleRequest(admin?.endpoint ?? '', "DELETE", inputs);
     };
 
     const handleDeleteModalShow = () => setShowDeleteModal(true);
@@ -245,11 +203,11 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         await handleDelete({ ids: [event.currentTarget.getAttribute('data-id') ?? ''] });
     };
 
-    useEffect(() => {
-        if (url) {
-            fetchData(url);
-        }
-    }, [url, page, pageSize, fetchData, reloadData]);
+    // useEffect(() => {
+    //     if (url) {
+    //         fetchData(url);
+    //     }
+    // }, [url, page, pageSize, fetchData, reloadData]);
 
     const getColumnValue = (columnSettings: Column, record: any) => {
         const columnId: any = columnSettings.id ?? columnSettings.key ?? "";
@@ -258,7 +216,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         if (columnSettings.datetime && columnValue) {
             let dateFormat = columnSettings.datetime.dateFormat ?? "";
             let timeFormat = columnSettings.datetime.timeFormat ?? "";
-            console.log(`${dateFormat} ${timeFormat}`);
             return moment(columnValue).format(`${dateFormat} ${timeFormat}`);
         }
         else if (columnSettings.mapper) {
@@ -290,7 +247,26 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     };
 
     const handleSelectAllChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAllSelected(e.target.checked);
+        const isSelected = e.target.checked;
+        setAllSelected(isSelected);
+        setData(prevData => ({
+            ...prevData,
+            items: prevData.items.map(item => ({ ...item, isSelected: isSelected }))
+        }));
+    };
+
+    const handleRowCheckChange = (id: number) => {
+        const updatedItems = data.items.map(item =>
+            item.id === id ? { ...item, isSelected: !item.isSelected } : item
+        );
+
+        setData(prevData => ({
+            ...prevData,
+            items: updatedItems,
+        }));
+
+        // Update selectAll based on individual checkbox states
+        setAllSelected(updatedItems.every(item => item.isSelected));
     };
 
 
@@ -311,7 +287,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             <ActionButton
                 text="Eliminar"
                 action={handleDeleteModalShow}
-                disabled={!getSelectCheckboxes(true).length}
+                disabled={getSelectCheckboxes(true).length !== 1}
             />
         );
 
@@ -323,6 +299,26 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             }
         </tr>;
     }
+
+    const EditRow = () => {
+        return (<tr id={adminRowId} className={`${name}-edit-row`}>
+            <td></td>
+            {columns && columns.map((column: any, index: number) => {
+                const columnId = column.key ?? column.id;
+                if (column.editable) {
+                    return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>
+                        <Input value={getEditRowDefaultValue(column.editable)} settings={column} />
+                    </td>);
+                }
+                else {
+                    return (<td className={"align-middle"} key={`${name}-${columnId}-${index}`}></td>);
+                }
+            })}
+            <th className={"align-middle"}>
+                <ActionButton text={'+'} action={onAdd} />
+            </th>
+        </tr>);
+    };
 
     const adminEnabled = adminAddEnabled || adminDeletedEnabled;
     const columnCount = columns.length + (adminEnabled ? 2 : 0)
@@ -349,41 +345,56 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                             {adminEnabled && <th />}
                         </tr>
                     </thead>
-                    <tbody>
-                        {data.items.map((record, index) => {
-                            const rowId = `${name}-data-row-${index}`;
-                            return (
-                                <tr key={rowId} id={rowId} className={`${name}-data-row`}>
-                                    {adminEnabled && <td><FormCheck /></td>}
-                                    {columns.map((column, index) => (
-                                        <td key={index} className={column.class}>
-                                            {getColumnValue(column, record)}
-                                        </td>))}
-                                    {adminAddEnabled && (
-                                        <td style={{ width: "100px" }}>
-                                            <ActionButton
-                                                text="Editar"
-                                                variant={VARIANTS.WARNING}
-                                                action={() => { }}
-                                                dataId={record.id}
-                                            />
-                                        </td>
-                                    )}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
+                    {loading ? (
+                        <tbody>
+                            <tr>
+                                <td colSpan={(columns.length + (adminEnabled ? 1 : 0) + (adminAddEnabled ? 1 : 0))}>
+                                    <center><LoadingSpinner /></center>
+                                </td>
+                            </tr>
+                        </tbody>
+                    ) :
+                        (
+                            <tbody>
+                                {admin && adminAddEnabled && <EditRow />}
+                                {data.items.map((record, index) => {
+                                    const rowId = `${name}-data-row-${index}`;
+                                    return (
+                                        <tr key={rowId} id={rowId} className={`${name}-data-row`}>
+                                            {adminEnabled && <td>
+                                                <FormCheck checked={record.isSelected} onChange={() => handleRowCheckChange(record.id)} />
+                                            </td>}
+                                            {columns.map((column, index) => (
+                                                <td key={index} className={column.class}>
+                                                    {getColumnValue(column, record)}
+                                                </td>))}
+                                            {adminAddEnabled && (
+                                                <td style={{ width: "100px" }}>
+                                                    <ActionButton
+                                                        text="Editar"
+                                                        variant={OUTLINE_VARIANTS.WARNING}
+                                                        action={() => { }}
+                                                        dataId={record.id}
+                                                    />
+                                                </td>
+                                            )}
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>)}
                     <tfoot>
                         <ActionsRow header={true} />
                     </tfoot>
                 </table>
             </Form>
 
-            <div className="pagination-controls pagination">
-                <Pagination
+            <div className="pagination-controls pagination d-flex justify-content-center">
+                <PaginationBar
                     page={page}
                     totalPages={totalPages}
-                    action={(newPage: number) => setPage(newPage)}
+                    action={(newPage: number) => {
+                        setPage(newPage);
+                    }}
                 />
             </div>
 

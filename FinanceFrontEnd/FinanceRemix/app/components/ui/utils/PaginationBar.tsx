@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ActionLink from "@/app/components/ui/utils/ActionLink";
 
-const Pagination: React.FC<{
+const PaginationBar: React.FC<{
   page: number;
   totalPages: number;
   action: (page: number) => void;
@@ -14,12 +14,12 @@ const Pagination: React.FC<{
       <li className={"page-item" + (!previousPageEnabled ? " disabled" : "")}>
         <ActionLink
           text="Anterior"
-          action={() => action(page - 1)}
+          action={(e) => action(page - 1)}
           isEnabled={previousPageEnabled}
         />
       </li>
       {Array.from({ length: totalPages }, (_, i) => {
-        let isActive = i == page - 1 ? " active" : "";
+        let isActive = i === page - 1 ? " active" : "";
         return (
           <li key={i} className="page-item">
             <a className={"page-link" + isActive} href="#" onClick={() => action(i)}>{i + 1}</a>
@@ -37,4 +37,4 @@ const Pagination: React.FC<{
   );
 }
 
-export default Pagination;
+export default PaginationBar;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import dates from "@/app/utils/dates";
-import { InputType } from "./InputType";
+import { InputType } from "@/app/components/ui/utils/InputType";
+import LoadingSpinner from "@/app/components/ui/utils/LoadingSpinner";
 
 type FetchTableProps = {
     name: string;
@@ -49,7 +50,7 @@ const FetchTable: React.FC<FetchTableProps> = ({
         fetchData();
     }, [url]);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div><LoadingSpinner /></div>;
     if (error) return <div>Error: {error}</div>;
 
     const getColumnValue = (columnSettings: any, record: any) => {

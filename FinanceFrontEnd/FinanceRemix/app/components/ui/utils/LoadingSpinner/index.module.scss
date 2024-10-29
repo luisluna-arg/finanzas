@@ -1,0 +1,23 @@
+$spinner-size: 40px;
+$spinner-color: #3498db;
+
+.spinner {
+    width: $spinner-size;
+    height: $spinner-size;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top-color: $spinner-color;
+    border-radius: 50%;
+    animation: spin 1s ease-in-out infinite;
+    margin: 20px auto;
+
+    /* Allow customization via CSS variables */
+    width: var(--spinner-size, $spinner-size);
+    height: var(--spinner-size, $spinner-size);
+    border-top-color: var(--spinner-color, $spinner-color);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
