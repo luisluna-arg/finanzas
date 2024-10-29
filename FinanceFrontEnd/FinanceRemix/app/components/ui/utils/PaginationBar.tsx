@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ActionLink from "@/app/components/ui/utils/ActionLink";
 
+/* TODO Fix the ammount of page pickers displayed on screen */
 const PaginationBar: React.FC<{
   page: number;
   totalPages: number;
