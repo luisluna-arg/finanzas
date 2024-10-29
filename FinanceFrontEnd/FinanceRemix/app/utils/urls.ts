@@ -1,5 +1,6 @@
 const baseUrl = import.meta.env.VITE_API_ENDPOINT;
 const apiBaseUrl = `${baseUrl}/api`;
+const debitsBaseUrl = `${apiBaseUrl}/debits`
 
 const urls = {
   appModules: {
@@ -26,9 +27,16 @@ const urls = {
     upload: `${apiBaseUrl}/credit-card-movements/upload`,
   },
   debits: {
-    endpoint: `${apiBaseUrl}/debits/`,
-    paginated: `${apiBaseUrl}/debits/paginated`,
-    latest: `${apiBaseUrl}/debits/latest`,
+    monthly: {
+      endpoint: `${debitsBaseUrl}/monthly/`,
+      paginated: `${debitsBaseUrl}/monthly/paginated`,
+      latest: `${debitsBaseUrl}/monthly/latest`,
+    },
+    annual: {
+      endpoint: `${debitsBaseUrl}/annual/`,
+      paginated: `${debitsBaseUrl}/annual/paginated`,
+      latest: `${debitsBaseUrl}/annual/latest`,
+    }
   },
   debitOrigins: {
     endpoint: `${apiBaseUrl}/debit-origins`
