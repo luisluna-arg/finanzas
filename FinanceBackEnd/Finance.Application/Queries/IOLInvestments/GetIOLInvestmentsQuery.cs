@@ -1,0 +1,64 @@
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
+using Finance.Domain;
+using Finance.Domain.Models;
+using Finance.Application.Repositories;
+using Finance.Persistance;
+using Microsoft.EntityFrameworkCore;
+
+namespace Finance.Application.Queries.IOLInvestments;
+
+public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetIOLInvestmentsQuery, IOLInvestment?>
+{
+    private readonly IRepository<IOLInvestment, Guid> repository;
+
+    public GetAllIOLInvestmentQueryHandler(
+        FinanceDbContext db,
+        IRepository<IOLInvestment, Guid> investmentAssetIOLRepository)
+        : base(db)
+    {
+        repository = investmentAssetIOLRepository;
+    }
+
+    public override async Task<ICollection<IOLInvestment?>> Handle(GetIOLInvestmentsQuery request, CancellationToken cancellationToken)
+    {
+        IQueryable<IOLInvestment> query = repository.GetDbSet().Include(o => o.Asset).ThenInclude(o => o.Type).AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        if (request.From.HasValue)
+        {
+            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.GreaterThanOrEqual, request.From.Value);
+        }
+
+        if (request.To.HasValue)
+        {
+            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.AssetSymbol))
+        {
+            query = query.Where(o => o.Asset.Symbol == request.AssetSymbol!);
+        }
+
+        return await query.ToArrayAsync();
+    }
+}
+
+public class GetIOLInvestmentsQuery : GetAllQuery<IOLInvestment?>
+{
+    /// <summary>
+    /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
+    /// </summary>
+    public DateTime? From { get; set; }
+
+    /// <summary>
+    /// Gets or sets date to filter to. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
+    /// </summary>
+    public DateTime? To { get; set; }
+
+    public string? AssetSymbol { get; set; }
+}

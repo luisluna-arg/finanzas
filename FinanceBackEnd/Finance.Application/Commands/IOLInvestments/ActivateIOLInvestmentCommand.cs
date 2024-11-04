@@ -1,0 +1,24 @@
+using Finance.Domain.Models;
+using Finance.Application.Services;
+using MediatR;
+
+namespace Finance.Application.Commands.IOLInvestments;
+
+public class ActivateIOLInvestmentCommandHandler : IRequestHandler<ActivateIOLInvestmentCommand, IOLInvestment?>
+{
+    private readonly IEntityService<IOLInvestment, Guid> service;
+
+    public ActivateIOLInvestmentCommandHandler(
+        IEntityService<IOLInvestment, Guid> repository)
+    {
+        this.service = repository;
+    }
+
+    public async Task<IOLInvestment?> Handle(ActivateIOLInvestmentCommand request, CancellationToken cancellationToken)
+        => await service.SetDeactivatedAsync(request.Id, false, cancellationToken);
+}
+
+public class ActivateIOLInvestmentCommand : IRequest<IOLInvestment?>
+{
+    public Guid Id { get; set; }
+}

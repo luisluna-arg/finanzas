@@ -1,0 +1,44 @@
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
+using Finance.Domain;
+using Finance.Domain.Models;
+using Finance.Persistance;
+using Microsoft.EntityFrameworkCore;
+
+namespace Finance.Application.Queries.CreditCards;
+
+public class GetCreditCardQueryHandler : BaseCollectionHandler<GetCreditCardsQuery, CreditCard?>
+{
+    public GetCreditCardQueryHandler(FinanceDbContext db)
+        : base(db)
+    {
+    }
+
+    public override async Task<ICollection<CreditCard?>> Handle(GetCreditCardsQuery request, CancellationToken cancellationToken)
+    {
+        var query = DbContext.CreditCard
+            .Include(o => o.Bank)
+            .Include(o => o.Movements)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.BankId))
+        {
+            query = query.Where(o => o.BankId == new Guid(request.BankId));
+        }
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        return await query
+            .OrderBy(o => o.Bank.Name)
+            .ThenBy(o => o.Name)
+            .ToArrayAsync();
+    }
+}
+
+public class GetCreditCardsQuery : GetAllQuery<CreditCard?>
+{
+    public string? BankId { get; private set; }
+}

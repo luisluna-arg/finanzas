@@ -1,0 +1,34 @@
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
+using Finance.Domain;
+using Finance.Domain.Models;
+using Finance.Persistance;
+using Microsoft.EntityFrameworkCore;
+
+namespace Finance.Application.Queries.Frequencies;
+
+public class GetAllFrequenciesQueryHandler : BaseCollectionHandler<GetAllFrequenciesQuery, Frequency?>
+{
+    public GetAllFrequenciesQueryHandler(FinanceDbContext db)
+        : base(db)
+    {
+    }
+
+    public override async Task<ICollection<Frequency?>> Handle(GetAllFrequenciesQuery request, CancellationToken cancellationToken)
+    {
+        var query = DbContext.Frequency
+            .OrderBy(o => o.Name)
+            .AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        return await Task.FromResult(await query.ToArrayAsync());
+    }
+}
+
+public class GetAllFrequenciesQuery : GetAllQuery<Frequency?>
+{
+}
