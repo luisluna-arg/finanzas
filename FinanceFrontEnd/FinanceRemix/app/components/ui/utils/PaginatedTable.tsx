@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Form, FormCheck } from "react-bootstrap";
+import { Button, Form, FormCheck } from "react-bootstrap";
 import moment from 'moment';
 
 import dates from "@/app/utils/dates";
-import { text } from "@/app/utils/textConstants";
-import ActionButton from '@/app/components/ui/utils/ActionButton';
+import ActionButton, { ButtonType } from '@/app/components/ui/utils/ActionButton';
 import ConfirmationModal from '@/app/components/ui/utils/ConfirmationModal';
 import Input from '@/app/components/ui/utils/Input';
 import LoadingSpinner from "@/app/components/ui/utils/LoadingSpinner";
 import PaginationBar from '@/app/components/ui/utils/PaginationBar';
 import { InputType } from '@/app/components/ui/utils/InputType';
-import { OUTLINE_VARIANTS } from '@/app/components/ui/utils/Bootstrap/ColorVariants';
 import { fetchData } from '@/app/components/data/fetchData';
 import { fetchPaginatedData } from '@/app/components/data/fetchPaginatedData';
 import { handleRequest } from '@/app/components/data/handleRequest';
-
+import { OUTLINE_VARIANT } from "@/app/components/ui/utils/Bootstrap/ColorVariant";
 
 // TODO: PaginatedTable - Actions still need implementation
 
@@ -277,7 +275,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     const ActionsRow = ({ header = false }: ActionsRowProps) => {
         const AddButton = () => (adminAddEnabled &&
             <ActionButton
-                text="Agregar"
+                type={ButtonType.Add}
                 classes={["me-2"]}
                 action={onAdd}
             />
@@ -285,7 +283,8 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
 
         const DeleteButton = () => (adminDeletedEnabled &&
             <ActionButton
-                text="Eliminar"
+                type={ButtonType.Delete}
+                variant={OUTLINE_VARIANT.DANGER}
                 action={handleDeleteModalShow}
                 disabled={getSelectCheckboxes(true).length !== 1}
             />
@@ -306,16 +305,16 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             {columns && columns.map((column: any, index: number) => {
                 const columnId = column.key ?? column.id;
                 if (column.editable) {
-                    return (<td className={`${column.class ?? ''} align-middle`} key={`${name}-${columnId}-${index}`}>
+                    return (<td className={`${column.class ?? ''} centered`} key={`${name}-${columnId}-${index}`}>
                         <Input value={getEditRowDefaultValue(column.editable)} settings={column} />
                     </td>);
                 }
                 else {
-                    return (<td className={"align-middle"} key={`${name}-${columnId}-${index}`}></td>);
+                    return (<td className={"centered"} key={`${name}-${columnId}-${index}`}></td>);
                 }
             })}
-            <th className={"align-middle"}>
-                <ActionButton text={'+'} action={onAdd} />
+            <th className={"centered"}>
+                <ActionButton type={ButtonType.Add} action={onAdd} />
             </th>
         </tr>);
     };
@@ -337,7 +336,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                                 let classes = column?.header?.classes;
                                 classes = Array.isArray(classes) ? classes.join(" ") : classes;
                                 return (
-                                    <th scope="col" key={index} className={classes}>
+                                    <th scope="col" key={index} className={classes} style={column.header?.style}>
                                         {column.label}
                                     </th>
                                 );
@@ -369,10 +368,10 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                                                     {getColumnValue(column, record)}
                                                 </td>))}
                                             {adminAddEnabled && (
-                                                <td style={{ width: "100px" }}>
+                                                <td style={{ width: "100px", textAlign: "center" }}>
                                                     <ActionButton
-                                                        text="Editar"
-                                                        variant={OUTLINE_VARIANTS.WARNING}
+                                                        type={ButtonType.Edit}
+                                                        variant={OUTLINE_VARIANT.WARNING}
                                                         action={() => { }}
                                                         dataId={record.id}
                                                     />

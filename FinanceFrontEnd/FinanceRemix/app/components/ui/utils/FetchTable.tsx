@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import dates from "@/app/utils/dates";
-import { InputType } from "@/app/components/ui/utils/InputType";
 import LoadingSpinner from "@/app/components/ui/utils/LoadingSpinner";
+import { InputType } from "@/app/components/ui/utils/InputType";
 
 type FetchTableProps = {
     name: string;
@@ -115,7 +115,7 @@ const FetchTable: React.FC<FetchTableProps> = ({
                 )}
                 <tr>
                     {columns.map((column, index) => (
-                        <th className={column.headerClass} scope="col" key={index}>
+                        <th className={column.headerClass} scope="col" key={index} style={column.header.style}>
                             {column.label}
                         </th>
                     ))}

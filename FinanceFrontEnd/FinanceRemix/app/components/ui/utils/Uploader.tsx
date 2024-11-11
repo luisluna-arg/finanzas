@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import { useFetcher } from "@remix-run/react";
 import { Toast, ToastContainer } from "react-bootstrap";
-import ActionButton from "./ActionButton";
-import { OUTLINE_VARIANTS } from "./Bootstrap/ColorVariants";
+import { OUTLINE_VARIANT } from "@/app/components/ui/utils/Bootstrap/ColorVariant";
+import ActionButton, { ButtonType } from "@/app/components/ui/utils/ActionButton";
 
 interface UploaderProps {
   url: string;
@@ -74,7 +74,8 @@ const Uploader = ({ url, extensions, onSuccess, onError }: UploaderProps) => {
             />
             <ActionButton 
                 text={"Subir"} 
-                variant={OUTLINE_VARIANTS.WARNING}
+                variant={OUTLINE_VARIANT.WARNING}
+                type={ButtonType.None}
                 //classes={["btn", "btn-outline-secondary"]} 
                 action={uploadFile}
                 disabled={false}

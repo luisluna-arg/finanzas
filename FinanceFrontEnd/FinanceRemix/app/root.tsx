@@ -5,12 +5,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-
 import { redirect, LoaderFunction } from "@remix-run/node";
-
 import "@/styles/index.scss";
 import '@/styles/App.scss';
-import Navigation from "./components/ui/Navbar/Navbar";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import Navigation from "@/app/components/ui/Navbar/Navbar";
+
+library.add(fas);
 
 // Conditional redirect based on the current path
 export const loader: LoaderFunction = async ({ request }) => {
