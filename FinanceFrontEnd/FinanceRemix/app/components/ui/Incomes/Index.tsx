@@ -69,7 +69,7 @@ const Incomes: React.FC = () => {
   const numericHeader = {
     classes: "text-end",
     style: {
-      width: "140px"
+      width: "180px"
     }
   };
 
