@@ -115,7 +115,7 @@ const FetchTable: React.FC<FetchTableProps> = ({
                 )}
                 <tr>
                     {columns.map((column, index) => (
-                        <th className={column.headerClass} scope="col" key={index} style={column.header.style}>
+                        <th className={column.headerClass} scope="col" key={index} style={column?.header?.style ?? {}}>
                             {column.label}
                         </th>
                     ))}

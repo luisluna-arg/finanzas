@@ -1,6 +1,6 @@
 import { fetchData } from "./fetchData";
 
-export const handleRequest = async (url: string, method: string, record: any) => {
+export const handleRequest = async (url: string, method: string, record: any, reload: boolean = false) => {
     try {
         const headers: HeadersInit = {
             "Content-Type": "application/json",
@@ -23,6 +23,6 @@ export const handleRequest = async (url: string, method: string, record: any) =>
     } catch (error) {
         console.error("Error:", error);
     } finally {
-        if (url) fetchData(url);
+        if (url && reload) return fetchData(url);
     }
 };
