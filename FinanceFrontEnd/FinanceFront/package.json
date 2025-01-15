@@ -2,6 +2,12 @@
   "name": "finances",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts --openssl-legacy-provider start  && npx opn http://localhost:5173",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -19,12 +25,6 @@
     "uuid": "^9.0.1",
     "web-vitals": "^2.1.4",
     "zustand": "^4.4.6"
-  },
-  "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
