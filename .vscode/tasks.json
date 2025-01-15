@@ -36,6 +36,18 @@
                 "${workspaceFolder}/FinanceBackEnd/Finance.Api"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildSyncTool",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/FinanceBackEnd/Finance.SyncTool",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }

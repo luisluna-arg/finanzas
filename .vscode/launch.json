@@ -31,19 +31,39 @@
       }
     },
     {
-      "name": "React App Launch",
+      "name": "Launch Sync Tool",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "buildSyncTool",
+      "program": "${workspaceFolder}/FinanceBackEnd/Finance.SyncTool/bin/Debug/net8.0/FinanceSyncTool.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "internalConsole"
+    },
+    {
+      "name": "Remix App Launch",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/FinanceFrontEnd/FinanceRemix",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run"],
       "args": ["dev"]
+    },
+    {
+      "name": "React App Launch",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/FinanceFrontEnd/FinanceFront",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run"],
+      "args": ["start"]
     }
   ],
   "compounds": [
     {
       "name": "API and React App",
-      "configurations": [".NET Core Launch (web)", "React App Launch"]
+      "configurations": [".NET Core Launch (web)", "Remix App Launch", "React App Launch"]
     }
   ]
 }
