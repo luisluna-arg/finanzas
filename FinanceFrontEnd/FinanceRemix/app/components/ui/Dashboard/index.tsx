@@ -232,8 +232,8 @@ export default function Dashboard() {
                                 </div>
                                 }
                                 {debitModules && <div className="w-auto me-2 overflow-hidden">
-                                    {urls.debits.latest && debitModules.map((appModuleId, index) => {
-                                        const url = `${urls.debits.latest}?AppModuleId=${appModuleId}&IncludeDeactivated=false`;
+                                    {urls.debits.monthly.latest && debitModules.map((appModuleId, index) => {
+                                        const url = `${urls.debits.monthly.latest}?AppModuleId=${appModuleId}&IncludeDeactivated=false`;
                                         const bgClass = debitBackgroundClasses[appModuleId];
                                         const tableName = debitTableNames[appModuleId];
                                         const title = debitTableTitles[appModuleId];
