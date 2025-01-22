@@ -76,7 +76,7 @@ const BooleanInputControl: React.FC<InputControlProps> = ({ settings, value }) =
                 settings.visible ? "visible" : "invisible",
             ])}
             type="checkbox"
-            checked={Boolean(value)}
+            defaultChecked={Boolean(value)}
             style={settings.style}
         />
     </div>

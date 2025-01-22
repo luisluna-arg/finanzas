@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button, Form, FormCheck } from "react-bootstrap";
+import { Form, FormCheck } from "react-bootstrap";
 import moment from "moment";
 
 import dates from "@/app/utils/dates";
@@ -217,31 +217,45 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     await handleCreate(values);
   };
 
-  const getColumnValue = (columnSettings: Column, record: any) => {
+  const ColumnValue = ({
+    columnSettings,
+    record,
+  }: {
+    columnSettings: Column;
+    record: any;
+  }) => {
     const columnId: any = columnSettings.id ?? columnSettings.key ?? "";
-    const columnValue = record[columnId];
+    let columnValue = record[columnId];
 
     if (columnSettings.datetime && columnValue) {
       let dateFormat = columnSettings.datetime.dateFormat ?? "";
       let timeFormat = columnSettings.datetime.timeFormat ?? "";
-      return moment(columnValue).format(`${dateFormat} ${timeFormat}`);
+      columnValue = moment(columnValue).format(`${dateFormat} ${timeFormat}`);
     } else if (columnSettings.mapper) {
       const mapper = columnSettings.mapper;
       if (typeof mapper === "function") {
-        return mapper(columnValue);
-      }
-
-      if (mapper.hasOwnProperty("label")) {
+        columnValue = mapper(columnValue);
+      } else if (mapper.hasOwnProperty("label")) {
         let label = mapper["label"];
 
         if (typeof label !== "function") {
-          return columnValue[label!];
+          columnValue = columnValue[label!];
+        } else {
+          columnValue = label(columnValue);
         }
-
-        return label(columnValue);
       }
     }
-    return columnValue;
+
+    if (columnSettings.type === InputType.Boolean) {
+      return (
+        <FormCheck
+          id={`${columnSettings.id}-${record.id}`}
+          checked={columnValue}
+        />
+      );
+    }
+
+    return <>{columnValue}</>;
   };
 
   const getEditRowDefaultValue = (columnEditable?: { defaultValue?: any }) => {
@@ -428,9 +442,9 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                         />
                       </td>
                     )}
-                    {columns.map((column, index) => (
+                    {columns.map((column: Column, index: number) => (
                       <td key={index} className={column.class}>
-                        {getColumnValue(column, record)}
+                        <ColumnValue columnSettings={column} record={record} />
                       </td>
                     ))}
                     {adminAddEnabled && (
