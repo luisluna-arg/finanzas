@@ -5,7 +5,10 @@ import urls from "@/app/utils/urls";
 import CommonUtils from "@/app/utils/common";
 import { InputType } from "@/app/components/ui/utils/InputType";
 import Picker from "@/app/components/ui/utils/Picker";
-import PaginatedTable, { Column, ConditionalClass } from "@/app/components/ui/utils/PaginatedTable";
+import PaginatedTable, {
+  Column,
+  ConditionalClass,
+} from "@/app/components/ui/utils/PaginatedTable";
 
 // Define types for the props and states
 interface PickerData {
@@ -23,21 +26,25 @@ const dateFormat = "DD/MM/yyyy";
 const buildIncomesEnpoint = (bankId: string, currencyId: string) => {
   const params = CommonUtils.Params({
     BankId: bankId,
-    CurrencyId: currencyId
+    CurrencyId: currencyId,
   });
   return `${urls.incomes.paginated}?${params}`;
-}
+};
 
 const Incomes: React.FC = () => {
   const { banks, currencies } = useLoaderData<LoaderData>();
   const [selectedBankId, setSelectedBankId] = useState<string>(banks[0].id);
-  const [selectedCurrencyId, setSelectedCurrencyId] = useState<string>(currencies[0].id);
-  const [incomesEndpoint, setIncomesEndpoint] = useState<string>(buildIncomesEnpoint(selectedBankId, selectedCurrencyId));
+  const [selectedCurrencyId, setSelectedCurrencyId] = useState<string>(
+    currencies[0].id
+  );
+  const [incomesEndpoint, setIncomesEndpoint] = useState<string>(
+    buildIncomesEnpoint(selectedBankId, selectedCurrencyId)
+  );
   const [reloadTable, setReloadTable] = useState<boolean>(true);
 
-  const updateIncomesEndpoint = /*useCallback(*/(bankId: string, currencyId: string) => {
+  const updateIncomesEndpoint = (bankId: string, currencyId: string) => {
     setIncomesEndpoint(buildIncomesEnpoint(bankId, currencyId));
-  }/*, [])*/;
+  };
 
   const onBankPickerChange = (picker: { value: string }) => {
     setSelectedBankId(picker.value);
@@ -61,16 +68,17 @@ const Incomes: React.FC = () => {
 
   const valueConditionalClass: ConditionalClass = {
     class: "text-success fw-bold",
-    eval: (field: { value: number }) => field != null && field.value > 0
+    eval: (field: { value: number }) => field != null && field.value > 0,
   };
 
-  const valueMapper = (field: { value: number }) => field != null ? field.value : null;
+  const valueMapper = (field: { value: number }) =>
+    field != null ? field.value : null;
 
   const numericHeader = {
     classes: "text-end",
     style: {
-      width: "180px"
-    }
+      width: "180px",
+    },
   };
 
   const TableColumns: Column[] = [
@@ -81,12 +89,16 @@ const Incomes: React.FC = () => {
       type: InputType.DateTime,
       editable: {
         defaultValue: () => {
-          const rowSelector = document.querySelector(".bank-table-data-row > td > span");
+          const rowSelector = document.querySelector(
+            ".bank-table-data-row > td > span"
+          );
 
           if (!rowSelector?.textContent) return moment().format(dateFormat);
 
-          return moment(rowSelector.textContent, `${dateFormat}`).format(dateFormat);
-        }
+          return moment(rowSelector.textContent, `${dateFormat}`).format(
+            dateFormat
+          );
+        },
       },
       datetime: {
         timeFormat: "HH:mm",
@@ -96,9 +108,9 @@ const Incomes: React.FC = () => {
       },
       header: {
         style: {
-          width: "160px"
-        }
-      }
+          width: "160px",
+        },
+      },
     },
     {
       id: "bank",
@@ -109,8 +121,8 @@ const Incomes: React.FC = () => {
       endpoint: urls.banks.endpoint,
       mapper: {
         id: "id",
-        label: (record: PickerData) => `${record.name}`
-      }
+        label: (record: PickerData) => `${record.name}`,
+      },
     },
     {
       id: "currency",
@@ -121,8 +133,8 @@ const Incomes: React.FC = () => {
       endpoint: urls.currencies.endpoint,
       mapper: {
         id: "id",
-        label: (record: PickerData) => `${record.name}`
-      }
+        label: (record: PickerData) => `${record.name}`,
+      },
     },
     {
       id: "amount",
@@ -133,11 +145,11 @@ const Incomes: React.FC = () => {
       header: numericHeader,
       class: "text-end",
       editable: {
-        defaultValue: 0.0
+        defaultValue: 0.0,
       },
       mapper: valueMapper,
-      conditionalClass: valueConditionalClass
-    }
+      conditionalClass: valueConditionalClass,
+    },
   ];
 
   // Update the endpoint whenever selectedBankId or selectedCurrencyId changes
@@ -157,7 +169,7 @@ const Incomes: React.FC = () => {
               id="bank-picker"
               value={selectedBankId}
               data={banks}
-              mapper={{ id: "id", label: record => `${record.name}` }}
+              mapper={{ id: "id", label: (record) => `${record.name}` }}
               onChange={onBankPickerChange}
               onFetch={onBankPickerFetch}
             />
@@ -167,16 +179,18 @@ const Incomes: React.FC = () => {
               id="currency-picker"
               value={selectedCurrencyId}
               data={currencies}
-              mapper={{ id: "id", label: record => `${record.name}` }}
+              mapper={{ id: "id", label: (record) => `${record.name}` }}
               onChange={onCurrencyPickerChange}
               onFetch={onCurrencyPickerFetch}
             />
           </div>
         </div>
         <hr className="py-1" />
-        {(!incomesEndpoint || incomesEndpoint.trim() === "") &&
-          <div className="container centered">Cargando datos</div>}
-        {incomesEndpoint && <PaginatedTable
+        {(!incomesEndpoint || incomesEndpoint.trim() === "") && (
+          <div className="container centered">Cargando datos</div>
+        )}
+        {incomesEndpoint && (
+          <PaginatedTable
             name="incomes-table"
             url={incomesEndpoint}
             reloadData={reloadTable}
@@ -186,16 +200,16 @@ const Incomes: React.FC = () => {
               key: [
                 {
                   id: "BankId",
-                  value: selectedBankId
+                  value: selectedBankId,
                 },
                 {
                   id: "CurrencyId",
-                  value: selectedCurrencyId
-                }
-              ]
+                  value: selectedCurrencyId,
+                },
+              ],
             }}
           />
-        }
+        )}
       </div>
     </>
   );
