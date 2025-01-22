@@ -14,6 +14,19 @@
 // @import '~bootstrap/scss/bootstrap';
 @import "./../node_modules/bootstrap/scss/bootstrap.scss";
 
+$white: #ffffff;
+
+$theme-colors: (
+    "light":      #48b677,
+    "dark":       #01306b,
+    "primary":    #653498,
+    "secondary":  #3961ad,
+    "info":       #c95d3f,
+    "success":    #289a62,
+    "warning":    #dbca2b,
+    "danger":     #e62e16,
+);
+
 // // COLORS
 // /*
 // C1DBE3
