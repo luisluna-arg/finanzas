@@ -5,12 +5,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { redirect, LoaderFunction } from "@remix-run/node";
-import "@/styles/index.scss";
-import '@/styles/App.scss';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import Navigation from "@/app/components/ui/Navbar/Navbar";
+import { LinksFunction, redirect, LoaderFunction } from "@remix-run/node";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import Navigation from "@/components/ui/Navigation";
+
+import stylesheet from "@/tailwind.css?url";
+import app from "@/app.css?url";
 
 library.add(fas);
 
@@ -19,12 +20,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
 
   if (url.pathname === "/") {
-    return redirect('/dashboard');
+    return redirect("/dashboard");
   }
 
   return null; // No redirect, allow normal processing
 };
-
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -48,3 +48,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return <Outlet />;
 }
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: stylesheet },
+  { rel: "app", href: app },
+];
