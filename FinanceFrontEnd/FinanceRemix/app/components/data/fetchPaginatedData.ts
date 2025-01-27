@@ -1,5 +1,5 @@
-import { objectToUrlParams, parseUrl } from "@/app/utils/urlTreatment";
-import { fetchData } from "@/app/components/data/fetchData";
+import { objectToUrlParams, parseUrl } from "@/utils/urlTreatment";
+import { fetchData } from "@/components/data/fetchData";
 
 export interface PaginationData<T> {
   items: T[];

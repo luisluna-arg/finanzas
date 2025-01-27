@@ -1,6 +1,6 @@
 import React from "react";
-import { InputType } from "@/app/components/ui/utils/InputType";
-import Picker, { MapperType } from "@/app/components/ui/utils/Picker";
+import { InputType } from "@/components/ui/utils/InputType";
+import Picker, { MapperType } from "@/components/ui/utils/Picker";
 
 export interface Settings {
     id?: string;
@@ -68,7 +68,7 @@ const DecimalInputControl: React.FC<InputControlProps> = ({ settings, value }) =
 );
 
 const BooleanInputControl: React.FC<InputControlProps> = ({ settings, value }) => (
-    <div className="mb-2 text-light">
+    <div className="mb-2 text-white">
         <input
             id={settings.id}
             className={classesToString([

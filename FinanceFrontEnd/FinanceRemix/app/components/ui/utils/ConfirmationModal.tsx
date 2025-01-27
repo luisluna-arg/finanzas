@@ -1,6 +1,13 @@
 import React from "react";
-import { Form, Modal } from "react-bootstrap";
-import ActionButton from "@/app/components/ui/utils/ActionButton";
+import { Form } from "@/components/ui/utils/Form";
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalTitle,
+  ModalFooter,
+} from "@/components/ui/utils/Modal";
+import ActionButton from "@/components/ui/utils/ActionButton";
 
 interface ConfirmationModalProps {
   text: React.ReactNode;
@@ -20,11 +27,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <Modal show={show} onHide={handleCancel}>
       {title && (
-        <Modal.Header closeButton>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
+        <ModalHeader closeButton>
+          <ModalTitle>{title}</ModalTitle>
+        </ModalHeader>
       )}
-      <Modal.Body>
+      <ModalBody>
         <Form
           onSubmit={(event) => {
             event.preventDefault();
@@ -35,15 +42,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         >
           {text}
         </Form>
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <ActionButton text="Aceptar" variant="success" action={handleAccept} />
         <ActionButton
           text="Cancelar"
           variant="secondary"
           action={handleCancel}
         />
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

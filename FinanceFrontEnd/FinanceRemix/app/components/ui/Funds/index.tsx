@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useLoaderData } from "@remix-run/react";
 import moment from "moment";
-import urls from "@/app/utils/urls";
-import Picker from "@/app/components/ui/utils/Picker";
+import urls from "@/utils/urls";
+import Picker from "@/components/ui/utils/Picker";
 import PaginatedTable, {
   Column,
-} from "@/app/components/ui/utils/PaginatedTable";
-import { InputType } from "@/app/components/ui/utils/InputType";
-import CommonUtils from "@/app/utils/common";
+} from "@/components/ui/utils/PaginatedTable";
+import { InputType } from "@/components/ui/utils/InputType";
+import CommonUtils from "@/utils/common";
 
 // Define types for the props and states
 interface PickerData {

@@ -1,4 +1,4 @@
-import { getBackendClient } from '@/app/data/getBackendClient';
+import { getBackendClient } from '@/data/getBackendClient';
 import Incomes from "../components/ui/Incomes/Index";
 
 export const loader = async () => {
@@ -15,4 +15,11 @@ export const loader = async () => {
     }
 };
 
+export const meta = () => {
+    return [{
+      title: "Ingresos",
+      description: "",
+    }];
+  };
+  
 export default Incomes;

@@ -1,4 +1,4 @@
-import urls from "@/app/utils/urls";
+import urls from "@/utils/urls";
 import axios from "axios";
 import { Agent } from "https";
 

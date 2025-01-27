@@ -1,8 +1,15 @@
 import { useState, useRef } from "react";
 import { useFetcher } from "@remix-run/react";
-import { Toast, ToastContainer } from "react-bootstrap";
-import { OUTLINE_VARIANT } from "@/app/components/ui/utils/Bootstrap/ColorVariant";
-import ActionButton, { ButtonType } from "@/app/components/ui/utils/ActionButton";
+import {
+  Toast,
+  ToastContainer,
+  ToastHeader,
+  ToastBody,
+} from "@/components/ui/utils/Toast";
+import { OUTLINE_VARIANT } from "@/components/ui/utils/Bootstrap/ColorVariant";
+import ActionButton, {
+  ButtonType,
+} from "@/components/ui/utils/ActionButton";
 
 interface UploaderProps {
   url: string;
@@ -72,14 +79,14 @@ const Uploader = ({ url, extensions, onSuccess, onError }: UploaderProps) => {
               aria-describedby="inputGroupFileAddon04"
               aria-label="Subir"
             />
-            <ActionButton 
-                text={"Subir"} 
-                variant={OUTLINE_VARIANT.WARNING}
-                type={ButtonType.None}
-                //classes={["btn", "btn-outline-secondary"]} 
-                action={uploadFile}
-                disabled={false}
-                />
+            <ActionButton
+              text={"Subir"}
+              variant={OUTLINE_VARIANT.WARNING}
+              type={ButtonType.None}
+              //classes={["btn", "btn-outline-secondary"]}
+              action={uploadFile}
+              disabled={false}
+            />
           </div>
         </form>
       </div>
@@ -93,13 +100,13 @@ const Uploader = ({ url, extensions, onSuccess, onError }: UploaderProps) => {
           autohide
           bg={toastType === "success" ? "success" : "danger"} // Change color based on type
         >
-          <Toast.Header>
+          <ToastHeader>
             <strong className="me-auto">
               {toastType === "success" ? "Success" : "Error"}
             </strong>
             <small>Just now</small>
-          </Toast.Header>
-          <Toast.Body>{toastMessage}</Toast.Body>
+          </ToastHeader>
+          <ToastBody>{toastMessage}</ToastBody>
         </Toast>
       </ToastContainer>
     </>

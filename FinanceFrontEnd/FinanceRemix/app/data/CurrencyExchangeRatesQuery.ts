@@ -1,4 +1,4 @@
-import urls from "@/app/utils/urls";
+import urls from "@/utils/urls";
 import { Agent } from "https";
 import { BaseQuery } from "./base/BaseQuery";
 

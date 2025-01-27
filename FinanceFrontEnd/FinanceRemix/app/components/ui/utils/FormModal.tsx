@@ -1,40 +1,49 @@
 import React, { FC } from "react";
-import { Form, Modal } from "react-bootstrap";
-import ActionButton, { ButtonType } from "@/app/components/ui/utils/ActionButton";
-import CustomToast from "@/app/components/ui/utils/CustomToast";
-import Input from "@/app/components/ui/utils/Input";
-import { InputType } from "@/app/components/ui/utils/InputType";
-import { VARIANT } from "@/app/components/ui/utils/Bootstrap/ColorVariant";
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from "@/components/ui/utils/Modal";
+import { Form } from "@/components/ui/utils/Form";
+import ActionButton, {
+  ButtonType,
+} from "@/components/ui/utils/ActionButton";
+import CustomToast from "@/components/ui/utils/CustomToast";
+import Input from "@/components/ui/utils/Input";
+import { InputType } from "@/components/ui/utils/InputType";
+import { VARIANT } from "@/components/ui/utils/Bootstrap/ColorVariant";
 
-type EditorSettings =
-  {
-    id: string,
-    type: InputType,
-    label: string,
-    placeholder?: string,
-    visible?: false
-  }
+type EditorSettings = {
+  id: string;
+  type: InputType;
+  label: string;
+  placeholder?: string;
+  visible?: false;
+};
 
 type FormModalProps = {
-  title: string,
-  formId: string,
-  error?: string,
-  editorSettings?: EditorSettings[],
-  form: any,
-  show: boolean,
-  handleCancel?: any,
-  handleAccept?: any
-}
+  title: string;
+  formId: string;
+  error?: string;
+  editorSettings?: EditorSettings[];
+  form: any;
+  show: boolean;
+  handleCancel?: any;
+  handleAccept?: any;
+};
 
 const DEFAULTS: FormModalProps = {
   formId: `form-${new Date().getTime()}`,
   title: "DefaultTitle",
   editorSettings: [],
   form: {},
-  show: true
+  show: true,
 };
 
-const isNullOrUndefined = (instance?: any) => typeof instance === "undefined" || instance === null;
+const isNullOrUndefined = (instance?: any) =>
+  typeof instance === "undefined" || instance === null;
 
 const setPropsDefaults = (originalProps: FormModalProps) => {
   let fullProps = Object.assign({}, DEFAULTS, originalProps);
@@ -69,11 +78,13 @@ const FormModal: React.FC<FormModalProps> = (props) => {
 
   return (
     <Modal show={props.show} onHide={props.handleCancel}>
-      <Modal.Header closeButton>
-        <Modal.Title>{title}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {props.error && <CustomToast variant={VARIANT.DANGER} text={props.error} />}
+      <ModalHeader closeButton>
+        <ModalTitle>{title}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        {props.error && (
+          <CustomToast variant={VARIANT.DANGER} text={props.error} />
+        )}
         <Form
           id={formId}
           onSubmit={(event) => {
@@ -83,16 +94,17 @@ const FormModal: React.FC<FormModalProps> = (props) => {
             event.preventDefault();
           }}
         >
-          {editorSettings && editorSettings.map((fieldSettings, index) => (
-            <Input
-              settings={fieldSettings}
-              value={form[fieldSettings.id]}
-              key={fieldSettings.id + "-" + index}
-            />
-          ))}
+          {editorSettings &&
+            editorSettings.map((fieldSettings, index) => (
+              <Input
+                settings={fieldSettings}
+                value={form[fieldSettings.id]}
+                key={fieldSettings.id + "-" + index}
+              />
+            ))}
         </Form>
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalBody>
+      <ModalFooter>
         <ActionButton
           text={"Aceptar"}
           variant={VARIANT.SUCCESS}
@@ -105,7 +117,7 @@ const FormModal: React.FC<FormModalProps> = (props) => {
           type={ButtonType.None}
           action={props.handleCancel}
         />
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

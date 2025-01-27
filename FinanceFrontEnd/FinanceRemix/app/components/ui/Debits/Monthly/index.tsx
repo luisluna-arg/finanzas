@@ -1,4 +1,4 @@
-import urls from "@/app/utils/urls";
+import urls from "@/utils/urls";
 import { useLoaderData } from "@remix-run/react";
 import { InputType } from "../../utils/InputType";
 import PaginatedTable from "../../utils/PaginatedTable";

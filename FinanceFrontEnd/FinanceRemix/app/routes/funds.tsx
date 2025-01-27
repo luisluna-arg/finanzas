@@ -1,5 +1,5 @@
-import { getBackendClient } from '@/app/data/getBackendClient';
-import Funds from "@/app/components/ui/Funds";
+import { getBackendClient } from '@/data/getBackendClient';
+import Funds from "@/components/ui/Funds";
 
 export const loader = async () => {
     
@@ -15,4 +15,11 @@ export const loader = async () => {
     }
 };
 
+export const meta = () => {
+    return [{
+      title: "Fondos",
+      description: "",
+    }];
+  };
+  
 export default Funds;

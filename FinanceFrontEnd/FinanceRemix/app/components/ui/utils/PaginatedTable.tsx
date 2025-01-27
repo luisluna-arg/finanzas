@@ -1,20 +1,28 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Form, FormCheck } from "react-bootstrap";
+import { Form, FormCheck } from "@/components/ui/utils/Form";
 import moment from "moment";
 
-import dates from "@/app/utils/dates";
+import dates from "@/utils/dates";
 import ActionButton, {
   ButtonType,
-} from "@/app/components/ui/utils/ActionButton";
-import ConfirmationModal from "@/app/components/ui/utils/ConfirmationModal";
-import Input from "@/app/components/ui/utils/Input";
-import LoadingSpinner from "@/app/components/ui/utils/LoadingSpinner";
-import PaginationBar from "@/app/components/ui/utils/PaginationBar";
-import { InputType } from "@/app/components/ui/utils/InputType";
-import { fetchData } from "@/app/components/data/fetchData";
-import { fetchPaginatedData } from "@/app/components/data/fetchPaginatedData";
-import { handleRequest } from "@/app/components/data/handleRequest";
-import { OUTLINE_VARIANT } from "@/app/components/ui/utils/Bootstrap/ColorVariant";
+} from "@/components/ui/utils/ActionButton";
+import ConfirmationModal from "@/components/ui/utils/ConfirmationModal";
+import Input from "@/components/ui/utils/Input";
+import LoadingSpinner from "@/components/ui/utils/LoadingSpinner";
+import PaginationBar from "@/components/ui/utils/PaginationBar";
+import { InputType } from "@/components/ui/utils/InputType";
+import { fetchData } from "@/components/data/fetchData";
+import { fetchPaginatedData } from "@/components/data/fetchPaginatedData";
+import { handleRequest } from "@/components/data/handleRequest";
+import { OUTLINE_VARIANT } from "@/components/ui/utils/Bootstrap/ColorVariant";
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableFooter,
+  TableRow,
+  TableCell,
+} from "@/components/ui/shadcn/table";
 
 // TODO: PaginatedTable - Actions still need implementation
 
@@ -158,7 +166,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       return [];
     }
 
-    const baseSelector = `table#${name} tr.${name}-data-row td:first-child input[type=checkbox]`;
+    const baseSelector = `Table#${name} TableRow.${name}-data-row TableCell:first-child input[type=checkbox]`;
     const checkboxes: any[] = Array.from(
       document.querySelectorAll(baseSelector)
     );
@@ -323,32 +331,32 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     };
 
     return (
-      <tr>
+      <TableRow>
         {header ? (
-          <th colSpan={columnCount}>
+          <TableHeader className={"w-[100px]"} aria-colspan={columnCount}>
             <AddButton />
             <DeleteButton />
-          </th>
+          </TableHeader>
         ) : (
-          <td colSpan={columnCount}>
+          <TableCell colSpan={columnCount}>
             <AddButton />
             <DeleteButton />
-          </td>
+          </TableCell>
         )}
-      </tr>
+      </TableRow>
     );
   };
 
   const EditRow = () => {
     return (
-      <tr id={adminRowId} className={`${name}-edit-row`}>
-        <td></td>
+      <TableRow id={adminRowId} className={`${name}-edit-row`}>
+        <TableCell></TableCell>
         {columns &&
           columns.map((column: any, index: number) => {
             const columnId = column.key ?? column.id;
             if (column.editable) {
               return (
-                <td
+                <TableCell
                   className={`${column.class ?? ""} centered`}
                   key={`${name}-${columnId}-${index}`}
                 >
@@ -356,21 +364,21 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                     value={getEditRowDefaultValue(column.editable)}
                     settings={column}
                   />
-                </td>
+                </TableCell>
               );
             } else {
               return (
-                <td
+                <TableCell
                   className={"centered"}
                   key={`${name}-${columnId}-${index}`}
-                ></td>
+                ></TableCell>
               );
             }
           })}
-        <th className={"centered"}>
+        <TableHeader className={["centered", "w-[100px]"].join(" ")}>
           <ActionButton type={ButtonType.Add} action={onAdd} />
-        </th>
-      </tr>
+        </TableHeader>
+      </TableRow>
     );
   };
 
@@ -378,42 +386,42 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   const columnCount = columns.length + (adminEnabled ? 2 : 0);
 
   return (
-    <div className="paginated-table ">
+    <div className="paginated-Table ">
       <Form>
-        <table id={name} className="table table-striped">
-          <thead>
+        {/* <Table id={name} className="Table-fixed"> */}
+        {/* <Table id={name}>
+          <TableHeader>
             <ActionsRow header={true} />
-            <tr>
+            <TableRow>
               {adminEnabled && (
-                <th style={{ width: "40px" }}>
+                <TableHeader className={"w-[100px]"} style={{ width: "40px" }}>
                   <FormCheck
                     id={`${name}-select-all`}
                     checked={allSelected}
                     onChange={handleSelectAllChange}
                   />
-                </th>
+                </TableHeader>
               )}
               {columns.map((column, index) => {
                 let classes = column?.header?.classes;
                 classes = Array.isArray(classes) ? classes.join(" ") : classes;
                 return (
-                  <th
-                    scope="col"
+                  <TableHeader
                     key={index}
                     className={classes}
                     style={column.header?.style}
                   >
                     {column.label}
-                  </th>
+                  </TableHeader>
                 );
               })}
-              {adminEnabled && <th />}
-            </tr>
-          </thead>
+              {adminEnabled && <TableHeader className={"w-[100px]"} />}
+            </TableRow>
+          </TableHeader>
           {loading ? (
-            <tbody>
-              <tr>
-                <td
+            <TableBody>
+              <TableRow>
+                <TableCell
                   colSpan={
                     columns.length +
                     (adminEnabled ? 1 : 0) +
@@ -423,49 +431,55 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                   <center>
                     <LoadingSpinner />
                   </center>
-                </td>
-              </tr>
-            </tbody>
+                </TableCell>
+              </TableRow>
+            </TableBody>
           ) : (
-            <tbody>
+            <TableBody>
               {admin && adminAddEnabled && <EditRow />}
               {data.items.map((record, index) => {
                 const rowId = `${name}-data-row-${index}`;
                 return (
-                  <tr key={rowId} id={rowId} className={`${name}-data-row`}>
+                  <TableRow
+                    key={rowId}
+                    id={rowId}
+                    className={`${name}-data-row`}
+                  >
                     {adminEnabled && (
-                      <td>
+                      <TableCell>
                         <FormCheck
                           id={record.id}
                           checked={record.isSelected}
                           onChange={() => handleRowCheckChange(record.id)}
                         />
-                      </td>
+                      </TableCell>
                     )}
                     {columns.map((column: Column, index: number) => (
-                      <td key={index} className={column.class}>
+                      <TableCell key={index} className={column.class}>
                         <ColumnValue columnSettings={column} record={record} />
-                      </td>
+                      </TableCell>
                     ))}
                     {adminAddEnabled && (
-                      <td style={{ width: "100px", textAlign: "center" }}>
+                      <TableCell
+                        style={{ width: "100px", textAlign: "center" }}
+                      >
                         <ActionButton
                           type={ButtonType.Edit}
                           variant={OUTLINE_VARIANT.WARNING}
                           action={() => {}}
                           dataId={record.id}
                         />
-                      </td>
+                      </TableCell>
                     )}
-                  </tr>
+                  </TableRow>
                 );
               })}
-            </tbody>
+            </TableBody>
           )}
-          <tfoot>
+          <TableFooter>
             <ActionsRow header={true} />
-          </tfoot>
-        </table>
+          </TableFooter>
+        </Table> */}
       </Form>
 
       <div className="pagination-controls pagination d-flex justify-content-center">

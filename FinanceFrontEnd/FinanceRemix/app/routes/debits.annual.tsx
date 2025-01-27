@@ -1,6 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
-import urls from "@/app/utils/urls";
-import AnnualDebits from "@/app/components/ui/Debits/Annual"
+import urls from "@/utils/urls";
+import AnnualDebits from "@/components/ui/Debits/Annual"
 
 export const loader: LoaderFunction = async () => {
   const pesosModuleId = "4c1ee918-e8f9-4bed-8301-b4126b56cfc0";

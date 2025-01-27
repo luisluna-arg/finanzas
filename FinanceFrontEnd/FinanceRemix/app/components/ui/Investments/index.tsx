@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import urls from "@/app/utils/urls";
-import Uploader from "@/app/components/ui/utils/Uploader";
-import PaginatedTable, { Column } from "@/app/components/ui/utils/PaginatedTable";
-import { InputType } from "@/app/components/ui/utils/InputType";
+import urls from "@/utils/urls";
+import Uploader from "@/components/ui/utils/Uploader";
+import PaginatedTable, { Column } from "@/components/ui/utils/PaginatedTable";
+import { InputType } from "@/components/ui/utils/InputType";
 
 type InvestmentField = {
   symbol: string;

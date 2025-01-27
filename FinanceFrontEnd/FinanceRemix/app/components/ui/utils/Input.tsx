@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { InputType } from "@/app/components/ui/utils/InputType";
-import InputControl, { Settings as InputControlSettings } from "@/app/components/ui/utils/InputControl";
+import { InputType } from "@/components/ui/utils/InputType";
+import InputControl, { Settings as InputControlSettings } from "@/components/ui/utils/InputControl";
 
 interface Settings {
     id: string;
