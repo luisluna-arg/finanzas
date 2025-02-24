@@ -1,4 +1,3 @@
-import urls from "@/utils/urls";
 import axios from "axios";
 import { Agent } from "https";
 
@@ -7,17 +6,18 @@ export interface QueryEndpoints {
 }
 
 export class BaseQuery {
-  private httpsAgent: Agent;
-  private endpoints: QueryEndpoints;
+  protected httpsAgent: Agent;
+  protected getEndpoint: string;
 
   constructor(httpsAgent: Agent, endpoints: QueryEndpoints) {
     this.httpsAgent = httpsAgent;
-    this.endpoints = endpoints;
+    this.getEndpoint = endpoints.get;
   }
 
-  async get() {
+  async get<TFilter>(filters?: TFilter) {
     try {
-      const response = await axios.get(this.endpoints.get, {
+      const response = await axios.get(this.getEndpoint, {
+        params: filters ?? {},
         httpsAgent: this.httpsAgent,
       });
 
