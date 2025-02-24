@@ -1,84 +1,75 @@
-import React from "react";
-import Button from "@/components/ui/utils/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAdd,
-  faBan,
-  faPencilAlt,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  OUTLINE_VARIANT,
-  BUTTON_OUTLINE_COLOR_VARIANT,
-} from "./Bootstrap/ColorVariant";
+import { Button } from "@/components/ui/shadcn/button";
+import { cn } from "@/lib/utils";
+import { CirclePlus, Eraser, SendHorizonal, Trash2Icon, SquarePen } from "lucide-react";
 
-export enum ButtonType {
-  None,
-  Edit,
-  Delete,
-  Add,
-}
+export const ACTION_BUTTON_KIND = {
+  add: "add",
+  delete: "delete",
+  submit: "submit",
+  clear: "clear",
+  edit: "edit"
+} as const;
 
-const ButtonIcon: React.FC<{
-  type?: ButtonType;
-}> = ({ type }) => {
-  let icon = null;
-  switch (type) {
-    case ButtonType.Add:
-      icon = faAdd;
-      break;
-    case ButtonType.Edit:
-      icon = faPencilAlt;
-      break;
-    case ButtonType.Delete:
-      icon = faTrashAlt;
-      break;
-    default:
-      icon = faBan;
-      break;
-  }
+export type ActionButtonType = keyof typeof ACTION_BUTTON_KIND;
 
-  return <FontAwesomeIcon icon={icon} size={"xs"} className={"me-2"} />;
+const icons: Record<ActionButtonType, JSX.Element> = {
+  add: <CirclePlus />,
+  delete: <Trash2Icon />,
+  submit: <SendHorizonal />,
+  clear: <Eraser />,
+  edit: <SquarePen />,
 };
 
-const ActionButton: React.FC<{
+const buttonClasses: Record<ActionButtonType, Array<string>> = {
+  add: ["bg-green-100", "hover:bg-green-400", "hover:text-white"],
+  delete: ["bg-red-100", "hover:bg-red-600", "hover:text-white"],
+  submit: ["bg-green-100", "hover:bg-green-600", "hover:text-white"],
+  clear: ["bg-amber-100", "hover:bg-amber-400", "hover:text-white"],
+  edit: ["bg-cyan-100", "hover:bg-cyan-400", "hover:text-white"],
+};
+
+export const VARIANTS = {
+  link: "link",
+  default: "default",
+  destructive: "destructive",
+  outline: "outline",
+  secondary: "secondary",
+  ghost: "ghost",
+} as const;
+
+export type VariantType = keyof typeof VARIANTS | null | undefined;
+
+export interface ActionButtonProps {
+  type: ActionButtonType;
   text?: string;
-  type?: ButtonType;
-  action: () => void;
+  className?: string | Array<string>;
+  variant?: VariantType;
   disabled?: boolean;
-  dataId?: string;
-  variant?: BUTTON_OUTLINE_COLOR_VARIANT;
-  width?: string;
-  height?: string;
-  classes?: string[];
-}> = ({
-  text,
+  onClick?: (e?: any) => Promise<void> | (() => void) | void;
+}
+
+const ActionButton = ({
   type,
-  action,
+  text,
+  className,
+  variant,
   disabled,
-  dataId,
-  variant = OUTLINE_VARIANT.PRIMARY,
-  width,
-  height,
-  classes,
-}) => {
-  const buttonStyle: React.CSSProperties = {
-    width: width || "auto",
-    height: height || "auto",
-    flexFlow: "row",
-  };
+  onClick,
+}: ActionButtonProps) => {
+  const icon = icons[type];
+
+  const classes = buttonClasses[type];
 
   return (
     <Button
-      onClick={action}
-      disabled={disabled}
-      variant={variant}
-      style={buttonStyle}
-      dataId={dataId}
-      className={(classes ?? []).concat(["centered"]).join(" ")}
+      variant={variant ?? "outline"}
+      size={text ? undefined : "icon"}
+      className={cn(classes, className)}
+      onClick={onClick}
+      type={type === "submit" ? type : undefined}
+      disabled={disabled ?? false}
     >
-      <ButtonIcon type={type} />
-      {text}
+      {icon} {text ?? ""}
     </Button>
   );
 };

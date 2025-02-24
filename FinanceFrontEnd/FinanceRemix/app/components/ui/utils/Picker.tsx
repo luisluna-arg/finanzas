@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import React, { useState, useEffect, useCallback } from "react";
 
 // Define types for the props
@@ -15,11 +16,23 @@ interface PickerProps {
   url?: string;
   data?: any[];
   mapper?: MapperType;
-  onChange?: ((event: { value: string | number }) => void) | ((picker: { value: string; }) => void);
+  onChange?:
+    | ((event: { value: string | number }) => void)
+    | ((picker: { value: string }) => void);
   onFetch?: any;
+  className?: string;
 }
 
-const Picker: React.FC<PickerProps> = ({ id, value, url, data, mapper, onChange, onFetch }) => {
+const Picker: React.FC<PickerProps> = ({
+  id,
+  value,
+  url,
+  data,
+  mapper,
+  className,
+  onChange,
+  onFetch,
+}) => {
   const [internalData, setInternalData] = useState<any[]>(data ?? []);
 
   const getRecordId = (record: any): string | number => {
@@ -62,13 +75,18 @@ const Picker: React.FC<PickerProps> = ({ id, value, url, data, mapper, onChange,
       fetchData();
     }, [fetchData]);
   }
-  
+
   const onPickerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onChange && onChange({ value: event.target.value });
   };
-  
+
   return (
-    <select id={id} className="form-select" onChange={onPickerChange} defaultValue={value}>
+    <select
+      id={id}
+      className={cn("form-select", className)}
+      onChange={onPickerChange}
+      defaultValue={value}
+    >
       {internalData.map((record) => {
         const recordId = getRecordId(record);
         const label = getRecordLabel(record);
