@@ -9,6 +9,7 @@ import PaginatedTable, {
   Column,
   ConditionalClass,
 } from "@/components/ui/utils/PaginatedTable";
+import { cn } from "@/lib/utils";
 
 // Define types for the props and states
 interface PickerData {
@@ -161,57 +162,53 @@ const Incomes: React.FC = () => {
   }, [selectedBankId, selectedCurrencyId, updateIncomesEndpoint]);
 
   return (
-    <>
-      <div className="container pt-3 pb-3">
-        <div className="row">
-          <div className="col-6">
-            <Picker
-              id="bank-picker"
-              value={selectedBankId}
-              data={banks}
-              mapper={{ id: "id", label: (record) => `${record.name}` }}
-              onChange={onBankPickerChange}
-              onFetch={onBankPickerFetch}
-            />
-          </div>
-          <div className="col-6">
-            <Picker
-              id="currency-picker"
-              value={selectedCurrencyId}
-              data={currencies}
-              mapper={{ id: "id", label: (record) => `${record.name}` }}
-              onChange={onCurrencyPickerChange}
-              onFetch={onCurrencyPickerFetch}
-            />
-          </div>
-        </div>
-        <hr className="py-1" />
-        {(!incomesEndpoint || incomesEndpoint.trim() === "") && (
-          <div className="container centered">Cargando datos</div>
-        )}
-        {incomesEndpoint && (
-          <PaginatedTable
-            name="incomes-table"
-            url={incomesEndpoint}
-            reloadData={reloadTable}
-            columns={TableColumns}
-            admin={{
-              endpoint: urls.incomes.endpoint,
-              key: [
-                {
-                  id: "BankId",
-                  value: selectedBankId,
-                },
-                {
-                  id: "CurrencyId",
-                  value: selectedCurrencyId,
-                },
-              ],
-            }}
-          />
-        )}
+    <div className={cn(["py-10", "px-40"])}>
+      <div className="flex flex-row justify-center gap-10">
+        <Picker
+          id="bank-picker"
+          value={selectedBankId}
+          data={banks}
+          mapper={{ id: "id", label: (record) => `${record.name}` }}
+          onChange={onBankPickerChange}
+          onFetch={onBankPickerFetch}
+          className={"w-60"}
+        />
+        <Picker
+          id="currency-picker"
+          value={selectedCurrencyId}
+          data={currencies}
+          mapper={{ id: "id", label: (record) => `${record.name}` }}
+          onChange={onCurrencyPickerChange}
+          onFetch={onCurrencyPickerFetch}
+          className={"w-60"}
+        />
       </div>
-    </>
+      <hr className={cn("py-1", "mb-5")} />
+      {(!incomesEndpoint || incomesEndpoint.trim() === "") && (
+        <div className="container centered">Cargando datos</div>
+      )}
+      {incomesEndpoint && (
+        <PaginatedTable
+          name="incomes-table"
+          url={incomesEndpoint}
+          reloadData={reloadTable}
+          columns={TableColumns}
+          admin={{
+            endpoint: urls.incomes.endpoint,
+            key: [
+              {
+                id: "BankId",
+                value: selectedBankId,
+              },
+              {
+                id: "CurrencyId",
+                value: selectedCurrencyId,
+              },
+            ],
+          }}
+        />
+      )}
+    </div>
   );
 };
 
