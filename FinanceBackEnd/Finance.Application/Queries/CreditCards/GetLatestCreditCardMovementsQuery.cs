@@ -1,6 +1,5 @@
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
-using Finance.Domain;
 using Finance.Domain.Models;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +23,7 @@ public class GetLatestCreditCardMovementsQueryHandler : BaseCollectionHandler<Ge
             if (request.CreditCardId.HasValue)
             {
                 query = query.Where(o => o.CreditCardId == request.CreditCardId.Value);
-                dates = new DateTime[] { await query.MaxAsync(o => o.TimeStamp) };
+                dates = [await query.MaxAsync(o => o.TimeStamp)];
             }
             else
             {
@@ -39,7 +38,7 @@ public class GetLatestCreditCardMovementsQueryHandler : BaseCollectionHandler<Ge
         }
         catch
         {
-            return new CreditCardMovement[0];
+            return [];
         }
     }
 }
