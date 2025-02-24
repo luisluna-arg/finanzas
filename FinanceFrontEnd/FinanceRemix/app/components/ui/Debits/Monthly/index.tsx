@@ -1,18 +1,33 @@
 import urls from "@/utils/urls";
 import { useLoaderData } from "@remix-run/react";
-import { InputType } from "../../utils/InputType";
-import PaginatedTable from "../../utils/PaginatedTable";
+import Table, { TableColumn } from "@/components/ui/utils/Table";
 
 interface EndpointsCollection {
-    pesosEndpoint?: string,
-    dollarsEndpoint?: string,
-    pesosModuleId?: string,
-    dollarsModuleId?: string
-  }
+  pesoDebits: any;
+  dollarDebits: any;
+  pesosModuleId: string;
+  dollarsModuleId: string;
+}
+
+const TableColumns: Array<TableColumn> = [
+  {
+    id: "origin",
+    label: "Origen",
+  },
+  {
+    id: "amount_value",
+    label: "Monto",
+    className: "text-right",
+    headerClassName: "text-right",
+    mapper: (d: any) => {
+      return d.amount.value;
+    },
+  },
+];
 
 function MonthlyDebits() {
   // Use the loader data
-  const { pesosEndpoint, dollarsEndpoint, pesosModuleId, dollarsModuleId } =
+  const { pesoDebits, dollarDebits, pesosModuleId, dollarsModuleId } =
     useLoaderData<EndpointsCollection>();
 
   const pesosTableName = "pesos-debit-table";
@@ -34,79 +49,34 @@ function MonthlyDebits() {
     },
   };
 
-  const TableColumns = [
-    {
-      id: "timeStamp",
-      label: "Fecha",
-      placeholder: "Fecha",
-      type: InputType.DateTime,
-      editable: false,
-      datetime: {
-        timeFormat: "HH:mm",
-        timeIntervals: 15,
-        dateFormat: "DD/MM/YYYY",
-        placeholder: "Seleccionar fecha",
-      },
-      header: {
-        style: {
-          width: "160px",
-        },
-      },
-    },
-    {
-      id: "origin",
-      label: "Gasto/Servicio",
-      placeholder: "Gasto/Servicio",
-      editable: true,
-    },
-    {
-      id: "amount",
-      label: "Monto",
-      placeholder: "Monto",
-      type: InputType.Decimal,
-      min: 0.0,
-      header: numericHeader,
-      class: "text-end",
-      editable: true,
-      mapper: valueMapper,
-      conditionalClass: valueConditionalClass,
-    },
-  ];
-
-  const Column = ({
-    title,
-    tableName,
-    url,
-    adminSettings,
-    onFetch,
-    columns,
-  }: any) => {
+  const Column = ({ title, tableName, data, adminSettings, columns }: any) => {
     return (
-      <div className="col">
+      <div className="col w-1/2 px-10 py-5">
         <div className="row">
           <div className="col text-center">
-            <span className="fs-5">{title}</span>
+            <span className="fs-3">{title}</span>
           </div>
         </div>
         <hr className="mt-1 mb-1" />
-        <PaginatedTable
+        <Table columns={columns} data={data.items} />
+
+        {/* <Table
           name={tableName}
           admin={adminSettings}
           url={url}
-          onFetch={onFetch}
           columns={columns}
-        />
+        /> */}
       </div>
     );
   };
 
   return (
-    <div className="container pt-3 pb-3">
-      <div className="row">
+    <div>
+      <div className="row flex">
         <Column
           title={"Pesos"}
           tableName={pesosTableName}
-          url={pesosEndpoint}
+          data={pesoDebits}
           adminSettings={{
             endpoint: urls.debits.monthly.endpoint,
             key: {
@@ -114,13 +84,12 @@ function MonthlyDebits() {
               value: pesosModuleId,
             },
           }}
-          onFetch={onFetchMovementsTable}
           columns={TableColumns}
         />
         <Column
           title={"Dólares"}
           tableName={dollarsTableName}
-          url={dollarsEndpoint}
+          data={dollarDebits}
           adminSettings={{
             endpoint: urls.debits.monthly.endpoint,
             key: {
@@ -128,7 +97,6 @@ function MonthlyDebits() {
               value: dollarsModuleId,
             },
           }}
-          onFetch={onFetchMovementsTable}
           columns={TableColumns}
         />
       </div>
