@@ -171,7 +171,7 @@ const FetchTable: React.FC<FetchTableProps> = ({
         {data.map((record: any) => (
           <DataRow key={record.id} record={record} columns={columns} />
         ))}
-        {(!data || data.length === 0) && <NoDataRow  columns={columns} />}
+        {(!data || data.length === 0) && <NoDataRow columns={columns} />}
       </TableBody>
       {showTotals &&
         data.length > 0 &&

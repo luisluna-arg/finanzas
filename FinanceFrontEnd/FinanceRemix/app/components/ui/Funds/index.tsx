@@ -139,8 +139,8 @@ const Funds: React.FC = () => {
     },
     {
       id: "amount",
-      label: "Pesos",
-      placeholder: "Pesos",
+      label: "Monto",
+      placeholder: "Monto",
       type: InputType.Decimal,
       min: 0.0,
       header: numericHeader,

@@ -74,7 +74,7 @@ function MonthlyDebits() {
     <div>
       <div className="row flex">
         <Column
-          title={"Pesos"}
+          title={"Monto"}
           tableName={pesosTableName}
           data={pesoDebits}
           adminSettings={{

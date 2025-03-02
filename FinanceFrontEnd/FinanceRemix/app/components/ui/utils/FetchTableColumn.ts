@@ -32,7 +32,6 @@ export class FetchTableColumn {
   private _formatter?: Function;
   private _totals?: FetchTableColumnTotals;
 
-  constructor(id: string, label: string);
   constructor(
     id: string,
     label: string,

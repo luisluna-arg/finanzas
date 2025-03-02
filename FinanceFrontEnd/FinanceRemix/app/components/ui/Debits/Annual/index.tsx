@@ -104,7 +104,7 @@ function AnnualDebits() {
     <div className="container pt-3 pb-3">
       <div className="row">
         <Column
-          title={"Pesos"}
+          title={"Monto"}
           tableName={pesosTableName}
           url={pesosEndpoint}
           adminSettings={{
