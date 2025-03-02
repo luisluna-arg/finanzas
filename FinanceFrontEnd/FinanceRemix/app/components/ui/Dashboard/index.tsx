@@ -40,7 +40,8 @@ const backgroundClasses = [
 
 const intFormatter = (r: number) => (r ? r : 0);
 
-const moneyFormatter = (r: number) => (r ? r : 0).toFixed(2);
+const moneyFormatter = (r: number) =>
+  (typeof r === "number" ? r : 0).toFixed(2);
 
 const getSafeValue = (v: ValueHolder) => v?.value ?? v ?? 0;
 
@@ -136,6 +137,25 @@ export default function Dashboard() {
     columns: [
       new FetchTableColumn("label", "Origen"),
       DecimalColumn("value", "Monto", getSafeValue),
+    ],
+  };
+
+  const CurrencyExchangeRatesTableSettings = {
+    columns: [
+      new FetchTableColumn(
+        "label",
+        "Origen",
+        (v: any) => v?.baseCurrency?.name ?? "-",
+        (v: any) => v?.baseCurrency?.name ?? "-"
+      ),
+      new FetchTableColumn(
+        "label",
+        "Destino",
+        (v: any) => v?.quoteCurrency?.name ?? "-",
+        (v: any) => v?.quoteCurrency?.name ?? "-"
+      ),
+      DecimalColumn("value", "Compra", (v: any) => getSafeValue(v.buyRate)),
+      DecimalColumn("value", "Venta", (v: any) => getSafeValue(v.sellRate)),
     ],
   };
 
@@ -247,6 +267,21 @@ export default function Dashboard() {
                       }}
                       url={`${urls.summary.general}?DailyUse=true`}
                       columns={SummaryTableSettings.columns}
+                      classes={tableClasses}
+                      showTotals={false}
+                    />
+                  </div>
+                )}
+                {urls.currencyExchangeRates.latest && (
+                  <div className="w-auto me-2 overflow-hidden">
+                    <FetchTable
+                      name={`CurrencyRates`}
+                      title={{
+                        text: `Conversiones de moneda`,
+                        class: `text-center bg-sky-500 text-white`,
+                      }}
+                      url={`${urls.currencyExchangeRates.latest}`}
+                      columns={CurrencyExchangeRatesTableSettings.columns}
                       classes={tableClasses}
                       showTotals={false}
                     />
