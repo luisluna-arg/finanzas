@@ -14,8 +14,8 @@ function Debits() {
   const dollarsTableName = "dollars-debit-table";
 
   const refreshEndpoints = () => {
-    setPesosEndpoint(`${urls.debits.paginated}?AppModuleId=${pesosModuleId}`);
-    setDollarsEndpoint(`${urls.debits.paginated}?AppModuleId=${dollarsModuleId}`);
+    setPesosEndpoint(`${urls.debits.paginated}?AppModuleId=${pesosModuleId}&Frequency=monthly`);
+    setDollarsEndpoint(`${urls.debits.paginated}?AppModuleId=${dollarsModuleId}&Frequency=monthly`);
   }
 
   const onFetchMovementsTable = (data) => {
