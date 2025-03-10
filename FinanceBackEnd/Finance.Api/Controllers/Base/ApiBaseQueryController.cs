@@ -1,5 +1,4 @@
 using AutoMapper;
-using Finance.Api.Commons;
 using Finance.Application.Commons;
 using Finance.Application.Dtos;
 using Finance.Application.Queries.Base;
@@ -25,7 +24,11 @@ public abstract class ApiBaseQueryController<TEntity, TId, TDto>(IMapper mapper,
         => Ok(await MapAndSend(query));
 
     private async Task<TDto[]> MapAndSend(IRequest<ICollection<TEntity>> query)
-        => (await Mediator.Send(query)).Select(entity => Mapper.Map<TDto>(entity)).ToArray();
+    {
+        var current = await Mediator.Send(query);
+        var result = current.Select(entity => Mapper.Map<TDto>(entity)).ToArray();
+        return result;
+    }
 
     private async Task<TDto> MapAndSend(IRequest<TEntity> query)
         => Mapper.Map<TDto>(await Mediator.Send(query));

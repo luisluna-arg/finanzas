@@ -3,7 +3,6 @@ using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
 using Finance.Application.Services;
 using Finance.Persistance.Constants;
-using Finance.Application.Queries.Summary;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,20 +34,15 @@ public class GetGeneralSummaryQueryHandler : IRequestHandler<GetGeneralSummaryQu
 
         var convertedIncomes = (await currencyConverterService.ConvertCollection(currentIncomes!, pesosCurrencyId)).Sum(m => m);
 
-        var expenses = (await mediator.Send(new GetTotalExpensesQuery())).Items.Sum(e => e.Value);
-
         var investments = (await mediator.Send(new GetCurrentInvestmentsQuery())).Items.Sum(e => e.Valued);
 
         var totalFunds = (await mediator.Send(new GetCurrentFundsQuery())).Items
-            .Concat((await mediator.Send(new GetCurrentFundsQuery() { DailyUse = true })).Items)
             .Sum(e => e.Value) +
             investments;
 
         var result = new TotalGeneralSummary(
         [
             new GeneralSummary(Guid.NewGuid().ToString(), "Ingresos", convertedIncomes),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Gastos", expenses),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Diferencia", convertedIncomes - expenses),
             new GeneralSummary(Guid.NewGuid().ToString(), "Inversiones", investments),
             new GeneralSummary(Guid.NewGuid().ToString(), "Dinero total", totalFunds)
         ]);

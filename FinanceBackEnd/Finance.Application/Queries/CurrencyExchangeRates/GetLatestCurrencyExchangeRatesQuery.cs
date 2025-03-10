@@ -36,16 +36,17 @@ public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<
             query = query.Where(o => !o.Deactivated);
         }
 
-        var groupResult = query.GroupBy(
-            child => new { child.BaseCurrencyId, child.QuoteCurrencyId },
-            (key, group) =>
-                group
-                    .OrderBy(o => o.BaseCurrency.Name)
-                    .ThenBy(o => o.QuoteCurrency.Name)
-                    .ThenByDescending(o => o.TimeStamp)
-                    .AsEnumerable());
+        var partialResult = await query
+            .OrderBy(o => o.BaseCurrency.Name)
+            .ThenBy(o => o.QuoteCurrency.Name)
+            .ThenByDescending(o => o.TimeStamp)
+            .ToArrayAsync();
 
-        return await Task.FromResult(await groupResult.Select(o => o.First()).ToArrayAsync());
+        var groupResult = partialResult.GroupBy(
+            child => new { child.BaseCurrencyId, child.QuoteCurrencyId },
+            (key, group) => group);
+
+        return await Task.FromResult(groupResult.Select(o => o.First()).ToArray());
     }
 }
 

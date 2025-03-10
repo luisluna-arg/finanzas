@@ -58,6 +58,7 @@ public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQu
 
         var paginatedItems = await query
             .OrderByDescending(o => o.TimeStamp)
+            .ThenByDescending(o => o.CreatedAt)
             .ThenBy(o => o.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
