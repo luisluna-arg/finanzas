@@ -36,14 +36,18 @@ public class GetGeneralSummaryQueryHandler : IRequestHandler<GetGeneralSummaryQu
 
         var investments = (await mediator.Send(new GetCurrentInvestmentsQuery())).Items.Sum(e => e.Valued);
 
-        var totalFunds = (await mediator.Send(new GetCurrentFundsQuery())).Items
-            .Sum(e => e.Value) +
-            investments;
+        var dailyFunds = (await mediator.Send(new GetCurrentFundsQuery() { DailyUse = true })).Items.Sum(e => e.Value);
+
+        var notDailyFunds = (await mediator.Send(new GetCurrentFundsQuery() { DailyUse = false })).Items.Sum(e => e.Value);
+
+        var totalFunds = dailyFunds + notDailyFunds + investments;
 
         var result = new TotalGeneralSummary(
         [
             new GeneralSummary(Guid.NewGuid().ToString(), "Ingresos", convertedIncomes),
             new GeneralSummary(Guid.NewGuid().ToString(), "Inversiones", investments),
+            new GeneralSummary(Guid.NewGuid().ToString(), "Fondos ($)", dailyFunds),
+            new GeneralSummary(Guid.NewGuid().ToString(), "Fondos (U$D / Crypto)", notDailyFunds),
             new GeneralSummary(Guid.NewGuid().ToString(), "Dinero total", totalFunds)
         ]);
 

@@ -40,11 +40,12 @@ public class GetCurrentIncomesQueryHandler : BaseResponseHandler<GetCurrentIncom
 
         var dateFilter = DateTime.UtcNow.CurrentMonth().AddMonths(-2);
 
-        var data = await query.Where(q => q.TimeStamp >= dateFilter).ToArrayAsync();
-
-        data = data.GroupBy(g => new { g.BankId, g.CurrencyId })
-            .SelectMany(g => new[] { g.OrderByDescending(i => i.TimeStamp).ThenBy(i => i.Id).First() })
-            .ToArray();
+        var data = await query
+            .Where(q => q.TimeStamp >= dateFilter)
+            .OrderByDescending(i => i.TimeStamp)
+            .GroupBy(g => new { g.BankId, g.CurrencyId })
+            .Select(g => g.First())
+            .ToArrayAsync();
 
         return data;
     }
