@@ -272,6 +272,20 @@ export default function Dashboard() {
                     />
                   </div>
                 )}
+                {urls.summary.totalExpenses && (
+                  <div className="w-auto me-2 overflow-hidden">
+                    <FetchTable
+                      name={`Expenses`}
+                      title={{
+                        text: `Gastos`,
+                        class: `text-center bg-red-500 text-white`,
+                      }}
+                      url={urls.summary.totalExpenses}
+                      columns={ExpensesTableSettings.columns}
+                      classes={tableClasses}
+                    />
+                  </div>
+                )}
                 {urls.currencyExchangeRates.latest && (
                   <div className="w-auto me-2 overflow-hidden">
                     <FetchTable
@@ -311,20 +325,6 @@ export default function Dashboard() {
                       }}
                       url={`${urls.summary.currentFunds}?DailyUse=false`}
                       columns={FundsTableSettings.columns}
-                      classes={tableClasses}
-                    />
-                  </div>
-                )}
-                {urls.summary.totalExpenses && (
-                  <div className="w-auto me-2 overflow-hidden">
-                    <FetchTable
-                      name={`Expenses`}
-                      title={{
-                        text: `Gastos`,
-                        class: `text-center bg-red-500 text-white`,
-                      }}
-                      url={urls.summary.totalExpenses}
-                      columns={ExpensesTableSettings.columns}
                       classes={tableClasses}
                     />
                   </div>
