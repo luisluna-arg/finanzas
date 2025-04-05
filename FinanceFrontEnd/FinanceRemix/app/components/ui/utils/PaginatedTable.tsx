@@ -85,11 +85,14 @@ export interface ConditionalClass {
 
 export interface PaginatedTableProps {
   name: string;
-  url: string;
+  data: any;
+  url?: string;
   admin?: Admin;
   rowCount?: number;
   columns: Column[];
   onFetch?: (data: any) => void;
+  onAdd?: (data: any) => void;
+  onDelete?: (data: any) => void;
   reloadData?: boolean;
 }
 
@@ -100,14 +103,20 @@ interface Data {
 
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
   name,
+  data,
   url,
   admin,
   rowCount,
   columns,
   onFetch,
+  onAdd,
+  onDelete,
   reloadData,
 }) => {
-  const [data, setData] = useState<Data>({ items: [], totalPages: 0 });
+  const [tableData, setTableData] = useState<Data>({
+    items: [],
+    totalPages: 0,
+  });
   const [totalPages, setTotalPages] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [adminAddEnabled] = useState<boolean>(admin?.addEnabled ?? true);
@@ -115,30 +124,34 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   const [anySelected, setAnySelected] = useState<boolean>(false);
   const [allSelected, setAllSelected] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
-  const [reloadFlag, setReloadFlag] = useState(true);
+  const [loading, setLoading] = useState(!url ? false : true);
+  const [reloadFlag, setReloadFlag] = useState(!url ? false : true);
 
   const pageSize = rowCount ?? 10;
   const adminRowId = `${name}-edit-row`;
 
   useEffect(() => {
-    setLoading(true);
+    if (url) {
+      setLoading(true);
 
-    fetchPaginatedData<any>(url, page, 10).then((data) => {
-      const extendedItems = data.items.map((item: Omit<any, "isSelected">) => ({
-        ...item,
-        isSelected: false,
-      }));
+      fetchPaginatedData<any>(url, page, 10).then((result) => {
+        const extendedItems = result.items.map(
+          (item: Omit<any, "isSelected">) => ({
+            ...item,
+            isSelected: false,
+          })
+        );
 
-      setData({
-        ...data,
-        items: extendedItems,
+        setTableData({
+          ...result,
+          items: extendedItems,
+        });
+        setTotalPages(result.totalPages);
+
+        setLoading(false);
+        setReloadFlag(false);
       });
-      setTotalPages(data.totalPages);
-
-      setLoading(false);
-      setReloadFlag(false);
-    });
+    }
   }, [url, page, pageSize, reloadFlag]);
 
   const getEditRowInputs = () => {
@@ -198,11 +211,19 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   const handleCreate = async (inputs: Record<string, any>) => {
     await handleRequest(admin?.endpoint ?? "", "POST", inputs, false);
     setReloadFlag(true);
+    if (onAdd)
+    {
+      onAdd(inputs)
+    }
   };
 
   const handleDelete = async (inputs: { ids: string[] }) => {
     await handleRequest(admin?.endpoint ?? "", "DELETE", inputs);
     setReloadFlag(true);
+    if (onDelete)
+    {
+      onDelete(inputs);
+    }
   };
 
   const handleDeleteModalShow = () => setShowDeleteModal(true);
@@ -213,11 +234,13 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     const ids = getSelectIds(true);
     await handleDelete({ ids });
     setShowDeleteModal(false);
-    fetchData(url);
+    if (url) {
+      fetchData(url);
+    }
     setAllSelected(false);
   };
 
-  const onAdd = async () => {
+  const onAddAction = async () => {
     const values = getEditRowValues();
     validateForm();
     if (admin?.key) {
@@ -285,11 +308,11 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   const handleSelectAllChange = (e: CheckedState) => {
     const isSelected = e === true;
     setAllSelected(isSelected);
-    let updatedItems = data.items.map((item) => ({
+    let updatedItems = tableData.items.map((item) => ({
       ...item,
       isSelected: isSelected,
     }));
-    setData((prevData) => ({
+    setTableData((prevData) => ({
       ...prevData,
       items: updatedItems,
     }));
@@ -297,11 +320,11 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   };
 
   const handleRowCheckChange = (id: number) => {
-    const updatedItems = data.items.map((item) =>
+    const updatedItems = tableData.items.map((item) =>
       item.id === id ? { ...item, isSelected: !item.isSelected } : item
     );
 
-    setData((prevData) => ({
+    setTableData((prevData) => ({
       ...prevData,
       items: updatedItems,
     }));
@@ -321,7 +344,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         <ActionButton
           type={ACTION_BUTTON_KIND.add}
           className={["me-2"]}
-          onClick={onAdd}
+          onClick={onAddAction}
         />
       );
 
@@ -384,7 +407,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             }
           })}
         <TableHead className={cn(["w-[100px]", "text-center"])}>
-          <ActionButton type={ACTION_BUTTON_KIND.add} onClick={onAdd} />
+          <ActionButton type={ACTION_BUTTON_KIND.add} onClick={onAddAction} />
         </TableHead>
       </TableRow>
     );
@@ -417,18 +440,18 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   };
 
   const ContentTableBody = ({
-    data,
+    tableData,
     admin,
     adminAddEnabled,
   }: {
-    data: any;
+    tableData: any;
     admin: any;
     adminAddEnabled: boolean;
   }) => {
     return (
       <TableBody>
         {admin && adminAddEnabled && <EditRow />}
-        {data.items.map((record: any, index: number) => {
+        {tableData.items.map((record: any, index: number) => {
           const rowId = `${name}-data-row-${index}`;
           return (
             <TableRow key={rowId} id={rowId} className={`${name}-data-row`}>
@@ -449,10 +472,9 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
               {adminAddEnabled && (
                 <TableCell style={{ width: "100px", textAlign: "center" }}>
                   <ActionButton
-                    type={ACTION_BUTTON_KIND.edit}
+                    type={ACTION_BUTTON_KIND.delete}
                     variant={VARIANTS.secondary}
-                    // action={() => {}}
-                    // dataId={record.id}
+                    onClick={() => handleDelete({ ids: [record.id] })}
                   />
                 </TableCell>
               )}
@@ -506,7 +528,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             <ContentTableBody
               admin={admin}
               adminAddEnabled={adminAddEnabled}
-              data={data}
+              tableData={data ?? tableData}
             />
           )}
           <TableFooter>

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Agent } from "https";
 import { BanksQuery } from "./BanksQuery";
 import { CreditCardQuery } from "./CreditCardQuery";
@@ -9,6 +10,8 @@ import { PaginatedDebitsQuery } from "./PaginatedDebitsQuery";
 const httpsAgent = new Agent({ rejectUnauthorized: false });
 
 export class BackendClient {
+  private HttpsAgent: Agent;
+  
   BanksQuery: BanksQuery = new BanksQuery(httpsAgent);
   DebitsQuery: DebitsQuery = new DebitsQuery(httpsAgent);
   PaginatedDebitsQuery: PaginatedDebitsQuery = new PaginatedDebitsQuery(httpsAgent);
@@ -16,6 +19,21 @@ export class BackendClient {
   CurrenciesQuery: CurrenciesQuery = new CurrenciesQuery(httpsAgent);
   CurrencyExchangeRatesQuery: CurrencyExchangeRatesQuery = new CurrencyExchangeRatesQuery(httpsAgent);
 
-  BackendClient() {
+  constructor() {
+    this.HttpsAgent = httpsAgent;
+  }
+
+  async get<TFilter>(endpoint: string, filters?: TFilter) {
+    try {
+      const response = await axios.get(endpoint, {
+        params: filters ?? {},
+        httpsAgent: this.HttpsAgent,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
   }
 }

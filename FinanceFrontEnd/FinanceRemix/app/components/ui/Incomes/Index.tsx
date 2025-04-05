@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useLoaderData } from "@remix-run/react";
+import React from "react";
+import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import moment from "moment";
 import urls from "@/utils/urls";
 import CommonUtils from "@/utils/common";
@@ -20,51 +20,39 @@ interface PickerData {
 interface LoaderData {
   banks: PickerData[];
   currencies: PickerData[];
+  data: any[];
+  bankId: string;
+  currencyId: string;
 }
 
 const dateFormat = "DD/MM/yyyy";
 
-const buildIncomesEnpoint = (bankId: string, currencyId: string) => {
-  const params = CommonUtils.Params({
-    BankId: bankId,
-    CurrencyId: currencyId,
-  });
-  return `${urls.incomes.paginated}?${params}`;
-};
-
 const Incomes: React.FC = () => {
-  const { banks, currencies } = useLoaderData<LoaderData>();
-  const [selectedBankId, setSelectedBankId] = useState<string>(banks[0].id);
-  const [selectedCurrencyId, setSelectedCurrencyId] = useState<string>(
-    currencies[0].id
-  );
-  const [incomesEndpoint, setIncomesEndpoint] = useState<string>(
-    buildIncomesEnpoint(selectedBankId, selectedCurrencyId)
-  );
-  const [reloadTable, setReloadTable] = useState<boolean>(true);
+  const { banks, currencies, data, bankId, currencyId } =
+    useLoaderData<LoaderData>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const updateIncomesEndpoint = (bankId: string, currencyId: string) => {
-    setIncomesEndpoint(buildIncomesEnpoint(bankId, currencyId));
+  const reload = ({
+    currentBankId,
+    currentCurrencyId,
+  }: {
+    currentBankId?: string;
+    currentCurrencyId?: string;
+  }) => {
+    var params = CommonUtils.Params({
+      bankId: currentBankId ?? bankId,
+      currencyId: currentCurrencyId ?? currencyId,
+    });
+    navigate(`${location.pathname}?${params}`);
   };
 
   const onBankPickerChange = (picker: { value: string }) => {
-    setSelectedBankId(picker.value);
-    setIncomesEndpoint(buildIncomesEnpoint(picker.value, selectedCurrencyId));
-  };
-
-  const onBankPickerFetch = ({ data }: { data: PickerData[] }) => {
-    const newBankId = data[0]?.id;
-    setSelectedBankId(newBankId);
+    reload({ currentBankId: picker.value });
   };
 
   const onCurrencyPickerChange = (picker: { value: string }) => {
-    setSelectedCurrencyId(picker.value);
-    setIncomesEndpoint(buildIncomesEnpoint(selectedBankId, picker.value));
-  };
-
-  const onCurrencyPickerFetch = ({ data }: { data: PickerData[] }) => {
-    const newCurrencyId = data[0]?.id;
-    setSelectedCurrencyId(newCurrencyId);
+    reload({ currentCurrencyId: picker.value });
   };
 
   const valueConditionalClass: ConditionalClass = {
@@ -89,17 +77,7 @@ const Incomes: React.FC = () => {
       placeholder: "Fecha",
       type: InputType.DateTime,
       editable: {
-        defaultValue: () => {
-          const rowSelector = document.querySelector(
-            ".bank-table-data-row > td > span"
-          );
-
-          if (!rowSelector?.textContent) return moment().format(dateFormat);
-
-          return moment(rowSelector.textContent, `${dateFormat}`).format(
-            dateFormat
-          );
-        },
+        defaultValue: () => moment().format(dateFormat),
       },
       datetime: {
         timeFormat: "HH:mm",
@@ -153,61 +131,47 @@ const Incomes: React.FC = () => {
     },
   ];
 
-  // Update the endpoint whenever selectedBankId or selectedCurrencyId changes
-  React.useEffect(() => {
-    if (selectedBankId && selectedCurrencyId) {
-      updateIncomesEndpoint(selectedBankId, selectedCurrencyId);
-      setReloadTable(true);
-    }
-  }, [selectedBankId, selectedCurrencyId, updateIncomesEndpoint]);
-
   return (
     <div className={cn(["py-10", "px-40"])}>
       <div className="flex flex-row justify-center gap-10">
         <Picker
           id="bank-picker"
-          value={selectedBankId}
+          value={bankId}
           data={banks}
           mapper={{ id: "id", label: (record) => `${record.name}` }}
           onChange={onBankPickerChange}
-          onFetch={onBankPickerFetch}
           className={"w-60"}
         />
         <Picker
           id="currency-picker"
-          value={selectedCurrencyId}
+          value={currencyId}
           data={currencies}
           mapper={{ id: "id", label: (record) => `${record.name}` }}
           onChange={onCurrencyPickerChange}
-          onFetch={onCurrencyPickerFetch}
           className={"w-60"}
         />
       </div>
       <hr className={cn("py-1", "mb-5")} />
-      {(!incomesEndpoint || incomesEndpoint.trim() === "") && (
-        <div className="container centered">Cargando datos</div>
-      )}
-      {incomesEndpoint && (
-        <PaginatedTable
-          name="incomes-table"
-          url={incomesEndpoint}
-          reloadData={reloadTable}
-          columns={TableColumns}
-          admin={{
-            endpoint: urls.incomes.endpoint,
-            key: [
-              {
-                id: "BankId",
-                value: selectedBankId,
-              },
-              {
-                id: "CurrencyId",
-                value: selectedCurrencyId,
-              },
-            ],
-          }}
-        />
-      )}
+      <PaginatedTable
+        name="incomes-table"
+        columns={TableColumns}
+        data={data}
+        onAdd={() => reload({})}
+        onDelete={() => reload({})}
+        admin={{
+          endpoint: urls.incomes.endpoint,
+          key: [
+            {
+              id: "BankId",
+              value: bankId,
+            },
+            {
+              id: "CurrencyId",
+              value: currencyId,
+            },
+          ],
+        }}
+      />
     </div>
   );
 };
