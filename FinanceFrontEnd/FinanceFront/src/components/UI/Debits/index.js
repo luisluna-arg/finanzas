@@ -14,8 +14,8 @@ function Debits() {
   const dollarsTableName = "dollars-debit-table";
 
   const refreshEndpoints = () => {
-    setPesosEndpoint(`${urls.debits.paginated}?AppModuleId=${pesosModuleId}&Frequency=monthly`);
-    setDollarsEndpoint(`${urls.debits.paginated}?AppModuleId=${dollarsModuleId}&Frequency=monthly`);
+    setPesosEndpoint(`${urls.debits.endpoint}monthly/paginated?AppModuleId=${pesosModuleId}&Frequency=monthly`);
+    setDollarsEndpoint(`${urls.debits.endpoint}monthly/paginated?AppModuleId=${dollarsModuleId}&Frequency=monthly`);
   }
 
   const onFetchMovementsTable = (data) => {
@@ -111,7 +111,7 @@ function Debits() {
           tableName={pesosTableName}
           url={pesosEndpoint}
           adminSettings={{
-            endpoint: urls.debits.endpoint,
+            endpoint: urls.debits.endpoint + 'monthly',
             key: {
               id: "AppModuleId",
               value: pesosModuleId
@@ -125,7 +125,7 @@ function Debits() {
           tableName={dollarsTableName}
           url={dollarsEndpoint}
           adminSettings={{
-            endpoint: urls.debits.endpoint,
+            endpoint: urls.debits.endpoint + 'monthly',
             key: {
               id: "AppModuleId",
               value: dollarsModuleId
