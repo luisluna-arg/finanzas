@@ -9,5 +9,5 @@ public record FrequencyDto : Dto<FrequencyEnum>
     {
     }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 }

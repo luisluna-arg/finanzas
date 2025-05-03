@@ -12,11 +12,11 @@ public class Movement : Entity<Guid>
     [ForeignKey("BankId")]
     public Guid BankId { get; set; }
 
-    public virtual AppModule AppModule { get; set; }
+    public virtual AppModule AppModule { get; set; } = default!;
 
-    public virtual Bank? Bank { get; set; }
+    public virtual Bank? Bank { get; set; } = default;
 
-    public virtual Currency? Currency { get; set; }
+    public virtual Currency? Currency { get; set; } = default;
 
     public Guid? CurrencyId { get; set; } = null;
 

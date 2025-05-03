@@ -20,5 +20,5 @@ public class DeleteCreditCardMovementCommandHandler : IRequestHandler<DeleteCred
 
 public class DeleteCreditCardMovementCommand : IRequest
 {
-    public Guid[] Ids { get; set; }
+    public Guid[] Ids { get; set; } = [];
 }

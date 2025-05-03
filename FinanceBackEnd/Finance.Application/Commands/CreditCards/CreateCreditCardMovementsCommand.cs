@@ -50,7 +50,7 @@ public class CreateCreditCardMovementCommand : IRequest<CreditCardMovement>
     public Guid CreditCardId { get; set; }
     public DateTime TimeStamp { get; set; }
     public DateTime PlanStart { get; set; }
-    public string Concept { get; set; }
+    public string Concept { get; set; } = string.Empty;
     public ushort PaymentNumber { get; set; }
     public ushort PlanSize { get; set; }
     public decimal Amount { get; set; }

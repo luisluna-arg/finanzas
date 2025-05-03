@@ -20,5 +20,5 @@ public class DeleteIOLInvestmentCommandHandler : IRequestHandler<DeleteIOLInvest
 
 public class DeleteIOLInvestmentCommand : IRequest
 {
-    public Guid[] Ids { get; set; }
+    public Guid[] Ids { get; set; } = [];
 }

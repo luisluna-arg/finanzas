@@ -12,5 +12,5 @@ public class AppModule : Entity<Guid>
 
     required public virtual AppModuleType Type { get; set; }
 
-    public virtual ICollection<Movement> Movements { get; set; } = new List<Movement>();
+    public virtual ICollection<Movement> Movements { get; set; } = [];
 }

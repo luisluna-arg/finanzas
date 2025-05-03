@@ -6,7 +6,7 @@ public class CreditCardStatement : Entity<Guid>
 {
     public Guid? CreditCardId { get; set; }
 
-    public virtual CreditCard CreditCard { get; set; }
+    public virtual CreditCard CreditCard { get; set; } = default!;
 
     public DateTime ClosureDate { get; set; }
 

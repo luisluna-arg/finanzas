@@ -30,5 +30,5 @@ public class DeleteCurrencyExchangeRateCommandHandler : BaseResponselessHandler<
 
 public class DeleteCurrencyExchangeRateCommand : IRequest
 {
-    public Guid[] Ids { get; set; }
+    public Guid[] Ids { get; set; } = [];
 }

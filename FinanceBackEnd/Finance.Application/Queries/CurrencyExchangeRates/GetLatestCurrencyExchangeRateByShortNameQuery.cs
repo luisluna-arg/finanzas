@@ -36,5 +36,5 @@ public class GetLatestCurrencyExchangeRateByShortNameQueryHandler : BaseResponse
 
 public class GetLatestCurrencyExchangeRateByShortNameQuery : IRequest<CurrencyExchangeRate?>
 {
-    public string QuoteCurrencyShortName { get; set; }
+    public string QuoteCurrencyShortName { get; set; } = string.Empty;
 }

@@ -19,7 +19,7 @@ public class BaseDeleteCommandHandler<TEntity, TId>(IEntityService<TEntity, TId>
 
 public class BaseDeleteCommand<TId> : IRequest
 {
-    public TId[] Ids { get; set; }
+    public TId[] Ids { get; set; } = [];
 }
 
 public abstract class BaseDeleteCommandValidator<TCommand, TEntity, TId> : AbstractValidator<TCommand>

@@ -6,9 +6,9 @@ namespace Finance.Application.Dtos.Funds;
 
 public record FundDto : Dto<Guid>
 {
-    public BankDto Bank { get; set; }
+    public BankDto Bank { get; set; } = default!;
 
-    public CurrencyDto Currency { get; set; }
+    public CurrencyDto Currency { get; set; } = default!;
 
     public DateTime CreatedAt { get; set; }
 

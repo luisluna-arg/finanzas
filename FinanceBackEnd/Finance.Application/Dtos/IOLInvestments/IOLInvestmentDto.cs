@@ -13,7 +13,7 @@ public record IOLInvestmentDto : Dto<Guid>
 
     required public DateTime TimeStamp { get; set; }
 
-    public IOLInvestmentAssetDto Asset { get; set; }
+    public IOLInvestmentAssetDto Asset { get; set; } = default!;
 
     public uint Alarms { get; set; } = 0;
 

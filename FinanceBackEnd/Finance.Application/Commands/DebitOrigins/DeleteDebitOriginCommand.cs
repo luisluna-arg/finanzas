@@ -20,5 +20,5 @@ public class DeleteDebitOriginCommandHandler : IRequestHandler<DeleteDebitOrigin
 
 public class DeleteDebitOriginCommand : IRequest
 {
-    public Guid[] Ids { get; set; }
+    public Guid[] Ids { get; set; } = [];
 }

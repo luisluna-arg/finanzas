@@ -6,7 +6,7 @@ namespace Finance.Domain.Models;
 public class CreditCardMovement : Entity<Guid>
 {
     public Guid CreditCardId { get; set; }
-    public virtual CreditCard CreditCard { get; set; }
+    public virtual CreditCard CreditCard { get; set; } = default!;
     required public DateTime TimeStamp { get; set; }
     required public DateTime PlanStart { get; set; }
     required public string Concept { get; set; }

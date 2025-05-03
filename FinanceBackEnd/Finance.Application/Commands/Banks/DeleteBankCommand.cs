@@ -20,5 +20,5 @@ public class DeleteBankCommandHandler : IRequestHandler<DeleteBankCommand>
 
 public class DeleteBankCommand : IRequest
 {
-    public Guid[] Ids { get; set; }
+    public Guid[] Ids { get; set; } = [];
 }

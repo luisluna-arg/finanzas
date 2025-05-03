@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
-using Finance.Domain;
 using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
 using Finance.Persistance;
@@ -37,7 +36,7 @@ public abstract class BaseUpdateCommandHandler<TEntity, TId, TCommand>(
 public abstract class BaseUpdateCommand<TEntity, TId> : IRequest<TEntity>
 {
     [Required]
-    public TId Id { get; set; }
+    public TId Id { get; set; } = default!;
 }
 
 public abstract class BaseUpdateCommandValidator<TCommand, TEntity, TId> : AbstractValidator<TCommand>

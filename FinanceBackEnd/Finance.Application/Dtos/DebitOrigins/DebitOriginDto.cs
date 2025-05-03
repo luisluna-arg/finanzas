@@ -9,9 +9,9 @@ public record DebitOriginDto : Dto<Guid>
     {
     }
 
-    public virtual AppModuleBasicDto AppModule { get; set; }
+    public virtual AppModuleBasicDto AppModule { get; set; } = default!;
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     public int RecordCount { get; set; }
 }

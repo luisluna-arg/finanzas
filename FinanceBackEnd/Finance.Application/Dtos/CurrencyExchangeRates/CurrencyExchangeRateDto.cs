@@ -9,9 +9,9 @@ public record CurrencyExchangeRateDto : Dto<Guid>
     {
     }
 
-    public CurrencyDto BaseCurrency { get; set; }
+    public CurrencyDto BaseCurrency { get; set; } = default!;
 
-    public CurrencyDto QuoteCurrency { get; set; }
+    public CurrencyDto QuoteCurrency { get; set; } = default!;
 
     public decimal BuyRate { get; set; }
 

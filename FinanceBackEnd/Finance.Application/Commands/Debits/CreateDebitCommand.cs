@@ -72,7 +72,7 @@ public class CreateDebitCommand : IRequest<Debit>
     public Guid AppModuleId { get; set; }
 
     [Required]
-    public string Origin { get; set; }
+    public string Origin { get; set; } = string.Empty;
 
     [Required]
     public decimal Amount { get; set; } = 0m;

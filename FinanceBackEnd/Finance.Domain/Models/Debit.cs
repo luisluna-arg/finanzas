@@ -8,7 +8,7 @@ public class Debit : Entity<Guid>
 {
     public Guid OriginId { get; set; }
 
-    public virtual DebitOrigin Origin { get; set; }
+    public virtual DebitOrigin Origin { get; set; } = default!;
 
     public DateTime TimeStamp { get; set; } = DateTime.MinValue;
 

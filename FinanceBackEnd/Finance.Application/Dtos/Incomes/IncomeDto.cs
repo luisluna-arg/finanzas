@@ -6,9 +6,9 @@ namespace Finance.Application.Dtos.Incomes;
 
 public record IncomeDto : Dto<Guid>
 {
-    public BankDto Bank { get; set; }
+    public BankDto Bank { get; set; } = default!;
 
-    public CurrencyDto Currency { get; set; }
+    public CurrencyDto Currency { get; set; } = default!;
 
     public DateTime CreatedAt { get; set; }
 

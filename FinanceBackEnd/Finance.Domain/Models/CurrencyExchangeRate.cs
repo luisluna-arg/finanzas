@@ -20,7 +20,7 @@ public class CurrencyExchangeRate : Entity<Guid>
 
     public DateTime TimeStamp { get; set; }
 
-    public Currency BaseCurrency { get; set; }
+    public Currency BaseCurrency { get; set; } = default!;
 
-    public Currency QuoteCurrency { get; set; }
+    public Currency QuoteCurrency { get; set; } = default!;
 }

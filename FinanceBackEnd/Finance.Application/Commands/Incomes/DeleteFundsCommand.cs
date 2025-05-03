@@ -20,5 +20,5 @@ public class DeleteIncomesCommandHandler : IRequestHandler<DeleteIncomesCommand>
 
 public class DeleteIncomesCommand : IRequest
 {
-    public Guid[] Ids { get; set; }
+    public Guid[] Ids { get; set; } = [];
 }
