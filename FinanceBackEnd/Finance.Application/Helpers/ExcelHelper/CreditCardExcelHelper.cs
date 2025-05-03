@@ -13,7 +13,7 @@ public class CreditCardExcelHelper : ICreditCardExcelHelper<CreditCardMovement>
 
     public IEnumerable<CreditCardMovement> Read(IFormFile file, CreditCard creditCard, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        List<CreditCardMovement> records = new List<CreditCardMovement>();
+        var records = new List<CreditCardMovement>();
 
         if (file == null || file.Length == 0)
             throw new Exception("File Not Selected");

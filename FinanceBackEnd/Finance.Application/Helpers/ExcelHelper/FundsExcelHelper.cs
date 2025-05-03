@@ -13,7 +13,7 @@ public class FundsExcelHelper : IFundsExcelHelper<Movement>
 
     public IEnumerable<Movement> Read(IFormFile file, AppModule appModule, Bank? bank, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        List<Movement> records = new List<Movement>();
+        var records = new List<Movement>();
 
         if (file == null || file.Length == 0)
             throw new Exception("File Not Selected");

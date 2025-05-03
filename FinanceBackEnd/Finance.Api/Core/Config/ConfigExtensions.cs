@@ -11,7 +11,6 @@ public static class ConfigExtensions
 {
     public static void MainServices(this IServiceCollection services)
     {
-        var apiAssembly = typeof(Program);
         var applicationAssembly = typeof(AppModuleRepository).Assembly;
         var domainAssembly = typeof(IEntity).Assembly;
 

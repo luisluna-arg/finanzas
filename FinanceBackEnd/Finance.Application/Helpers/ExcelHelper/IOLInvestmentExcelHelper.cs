@@ -10,7 +10,7 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
 
     public IEnumerable<IOLInvestment> Read(IFormFile file, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        List<IOLInvestment> records = new List<IOLInvestment>();
+        var records = new List<IOLInvestment>();
 
         if (file == null || file.Length == 0)
             throw new Exception("File Not Selected");

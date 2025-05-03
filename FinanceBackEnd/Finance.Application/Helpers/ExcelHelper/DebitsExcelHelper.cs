@@ -13,7 +13,7 @@ public class DebitsExcelHelper : IAppModuleExcelHelper<Debit>
 
     public IEnumerable<Debit> Read(IFormFile file, AppModule appModule, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
     {
-        List<Debit> records = new List<Debit>();
+        var records = new List<Debit>();
 
         if (file == null || file.Length == 0)
             throw new Exception("File Not Selected");
