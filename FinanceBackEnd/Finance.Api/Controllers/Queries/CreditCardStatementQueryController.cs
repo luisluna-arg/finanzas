@@ -14,7 +14,7 @@ public class CreditCardStatementQueryController(IMapper mapper, IMediator mediat
 {
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetCreditCardStatementsQuery request)
-        => await Handle(request);
+        => await Handle(request!);
 
     [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCreditCardStatementsQuery request)

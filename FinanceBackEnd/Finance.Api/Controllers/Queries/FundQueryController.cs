@@ -22,7 +22,7 @@ public class FundQueryController(IMapper mapper, IMediator mediator)
 
     [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedFundsQuery request)
-        => await Handle(request);
+        => await Handle(request!);
 
     [HttpGet("latest/{appModuleId}")]
     public async Task<IActionResult> Latest(Guid appModuleId)

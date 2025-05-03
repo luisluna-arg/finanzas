@@ -22,7 +22,7 @@ public class IncomeQueryController(IMapper mapper, IMediator mediator)
 
     [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedIncomesQuery request)
-        => await Handle(request);
+        => await Handle(request!);
 
     [HttpGet("latest/{appModuleId}")]
     public async Task<IActionResult> Latest(Guid appModuleId)

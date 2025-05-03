@@ -23,5 +23,5 @@ public class DebitQueryController(IMapper mapper, IMediator mediator)
 
     [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedDebitsQuery request)
-        => await Handle(request);
+        => await Handle(request!);
 }
