@@ -1,14 +1,15 @@
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
-using Finance.Domain;
 using Finance.Domain.Models;
 using Finance.Persistance;
 using Tesseract;
 using Microsoft.AspNetCore.Http;
+using System.Runtime.Versioning;
 
 namespace Finance.Helpers;
 
+[SupportedOSPlatform("windows")]
 public class OcrHelper
 {
     private const string LanguageFilePath = @"./Assets/tessdata";
@@ -88,7 +89,7 @@ public class OcrHelper
     {
         DocumentProcessGuard();
 
-        List<string> result = new List<string>();
+        var result = new List<string>();
 
         using (var engine = new TesseractEngine(LanguageFilePath, "spa", EngineMode.Default))
         {

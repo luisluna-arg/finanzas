@@ -1,13 +1,13 @@
+using System.Runtime.Versioning;
 using Finance.Application.Base.Handlers;
-using Finance.Domain;
 using Finance.Helpers;
 using Finance.Persistance;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Commands.Funds;
 
+[SupportedOSPlatform("windows")]
 public class ProcessImageCommandHandler : BaseResponselessHandler<ProcessImageCommand>
 {
     public ProcessImageCommandHandler(
