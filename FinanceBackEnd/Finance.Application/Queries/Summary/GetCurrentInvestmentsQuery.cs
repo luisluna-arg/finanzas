@@ -1,5 +1,4 @@
 using Finance.Application.Dtos.Summary;
-using Finance.Domain;
 using MediatR;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;

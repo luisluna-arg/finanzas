@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
-using Finance.Domain;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Persistance;

@@ -1,5 +1,4 @@
 using Finance.Application.Base.Handlers;
-using Finance.Domain;
 using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
 using Finance.Persistance;

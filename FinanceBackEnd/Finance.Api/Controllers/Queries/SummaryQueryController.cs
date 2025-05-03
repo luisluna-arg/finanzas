@@ -1,6 +1,5 @@
 using AutoMapper;
 using Finance.Api.Controllers.Base;
-using Finance.Application.Commons;
 using Finance.Application.Dtos.Banks;
 using Finance.Application.Queries.Summary;
 using Finance.Domain.Models;

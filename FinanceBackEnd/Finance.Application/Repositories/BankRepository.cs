@@ -1,4 +1,3 @@
-using Finance.Domain;
 using Finance.Domain.Models;
 using Finance.Persistance;
 using Finance.Application.Repositories.Base;

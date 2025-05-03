@@ -1,6 +1,5 @@
 using Finance.Application.Queries.Base;
 using Finance.Application.Commons;
-using Finance.Domain;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Persistance;

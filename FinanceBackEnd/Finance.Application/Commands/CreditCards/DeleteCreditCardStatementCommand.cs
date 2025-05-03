@@ -1,6 +1,5 @@
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
-using Finance.Persistance;
 using Finance.Application.Services;
 
 namespace Finance.Application.Commands.CreditCards;

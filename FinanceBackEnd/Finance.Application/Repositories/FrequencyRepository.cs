@@ -1,4 +1,3 @@
-using Finance.Domain;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Application.Repositories.Base;

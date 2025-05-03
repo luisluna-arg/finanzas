@@ -1,5 +1,4 @@
 using Finance.Application.Base.Handlers;
-using Finance.Domain;
 using Finance.Domain.Comparers;
 using Finance.Domain.Models;
 using Finance.Helpers;

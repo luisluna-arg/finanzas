@@ -1,6 +1,5 @@
 using Finance.Domain.SpecialTypes;
 using Finance.Domain.Models;
-using Finance.Persistance;
 using MediatR;
 
 namespace Finance.Application.Commands.Movements;

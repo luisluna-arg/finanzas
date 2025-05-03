@@ -4,7 +4,10 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>2439153f-d8fa-426d-821a-e701e182b22c</UserSecretsId>
+        <AnalysisLevel>latest</AnalysisLevel>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="EPPlus" Version="6.2.3" />

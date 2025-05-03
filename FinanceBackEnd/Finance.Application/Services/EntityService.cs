@@ -1,6 +1,5 @@
 using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
-using Finance.Persistance;
 
 namespace Finance.Application.Services;
 

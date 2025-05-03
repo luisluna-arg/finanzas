@@ -1,5 +1,4 @@
 using Finance.Application.Base.Handlers;
-using Finance.Domain;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using MediatR;

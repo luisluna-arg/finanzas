@@ -1,0 +1,4 @@
+[*.cs]
+# Flag unused using directives as errors
+dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.CS1591.severity = none

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Commands.DebitOrigins;
-using Finance.Domain;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;

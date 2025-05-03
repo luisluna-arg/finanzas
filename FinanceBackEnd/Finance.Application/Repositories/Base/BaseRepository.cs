@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Finance.Domain;
 using Finance.Domain.Models.Base;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;

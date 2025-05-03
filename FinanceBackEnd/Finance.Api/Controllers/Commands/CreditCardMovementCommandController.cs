@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using AutoMapper;
 using Finance.Api.Controllers.Base;

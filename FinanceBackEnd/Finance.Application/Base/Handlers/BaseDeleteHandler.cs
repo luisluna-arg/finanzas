@@ -1,6 +1,5 @@
 using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
-using Finance.Persistance;
 using Finance.Application.Services;
 using FluentValidation;
 using MediatR;

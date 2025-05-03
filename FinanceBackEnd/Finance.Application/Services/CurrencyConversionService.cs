@@ -1,6 +1,5 @@
 using Finance.Application.Queries.CurrencyExchangeRates;
 using Finance.Domain.SpecialTypes;
-using Finance.Domain;
 using Finance.Domain.DataConverters;
 using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;

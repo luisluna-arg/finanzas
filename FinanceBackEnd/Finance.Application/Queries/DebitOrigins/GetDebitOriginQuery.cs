@@ -1,8 +1,7 @@
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
-using Finance.Domain;
-using Finance.Domain.Models;
 using Finance.Application.Repositories;
+using Finance.Domain.Models;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 

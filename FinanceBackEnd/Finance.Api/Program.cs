@@ -1,7 +1,6 @@
 // Based on Microsoft Minimal API tutorial
 using System.Reflection;
 using Finance.Api.Core.Config;
-using Finance.Domain;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;

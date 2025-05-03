@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Domain;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;

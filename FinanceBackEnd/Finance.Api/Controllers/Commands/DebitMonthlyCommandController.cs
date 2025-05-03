@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using AutoMapper;
 using Finance.Application.Commands.Debits;
-using Finance.Application.Helpers;
 using Finance.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
