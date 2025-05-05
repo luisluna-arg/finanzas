@@ -27,7 +27,7 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
     public async Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken) => await dbSet.ToArrayAsync(cancellationToken);
 
     public async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
-        => await dbSet.FindAsync(new object?[] { id, cancellationToken }, cancellationToken: cancellationToken);
+        => await dbSet.FindAsync([id, cancellationToken], cancellationToken: cancellationToken);
 
     public async Task<TEntity?> GetByAsync(string searchCriteria, object searchValue, CancellationToken cancellationToken)
         => await GetByAsync(new Dictionary<string, object>() { { searchCriteria, searchValue } }, cancellationToken);

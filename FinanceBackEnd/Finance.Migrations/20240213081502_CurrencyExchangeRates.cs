@@ -42,7 +42,7 @@ namespace Finance.Domain.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CurrencyExchangeRate_BaseCurrencyId_QuoteCurrencyId_TimeSta~",
                 table: "CurrencyExchangeRate",
-                columns: new[] { "BaseCurrencyId", "QuoteCurrencyId", "TimeStamp" },
+                columns: ["BaseCurrencyId", "QuoteCurrencyId", "TimeStamp"],
                 unique: true);
 
             migrationBuilder.CreateIndex(

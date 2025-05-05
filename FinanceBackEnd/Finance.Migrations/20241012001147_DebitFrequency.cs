@@ -34,7 +34,7 @@ namespace Finance.Domain.Migrations
 
             migrationBuilder.InsertData(
                 table: "Frequency",
-                columns: new[] { "Id", "Deactivated", "Name" },
+                columns: ["Id", "Deactivated", "Name"],
                 values: new object[,]
                 {
                     { (short)0, false, "Monthly" },

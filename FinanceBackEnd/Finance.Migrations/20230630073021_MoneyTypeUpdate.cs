@@ -53,7 +53,7 @@ namespace Finance.Domain.Migrations
 
             migrationBuilder.InsertData(
                 table: "InvestmentAssetIOLTypes",
-                columns: new[] { "Id", "Name" },
+                columns: ["Id", "Name"],
                 values: new object[,]
                 {
                     { 1, "Cedear" },
@@ -106,7 +106,7 @@ namespace Finance.Domain.Migrations
 
             migrationBuilder.InsertData(
                 table: "InvestmentAssetIOLTypes",
-                columns: new[] { "Id", "Name" },
+                columns: ["Id", "Name"],
                 values: new object[,]
                 {
                     { 1L, "Cedear" },

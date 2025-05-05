@@ -13,6 +13,6 @@ public static class CurrencyConstants
 
     public static Dictionary<string, string> Names => NamesValue;
 
-    public static string[] CurrencyIds => new string[] { PesoId, DollarId };
+    public static string[] CurrencyIds => [PesoId, DollarId];
 }
 
