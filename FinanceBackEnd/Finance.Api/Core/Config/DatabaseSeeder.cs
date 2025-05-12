@@ -104,14 +104,21 @@ public class DatabaseSeeder : IHostedService
         {
             var currency = currencies.FirstOrDefault(x => x.Id.ToString().Equals(currencyId, StringComparison.InvariantCulture));
             var currencyName = CurrencyConstants.Names[currencyId];
-            if (currency == null) throw new SystemException($"Fatal error while seeding App database: Currency not found {currencyName}");
+            if (currency == null)
+            {
+                throw new SystemException($"Fatal error while seeding App database: Currency not found {currencyName}");
+            }
 
             if (!AppModuleConstants.Types.ContainsKey(moduleId))
+            {
                 throw new SystemException($"Fatal error while seeding App database: AppModuleTypeEnum not found for ModuleId {moduleId}");
+            }
 
             var appModuleType = appModuleTypes.FirstOrDefault(x => x.Id == (short)AppModuleConstants.Types[moduleId]);
             if (appModuleType == null)
+            {
                 throw new SystemException($"Fatal error while seeding App database: AppModuleType not found {AppModuleConstants.Types[moduleId]}");
+            }
 
             var appModule = appModules.FirstOrDefault(o => o.Id.ToString().Equals(moduleId, StringComparison.InvariantCulture));
 
@@ -123,7 +130,7 @@ public class DatabaseSeeder : IHostedService
                     Name = AppModuleConstants.Names[moduleId],
                     CreatedAt = now,
                     Currency = currency,
-                    Type = appModuleType
+                    Type = appModuleType,
                 });
             }
             else

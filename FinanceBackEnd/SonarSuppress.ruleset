@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="SonarSuppress" ToolsVersion="16.0">
+  <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.Rules">
+    <!-- disable S125 -->
+    <Rule Id="S125" Action="None" />
+  </Rules>
+</RuleSet>

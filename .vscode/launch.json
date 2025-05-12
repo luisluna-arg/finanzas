@@ -13,7 +13,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/FinanceBackEnd/Finance.Api/bin/Debug/net8.0/Finance.Api.dll",
+      "program": "${workspaceFolder}/FinanceBackEnd/Finance.Api/bin/Debug/net9.0/Finance.Api.dll",
       "args": [],
       "cwd": "${workspaceFolder}/FinanceBackEnd/Finance.Api",
       "stopAtEntry": false,
@@ -35,7 +35,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "buildSyncTool",
-      "program": "${workspaceFolder}/FinanceBackEnd/Finance.SyncTool/bin/Debug/net8.0/FinanceSyncTool.dll",
+      "program": "${workspaceFolder}/FinanceBackEnd/Finance.SyncTool/bin/Debug/net9.0/FinanceSyncTool.dll",
       "args": [],
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,
@@ -63,7 +63,11 @@
   "compounds": [
     {
       "name": "API and React App",
-      "configurations": [".NET Core Launch (web)", "Remix App Launch", "React App Launch"]
+      "configurations": [
+        ".NET Core Launch (web)",
+        "Remix App Launch",
+        "React App Launch"
+      ]
     }
   ]
 }
