@@ -36,10 +36,10 @@
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
         <PackageReference Include="SonarAnalyzer.CSharp" Version="9.0.0.68202" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5" />
         <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
-        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.4" />
-        <PackageReference Include="System.Text.Json" Version="9.0.4" />
+        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.5" />
+        <PackageReference Include="System.Text.Json" Version="9.0.5" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Finance.Application\Finance.Application.csproj" />
