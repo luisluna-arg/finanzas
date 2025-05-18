@@ -6,7 +6,7 @@ namespace Finance.Domain.Models;
 
 public class IOLInvestmentAssetType : Entity<ushort>
 {
-    public static readonly string Default = "Default";
+    public static readonly string DefaultName = "Default";
 
     public IOLInvestmentAssetType()
     {
@@ -21,4 +21,12 @@ public class IOLInvestmentAssetType : Entity<ushort>
     [Required]
     [MaxLength(100)]
     required public string Name { get; set; }
+
+    public static IOLInvestmentAssetType Default(string? name = null)
+    {
+        return new IOLInvestmentAssetType()
+        {
+            Name = name ?? string.Empty,
+        };
+    }
 }
