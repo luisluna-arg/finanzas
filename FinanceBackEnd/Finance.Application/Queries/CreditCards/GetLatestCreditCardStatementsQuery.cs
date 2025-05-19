@@ -26,7 +26,7 @@ public class GetLatestCreditCardStatementsQueryHandler : BaseCollectionHandler<G
             if (request.CreditCardId.HasValue)
             {
                 query = query.Where(o => o.CreditCardId == request.CreditCardId.Value);
-                dates = new DateTime[] { await query.MaxAsync(o => o.ClosureDate) };
+                dates = [await query.MaxAsync(o => o.ClosureDate)];
             }
             else
             {
@@ -40,7 +40,7 @@ public class GetLatestCreditCardStatementsQueryHandler : BaseCollectionHandler<G
         }
         catch
         {
-            return new CreditCardStatement[0];
+            return [];
         }
     }
 }

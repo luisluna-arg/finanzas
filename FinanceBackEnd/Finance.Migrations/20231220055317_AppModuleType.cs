@@ -48,8 +48,8 @@ namespace Finance.Domain.Migrations
             {
                 migrationBuilder.InsertData(
                     table: AppModuleTypeTable,
-                    columns: new[] { "Id", "Name", "Deactivated" },
-                    values: new object[] { (short)enumValue, $"{enumValue}", false });
+                    columns: ["Id", "Name", "Deactivated"],
+                    values: [(short)enumValue, $"{enumValue}", false]);
             }
 
             migrationBuilder.CreateIndex(

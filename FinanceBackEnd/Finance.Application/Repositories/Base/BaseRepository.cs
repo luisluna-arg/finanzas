@@ -21,18 +21,18 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
 
     public DbSet<TEntity> GetDbSet() => dbSet;
 
-    public async Task<bool> ExistsAsync(TId id, CancellationToken cancellationToken)
+    public virtual async Task<bool> ExistsAsync(TId id, CancellationToken cancellationToken)
         => await dbSet.AnyAsync(o => o.Id!.Equals(id), cancellationToken);
 
-    public async Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken) => await dbSet.ToArrayAsync(cancellationToken);
+    public virtual async Task<TEntity[]> GetAllAsync(CancellationToken cancellationToken) => await dbSet.ToArrayAsync(cancellationToken);
 
-    public async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
-        => await dbSet.FindAsync(new object?[] { id, cancellationToken }, cancellationToken: cancellationToken);
+    public virtual async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
+        => await dbSet.FindAsync([id, cancellationToken], cancellationToken: cancellationToken);
 
-    public async Task<TEntity?> GetByAsync(string searchCriteria, object searchValue, CancellationToken cancellationToken)
+    public virtual async Task<TEntity?> GetByAsync(string searchCriteria, object searchValue, CancellationToken cancellationToken)
         => await GetByAsync(new Dictionary<string, object>() { { searchCriteria, searchValue } }, cancellationToken);
 
-    public async Task<TEntity?> GetByAsync(IDictionary<string, object> searchCriteria, CancellationToken cancellationToken)
+    public virtual async Task<TEntity?> GetByAsync(IDictionary<string, object> searchCriteria, CancellationToken cancellationToken)
         => await GetAllBy(searchCriteria).FirstOrDefaultAsync(cancellationToken);
 
     public IQueryable<TEntity> GetAllBy(string searchCriteria, object searchValue)
@@ -85,37 +85,37 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         return dbSet.Where(Expression.Lambda<Func<TEntity, bool>>(operation, parameter));
     }
 
-    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
+    public virtual async Task AddAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
     {
         dbSet.Add(entity);
         if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken, bool persist = true)
+    public virtual async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken, bool persist = true)
     {
         dbSet.AddRange(entities);
         if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
+    public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
     {
         dbSet.Attach(entity);
         dbContext.Entry(entity).State = EntityState.Modified;
         if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(TId entityId, CancellationToken cancellationToken, bool persist = true)
+    public virtual async Task DeleteAsync(TId entityId, CancellationToken cancellationToken, bool persist = true)
     {
         var entity = await GetByIdAsync(entityId, cancellationToken);
         if (entity != null)
             await DeleteAsync(entity, cancellationToken, persist);
     }
 
-    public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
+    public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
     {
         dbSet.Remove(entity);
         if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task PersistAsync(CancellationToken cancellationToken) => await dbContext.SaveChangesAsync(cancellationToken);
+    public virtual async Task PersistAsync(CancellationToken cancellationToken) => await dbContext.SaveChangesAsync(cancellationToken);
 }

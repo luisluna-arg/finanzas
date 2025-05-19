@@ -8,3 +8,5 @@ dotnet_diagnostic.SA1200.severity = none
 dotnet_diagnostic.S125.severity = none
 # Using directive should appear within a namespace declaration (SA1200)
 dotnet_diagnostic.SA1200.severity = none
+# Collection initialization can be simplified IDE0300
+dotnet_diagnostic.IDE0300.severity = error

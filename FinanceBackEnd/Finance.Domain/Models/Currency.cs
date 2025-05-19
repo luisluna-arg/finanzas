@@ -17,12 +17,21 @@ public class Currency : Entity<Guid>
 
     public virtual ICollection<CurrencyExchangeRate> QuoteExchangeRates { get; set; } = [];
 
-    public static Currency Default()
+    public virtual ICollection<IOLInvestmentAsset> IOLInvestmentAssets { get; set; } = [];
+
+    public virtual ICollection<CurrencySymbol> Symbols { get; set; } = [];
+
+    public static Currency Default(
+        string? shortName = null,
+        string? name = null,
+        ICollection<CurrencySymbol>? symbols = null
+    )
     {
         return new Currency()
         {
-            ShortName = string.Empty,
-            Name = string.Empty
+            ShortName = shortName ?? string.Empty,
+            Name = name ?? string.Empty,
+            Symbols = symbols ?? [],
         };
     }
 }

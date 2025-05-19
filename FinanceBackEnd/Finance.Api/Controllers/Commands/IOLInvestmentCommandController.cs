@@ -38,5 +38,5 @@ public class IOLInvestmentCommandController(IMapper mapper, IMediator mediator)
 
     [HttpPatch("deactivate/{id}")]
     public async Task<IActionResult> Deactivate(Guid id)
-        => await Handle404(new DeactivateIOLInvestmentCommand { Id = id });
+        => await Handle(new DeactivateIOLInvestmentCommand { Id = id });
 }

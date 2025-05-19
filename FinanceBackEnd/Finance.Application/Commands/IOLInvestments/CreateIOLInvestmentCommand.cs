@@ -4,32 +4,36 @@ using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using MediatR;
+using Finance.Persistance.Constants;
 
 namespace Finance.Application.Commands.IOLInvestments;
 
 public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLInvestmentCommand, IOLInvestment>
 {
-    private readonly IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLRepository;
+    private readonly IRepository<IOLInvestmentAsset, Guid> iolInvestmentAssetRepository;
     private readonly IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository;
     private readonly IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypeRepository;
+    private readonly IRepository<Currency, Guid> currencyRepository;
 
     public CreateIOLInvestmentCommandHandler(
         FinanceDbContext db,
         IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLRepository,
         IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository,
-        IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypeRepository)
+        IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypeRepository,
+        IRepository<Currency, Guid> currencyRepository)
         : base(db)
     {
-        this.investmentAssetIOLRepository = investmentAssetIOLRepository;
+        this.iolInvestmentAssetRepository = investmentAssetIOLRepository;
         this.investmentAssetIOLRecordRepository = investmentAssetIOLRecordRepository;
         this.investmentAssetIOLTypeRepository = investmentAssetIOLTypeRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     public override async Task<IOLInvestment> Handle(CreateIOLInvestmentCommand command, CancellationToken cancellationToken)
     {
         var newInvestmentAssetIOL = new IOLInvestment()
         {
-            Asset = await GetAssetAsync(command.AssetSymbol, cancellationToken),
+            Asset = await GetAssetAsync(command, cancellationToken),
             CreatedAt = DateTime.UtcNow,
             TimeStamp = DateTime.UtcNow,
             Alarms = command.Alarms,
@@ -45,29 +49,29 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
 
         await investmentAssetIOLRecordRepository.AddAsync(newInvestmentAssetIOL, cancellationToken);
 
-        return await Task.FromResult(newInvestmentAssetIOL);
+        return newInvestmentAssetIOL;
     }
 
-    private async Task<IOLInvestmentAsset> GetAssetAsync(string assetSymbol, CancellationToken cancellationToken)
+    private async Task<IOLInvestmentAsset> GetAssetAsync(CreateIOLInvestmentCommand command, CancellationToken cancellationToken)
     {
-        var asset = await investmentAssetIOLRepository.GetByAsync("Symbol", assetSymbol, cancellationToken);
+        var asset = await iolInvestmentAssetRepository.GetByAsync("Symbol", command.AssetSymbol, cancellationToken);
 
         if (asset == null)
         {
-            var assetType = await investmentAssetIOLTypeRepository.GetByAsync("Name", IOLInvestmentAssetType.Default, cancellationToken);
+            var assetType = await investmentAssetIOLTypeRepository.GetByAsync("Name", IOLInvestmentAssetType.DefaultName, cancellationToken);
 
             if (assetType == null)
             {
-                assetType = new IOLInvestmentAssetType()
-                {
-                    Name = IOLInvestmentAssetType.Default
-                };
+                assetType = IOLInvestmentAssetType.Default();
             }
+
+            var currency = (await currencyRepository.GetByIdAsync(command.CurrencyId ?? Guid.Parse(CurrencyConstants.PesoId), cancellationToken))!;
 
             asset = new IOLInvestmentAsset()
             {
-                Symbol = assetSymbol,
-                Description = assetSymbol,
+                Symbol = command.AssetSymbol,
+                Description = command.AssetSymbol,
+                Currency = currency,
                 Type = assetType
             };
         }
@@ -99,4 +103,6 @@ public class CreateIOLInvestmentCommand : IRequest<IOLInvestment>
     required public decimal Valued { get; set; } = 0M;
 
     required public IOLInvestmentAssetTypeEnum InvestmentAssetIOLTypeId { get; set; }
+
+    public Guid? CurrencyId { get; set; }
 }

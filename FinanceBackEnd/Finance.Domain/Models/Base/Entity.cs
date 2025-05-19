@@ -3,15 +3,8 @@ using Finance.Domain.Models.Interfaces;
 
 namespace Finance.Domain.Models.Base;
 
-public abstract class Entity<TId> : IEntity
+public abstract class Entity : IEntity
 {
-    protected Entity()
-    {
-    }
-
-    [Key]
-    public TId Id { get; set; } = default!;
-
     public bool Deactivated { get; set; }
 
     public virtual void Update(IEntity newData)
@@ -23,4 +16,15 @@ public abstract class Entity<TId> : IEntity
             property.SetValue(this, property.GetValue(newData));
         }
     }
+}
+
+
+public abstract class Entity<TId> : Entity
+{
+    protected Entity()
+    {
+    }
+
+    [Key]
+    public TId Id { get; set; } = default!;
 }

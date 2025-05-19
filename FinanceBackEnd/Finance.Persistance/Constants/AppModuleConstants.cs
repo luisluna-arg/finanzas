@@ -32,12 +32,12 @@ public static class AppModuleConstants
 
     public static Dictionary<string, AppModuleTypeEnum> Types => TypesValue;
 
-    public static string[][] AppModuleCurrencyPairs => new string[][]
-    {
-        new string[] { FundsId, CurrencyConstants.PesoId },
-        new string[] { DollarFundsId, CurrencyConstants.DollarId },
-        new string[] { DebitsId, CurrencyConstants.PesoId },
-        new string[] { DollarDebitsId, CurrencyConstants.DollarId },
-        new string[] { IOLInvestmentsId, CurrencyConstants.PesoId },
-    };
+    public static string[][] AppModuleCurrencyPairs =>
+    [
+        [FundsId, CurrencyConstants.PesoId],
+        [DollarFundsId, CurrencyConstants.DollarId],
+        [DebitsId, CurrencyConstants.PesoId],
+        [DollarDebitsId, CurrencyConstants.DollarId],
+        [IOLInvestmentsId, CurrencyConstants.PesoId]
+    ];
 }

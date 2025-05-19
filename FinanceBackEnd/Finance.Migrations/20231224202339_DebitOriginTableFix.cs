@@ -17,7 +17,7 @@ namespace Finance.Domain.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DebitOrigin_Name_AppModuleId",
                 table: "DebitOrigin",
-                columns: new[] { "Name", "AppModuleId" },
+                columns: ["Name", "AppModuleId"],
                 unique: true);
         }
 

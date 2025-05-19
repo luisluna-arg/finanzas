@@ -20,6 +20,7 @@ public class FinanceDbContext : DbContext
     public DbSet<Currency> Currency => Set<Currency>();
     public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
     public DbSet<CurrencyExchangeRate> CurrencyExchangeRate => Set<CurrencyExchangeRate>();
+    public DbSet<CurrencySymbol> CurrencySymbols => Set<CurrencySymbol>();
     public DbSet<Debit> Debit => Set<Debit>();
     public DbSet<DebitOrigin> DebitOrigin => Set<DebitOrigin>();
     public DbSet<Frequency> Frequency => Set<Frequency>();

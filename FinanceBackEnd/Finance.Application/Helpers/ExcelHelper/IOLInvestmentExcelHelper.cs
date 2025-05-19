@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using ExcelDataReader;
 using Finance.Domain.Models;
 using Finance.Helpers;
@@ -28,6 +29,7 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
 
                 Func<object, uint> uIntParser = (cell) => ParsingHelper.ParseUInteger(SanitizeDecimalString(cell));
                 Func<object, decimal> decimalParser = (cell) => ParsingHelper.ParseDecimal(SanitizeDecimalString(cell));
+                Func<object, string> currencySymbolParser = ExtractCurrencySymbol;
 
                 var dateString = sheet.Rows[0][1].ToString();
                 var currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy HH:mm:ss", null, dateTimeKind);
@@ -42,6 +44,7 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
                     var asset = StringHelper.ValueOrEmpty(row[0]).Split("\n");
                     var assetSymbol = asset[0].Trim();
                     var assetDescription = asset.Length == 2 ? asset[1] : string.Empty;
+                    var currencySymbol = currencySymbolParser(row[9]);
 
                     records.Add(new IOLInvestment()
                     {
@@ -49,10 +52,10 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
                         {
                             Symbol = assetSymbol,
                             Description = assetDescription,
-                            Type = new IOLInvestmentAssetType()
-                            {
-                                Name = IOLInvestmentAssetType.Default
-                            }
+                            Type = IOLInvestmentAssetType.Default(),
+                            Currency = Currency.Default(symbols:
+                                !string.IsNullOrWhiteSpace(currencySymbol) ?
+                                    [CurrencySymbol.Default(symbol: currencySymbol)] : [])
                         },
                         CreatedAt = now,
                         TimeStamp = currentDate,
@@ -71,6 +74,22 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
         }
 
         return records.ToArray();
+    }
+
+    private static readonly Regex _currencyRegex =
+        new Regex(@"^(\D+)\d+\.\d+$", RegexOptions.Compiled);
+
+    private string ExtractCurrencySymbol(object value)
+    {
+        var text = value?.ToString()?
+            .Replace(".", string.Empty)
+            .Replace(",", ".")
+            .Trim();
+
+        if (string.IsNullOrWhiteSpace(text)) return string.Empty;
+
+        var m = _currencyRegex.Match(text);
+        return m.Success && m.Groups.Count > 1 ? m.Groups[1].Value.Trim() : string.Empty;
     }
 
     private object? SanitizeDecimalString(object value)
