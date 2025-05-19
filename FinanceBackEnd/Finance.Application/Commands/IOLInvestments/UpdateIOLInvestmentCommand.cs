@@ -28,9 +28,14 @@ public class UpdateIOLInvestmentCommandHandler : BaseResponseHandler<UpdateIOLIn
     public override async Task<IOLInvestment> Handle(UpdateIOLInvestmentCommand command, CancellationToken cancellationToken)
     {
         var iolInvestmentAsset = await iolInvestmentRepository.GetByIdAsync(command.Id, cancellationToken);
-        if (iolInvestmentAsset == null) throw new Exception("IOL Investment Asset not found");
+        if (iolInvestmentAsset == null) throw new Exception("IOL Investment not found");
 
-        iolInvestmentAsset.Asset = await GetAssetAsync(command.AssetSymbol, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(command.AssetSymbol))
+        {
+            iolInvestmentAsset.Asset = await GetAssetAsync(command.AssetSymbol, cancellationToken);
+            if (iolInvestmentAsset == null) throw new Exception("IOL Investment Asset not found by symbol");
+        }
+
         iolInvestmentAsset.Alarms = command.Alarms;
         iolInvestmentAsset.Quantity = command.Quantity;
         iolInvestmentAsset.Assets = command.Assets;
@@ -52,14 +57,11 @@ public class UpdateIOLInvestmentCommandHandler : BaseResponseHandler<UpdateIOLIn
 
         if (asset == null)
         {
-            var assetType = await iolInvestmentAssetTypeRepository.GetByAsync("Name", IOLInvestmentAssetType.Default, cancellationToken);
+            var assetType = await iolInvestmentAssetTypeRepository.GetByAsync("Name", IOLInvestmentAssetType.DefaultName, cancellationToken);
 
             if (assetType == null)
             {
-                assetType = new IOLInvestmentAssetType()
-                {
-                    Name = IOLInvestmentAssetType.Default
-                };
+                assetType = IOLInvestmentAssetType.Default();
             }
 
             asset = new IOLInvestmentAsset()

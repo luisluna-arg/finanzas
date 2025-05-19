@@ -42,6 +42,8 @@ public static class ConfigExtensions
                 AllowOriginsForCORSPolicy,
                 policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
         });
+
+        services.AddScoped<IOLInvestmentExcelHelper>();
     }
 
     public static void ConfigureDataBase(this IServiceCollection services, WebApplicationBuilder builder)

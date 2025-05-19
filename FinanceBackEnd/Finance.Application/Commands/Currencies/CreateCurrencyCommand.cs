@@ -24,7 +24,11 @@ public class CreateCurrencyCommandHandler : BaseResponseHandler<CreateCurrencyCo
         var newCurrency = new Currency()
         {
             ShortName = command.ShortName,
-            Name = command.Name
+            Name = command.Name,
+            Symbols = command.CurrencySymbols.Select(x => new CurrencySymbol()
+            {
+                Symbol = x
+            }).ToList(),
         };
 
         await currencyRepository.AddAsync(newCurrency, cancellationToken);
@@ -39,5 +43,7 @@ public class CreateCurrencyCommand : IRequest<Currency>
     public string Name { get; set; } = string.Empty;
     [Required]
     public string ShortName { get; set; } = string.Empty;
+    [Required]
+    public ICollection<string> CurrencySymbols { get; set; } = [];
 }
 
