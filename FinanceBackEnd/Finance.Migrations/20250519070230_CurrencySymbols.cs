@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System.Text;
+using Finance.Persistance.Constants;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -12,13 +14,6 @@ namespace Finance.Domain.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<Guid>(
-                name: "CurrencyId",
-                table: "IOLInvestmentAsset",
-                type: "uuid",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
-
             migrationBuilder.CreateTable(
                 name: "CurrencySymbols",
                 columns: table => new
@@ -39,25 +34,61 @@ namespace Finance.Domain.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Currency",
-                columns: ["Id", "Deactivated", "Name", "ShortName"],
-                values: new object[,]
-                {
-                    { new Guid("6d189135-7040-45a1-b713-b1aa6cad1720"), false, "Peso", "ARS" },
-                    { new Guid("efbf50bc-34d4-43e9-96f9-9f6213ea11b5"), false, "Dollar", "USD" }
-                });
+            var currencyQueryBuilder = new StringBuilder();
+            var currencySymbolQueryBuilder = new StringBuilder();
 
-            migrationBuilder.InsertData(
-                table: "CurrencySymbols",
-                columns: ["Id", "CurrencyId", "Deactivated", "Symbol"],
-                values: new object[,]
+            foreach (var currencyId in CurrencyConstants.CurrencyIds)
+            {
+                var currencyName = CurrencyConstants.Names[currencyId];
+                var currencyShortName = CurrencyConstants.ShortNames[currencyId];
+
+                currencyQueryBuilder.AppendLine($@"
+                    IF NOT EXISTS (SELECT 1 FROM ""Currency"" WHERE ""Id"" = '{currencyId}') THEN
+                        INSERT INTO ""Currency"" (""Id"", ""Deactivated"", ""Name"", ""ShortName"")
+                        VALUES ('{currencyId}', false, '{currencyName}', '{currencyShortName}');
+                    END IF;
+
+                ");
+
+                if (CurrencyConstants.CurrencySymbols.ContainsKey(currencyId))
                 {
-                    { new Guid("0a3d9502-aeec-4c35-92c1-9dc36c40612f"), new Guid("efbf50bc-34d4-43e9-96f9-9f6213ea11b5"), false, "USD" },
-                    { new Guid("31d219c8-90a2-437b-8e52-f5fbf3bbd24f"), new Guid("6d189135-7040-45a1-b713-b1aa6cad1720"), false, "$" },
-                    { new Guid("9b0ddd93-b13c-4443-ba97-0996672cbc1a"), new Guid("efbf50bc-34d4-43e9-96f9-9f6213ea11b5"), false, "U$D" },
-                    { new Guid("9db01d76-76b0-438a-a6f3-38c4dda33ff4"), new Guid("efbf50bc-34d4-43e9-96f9-9f6213ea11b5"), false, "US$" }
-                });
+                    foreach (var symbol in CurrencyConstants.CurrencySymbols[currencyId])
+                    {
+                        var symbolId = symbol.Item1;
+                        var symbolValue = symbol.Item2;
+
+                        currencySymbolQueryBuilder.AppendLine($@"
+                            IF NOT EXISTS (SELECT 1 FROM ""CurrencySymbols"" WHERE ""Id"" = '{symbolId}') THEN
+                                INSERT INTO ""CurrencySymbols"" (""Id"", ""Deactivated"", ""Symbol"", ""CurrencyId"")
+                                VALUES ('{symbolId}', false, '{symbolValue}', '{currencyId}');
+                            END IF;
+                        ");
+                    }
+                }
+            }
+
+            migrationBuilder.Sql($@"
+            DO $$
+            BEGIN
+                {currencyQueryBuilder}
+            END
+            $$;
+            ");
+
+            migrationBuilder.Sql($@"
+                DO $$
+                BEGIN
+                    {currencySymbolQueryBuilder}
+                END
+                $$;
+            ");
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "CurrencyId",
+                table: "IOLInvestmentAsset",
+                type: "uuid",
+                nullable: false,
+                defaultValue: new Guid($"{CurrencyConstants.DefaultCurrencyId}"));
 
             migrationBuilder.CreateIndex(
                 name: "IX_IOLInvestmentAsset_CurrencyId",
@@ -107,16 +138,6 @@ namespace Finance.Domain.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Currency_Name_ShortName",
                 table: "Currency");
-
-            migrationBuilder.DeleteData(
-                table: "Currency",
-                keyColumn: "Id",
-                keyValue: new Guid("6d189135-7040-45a1-b713-b1aa6cad1720"));
-
-            migrationBuilder.DeleteData(
-                table: "Currency",
-                keyColumn: "Id",
-                keyValue: new Guid("efbf50bc-34d4-43e9-96f9-9f6213ea11b5"));
 
             migrationBuilder.DropColumn(
                 name: "CurrencyId",
