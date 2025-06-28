@@ -4,6 +4,7 @@ using Finance.Persistance;
 using Finance.Persistance.Constants;
 using Microsoft.EntityFrameworkCore;
 using FundDto = Finance.Application.Dtos.Summary.Fund;
+using Finance.Domain.Models;
 
 namespace Finance.Application.Queries.Summary;
 
@@ -24,6 +25,7 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
         var fundsQuery = db.Fund
             .Include(o => o.Bank)
             .Include(o => o.Currency)
+                .ThenInclude(o => o != null ? o.Symbols : null)
             .Where(o => !o.Deactivated);
 
         if (request.DailyUse.HasValue)
@@ -51,7 +53,23 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
 
         result.Items.AddRange(funds
             .Where(o => o.CurrencyId == request.CurrencyId)
-            .Select(o => new FundDto($"{o.Id}", nameFormater(o), o.Amount)));
+            .Select(o =>
+            {
+                var currency = o.Currency;
+                var currencySymbol = currency?.Symbols.FirstOrDefault();
+
+                return new FundDto(
+                    $"{o.Id}",
+                    nameFormater(o),
+                    o.Amount,
+                    currency?.Id ?? Guid.Empty,
+                    currency?.ShortName ?? string.Empty,
+                    currencySymbol?.Symbol ?? string.Empty,
+                    o.Amount,
+                    currency?.Id ?? Guid.Empty,
+                    currency?.ShortName ?? string.Empty,
+                    currencySymbol?.Symbol ?? string.Empty);
+            }));
 
         foreach (var fund in funds.Where(o => o.CurrencyId != request.CurrencyId))
         {
@@ -59,17 +77,38 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
                 .FirstOrDefault(o => o.BaseCurrencyId == fund.CurrencyId || o.QuoteCurrencyId == fund.CurrencyId);
             if (currencyRate == null) continue;
 
+            Currency baseCurrency, quoteCurrency;
+
             decimal amount = 0;
             if (fund.CurrencyId == currencyRate.BaseCurrencyId)
             {
+                baseCurrency = currencyRate.BaseCurrency;
+                quoteCurrency = currencyRate.QuoteCurrency;
+
                 amount = fund.Amount / currencyRate.SellRate;
             }
             else
             {
+                baseCurrency = currencyRate.QuoteCurrency;
+                quoteCurrency = currencyRate.BaseCurrency;
+
                 amount = fund.Amount * currencyRate.BuyRate;
             }
 
-            result.Add(new FundDto($"{fund.Id}", nameFormater(fund), amount));
+            var fundDto = new FundDto(
+                $"{fund.Id}",
+                nameFormater(fund),
+                fund.Amount,
+                baseCurrency?.Id ?? Guid.Empty,
+                baseCurrency?.ShortName ?? string.Empty,
+                baseCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty,
+                amount,
+                quoteCurrency?.Id ?? Guid.Empty,
+                quoteCurrency?.ShortName ?? string.Empty,
+                quoteCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty
+                );
+
+            result.Add(fundDto);
         }
 
         return result;
