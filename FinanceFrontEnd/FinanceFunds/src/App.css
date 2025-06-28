@@ -1,0 +1,13 @@
+/* App-level styles */
+.app-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Ensure content uses full width in mobile */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0 16px;
+  }
+}

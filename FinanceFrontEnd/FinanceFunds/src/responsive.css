@@ -1,0 +1,60 @@
+/* Responsive styles for FinanceFunds */
+
+/* Mobile-first approach */
+.app-container {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+/* Table becomes scrollable on small screens */
+.scrollable-table {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Adjust spacing for mobile */
+@media (max-width: 767px) {
+  .mantine-Container-root {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .mantine-Card-root {
+    padding: 0.75rem !important;
+  }
+
+  .mantine-Title-root {
+    font-size: 1.5rem !important;
+  }
+
+  .mantine-Title-h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .mantine-Title-h3 {
+    font-size: 1.1rem !important;
+  }
+
+  .mantine-Title-h4 {
+    font-size: 1rem !important;
+  }
+
+  .mantine-Group-root {
+    flex-wrap: wrap;
+  }
+}
+
+/* For tablets */
+@media (min-width: 768px) and (max-width: 991px) {
+  .app-container {
+    padding: 0 1.5rem;
+  }
+}
+
+/* For desktops */
+@media (min-width: 992px) {
+  .app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}

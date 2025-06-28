@@ -1,0 +1,204 @@
+/* Global CSS variables for theme colors */
+:root {
+  --primary-color: #646cff;
+  --secondary-color: #535bf2;
+  --background-color: #ffffff;
+  --surface-color: #f5f5f5;
+  --text-color: #213547;
+  --border-color: #e5e5e5;
+  --card-color: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode variables */
+.dark-theme {
+  --primary-color: #747bff;
+  --secondary-color: #646cff;
+  --background-color: #1a1a1a;
+  --surface-color: #242424;
+  --text-color: rgba(255, 255, 255, 0.87);
+  --border-color: #2a2a2a;
+  --card-color: #2a2a2a;
+  --shadow-color: rgba(0, 0, 0, 0.25);
+}
+
+body {
+  color: var(--text-color);
+  background-color: var(--background-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em var(--primary-color));
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+  background-color: var(--card-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Auth styles */
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease;
+}
+
+.navigation .nav-brand h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.navigation .nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.navigation .nav-links a {
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.navigation .nav-links a:hover {
+  background-color: rgba(100, 108, 255, 0.1);
+}
+
+.navigation .nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.container {
+  padding: 2rem;
+}
+
+.button {
+  padding: 0.6em 1.2em;
+  border: 1px solid transparent;
+  font-weight: 500;
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: border-color 0.25s, background-color 0.25s;
+}
+
+.button:hover {
+  border-color: var(--secondary-color);
+  background-color: var(--secondary-color);
+}
+
+.button:focus,
+.button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: var(--text-color);
+}
+
+/* Profile styles */
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background-color: var(--card-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.profile img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 3px solid var(--primary-color);
+}
+
+.profile h2 {
+  margin: 0.5rem 0;
+  color: var(--text-color);
+}
+
+.profile p {
+  margin: 0.25rem 0;
+  color: var(--text-color);
+}
+
+/* Debug styles */
+.debug-info {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-align: left;
+  overflow: auto;
+}
+
+.debug-info h3 {
+  margin-top: 0;
+  color: var(--primary-color);
+}
+
+.debug-info pre {
+  background-color: var(--card-color);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow: auto;
+}

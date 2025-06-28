@@ -58,6 +58,15 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run"],
       "args": ["start"]
+    },
+    {
+      "name": "FinanceFunds Launch",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/FinanceFrontEnd/FinanceFunds",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run"],
+      "args": ["dev"]
     }
   ],
   "compounds": [
@@ -68,6 +77,10 @@
         "Remix App Launch",
         "React App Launch"
       ]
+    },
+    {
+      "name": "API and FinanceFunds",
+      "configurations": [".NET Core Launch (web)", "FinanceFunds Launch"]
     }
   ]
 }
