@@ -21,7 +21,7 @@ import FundService from '../services/FundService';
 import type { Fund } from '../services/types/FundTypes';
 import CreateFundModal from '../components/CreateFundModal';
 
-const Dashboard = () => {
+const FundsDashboard = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [funds, setFunds] = useState<Fund[]>([]);
@@ -319,4 +319,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default FundsDashboard;

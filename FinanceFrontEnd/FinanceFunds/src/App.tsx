@@ -9,7 +9,7 @@ import "./responsive.css"; // Import responsive styles
 import { useAuth } from "./auth";
 import { Navigation, Auth0Debug } from "./components";
 import { ProtectedRoute } from "./auth";
-import { Dashboard } from "./pages";
+import { FundsDashboard } from "./pages";
 import { AppShell, Container, Loader, Center, Box } from "@mantine/core";
 
 function App() {
@@ -45,11 +45,19 @@ function App() {
                   path="/"
                   element={
                     <ProtectedRoute>
-                      <Dashboard />
+                      <Navigate to="/funds" replace />
                     </ProtectedRoute>
                   }
                 />
-                <Route path="*" element={<Navigate to="/" />} />
+                <Route
+                  path="/funds"
+                  element={
+                    <ProtectedRoute>
+                      <FundsDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<Navigate to="/funds" />} />
               </Routes>
 
               {/* Auth0Debug Panel at the bottom of the page */}
