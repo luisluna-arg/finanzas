@@ -3,14 +3,11 @@ using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
 
-public class DebitOrigin : Entity<Guid>
+public class DebitOrigin() : Entity<Guid>()
 {
     [ForeignKey("AppModuleId")]
     public Guid AppModuleId { get; set; }
-
     public virtual AppModule AppModule { get; set; } = default!;
-
     required public string Name { get; set; }
-
     public virtual ICollection<Debit> Debits { get; set; } = [];
 }

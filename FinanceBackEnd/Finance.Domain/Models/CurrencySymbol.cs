@@ -3,16 +3,10 @@ using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
 
-public class CurrencySymbol : Entity<Guid>
+public class CurrencySymbol() : Entity<Guid>()
 {
-    public CurrencySymbol()
-    {
-    }
-
     public Guid CurrencyId { get; set; }
-
     public virtual Currency Currency { get; set; } = default!;
-
     [Required]
     [MaxLength(10)]
     required public string Symbol { get; set; }

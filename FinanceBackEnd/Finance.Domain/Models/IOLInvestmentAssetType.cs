@@ -4,15 +4,11 @@ using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
 
-public class IOLInvestmentAssetType : Entity<ushort>
+public class IOLInvestmentAssetType() : Entity<ushort>
 {
     public static readonly string DefaultName = "Default";
 
-    public IOLInvestmentAssetType()
-    {
-    }
-
-    public IOLInvestmentAssetType(IOLInvestmentAssetTypeEnum enumValue)
+    public IOLInvestmentAssetType(IOLInvestmentAssetTypeEnum enumValue) : this()
     {
         this.Id = (ushort)enumValue;
         this.Name = enumValue.ToString();
