@@ -38,8 +38,11 @@ export const Navigation = () => {
 
   const NavLinks = () => (
     <Group className="nav-links" gap="lg">
-      <Anchor component={Link} to="/dashboard" fw={500}>
-        Dashboard
+      <Anchor component={Link} to="/funds" fw={500}>
+        Funds
+      </Anchor>
+      <Anchor component={Link} to="/exchange-rates" fw={500}>
+        Exchange Rates
       </Anchor>
     </Group>
   );

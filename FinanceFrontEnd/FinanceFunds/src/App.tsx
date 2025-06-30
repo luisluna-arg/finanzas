@@ -9,7 +9,7 @@ import "./responsive.css"; // Import responsive styles
 import { useAuth } from "./auth";
 import { Navigation, Auth0Debug } from "./components";
 import { ProtectedRoute } from "./auth";
-import { FundsDashboard } from "./pages";
+import { FundsDashboard, CurrencyExchangeDashboard } from "./pages";
 import { AppShell, Container, Loader, Center, Box } from "@mantine/core";
 
 function App() {
@@ -54,6 +54,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <FundsDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/exchange-rates"
+                  element={
+                    <ProtectedRoute>
+                      <CurrencyExchangeDashboard />
                     </ProtectedRoute>
                   }
                 />

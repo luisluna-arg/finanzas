@@ -20,6 +20,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import FundService from '../services/FundService';
 import type { Fund } from '../services/types/FundTypes';
 import CreateFundModal from '../components/CreateFundModal';
+import { getMaxDecimals } from '../constants/currencies';
 
 const FundsDashboard = () => {
   const { user } = useAuth();
@@ -41,10 +42,13 @@ const FundsDashboard = () => {
   );
 
   // Helper function to format number without currency symbol
-  const formatNumber = useCallback((amount: number) => {
+  const formatNumber = useCallback((amount: number, currencyId?: string) => {
+    // Use 2 decimals for USD and ARS (pesos), 8 for others
+    const maxDecimals = getMaxDecimals(currencyId);
+    
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 8,
+      maximumFractionDigits: maxDecimals,
     }).format(amount);
   }, []);
 
@@ -63,10 +67,11 @@ const FundsDashboard = () => {
 
   // Default currency and symbol - calculated once
   const defaultCurrencyInfo = useMemo(() => {
-    if (funds.length === 0) return { currency: '', symbol: '' };
+    if (funds.length === 0) return { currency: '', symbol: '', currencyId: '' };
     return {
       currency: funds[0].defaultCurrency,
       symbol: funds[0].defaultCurrencySymbol || '',
+      currencyId: funds[0].defaultCurrencyId,
     };
   }, [funds]);
 
@@ -136,7 +141,7 @@ const FundsDashboard = () => {
                   Amount:
                 </Text>
                 <Text fw={500}>
-                  {fund.baseCurrencySymbol} {formatNumber(fund.value)}
+                  {fund.baseCurrencySymbol} {formatNumber(fund.value, fund.baseCurrencyId)}
                 </Text>
               </Group>
               <Group justify="space-between">
@@ -159,7 +164,7 @@ const FundsDashboard = () => {
                     Value in {fund.defaultCurrency}:
                   </Text>
                   <Text fw={500} c="blue">
-                    {fund.defaultCurrencySymbol} {formatNumber(fund.quoteCurrencyValue)}
+                    {fund.defaultCurrencySymbol} {formatNumber(fund.quoteCurrencyValue, fund.defaultCurrencyId)}
                   </Text>
                 </Group>
               )}
@@ -171,7 +176,7 @@ const FundsDashboard = () => {
             <Text fw={700}>Total:</Text>
             <Text fw={700}>
               {defaultCurrencyInfo.symbol}
-              {formatNumber(totalValue)}
+              {formatNumber(totalValue, defaultCurrencyInfo.currencyId)}
             </Text>
           </Group>
         </Card>
@@ -209,7 +214,7 @@ const FundsDashboard = () => {
           <Table.Tbody>
             {funds.map(fund => (
               <Table.Tr key={fund.id}>
-                <Table.Td fw={500}>{formatNumber(fund.value)}</Table.Td>
+                <Table.Td fw={500}>{formatNumber(fund.value, fund.baseCurrencyId)}</Table.Td>
                 <Table.Td>
                   <Group gap="xs">
                     <ThemeIcon size="sm" variant="light" radius="xl" color="blue">
@@ -229,7 +234,7 @@ const FundsDashboard = () => {
                   </Group>
                 </Table.Td>
                 <Table.Td fw={500} c="blue">
-                  {fund.defaultCurrencySymbol} {formatNumber(fund.quoteCurrencyValue)}
+                  {fund.defaultCurrencySymbol} {formatNumber(fund.quoteCurrencyValue, fund.defaultCurrencyId)}
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -239,7 +244,7 @@ const FundsDashboard = () => {
               </Table.Td>
               <Table.Td>
                 {defaultCurrencyInfo.symbol}
-                {formatNumber(totalValue)}
+                {formatNumber(totalValue, defaultCurrencyInfo.currencyId)}
               </Table.Td>
             </Table.Tr>
           </Table.Tbody>

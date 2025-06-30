@@ -116,6 +116,149 @@ class ApiClient {
   }
 
   /**
+   * Make a PUT request to the API
+   *
+   * @param endpoint - The API endpoint to request
+   * @param data - The data to send in the request body
+   * @returns Promise with the response data
+   */
+  async put<T>(endpoint: string, data: any): Promise<T> {
+    // Ensure endpoint doesn't start with a slash to avoid double slashes
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const url = `${BASE_URL}/${normalizedEndpoint}`;
+
+    try {
+      if (import.meta.env.DEV) {
+        console.log(`Sending PUT request to ${url} with data:`, data);
+      }
+
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: COMMON_HEADERS,
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await processErrorResponse(response);
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`
+        );
+      }
+
+      const responseData = await response.json();
+
+      if (import.meta.env.DEV) {
+        console.log(`Received response from ${url}:`, responseData);
+      }
+
+      return responseData;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(`API request error for ${url}:`, error);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Make a DELETE request to the API
+   *
+   * @param endpoint - The API endpoint to request
+   * @param data - Optional data to send in the request body
+   * @returns Promise with the response data
+   */
+  async delete<T = void>(endpoint: string, data?: any): Promise<T> {
+    // Ensure endpoint doesn't start with a slash to avoid double slashes
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const url = `${BASE_URL}/${normalizedEndpoint}`;
+
+    try {
+      if (import.meta.env.DEV) {
+        console.log(`Sending DELETE request to ${url}`, data ? `with data: ${JSON.stringify(data)}` : '');
+      }
+
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: COMMON_HEADERS,
+        ...(data && { body: JSON.stringify(data) }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await processErrorResponse(response);
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`
+        );
+      }
+
+      // Handle empty responses
+      const text = await response.text();
+      if (text) {
+        const responseData = JSON.parse(text);
+        if (import.meta.env.DEV) {
+          console.log(`Received response from ${url}:`, responseData);
+        }
+        return responseData;
+      }
+
+      return undefined as T;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(`API request error for ${url}:`, error);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Make a PATCH request to the API
+   *
+   * @param endpoint - The API endpoint to request
+   * @param data - Optional data to send in the request body
+   * @returns Promise with the response data
+   */
+  async patch<T = void>(endpoint: string, data?: any): Promise<T> {
+    // Ensure endpoint doesn't start with a slash to avoid double slashes
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const url = `${BASE_URL}/${normalizedEndpoint}`;
+
+    try {
+      if (import.meta.env.DEV) {
+        console.log(`Sending PATCH request to ${url}`, data ? `with data: ${JSON.stringify(data)}` : '');
+      }
+
+      const response = await fetch(url, {
+        method: 'PATCH',
+        headers: COMMON_HEADERS,
+        ...(data && { body: JSON.stringify(data) }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await processErrorResponse(response);
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`
+        );
+      }
+
+      // Handle empty responses
+      const text = await response.text();
+      if (text) {
+        const responseData = JSON.parse(text);
+        if (import.meta.env.DEV) {
+          console.log(`Received response from ${url}:`, responseData);
+        }
+        return responseData;
+      }
+
+      return undefined as T;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(`API request error for ${url}:`, error);
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Build a URL with query parameters
    *
    * @param endpoint - The API endpoint
