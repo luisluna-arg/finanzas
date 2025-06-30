@@ -25,11 +25,14 @@ public class FinanceDbContext : DbContext
     public DbSet<DebitOrigin> DebitOrigin => Set<DebitOrigin>();
     public DbSet<Frequency> Frequency => Set<Frequency>();
     public DbSet<Fund> Fund => Set<Fund>();
+    public DbSet<Identity> Identity => Set<Identity>();
+    public DbSet<IdentityProvider> IdentityProvider => Set<IdentityProvider>();
     public DbSet<Income> Income => Set<Income>();
     public DbSet<IOLInvestment> IOLInvestment => Set<IOLInvestment>();
     public DbSet<IOLInvestmentAsset> IOLInvestmentAsset => Set<IOLInvestmentAsset>();
     public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetType => Set<IOLInvestmentAssetType>();
     public DbSet<Movement> Movement => Set<Movement>();
+    public DbSet<User> User => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
