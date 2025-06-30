@@ -1,14 +1,15 @@
 using Finance.Domain.Models;
 using Finance.Persistance.TypeConverters;
-using Microsoft.EntityFrameworkCore;
+using Finance.Persistance.Configurations.Base;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Finance.Persistance.Configurations;
 
-public class IOLInvestmentConfiguration : IEntityTypeConfiguration<IOLInvestment>
+public class IOLInvestmentConfiguration : AuditedEntityConfiguration<IOLInvestment, Guid>
 {
-    public void Configure(EntityTypeBuilder<IOLInvestment> builder)
+    public override void Configure(EntityTypeBuilder<IOLInvestment> builder)
     {
+        base.Configure(builder);
         builder
             .Property(o => o.LastPrice)
             .HasConversion(new MoneyConverter());

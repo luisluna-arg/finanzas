@@ -1,13 +1,14 @@
 using Finance.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using Finance.Persistance.Configurations.Base;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Finance.Persistance.Configurations;
 
-public class AppModuleConfiguration : IEntityTypeConfiguration<AppModule>
+public class AppModuleConfiguration : AuditedEntityConfiguration<AppModule, Guid>
 {
-    public void Configure(EntityTypeBuilder<AppModule> builder)
+    public override void Configure(EntityTypeBuilder<AppModule> builder)
     {
+        base.Configure(builder);
         builder
             .HasMany(c => c.Movements)
             .WithOne(e => e.AppModule)

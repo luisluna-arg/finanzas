@@ -3,7 +3,7 @@ using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
 
-public class CurrencyExchangeRate() : Entity<Guid>()
+public class CurrencyExchangeRate() : AuditedEntity<Guid>()
 {
     public Guid BaseCurrencyId { get; set; }
     public Guid QuoteCurrencyId { get; set; }

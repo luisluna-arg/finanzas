@@ -1,17 +1,15 @@
 using Finance.Domain.Models;
 using Finance.Persistance.TypeConverters;
-using Microsoft.EntityFrameworkCore;
+using Finance.Persistance.Configurations.Base;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Finance.Persistance.Configurations;
 
-public class IncomeConfiguration : IEntityTypeConfiguration<Income>
+public class IncomeConfiguration : AuditedEntityConfiguration<Income, Guid>
 {
-    public void Configure(EntityTypeBuilder<Income> builder)
+    public override void Configure(EntityTypeBuilder<Income> builder)
     {
-        builder
-            .Property(o => o.CreatedAt)
-            .HasConversion(o => o.ToUniversalTime(), o => o);
+        base.Configure(builder);
 
         builder
             .Property(o => o.TimeStamp)
