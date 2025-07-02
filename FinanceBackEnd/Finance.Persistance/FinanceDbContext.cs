@@ -4,13 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Persistance;
 
-public class FinanceDbContext : DbContext
+public class FinanceDbContext(DbContextOptions<FinanceDbContext> options) : DbContext(options)
 {
-    public FinanceDbContext(DbContextOptions<FinanceDbContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<AppModule> AppModule => Set<AppModule>();
     public DbSet<AppModuleType> AppModuleType => Set<AppModuleType>();
     public DbSet<Bank> Bank => Set<Bank>();
@@ -33,6 +28,22 @@ public class FinanceDbContext : DbContext
     public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetType => Set<IOLInvestmentAssetType>();
     public DbSet<Movement> Movement => Set<Movement>();
     public DbSet<User> User => Set<User>();
+    public DbSet<UserRole> UserRole => Set<UserRole>();
+    public DbSet<Role> Role => Set<Role>();
+    public DbSet<Resource> Resource => Set<Resource>();
+    public DbSet<ResourceOwner> ResourceOwner => Set<ResourceOwner>();
+    public DbSet<CreditCardMovementResource> CreditCardMovementResource => Set<CreditCardMovementResource>();
+    public DbSet<CreditCardResource> CreditCardResource => Set<CreditCardResource>();
+    public DbSet<CreditCardStatementResource> CreditCardStatementResource => Set<CreditCardStatementResource>();
+    public DbSet<CurrencyExchangeRateResource> CurrencyExchangeRateResource => Set<CurrencyExchangeRateResource>();
+    public DbSet<DebitOriginResource> DebitOriginResource => Set<DebitOriginResource>();
+    public DbSet<DebitResource> DebitResource => Set<DebitResource>();
+    public DbSet<FundResource> FundResource => Set<FundResource>();
+    public DbSet<IncomeResource> IncomeResource => Set<IncomeResource>();
+    public DbSet<IOLInvestmentAssetResource> IOLInvestmentAssetResource => Set<IOLInvestmentAssetResource>();
+    public DbSet<IOLInvestmentAssetTypeResource> IOLInvestmentAssetTypeResource => Set<IOLInvestmentAssetTypeResource>();
+    public DbSet<IOLInvestmentResource> IOLInvestmentResource => Set<IOLInvestmentResource>();
+    public DbSet<MovementResource> MovementResource => Set<MovementResource>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
