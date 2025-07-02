@@ -28,7 +28,7 @@ public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModul
 
         if (request.AppModuleType.HasValue)
         {
-            query = query.Where(o => o.Type.Id == (short)request.AppModuleType.Value);
+            query = query.Where(o => o.Type.Id == request.AppModuleType.Value);
         }
 
         return await Task.FromResult(await query.ToArrayAsync());

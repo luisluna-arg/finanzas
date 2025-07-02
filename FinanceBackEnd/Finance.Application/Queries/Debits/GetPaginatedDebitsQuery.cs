@@ -53,7 +53,7 @@ public class GetPaginatedDebitsQueryHandler : IRequestHandler<GetPaginatedDebits
 
         if (request.AppModuleType.HasValue)
         {
-            query = query.Where(o => o.Origin.AppModule.Type.Id == (int)request.AppModuleType.Value);
+            query = query.Where(o => o.Origin.AppModule.Type.Id == request.AppModuleType.Value);
         }
 
         // Pagination
