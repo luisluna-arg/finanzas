@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class CurrencyMapperProfile : BaseEntityMapperProfile<Currency, CurrencyDto>
-{
-    public CurrencyMapperProfile()
-        : base()
-    {
-    }
-}
+public class CurrencyMapperProfile() : BaseEntityMapperProfile<Currency, CurrencyDto>();

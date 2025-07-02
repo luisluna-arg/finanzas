@@ -4,10 +4,4 @@ using Finance.Persistance;
 
 namespace Finance.Application.Repositories;
 
-public class MovementRepository : BaseRepository<Movement, Guid>
-{
-    public MovementRepository(FinanceDbContext dbContext)
-        : base(dbContext)
-    {
-    }
-}
+public class MovementRepository(FinanceDbContext dbContext) : BaseRepository<Movement, Guid>(dbContext);

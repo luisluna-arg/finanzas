@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class PaginatedDebitMapperProfile : PaginatedResultMapperProfile<Debit, DebitDto>
-{
-    public PaginatedDebitMapperProfile()
-        : base()
-    {
-    }
-}
+public class PaginatedDebitMapperProfile() : PaginatedResultMapperProfile<Debit, DebitDto>();

@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class PaginatedCurrencyExchangeRateMapperProfile : PaginatedResultMapperProfile<CurrencyExchangeRate, CurrencyExchangeRateDto>
-{
-    public PaginatedCurrencyExchangeRateMapperProfile()
-        : base()
-    {
-    }
-}
+public class PaginatedCurrencyExchangeRateMapperProfile() : PaginatedResultMapperProfile<CurrencyExchangeRate, CurrencyExchangeRateDto>();

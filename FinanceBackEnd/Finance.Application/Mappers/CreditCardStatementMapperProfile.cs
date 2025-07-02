@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class CreditCardStatementMapperProfile : BaseEntityMapperProfile<CreditCardStatement, CreditCardStatementDto>
-{
-    public CreditCardStatementMapperProfile()
-        : base()
-    {
-    }
-}
+public class CreditCardStatementMapperProfile() : BaseEntityMapperProfile<CreditCardStatement, CreditCardStatementDto>();

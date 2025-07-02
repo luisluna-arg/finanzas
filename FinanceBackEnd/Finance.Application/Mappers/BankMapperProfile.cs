@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class BankMapperProfile : BaseEntityMapperProfile<Bank, BankDto>
-{
-    public BankMapperProfile()
-        : base()
-    {
-    }
-}
+public class BankMapperProfile() : BaseEntityMapperProfile<Bank, BankDto>();

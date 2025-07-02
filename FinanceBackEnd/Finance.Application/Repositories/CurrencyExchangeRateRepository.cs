@@ -4,10 +4,4 @@ using Finance.Persistance;
 
 namespace Finance.Application.Repositories;
 
-public class CurrencyExchangeRateRepository : BaseRepository<CurrencyExchangeRate, Guid>
-{
-    public CurrencyExchangeRateRepository(FinanceDbContext dbContext)
-        : base(dbContext)
-    {
-    }
-}
+public class CurrencyExchangeRateRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyExchangeRate, Guid>(dbContext);

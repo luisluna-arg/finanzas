@@ -5,13 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Repositories;
 
-public class CurrencyRepository : BaseRepository<Currency, Guid>
+public class CurrencyRepository(FinanceDbContext dbContext) : BaseRepository<Currency, Guid>(dbContext)
 {
-    public CurrencyRepository(FinanceDbContext dbContext)
-        : base(dbContext)
-    {
-    }
-
     public override async Task<Currency?> GetByAsync(string searchCriteria, object searchValue, CancellationToken cancellationToken)
     {
         if (searchCriteria == "Symbol")

@@ -4,10 +4,4 @@ using Finance.Persistance;
 
 namespace Finance.Application.Repositories;
 
-public class FundRepository : BaseRepository<Fund, Guid>
-{
-    public FundRepository(FinanceDbContext dbContext)
-        : base(dbContext)
-    {
-    }
-}
+public class FundRepository(FinanceDbContext dbContext) : BaseRepository<Fund, Guid>(dbContext);

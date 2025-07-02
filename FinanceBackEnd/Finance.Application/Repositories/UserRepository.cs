@@ -4,4 +4,4 @@ using Finance.Persistance;
 
 namespace Finance.Application.Repositories;
 
-public class CurrencyConversionRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyConversion, Guid>(dbContext);
+public class UserRepository(FinanceDbContext dbContext) : BaseRepository<User, Guid>(dbContext);

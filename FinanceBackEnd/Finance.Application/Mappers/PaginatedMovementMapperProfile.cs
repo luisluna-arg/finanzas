@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class PaginatedMovementMapperProfile : PaginatedResultMapperProfile<Movement, MovementDto>
-{
-    public PaginatedMovementMapperProfile()
-        : base()
-    {
-    }
-}
+public class PaginatedMovementMapperProfile() : PaginatedResultMapperProfile<Movement, MovementDto>();

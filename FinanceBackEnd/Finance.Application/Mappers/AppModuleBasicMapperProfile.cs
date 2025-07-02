@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class AppModuleBasicMapperProfile : BaseEntityMapperProfile<AppModule, AppModuleBasicDto>
-{
-    public AppModuleBasicMapperProfile()
-        : base()
-    {
-    }
-}
+public class AppModuleBasicMapperProfile() : BaseEntityMapperProfile<AppModule, AppModuleBasicDto>();

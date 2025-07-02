@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class IOLInvestmentMapperProfile : BaseEntityMapperProfile<IOLInvestment, IOLInvestmentDto>
-{
-    public IOLInvestmentMapperProfile()
-        : base()
-    {
-    }
-}
+public class IOLInvestmentMapperProfile() : BaseEntityMapperProfile<IOLInvestment, IOLInvestmentDto>();

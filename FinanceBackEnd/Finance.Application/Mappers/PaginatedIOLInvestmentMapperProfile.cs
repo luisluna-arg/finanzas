@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class PaginatedIOLInvestmentMapperProfile : PaginatedResultMapperProfile<IOLInvestment, IOLInvestmentDto>
-{
-    public PaginatedIOLInvestmentMapperProfile()
-        : base()
-    {
-    }
-}
+public class PaginatedIOLInvestmentMapperProfile() : PaginatedResultMapperProfile<IOLInvestment, IOLInvestmentDto>();

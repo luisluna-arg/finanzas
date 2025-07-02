@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class PaginatedCreditCardMovementMapperProfile : PaginatedResultMapperProfile<CreditCardMovement, CreditCardMovementDto>
-{
-    public PaginatedCreditCardMovementMapperProfile()
-        : base()
-    {
-    }
-}
+public class PaginatedCreditCardMovementMapperProfile() : PaginatedResultMapperProfile<CreditCardMovement, CreditCardMovementDto>();

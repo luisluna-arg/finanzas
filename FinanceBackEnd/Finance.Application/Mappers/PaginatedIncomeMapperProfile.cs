@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class PaginatedIncomeMapperProfile : PaginatedResultMapperProfile<Income, IncomeDto>
-{
-    public PaginatedIncomeMapperProfile()
-        : base()
-    {
-    }
-}
+public class PaginatedIncomeMapperProfile() : PaginatedResultMapperProfile<Income, IncomeDto>();

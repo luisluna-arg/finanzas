@@ -5,4 +5,4 @@ using Finance.Persistance;
 
 namespace Finance.Application.Repositories;
 
-public class FrequencyRepository(FinanceDbContext dbContext) : BaseRepository<Frequency, FrequencyEnum>(dbContext);
+public class IdentityProviderRepository(FinanceDbContext dbContext) : BaseRepository<IdentityProvider, IdentityProviderEnum>(dbContext);

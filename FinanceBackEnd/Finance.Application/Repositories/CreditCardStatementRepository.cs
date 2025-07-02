@@ -4,10 +4,4 @@ using Finance.Persistance;
 
 namespace Finance.Application.Repositories;
 
-public class CreditCardStatementRepository : BaseRepository<CreditCardStatement, Guid>
-{
-    public CreditCardStatementRepository(FinanceDbContext dbContext)
-        : base(dbContext)
-    {
-    }
-}
+public class CreditCardStatementRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardStatement, Guid>(dbContext);

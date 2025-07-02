@@ -4,10 +4,4 @@ using Finance.Persistance;
 
 namespace Finance.Application.Repositories;
 
-public class CurrencySymbolRepository : BaseRepository<CurrencySymbol, Guid>
-{
-    public CurrencySymbolRepository(FinanceDbContext dbContext)
-        : base(dbContext)
-    {
-    }
-}
+public class CurrencySymbolRepository(FinanceDbContext dbContext) : BaseRepository<CurrencySymbol, Guid>(dbContext);

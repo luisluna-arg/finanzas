@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class FrequencyMapperProfile : BaseEntityMapperProfile<Frequency, FrequencyDto>
-{
-    public FrequencyMapperProfile()
-        : base()
-    {
-    }
-}
+public class FrequencyMapperProfile() : BaseEntityMapperProfile<Frequency, FrequencyDto>();

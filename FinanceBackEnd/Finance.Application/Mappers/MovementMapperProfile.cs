@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class MovementMapperProfile : BaseEntityMapperProfile<Movement, MovementDto>
-{
-    public MovementMapperProfile()
-        : base()
-    {
-    }
-}
+public class MovementMapperProfile() : BaseEntityMapperProfile<Movement, MovementDto>();

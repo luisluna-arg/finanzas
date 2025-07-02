@@ -4,10 +4,4 @@ using Finance.Domain.Models;
 
 namespace Finance.Application.Mappers;
 
-public class IncomeMapperProfile : BaseEntityMapperProfile<Income, IncomeDto>
-{
-    public IncomeMapperProfile()
-        : base()
-    {
-    }
-}
+public class IncomeMapperProfile() : BaseEntityMapperProfile<Income, IncomeDto>();

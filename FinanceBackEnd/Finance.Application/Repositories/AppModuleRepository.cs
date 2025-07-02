@@ -6,13 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Repositories;
 
-public class AppModuleRepository : BaseRepository<AppModule, Guid>, IAppModuleRepository
+public class AppModuleRepository(FinanceDbContext dbContext) : BaseRepository<AppModule, Guid>(dbContext), IAppModuleRepository
 {
-    public AppModuleRepository(FinanceDbContext dbContext)
-        : base(dbContext)
-    {
-    }
-
     public async Task<AppModule> GetFundsAsync(CancellationToken cancellationToken)
     {
         var appModule = await GetModuleAsync(AppModuleConstants.FundsId, cancellationToken);
