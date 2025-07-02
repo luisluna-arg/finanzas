@@ -1,5 +1,6 @@
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
+using Finance.Domain.Enums;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using MediatR;
@@ -14,7 +15,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
     private readonly IRepository<Currency, Guid> _currencyRepository;
     private readonly IRepository<IOLInvestment, Guid> _iolInvestment;
     private readonly IRepository<IOLInvestmentAsset, Guid> _iolInvestmentAsset;
-    private readonly IRepository<IOLInvestmentAssetType, ushort> _iolInvestmentAssetType;
+    private readonly IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> _iolInvestmentAssetType;
     private readonly IOLInvestmentExcelHelper _iolInvestmentExcelHelper;
 
     public UploadIOLInvestmentCommandHandler(
@@ -22,7 +23,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
         IRepository<Currency, Guid> currencyRepository,
         IRepository<IOLInvestment, Guid> iolInvestmentRepository,
         IRepository<IOLInvestmentAsset, Guid> iolInvestmentAssetRepository,
-        IRepository<IOLInvestmentAssetType, ushort> iolInvestmentAssetTypeRepository,
+        IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> iolInvestmentAssetTypeRepository,
         IOLInvestmentExcelHelper iolInvestmentExcelHelper)
         : base(db)
     {

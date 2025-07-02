@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
+using Finance.Domain.Enums;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using MediatR;
@@ -9,7 +10,7 @@ namespace Finance.Application.Commands.AppModules;
 
 public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModuleCommand, AppModule>
 {
-    private readonly IRepository<AppModuleType, short> appModuleTypeRepository;
+    private readonly IRepository<AppModuleType, AppModuleTypeEnum> appModuleTypeRepository;
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IRepository<Currency, Guid> currencyRepository;
 
@@ -17,7 +18,7 @@ public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModule
         FinanceDbContext db,
         IRepository<Currency, Guid> currencyRepository,
         IAppModuleRepository appModuleRepository,
-        IRepository<AppModuleType, short> appModuleTypeRepository)
+        IRepository<AppModuleType, AppModuleTypeEnum> appModuleTypeRepository)
         : base(db)
     {
         this.appModuleTypeRepository = appModuleTypeRepository;
@@ -54,5 +55,5 @@ public class CreateAppModuleCommand : IRequest<AppModule>
     [Required]
     public Guid CurrencyId { get; set; }
     [Required]
-    public short AppModuleTypeId { get; set; }
+    public AppModuleTypeEnum AppModuleTypeId { get; set; }
 }

@@ -11,13 +11,13 @@ public class UpdateIOLInvestmentCommandHandler : BaseResponseHandler<UpdateIOLIn
 {
     private readonly IRepository<IOLInvestmentAsset, Guid> iolInvestmentAssetRepository;
     private readonly IRepository<IOLInvestment, Guid> iolInvestmentRepository;
-    private readonly IRepository<IOLInvestmentAssetType, ushort> iolInvestmentAssetTypeRepository;
+    private readonly IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> iolInvestmentAssetTypeRepository;
 
     public UpdateIOLInvestmentCommandHandler(
         FinanceDbContext db,
         IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository,
         IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLRepository,
-        IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypeRepository)
+        IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> investmentAssetIOLTypeRepository)
         : base(db)
     {
         this.iolInvestmentAssetRepository = investmentAssetIOLRepository;
@@ -61,7 +61,7 @@ public class UpdateIOLInvestmentCommandHandler : BaseResponseHandler<UpdateIOLIn
 
             if (assetType == null)
             {
-                assetType = IOLInvestmentAssetType.Default();
+                assetType = KeyValueEntity<IOLInvestmentAssetTypeEnum>.Default<IOLInvestmentAssetType>();
             }
 
             asset = new IOLInvestmentAsset()

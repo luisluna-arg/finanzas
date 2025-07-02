@@ -12,14 +12,14 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
 {
     private readonly IRepository<IOLInvestmentAsset, Guid> iolInvestmentAssetRepository;
     private readonly IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository;
-    private readonly IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypeRepository;
+    private readonly IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> investmentAssetIOLTypeRepository;
     private readonly IRepository<Currency, Guid> currencyRepository;
 
     public CreateIOLInvestmentCommandHandler(
         FinanceDbContext db,
         IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLRepository,
         IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository,
-        IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypeRepository,
+        IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> investmentAssetIOLTypeRepository,
         IRepository<Currency, Guid> currencyRepository)
         : base(db)
     {
@@ -62,7 +62,7 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
 
             if (assetType == null)
             {
-                assetType = IOLInvestmentAssetType.Default();
+                assetType = KeyValueEntity<IOLInvestmentAssetTypeEnum>.Default<IOLInvestmentAssetType>();
             }
 
             var currency = (await currencyRepository.GetByIdAsync(command.CurrencyId ?? Guid.Parse(CurrencyConstants.PesoId), cancellationToken))!;

@@ -71,9 +71,9 @@ public class DatabaseSeeder : IHostedService
 
         Action<AppModuleTypeEnum> collector = (appModuleTypeEnum) =>
         {
-            if (!appModuleTypes.Any(o => o.Id == (short)appModuleTypeEnum))
+            if (!appModuleTypes.Any(o => o.Id == appModuleTypeEnum))
             {
-                newAppModuleTypes.Add(new AppModuleType { Id = (short)appModuleTypeEnum, Name = appModuleTypeEnum });
+                newAppModuleTypes.Add(new AppModuleType { Id = appModuleTypeEnum, Name = appModuleTypeEnum.ToString() });
             }
         };
 
@@ -114,7 +114,7 @@ public class DatabaseSeeder : IHostedService
                 throw new SystemException($"Fatal error while seeding App database: AppModuleTypeEnum not found for ModuleId {moduleId}");
             }
 
-            var appModuleType = appModuleTypes.FirstOrDefault(x => x.Id == (short)AppModuleConstants.Types[moduleId]);
+            var appModuleType = appModuleTypes.FirstOrDefault(x => x.Id == AppModuleConstants.Types[moduleId]);
             if (appModuleType == null)
             {
                 throw new SystemException($"Fatal error while seeding App database: AppModuleType not found {AppModuleConstants.Types[moduleId]}");
@@ -169,7 +169,7 @@ public class DatabaseSeeder : IHostedService
 
         var newInvestmentAssetTypes = new List<IOLInvestmentAssetType>();
 
-        Action<ushort, string> collectInvestmentAssetTypes = (id, name) =>
+        Action<IOLInvestmentAssetTypeEnum, string> collectInvestmentAssetTypes = (id, name) =>
         {
             if (!investmentAssetTypes.Any(o => o.Id == id))
             {
@@ -177,7 +177,7 @@ public class DatabaseSeeder : IHostedService
             }
         };
 
-        enumValueInstances.ForEach(o => collectInvestmentAssetTypes((ushort)o, o.ToString()));
+        enumValueInstances.ForEach(o => collectInvestmentAssetTypes(o, o.ToString()));
 
         if (newInvestmentAssetTypes.Any())
         {

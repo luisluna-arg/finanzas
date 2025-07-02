@@ -1,3 +1,4 @@
+using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Application.Services;
 using MediatR;
@@ -6,10 +7,10 @@ namespace Finance.Application.Commands.IOLInvestments;
 
 public class ActivateIOLInvestmentAssetTypeCommandHandler : IRequestHandler<ActivateIOLInvestmentAssetTypeCommand, IOLInvestmentAssetType?>
 {
-    private readonly IEntityService<IOLInvestmentAssetType, ushort> _iolInvestmentAssetTypeRepository;
+    private readonly IEntityService<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> _iolInvestmentAssetTypeRepository;
 
     public ActivateIOLInvestmentAssetTypeCommandHandler(
-        IEntityService<IOLInvestmentAssetType, ushort> iolInvestmentAssetTypeRepository)
+        IEntityService<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> iolInvestmentAssetTypeRepository)
     {
         this._iolInvestmentAssetTypeRepository = iolInvestmentAssetTypeRepository;
     }
@@ -20,5 +21,5 @@ public class ActivateIOLInvestmentAssetTypeCommandHandler : IRequestHandler<Acti
 
 public class ActivateIOLInvestmentAssetTypeCommand : IRequest<IOLInvestmentAssetType?>
 {
-    public ushort Id { get; set; }
+    public IOLInvestmentAssetTypeEnum Id { get; set; }
 }
