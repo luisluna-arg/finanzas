@@ -1,12 +1,13 @@
+using Finance.Application.Dtos.Base;
 using Finance.Application.Dtos.IOLInvestmentAssets;
 
 namespace Finance.Application.Dtos.IOLInvestments;
 
-public record IOLInvestmentDto() : Dto<Guid>
+public record IOLInvestmentDto : Dto<Guid>
 {
-    required public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    required public DateTime TimeStamp { get; set; }
+    public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
 
     public IOLInvestmentAssetDto Asset { get; set; } = default!;
 
@@ -27,4 +28,8 @@ public record IOLInvestmentDto() : Dto<Guid>
     public decimal AverageReturn { get; set; } = 0M;
 
     public decimal Valued { get; set; } = 0M;
+    
+    public IOLInvestmentDto()
+    {
+    }
 }

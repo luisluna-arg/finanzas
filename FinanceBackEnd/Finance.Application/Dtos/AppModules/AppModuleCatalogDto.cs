@@ -2,10 +2,9 @@ using Finance.Application.Dtos.Base;
 
 namespace Finance.Application.Dtos.AppModules;
 
-public record AppModuleTypeDto : CatalogDto<short>
+public record AppModuleCatalogDto : CatalogDto<Guid>
 {
-    public AppModuleTypeDto()
-        : base()
+    public AppModuleCatalogDto()
     {
     }
 }

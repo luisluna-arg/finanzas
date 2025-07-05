@@ -1,16 +1,21 @@
+using Finance.Application.Dtos.Base;
 using Finance.Application.Dtos.Banks;
 
 namespace Finance.Application.Dtos.CreditCards;
 
-public record CreditCardDto() : Dto<Guid>
+public record CreditCardDto : Dto<Guid>
 {
-    public Guid BankId { get; set; }
+    public Guid BankId { get; set; } = Guid.Empty;
 
     public BankDto Bank { get; set; } = default!;
 
     public CreditCardStatementDto CreditCardStatement { get; set; } = default!;
 
-    public int RecordCount { get; set; }
+    public int RecordCount { get; set; } = 0;
 
-    required public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+
+    public CreditCardDto()
+    {
+    }
 }

@@ -1,4 +1,5 @@
 using Finance.Application.Dtos.Banks;
+using Finance.Application.Dtos.Base;
 using Finance.Application.Dtos.Currencies;
 using Finance.Domain.SpecialTypes;
 

@@ -1,10 +1,8 @@
-namespace Finance.Application.Dtos;
+namespace Finance.Application.Dtos.Base;
 
 public abstract record Dto<TId> : IDto
 {
-    protected Dto()
-    {
-    }
+    public Dto() { }
 
     public TId Id { get; set; } = default!;
 

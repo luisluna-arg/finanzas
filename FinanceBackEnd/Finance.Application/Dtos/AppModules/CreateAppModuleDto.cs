@@ -2,11 +2,11 @@ namespace Finance.Application.Dtos.AppModules;
 
 public abstract record CreateAppModuleDto
 {
+    public string Name { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public Guid CurrencyId { get; set; } = Guid.Empty;
+    
     protected CreateAppModuleDto()
     {
     }
-
-    required public string Name { get; set; } = string.Empty;
-    required public DateTime CreatedAt { get; set; }
-    required public Guid CurrencyId { get; set; }
 }
