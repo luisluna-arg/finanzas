@@ -11,15 +11,4 @@ namespace Finance.Api.Controllers.Queries;
 
 [Route("api/frequencies")]
 public class FrequencyQueryController(IMapper mapper, IMediator mediator)
-    : ApiBaseQueryController<Frequency?, FrequencyEnum, FrequencyDto>(mapper, mediator)
-{
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllFrequenciesQuery request)
-        => await Handle(request);
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetFrequencyQuery request)
-    {
-        return await Handle(request);
-    }
-}
+    : BasicQueryController<Frequency?, FrequencyEnum, FrequencyDto, GetAllFrequenciesQuery, GetFrequencyQuery>(mapper, mediator);

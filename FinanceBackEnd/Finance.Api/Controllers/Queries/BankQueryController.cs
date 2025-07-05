@@ -9,13 +9,5 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/banks")]
-public class BankQueryController(IMapper mapper, IMediator mediator) : ApiBaseQueryController<Bank?, Guid, BankDto>(mapper, mediator)
-{
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetAllBanksQuery request)
-        => await Handle(request);
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery] GetBankQuery request)
-        => await Handle(request);
-}
+public class BankQueryController(IMapper mapper, IMediator mediator)
+    : BasicQueryController<Bank?, Guid, BankDto, GetAllBanksQuery, GetBankQuery>(mapper, mediator);
