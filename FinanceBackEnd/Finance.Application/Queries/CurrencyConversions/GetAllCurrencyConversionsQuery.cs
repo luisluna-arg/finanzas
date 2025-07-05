@@ -6,13 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.CurrencyConvertions;
 
-public class GetAllCurrencyConversionsQueryHandler : BaseCollectionHandler<GetAllCurrencyConversionsQuery, CurrencyConversion?>
-{
-    public GetAllCurrencyConversionsQueryHandler(FinanceDbContext db)
-        : base(db)
-    {
-    }
+public class GetAllCurrencyConversionsQuery : GetAllQuery<CurrencyConversion?>;
 
+public class GetAllCurrencyConversionsQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllCurrencyConversionsQuery, CurrencyConversion?>(db)
+{
     public override async Task<ICollection<CurrencyConversion?>> Handle(GetAllCurrencyConversionsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.CurrencyConversion.AsQueryable();
@@ -24,8 +21,4 @@ public class GetAllCurrencyConversionsQueryHandler : BaseCollectionHandler<GetAl
 
         return await Task.FromResult(await query.ToArrayAsync());
     }
-}
-
-public class GetAllCurrencyConversionsQuery : GetAllQuery<CurrencyConversion?>
-{
 }

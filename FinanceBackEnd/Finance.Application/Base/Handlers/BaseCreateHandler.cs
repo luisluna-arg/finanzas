@@ -7,6 +7,8 @@ using MediatR;
 
 namespace Finance.Application.Commands.CreditCards;
 
+public abstract class BaseCreateCommand<TEntity> : IRequest<TEntity>;
+
 public abstract class BaseCreateCommandHandler<TEntity, TId, TCommand>(
     IRepository<TEntity, TId> repository,
     FinanceDbContext db)
@@ -26,10 +28,6 @@ public abstract class BaseCreateCommandHandler<TEntity, TId, TCommand>(
     }
 
     protected abstract Task<TEntity> BuildRecord(TCommand command, CancellationToken cancellationToken);
-}
-
-public abstract class BaseCreateCommand<TEntity> : IRequest<TEntity>
-{
 }
 
 public abstract class BaseCreateCommandValidator<TCommand, TEntity> : AbstractValidator<TCommand>

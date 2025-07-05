@@ -5,23 +5,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetCurrentInvestmentsQueryHandler : IRequestHandler<GetCurrentInvestmentsQuery, TotalInvestments>
-{
-    private readonly FinanceDbContext db;
+public class GetCurrentInvestmentsQuery : IRequest<TotalInvestments>;
 
-    public GetCurrentInvestmentsQueryHandler(
-        FinanceDbContext db)
-    {
-        this.db = db;
-    }
+public class GetCurrentInvestmentsQueryHandler(FinanceDbContext db) : IRequestHandler<GetCurrentInvestmentsQuery, TotalInvestments>
+{
+    private readonly FinanceDbContext _db = db;
 
     public Task<TotalInvestments> Handle(GetCurrentInvestmentsQuery request, CancellationToken cancellationToken)
     {
         var result = new TotalInvestments();
 
-        var maxTimeStamp = db.IOLInvestment.Max(o => o.TimeStamp);
+        var maxTimeStamp = _db.IOLInvestment.Max(o => o.TimeStamp);
 
-        var investments = db.IOLInvestment
+        var investments = _db.IOLInvestment
             .Include(o => o.Asset)
             .ThenInclude(o => o.Type)
             .Where(o => !o.Deactivated && o.TimeStamp == maxTimeStamp)
@@ -32,8 +28,4 @@ public class GetCurrentInvestmentsQueryHandler : IRequestHandler<GetCurrentInves
 
         return Task.FromResult(result);
     }
-}
-
-public class GetCurrentInvestmentsQuery : IRequest<TotalInvestments>
-{
 }

@@ -6,22 +6,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.AppModules;
 
-public class GetAppModuleQueryHandler : BaseResponseHandler<GetAppModuleQuery, AppModule?>
-{
-    private readonly IAppModuleRepository appModuleRepository;
+public class GetAppModuleQuery : GetSingleByIdQuery<AppModule?, Guid>;
 
-    public GetAppModuleQueryHandler(
-        FinanceDbContext db,
-        IAppModuleRepository appModuleRepository)
-        : base(db)
-    {
-        this.appModuleRepository = appModuleRepository;
-    }
+public class GetAppModuleQueryHandler(FinanceDbContext db, IAppModuleRepository repository)
+    : BaseResponseHandler<GetAppModuleQuery, AppModule?>(db)
+{
+    private readonly IAppModuleRepository _repository = repository;
 
     public override async Task<AppModule?> Handle(GetAppModuleQuery request, CancellationToken cancellationToken)
-        => await appModuleRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetAppModuleQuery : GetSingleByIdQuery<AppModule?, Guid>
-{
+        => await _repository.GetByIdAsync(request.Id, cancellationToken);
 }

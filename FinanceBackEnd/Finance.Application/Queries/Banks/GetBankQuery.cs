@@ -6,22 +6,12 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.Banks;
 
-public class GetBankQueryHandler : BaseResponseHandler<GetBankQuery, Bank?>
-{
-    private readonly IRepository<Bank, Guid> bankRepository;
+public class GetBankQuery : GetSingleByIdQuery<Bank?, Guid>;
 
-    public GetBankQueryHandler(
-        FinanceDbContext db,
-        IRepository<Bank, Guid> bankRepository)
-        : base(db)
-    {
-        this.bankRepository = bankRepository;
-    }
+public class GetBankQueryHandler(FinanceDbContext db, IRepository<Bank, Guid> repository) : BaseResponseHandler<GetBankQuery, Bank?>(db)
+{
+    private readonly IRepository<Bank, Guid> _repository = repository;
 
     public override async Task<Bank?> Handle(GetBankQuery request, CancellationToken cancellationToken)
-        => await bankRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetBankQuery : GetSingleByIdQuery<Bank?, Guid>
-{
+        => await _repository.GetByIdAsync(request.Id, cancellationToken);
 }

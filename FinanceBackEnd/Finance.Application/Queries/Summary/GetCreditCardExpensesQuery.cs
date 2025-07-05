@@ -5,24 +5,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetCreditCardExpensesQueryHandler : IRequestHandler<GetCreditCardExpensesQuery, Expense>
-{
-    private readonly FinanceDbContext db;
+public class GetCreditCardExpensesQuery : IRequest<Expense>;
 
-    public GetCreditCardExpensesQueryHandler(
-        IMediator mediator,
-        FinanceDbContext db)
-    {
-        this.db = db;
-    }
+public class GetCreditCardExpensesQueryHandler(FinanceDbContext db) : IRequestHandler<GetCreditCardExpensesQuery, Expense>
+{
+    private readonly FinanceDbContext _db = db;
 
     public async Task<Expense> Handle(GetCreditCardExpensesQuery request, CancellationToken cancellationToken)
     {
         var total = 0;
-        var creditCards = db.CreditCard.Include(o => o.Bank).Where(o => !o.Deactivated).ToArray();
+        var creditCards = _db.CreditCard.Include(o => o.Bank).Where(o => !o.Deactivated).ToArray();
         foreach (var creditCard in creditCards)
         {
-            var baseQuery = db.CreditCardMovement.Where(o => o.CreditCardId == creditCard.Id);
+            var baseQuery = _db.CreditCardMovement.Where(o => o.CreditCardId == creditCard.Id);
             var count = await baseQuery.CountAsync();
             if (count > 0)
             {
@@ -33,8 +28,4 @@ public class GetCreditCardExpensesQueryHandler : IRequestHandler<GetCreditCardEx
 
         return new Expense("creditCards", "Tarjetas de crédito", total);
     }
-}
-
-public class GetCreditCardExpensesQuery : IRequest<Expense>
-{
 }

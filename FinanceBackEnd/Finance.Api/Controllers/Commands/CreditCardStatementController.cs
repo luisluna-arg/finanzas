@@ -17,6 +17,4 @@ public class CreditCardStatementStatementController(IMapper mapper, IMediator me
     CreateCreditCardStatementCommand,
     UpdateCreditCardStatementCommand,
     DeleteCreditCardStatementCommand
-    >(mapper, mediator)
-{
-}
+    >(mapper, mediator);

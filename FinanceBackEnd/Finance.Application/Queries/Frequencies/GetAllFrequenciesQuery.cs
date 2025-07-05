@@ -6,13 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Frequencies;
 
-public class GetAllFrequenciesQueryHandler : BaseCollectionHandler<GetAllFrequenciesQuery, Frequency?>
-{
-    public GetAllFrequenciesQueryHandler(FinanceDbContext db)
-        : base(db)
-    {
-    }
+public class GetAllFrequenciesQuery : GetAllQuery<Frequency?>;
 
+public class GetAllFrequenciesQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllFrequenciesQuery, Frequency?>(db)
+{
     public override async Task<ICollection<Frequency?>> Handle(GetAllFrequenciesQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.Frequency
@@ -26,8 +23,4 @@ public class GetAllFrequenciesQueryHandler : BaseCollectionHandler<GetAllFrequen
 
         return await Task.FromResult(await query.ToArrayAsync());
     }
-}
-
-public class GetAllFrequenciesQuery : GetAllQuery<Frequency?>
-{
 }

@@ -4,6 +4,8 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.Summary;
 
+public class GetTotalExpensesQuery : IRequest<TotalExpenses>;
+
 public class GetTotalExpensesQueryHandler : IRequestHandler<GetTotalExpensesQuery, TotalExpenses>
 {
     private readonly IMediator mediator;
@@ -27,8 +29,4 @@ public class GetTotalExpensesQueryHandler : IRequestHandler<GetTotalExpensesQuer
 
         return result;
     }
-}
-
-public class GetTotalExpensesQuery : IRequest<TotalExpenses>
-{
 }

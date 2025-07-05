@@ -6,22 +6,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.Movements;
 
-public class GetSingleMovementQueryHandler : BaseResponseHandler<GetSingleMovementQuery, Movement?>
-{
-    private readonly IRepository<Movement, Guid> movementRepository;
+public class GetSingleMovementQuery : GetSingleByIdQuery<Movement?, Guid>;
 
-    public GetSingleMovementQueryHandler(
-        FinanceDbContext db,
-        IRepository<Movement, Guid> movementRepository)
-        : base(db)
-    {
-        this.movementRepository = movementRepository;
-    }
+public class GetSingleMovementQueryHandler(FinanceDbContext db, IRepository<Movement, Guid> repository)
+    : BaseResponseHandler<GetSingleMovementQuery, Movement?>(db)
+{
+    private readonly IRepository<Movement, Guid> _repository = repository;
 
     public override async Task<Movement?> Handle(GetSingleMovementQuery request, CancellationToken cancellationToken)
-        => await movementRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetSingleMovementQuery : GetSingleByIdQuery<Movement?, Guid>
-{
+        => await _repository.GetByIdAsync(request.Id, cancellationToken);
 }

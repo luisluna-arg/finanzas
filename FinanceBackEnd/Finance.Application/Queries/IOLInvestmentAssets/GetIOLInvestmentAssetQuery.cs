@@ -6,22 +6,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.IOLInvestmentAssets;
 
-public class GetIOLInvestmentAssetQueryHandler : BaseResponseHandler<GetIOLInvestmentAssetQuery, IOLInvestmentAsset?>
-{
-    private readonly IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLTypeRepository;
+public class GetIOLInvestmentAssetQuery : GetSingleByIdQuery<IOLInvestmentAsset?, Guid>;
 
-    public GetIOLInvestmentAssetQueryHandler(
-        FinanceDbContext db,
-        IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLTypeRepository)
-        : base(db)
-    {
-        this.investmentAssetIOLTypeRepository = investmentAssetIOLTypeRepository;
-    }
+public class GetIOLInvestmentAssetQueryHandler(FinanceDbContext db, IRepository<IOLInvestmentAsset, Guid> repository)
+    : BaseResponseHandler<GetIOLInvestmentAssetQuery, IOLInvestmentAsset?>(db)
+{
+    private readonly IRepository<IOLInvestmentAsset, Guid> _repository = repository;
 
     public override async Task<IOLInvestmentAsset?> Handle(GetIOLInvestmentAssetQuery request, CancellationToken cancellationToken)
-        => await investmentAssetIOLTypeRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetIOLInvestmentAssetQuery : GetSingleByIdQuery<IOLInvestmentAsset?, Guid>
-{
+        => await _repository.GetByIdAsync(request.Id, cancellationToken);
 }

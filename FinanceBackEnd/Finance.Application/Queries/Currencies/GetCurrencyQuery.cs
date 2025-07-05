@@ -6,22 +6,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.Currencies;
 
-public class GetCurrencyQueryHandler : BaseResponseHandler<GetCurrencyQuery, Currency?>
-{
-    private readonly IRepository<Currency, Guid> currencyRepository;
+public class GetCurrencyQuery : GetSingleByIdQuery<Currency?, Guid>;
 
-    public GetCurrencyQueryHandler(
-        FinanceDbContext db,
-        IRepository<Currency, Guid> currencyRepository)
-        : base(db)
-    {
-        this.currencyRepository = currencyRepository;
-    }
+public class GetCurrencyQueryHandler(FinanceDbContext db, IRepository<Currency, Guid> repository)
+    : BaseResponseHandler<GetCurrencyQuery, Currency?>(db)
+{
+    private readonly IRepository<Currency, Guid> _repository = repository;
 
     public override async Task<Currency?> Handle(GetCurrencyQuery request, CancellationToken cancellationToken)
-        => await currencyRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetCurrencyQuery : GetSingleByIdQuery<Currency?, Guid>
-{
+        => await _repository.GetByIdAsync(request.Id, cancellationToken);
 }

@@ -7,22 +7,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.IOLInvestmentAssetTypes;
 
-public class GetIOLInvestmentAssetTypeQueryHandler : BaseResponseHandler<GetIOLInvestmentAssetTypeQuery, IOLInvestmentAssetType?>
-{
-    private readonly IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> investmentAssetIOLTypeRepository;
+public class GetIOLInvestmentAssetTypeQuery : GetSingleByIdQuery<IOLInvestmentAssetType?, IOLInvestmentAssetTypeEnum>;
 
-    public GetIOLInvestmentAssetTypeQueryHandler(
-        FinanceDbContext db,
-        IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> investmentAssetIOLTypeRepository)
-        : base(db)
-    {
-        this.investmentAssetIOLTypeRepository = investmentAssetIOLTypeRepository;
-    }
+public class GetIOLInvestmentAssetTypeQueryHandler(FinanceDbContext db, IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> repository)
+    : BaseResponseHandler<GetIOLInvestmentAssetTypeQuery, IOLInvestmentAssetType?>(db)
+{
+    private readonly IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> _repository = repository;
 
     public override async Task<IOLInvestmentAssetType?> Handle(GetIOLInvestmentAssetTypeQuery request, CancellationToken cancellationToken)
-        => await investmentAssetIOLTypeRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetIOLInvestmentAssetTypeQuery : GetSingleByIdQuery<IOLInvestmentAssetType?, IOLInvestmentAssetTypeEnum>
-{
+        => await _repository.GetByIdAsync(request.Id, cancellationToken);
 }

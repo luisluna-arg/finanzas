@@ -6,22 +6,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.Funds;
 
-public class GetSingleFundQueryHandler : BaseResponseHandler<GetSingleFundQuery, Fund?>
-{
-    private readonly IRepository<Fund, Guid> fundRepository;
+public class GetSingleFundQuery : GetSingleByIdQuery<Fund?, Guid>;
 
-    public GetSingleFundQueryHandler(
-        FinanceDbContext db,
-        IRepository<Fund, Guid> fundRepository)
-        : base(db)
-    {
-        this.fundRepository = fundRepository;
-    }
+public class GetSingleFundQueryHandler(FinanceDbContext db, IRepository<Fund, Guid> repository)
+    : BaseResponseHandler<GetSingleFundQuery, Fund?>(db)
+{
+    private readonly IRepository<Fund, Guid> _repository = repository;
 
     public override async Task<Fund?> Handle(GetSingleFundQuery request, CancellationToken cancellationToken)
-        => await fundRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetSingleFundQuery : GetSingleByIdQuery<Fund?, Guid>
-{
+        => await _repository.GetByIdAsync(request.Id, cancellationToken);
 }

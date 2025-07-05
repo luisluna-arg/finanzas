@@ -6,13 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.IOLInvestmentAssetTypes;
 
-public class GetAllIOLInvestmentAssetTypesQueryHandler : BaseCollectionHandler<GetAllIOLInvestmentAssetTypesQuery, IOLInvestmentAssetType?>
-{
-    public GetAllIOLInvestmentAssetTypesQueryHandler(FinanceDbContext db)
-        : base(db)
-    {
-    }
+public class GetAllIOLInvestmentAssetTypesQuery : GetAllQuery<IOLInvestmentAssetType?>;
 
+public class GetAllIOLInvestmentAssetTypesQueryHandler(FinanceDbContext db)
+    : BaseCollectionHandler<GetAllIOLInvestmentAssetTypesQuery, IOLInvestmentAssetType?>(db)
+{
     public override async Task<ICollection<IOLInvestmentAssetType?>> Handle(GetAllIOLInvestmentAssetTypesQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.IOLInvestmentAssetType.AsQueryable();
@@ -26,8 +24,4 @@ public class GetAllIOLInvestmentAssetTypesQueryHandler : BaseCollectionHandler<G
 
         return await Task.FromResult(await query.ToArrayAsync());
     }
-}
-
-public class GetAllIOLInvestmentAssetTypesQuery : GetAllQuery<IOLInvestmentAssetType?>
-{
 }

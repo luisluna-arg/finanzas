@@ -1,19 +1,15 @@
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
-using Finance.Application.Repositories;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.DebitOrigins;
 
-public class GetAllDebitOriginsQueryHandler : BaseCollectionHandler<GetAllDebitOriginsQuery, DebitOrigin?>
-{
-    public GetAllDebitOriginsQueryHandler(FinanceDbContext db, IRepository<DebitOrigin, Guid> bankRepository)
-        : base(db)
-    {
-    }
+public class GetAllDebitOriginsQuery : GetAllQuery<DebitOrigin?>;
 
+public class GetAllDebitOriginsQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllDebitOriginsQuery, DebitOrigin?>(db)
+{
     public override async Task<ICollection<DebitOrigin?>> Handle(GetAllDebitOriginsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.DebitOrigin
@@ -30,8 +26,4 @@ public class GetAllDebitOriginsQueryHandler : BaseCollectionHandler<GetAllDebitO
 
         return await Task.FromResult(await query.ToArrayAsync());
     }
-}
-
-public class GetAllDebitOriginsQuery : GetAllQuery<DebitOrigin?>
-{
 }
