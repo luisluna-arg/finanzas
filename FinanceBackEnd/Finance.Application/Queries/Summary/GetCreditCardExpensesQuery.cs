@@ -26,6 +26,11 @@ public class GetCreditCardExpensesQueryHandler(FinanceDbContext db) : IRequestHa
             }
         }
 
-        return new Expense("creditCards", "Tarjetas de crédito", total);
+        return new Expense()
+        {
+            Id = "creditCards",
+            Label = "Tarjetas de crédito",
+            Value = total
+        };
     }
 }

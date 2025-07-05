@@ -24,7 +24,13 @@ public class GetCurrentInvestmentsQueryHandler(FinanceDbContext db) : IRequestHa
             .OrderBy(o => o.Asset.Symbol)
             .ToArray();
 
-        result.Items.AddRange(investments.Select(o => new Investment($"{o.Id}", o.Asset.Symbol, o.AverageReturn, o.Valued)));
+        result.Items.AddRange(investments.Select(o => new Investment()
+        {
+            Id = $"{o.Id}",
+            Label = o.Asset.Symbol,
+            Value = o.Valued,
+            AverageReturn = o.AverageReturn
+        }));
 
         return Task.FromResult(result);
     }

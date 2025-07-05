@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.AppModules;
 
-public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModulesQuery, AppModule?>
+public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModulesQuery, AppModule>
 {
     public GetAllAppModulesQueryHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<ICollection<AppModule?>> Handle(GetAllAppModulesQuery request, CancellationToken cancellationToken)
+    public override async Task<ICollection<AppModule>> Handle(GetAllAppModulesQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.AppModule
             .Include(o => o.Currency)
@@ -31,11 +31,23 @@ public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModul
             query = query.Where(o => o.Type.Id == request.AppModuleType.Value);
         }
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        // Ensure all required properties are loaded
+        var result = await query.ToArrayAsync();
+        
+        // Validate all modules have their required properties
+        foreach (var module in result)
+        {
+            if (module.Currency == null || module.Type == null)
+            {
+                Console.WriteLine($"Warning: AppModule {module.Id} has null Currency or Type property.");
+            }
+        }
+
+        return result;
     }
 }
 
-public class GetAllAppModulesQuery : GetAllQuery<AppModule?>
+public class GetAllAppModulesQuery : GetAllQuery<AppModule>
 {
     public AppModuleTypeEnum? AppModuleType { get; set; }
 }

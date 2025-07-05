@@ -58,17 +58,19 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
                 var currency = o.Currency;
                 var currencySymbol = currency?.Symbols.FirstOrDefault();
 
-                return new FundDto(
-                    $"{o.Id}",
-                    nameFormater(o),
-                    o.Amount,
-                    currency?.Id ?? Guid.Empty,
-                    currency?.ShortName ?? string.Empty,
-                    currencySymbol?.Symbol ?? string.Empty,
-                    o.Amount,
-                    currency?.Id ?? Guid.Empty,
-                    currency?.ShortName ?? string.Empty,
-                    currencySymbol?.Symbol ?? string.Empty);
+                return new FundDto()
+                {
+                    Id = $"{o.Id}",
+                    Label = nameFormater(o),
+                    Value = o.Amount,
+                    BaseCurrencyId = currency?.Id ?? Guid.Empty,
+                    BaseCurrency = currency?.ShortName ?? string.Empty,
+                    BaseCurrencySymbol = currencySymbol?.Symbol ?? string.Empty,
+                    QuoteCurrencyValue = o.Amount,
+                    DefaultCurrencyId = currency?.Id ?? Guid.Empty,
+                    DefaultCurrency = currency?.ShortName ?? string.Empty,
+                    DefaultCurrencySymbol = currencySymbol?.Symbol ?? string.Empty
+                };
             }));
 
         foreach (var fund in funds.Where(o => o.CurrencyId != request.CurrencyId))
@@ -95,18 +97,19 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
                 amount = fund.Amount * currencyRate.BuyRate;
             }
 
-            var fundDto = new FundDto(
-                $"{fund.Id}",
-                nameFormater(fund),
-                fund.Amount,
-                baseCurrency?.Id ?? Guid.Empty,
-                baseCurrency?.ShortName ?? string.Empty,
-                baseCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty,
-                amount,
-                quoteCurrency?.Id ?? Guid.Empty,
-                quoteCurrency?.ShortName ?? string.Empty,
-                quoteCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty
-                );
+            var fundDto = new FundDto()
+            {
+                Id = $"{fund.Id}",
+                Label = nameFormater(fund),
+                Value = fund.Amount,
+                BaseCurrencyId = baseCurrency?.Id ?? Guid.Empty,
+                BaseCurrency = baseCurrency?.ShortName ?? string.Empty,
+                BaseCurrencySymbol = baseCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty,
+                QuoteCurrencyValue = amount,
+                DefaultCurrencyId = quoteCurrency?.Id ?? Guid.Empty,
+                DefaultCurrency = quoteCurrency?.ShortName ?? string.Empty,
+                DefaultCurrencySymbol = quoteCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty
+            };
 
             result.Add(fundDto);
         }

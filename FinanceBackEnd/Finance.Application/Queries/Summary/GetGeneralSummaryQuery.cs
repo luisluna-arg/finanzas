@@ -44,11 +44,11 @@ public class GetGeneralSummaryQueryHandler : IRequestHandler<GetGeneralSummaryQu
 
         var result = new TotalGeneralSummary(
         [
-            new GeneralSummary(Guid.NewGuid().ToString(), "Ingresos", convertedIncomes),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Inversiones", investments),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Fondos ($)", dailyFunds),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Fondos (U$D / Crypto)", notDailyFunds),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Dinero total", totalFunds)
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Ingresos", Value = convertedIncomes },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Inversiones", Value = investments },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Fondos ($)", Value = dailyFunds },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Fondos (U$D / Crypto)", Value = notDailyFunds },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Dinero total", Value = totalFunds }
         ]);
 
         return result;

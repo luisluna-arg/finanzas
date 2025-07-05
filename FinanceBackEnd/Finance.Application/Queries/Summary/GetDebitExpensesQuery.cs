@@ -26,6 +26,6 @@ public class GetDebitExpensesQueryHandler(FinanceDbContext db) : IRequestHandler
             debitTotal += item != null ? item.Amount : 0;
         }
 
-        return new Expense("debits", "Débitos", debitTotal);
+        return new Expense() { Id = "debits", Label = "Débitos", Value = debitTotal };
     }
 }
