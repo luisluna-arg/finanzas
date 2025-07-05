@@ -1,9 +1,9 @@
 using System.ComponentModel;
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Commands.Debits;
 using Finance.Application.Dtos.Debits;
 using Finance.Application.Helpers;
+using Finance.Application.Mapping;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using MediatR;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
-public abstract class DebitCommandController(IMapper mapper, IMediator mediator)
+public abstract class DebitCommandController(IMappingService mapper, IMediator mediator)
     : ApiBaseCommandController<Debit?, Guid, DebitDto>(mapper, mediator)
 {
     [HttpDelete]

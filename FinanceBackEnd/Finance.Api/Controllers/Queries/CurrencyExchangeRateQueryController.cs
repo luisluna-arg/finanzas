@@ -1,6 +1,6 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Dtos;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.CurrencyExchangeRates;
 using Finance.Domain.Models;
 using MediatR;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/currencies/exchange-rates")]
-public class CurrencyExchangeRateQueryController(IMapper mapper, IMediator mediator)
+public class CurrencyExchangeRateQueryController(IMappingService mapper, IMediator mediator)
     : ApiBaseQueryController<CurrencyExchangeRate?, Guid, CurrencyExchangeRateDto>(mapper, mediator)
 {
     [HttpGet]

@@ -1,6 +1,6 @@
 using System.ComponentModel;
-using AutoMapper;
 using Finance.Application.Commands.Debits;
+using Finance.Application.Mapping;
 using Finance.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/debits/monthly")]
-public class MonthlyDebitCommandController(IMapper mapper, IMediator mediator)
+public class MonthlyDebitCommandController(IMappingService mapper, IMediator mediator)
     : DebitCommandController(mapper, mediator)
 {
     [HttpPost]

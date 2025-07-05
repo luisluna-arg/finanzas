@@ -1,7 +1,7 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Commands.Banks;
 using Finance.Application.Dtos.Banks;
+using Finance.Application.Mapping;
 using Finance.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/banks")]
-public class BankCommandController(IMapper mapper, IMediator mediator)
+public class BankCommandController(IMappingService mapper, IMediator mediator)
     : ApiBaseCommandController<Bank?, Guid, BankDto>(mapper, mediator)
 {
     [HttpPost]

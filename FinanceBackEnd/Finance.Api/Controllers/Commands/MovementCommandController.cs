@@ -1,9 +1,9 @@
 using System.ComponentModel;
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Commands.Movements;
 using Finance.Application.Dtos.Movements;
 using Finance.Application.Helpers;
+using Finance.Application.Mapping;
 using Finance.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/movements")]
-public class MovementCommandController(IMapper mapper, IMediator mediator)
+public class MovementCommandController(IMappingService mapper, IMediator mediator)
     : ApiBaseCommandController<Movement?, Guid, MovementDto>(mapper, mediator)
 {
     [HttpPost]

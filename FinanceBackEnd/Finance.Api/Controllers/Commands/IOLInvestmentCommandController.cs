@@ -1,7 +1,7 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Commands.IOLInvestments;
 using Finance.Application.Dtos.IOLInvestments;
+using Finance.Application.Mapping;
 using Finance.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/iol-investment")]
-public class IOLInvestmentCommandController(IMapper mapper, IMediator mediator)
+public class IOLInvestmentCommandController(IMappingService mapper, IMediator mediator)
     : ApiBaseCommandController<IOLInvestment?, Guid, IOLInvestmentDto>(mapper, mediator)
 {
     [HttpPost]

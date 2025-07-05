@@ -1,7 +1,7 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Dtos.DebitOrigins;
+using Finance.Application.Mapping;
 using Finance.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/debit-origins")]
-public class DebitOriginCommandController(IMapper mapper, IMediator mediator)
+public class DebitOriginCommandController(IMappingService mapper, IMediator mediator)
     : ApiBaseCommandController<DebitOrigin?, Guid, DebitOriginDto>(mapper, mediator)
 {
     [HttpPost]

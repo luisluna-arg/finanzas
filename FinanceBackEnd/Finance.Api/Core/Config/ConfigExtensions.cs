@@ -1,4 +1,5 @@
 using Castle.DynamicProxy.Internal;
+using Finance.Application.Mapping;
 using Finance.Application.Repositories;
 using Finance.Application.Services;
 using Finance.Domain.DataConverters;
@@ -23,9 +24,9 @@ public static class ConfigExtensions
 
         services.AddOpenApi();
 
-        services.AddAutoMapper(applicationAssembly);
-
         services.AddMediatR(o => o.RegisterServicesFromAssembly(applicationAssembly));
+
+        services.AddMappers();
 
         var assemblyTypes = applicationAssembly.GetTypes().ToList();
         assemblyTypes.AddRange(domainAssembly.GetTypes());

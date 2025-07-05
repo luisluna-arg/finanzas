@@ -1,6 +1,6 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Dtos.Funds;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.Funds;
 using Finance.Domain.Models;
 using MediatR;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/funds")]
-public class FundQueryController(IMapper mapper, IMediator mediator)
+public class FundQueryController(IMappingService mapper, IMediator mediator)
     : ApiBaseQueryController<Fund?, Guid, FundDto>(mapper, mediator)
 {
     [HttpGet]

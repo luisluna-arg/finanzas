@@ -1,6 +1,6 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Dtos.Incomes;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.Incomes;
 using Finance.Domain.Models;
 using MediatR;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/incomes")]
-public class IncomeQueryController(IMapper mapper, IMediator mediator)
+public class IncomeQueryController(IMappingService mapper, IMediator mediator)
     : ApiBaseQueryController<Income?, Guid, IncomeDto>(mapper, mediator)
 {
     [HttpGet]

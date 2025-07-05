@@ -1,6 +1,6 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Dtos.CreditCards;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.CreditCards;
 using Finance.Domain.Models;
 using MediatR;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/credit-card-movements")]
-public class CreditCardMovementQueryController(IMapper mapper, IMediator mediator)
+public class CreditCardMovementQueryController(IMappingService mapper, IMediator mediator)
     : ApiBaseQueryController<CreditCardMovement, Guid, CreditCardMovementDto>(mapper, mediator)
 {
     [HttpGet]

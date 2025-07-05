@@ -1,6 +1,6 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Dtos.Debits;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.Debits;
 using Finance.Domain.Models;
 using MediatR;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/debits/{frequency}")]
-public class DebitQueryController(IMapper mapper, IMediator mediator)
+public class DebitQueryController(IMappingService mapper, IMediator mediator)
     : ApiBaseQueryController<Debit?, Guid, DebitDto>(mapper, mediator)
 {
     [HttpGet]

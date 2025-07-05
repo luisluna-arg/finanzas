@@ -1,6 +1,6 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Dtos.AppModules;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.AppModules;
 using Finance.Domain.Models;
 using MediatR;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/app-module-types")]
-public class AppModuleTypeQueryController(IMapper mapper, IMediator mediator) : ApiBaseQueryController<AppModuleType?, short, AppModuleTypeDto>(mapper, mediator)
+public class AppModuleTypeQueryController(IMappingService mapper, IMediator mediator) : ApiBaseQueryController<AppModuleType?, short, AppModuleTypeDto>(mapper, mediator)
 {
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetAllAppModuleTypesQuery request)

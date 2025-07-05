@@ -1,6 +1,6 @@
-using AutoMapper;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Dtos.Banks;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.Summary;
 using Finance.Domain.Models;
 using MediatR;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/summary")]
-public class SummaryQueryController(IMapper mapper, IMediator mediator)
+public class SummaryQueryController(IMappingService mapper, IMediator mediator)
     : ApiBaseQueryController<Bank?, Guid, BankDto>(mapper, mediator)
 {
     [HttpGet("currentFunds")]

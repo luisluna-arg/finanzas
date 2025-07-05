@@ -1,5 +1,5 @@
-using AutoMapper;
-using Finance.Application.Dtos;
+using Finance.Application.Dtos.Base;
+using Finance.Application.Mapping;
 using Finance.Domain.Models.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ public abstract class ApiBaseCUDCommandController<
     TCreateCommand,
     TUpdateCommand,
     TDeleteCommand
-    >(IMapper mapper, IMediator mediator)
+    >(IMappingService mapper, IMediator mediator)
     : ApiBaseCommandController<TEntity, TId, TDto>(mapper, mediator)
     where TDto : Dto<TId>
     where TEntity : IEntity?

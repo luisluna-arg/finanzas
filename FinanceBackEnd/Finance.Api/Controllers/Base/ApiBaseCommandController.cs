@@ -1,5 +1,5 @@
-using AutoMapper;
-using Finance.Application.Dtos;
+using Finance.Application.Dtos.Base;
+using Finance.Application.Mapping;
 using Finance.Domain.Models.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Base;
 
 [ApiController]
-public abstract class ApiBaseCommandController<TEntity, TId, TDto>(IMapper mapper, IMediator mediator)
+public abstract class ApiBaseCommandController<TEntity, TId, TDto>(IMappingService mapper, IMediator mediator)
     : ApiBaseController<TEntity, TId, TDto>(mapper, mediator)
     where TDto : Dto<TId>
     where TEntity : IEntity?
@@ -27,6 +27,6 @@ public abstract class ApiBaseCommandController<TEntity, TId, TDto>(IMapper mappe
     private async Task<TDto?> MapAndSend404(IRequest<TEntity> command)
     {
         var entity = await Mediator.Send(command);
-        return entity == null ? Mapper.Map<TDto>(entity) : null;
+        return entity != null ? MappingService.Map<TDto>(entity) : null;
     }
 }
