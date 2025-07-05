@@ -14,4 +14,6 @@ public class CreditCardMovement : Entity<Guid>
     required public ushort PlanSize { get; set; } = 1;
     required public Money Amount { get; set; } = 0;
     required public Money AmountDollars { get; set; } = 0;
+
+    public CreditCardMovement() : base() { }
 }
