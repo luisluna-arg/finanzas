@@ -28,4 +28,17 @@ public class AppModuleRepository(FinanceDbContext dbContext) : BaseRepository<Ap
 
     private async Task<AppModule?> GetModuleAsync(string appModuleId, CancellationToken cancellationToken)
         => await GetAllBy("Id", new Guid(appModuleId)).Include(o => o.Currency).FirstOrDefaultAsync(cancellationToken);
+
+    async Task<AppModule> IAppModuleRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var appModule = await DbContext
+            .AppModule
+            .Include(o => o.Currency)
+            .Include(o => o.Type)
+            .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+
+        if (appModule == null) throw new Exception($"App Module with id {id} not found");
+
+        return appModule;
+    }
 }
