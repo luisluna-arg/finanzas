@@ -3,6 +3,7 @@ using System;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Finance.Domain.Migrations
 {
     [DbContext(typeof(FinanceDbContext))]
-    partial class FinanceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250705073018_FixIdentityColumnNames")]
+    partial class FixIdentityColumnNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +56,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("AppModule", (string)null);
+                    b.ToTable("AppModule");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.AppModuleType", b =>
@@ -76,7 +79,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppModuleType", (string)null);
+                    b.ToTable("AppModuleType");
 
                     b.HasData(
                         new
@@ -119,7 +122,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bank", (string)null);
+                    b.ToTable("Bank");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCard", b =>
@@ -145,7 +148,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("BankId");
 
-                    b.ToTable("CreditCard", (string)null);
+                    b.ToTable("CreditCard");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardMovement", b =>
@@ -186,7 +189,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("CreditCardId");
 
-                    b.ToTable("CreditCardMovement", (string)null);
+                    b.ToTable("CreditCardMovement");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardMovementResource", b =>
@@ -216,7 +219,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("CreditCardMovementResource", (string)null);
+                    b.ToTable("CreditCardMovementResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardResource", b =>
@@ -246,7 +249,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("CreditCardResource", (string)null);
+                    b.ToTable("CreditCardResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardStatement", b =>
@@ -272,7 +275,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("CreditCardId")
                         .IsUnique();
 
-                    b.ToTable("CreditCardStatement", (string)null);
+                    b.ToTable("CreditCardStatement");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementResource", b =>
@@ -302,7 +305,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("CreditCardStatementResource", (string)null);
+                    b.ToTable("CreditCardStatementResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Currency", b =>
@@ -333,7 +336,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("Name", "ShortName")
                         .IsUnique();
 
-                    b.ToTable("Currency", (string)null);
+                    b.ToTable("Currency");
 
                     b.HasData(
                         new
@@ -376,7 +379,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("MovementId");
 
-                    b.ToTable("CurrencyConversion", (string)null);
+                    b.ToTable("CurrencyConversion");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CurrencyExchangeRate", b =>
@@ -416,7 +419,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("BaseCurrencyId", "QuoteCurrencyId", "TimeStamp")
                         .IsUnique();
 
-                    b.ToTable("CurrencyExchangeRate", (string)null);
+                    b.ToTable("CurrencyExchangeRate");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CurrencyExchangeRateResource", b =>
@@ -446,7 +449,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("CurrencyExchangeRateResource", (string)null);
+                    b.ToTable("CurrencyExchangeRateResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CurrencySymbol", b =>
@@ -473,7 +476,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("Symbol", "CurrencyId")
                         .IsUnique();
 
-                    b.ToTable("CurrencySymbols", (string)null);
+                    b.ToTable("CurrencySymbols");
 
                     b.HasData(
                         new
@@ -535,7 +538,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("OriginId");
 
-                    b.ToTable("Debit", (string)null);
+                    b.ToTable("Debit");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.DebitOrigin", b =>
@@ -561,7 +564,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("Name", "AppModuleId")
                         .IsUnique();
 
-                    b.ToTable("DebitOrigin", (string)null);
+                    b.ToTable("DebitOrigin");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.DebitOriginResource", b =>
@@ -591,7 +594,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("DebitOriginResource", (string)null);
+                    b.ToTable("DebitOriginResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.DebitResource", b =>
@@ -621,7 +624,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("DebitResource", (string)null);
+                    b.ToTable("DebitResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Frequency", b =>
@@ -644,7 +647,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Frequency", (string)null);
+                    b.ToTable("Frequency");
 
                     b.HasData(
                         new
@@ -701,7 +704,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Fund", (string)null);
+                    b.ToTable("Fund");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.FundResource", b =>
@@ -731,7 +734,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("FundResource", (string)null);
+                    b.ToTable("FundResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestment", b =>
@@ -786,7 +789,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("AssetId");
 
-                    b.ToTable("IOLInvestment", (string)null);
+                    b.ToTable("IOLInvestment");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAsset", b =>
@@ -818,7 +821,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("IOLInvestmentAsset", (string)null);
+                    b.ToTable("IOLInvestmentAsset");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAssetResource", b =>
@@ -848,7 +851,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("IOLInvestmentAssetResource", (string)null);
+                    b.ToTable("IOLInvestmentAssetResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAssetType", b =>
@@ -871,7 +874,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IOLInvestmentAssetType", (string)null);
+                    b.ToTable("IOLInvestmentAssetType");
 
                     b.HasData(
                         new
@@ -937,7 +940,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId1");
 
-                    b.ToTable("IOLInvestmentAssetTypeResource", (string)null);
+                    b.ToTable("IOLInvestmentAssetTypeResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentResource", b =>
@@ -967,7 +970,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("IOLInvestmentResource", (string)null);
+                    b.ToTable("IOLInvestmentResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Identity", b =>
@@ -1000,7 +1003,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Identity", (string)null);
+                    b.ToTable("Identity");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IdentityProvider", b =>
@@ -1023,7 +1026,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IdentityProvider", (string)null);
+                    b.ToTable("IdentityProvider");
 
                     b.HasData(
                         new
@@ -1077,7 +1080,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Income", (string)null);
+                    b.ToTable("Income");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IncomeResource", b =>
@@ -1107,7 +1110,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("IncomeResource", (string)null);
+                    b.ToTable("IncomeResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Movement", b =>
@@ -1158,7 +1161,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Movement", (string)null);
+                    b.ToTable("Movement");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.MovementResource", b =>
@@ -1188,7 +1191,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("MovementResource", (string)null);
+                    b.ToTable("MovementResource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Resource", b =>
@@ -1208,7 +1211,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Resource", (string)null);
+                    b.ToTable("Resource");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.ResourceOwner", b =>
@@ -1238,7 +1241,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ResourceOwner", (string)null);
+                    b.ToTable("ResourceOwner");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Role", b =>
@@ -1261,7 +1264,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Role", (string)null);
+                    b.ToTable("Role");
 
                     b.HasData(
                         new
@@ -1314,7 +1317,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.UserRole", b =>
@@ -1344,7 +1347,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole", (string)null);
+                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.AppModule", b =>

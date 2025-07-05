@@ -1,6 +1,7 @@
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Persistance.Configurations.Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Finance.Persistance.Configurations;
@@ -12,7 +13,7 @@ public class IdentityConfiguration : AuditedEntityConfiguration<Identity, Guid>
         base.Configure(builder);
 
         builder
-            .Property(o => o.UserId)
+            .Property(o => o.SourceId)
             .HasMaxLength(100);
 
         builder
@@ -20,5 +21,11 @@ public class IdentityConfiguration : AuditedEntityConfiguration<Identity, Guid>
             .HasConversion(
                 v => (short)v,
                 v => (IdentityProviderEnum)v);
+
+        builder
+            .HasOne(i => i.User)
+            .WithMany(u => u.Identities)
+            .HasForeignKey(i => i.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
