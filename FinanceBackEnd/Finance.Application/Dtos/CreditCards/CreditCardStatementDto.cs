@@ -1,12 +1,7 @@
 namespace Finance.Application.Dtos.CreditCards;
 
-public record CreditCardStatementDto : Dto<Guid>
+public record CreditCardStatementDto() : Dto<Guid>
 {
-    public CreditCardStatementDto()
-        : base()
-    {
-    }
-
     public Guid CreditCardId { get; set; }
 
     public CreditCardDto CreditCard { get; set; } = default!;

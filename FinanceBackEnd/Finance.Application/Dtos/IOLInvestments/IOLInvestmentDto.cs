@@ -2,13 +2,8 @@ using Finance.Application.Dtos.IOLInvestmentAssets;
 
 namespace Finance.Application.Dtos.IOLInvestments;
 
-public record IOLInvestmentDto : Dto<Guid>
+public record IOLInvestmentDto() : Dto<Guid>
 {
-    public IOLInvestmentDto()
-        : base()
-    {
-    }
-
     required public DateTime CreatedAt { get; set; }
 
     required public DateTime TimeStamp { get; set; }

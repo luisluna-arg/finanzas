@@ -2,13 +2,8 @@ using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Dtos.CreditCards;
 
-public record CreditCardMovementDto : Dto<Guid>
+public record CreditCardMovementDto() : Dto<Guid>
 {
-    public CreditCardMovementDto()
-        : base()
-    {
-    }
-
     public Guid CreditCardId { get; set; }
     required public DateTime TimeStamp { get; set; }
     required public DateTime PlanStart { get; set; }

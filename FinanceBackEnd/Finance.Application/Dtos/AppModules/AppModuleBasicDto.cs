@@ -1,11 +1,6 @@
 namespace Finance.Application.Dtos.AppModules;
 
-public record AppModuleBasicDto : Dto<Guid>
+public record AppModuleBasicDto() : Dto<Guid>
 {
-    public AppModuleBasicDto()
-        : base()
-    {
-    }
-
     public string Name { get; set; } = string.Empty;
 }
