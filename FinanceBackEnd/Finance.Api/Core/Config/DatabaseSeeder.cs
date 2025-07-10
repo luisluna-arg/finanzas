@@ -1,18 +1,28 @@
+using Finance.Api.Core.Options;
+using Finance.Api.Core.Services;
 using Finance.Application.Helpers;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Finance.Api.Core.Config;
 
 public class DatabaseSeeder : IHostedService
 {
     private readonly IServiceProvider provider;
+    private readonly AdminUserOptions adminUserOptions;
+    private readonly ILogger<DatabaseSeeder> logger;
 
-    public DatabaseSeeder(IServiceProvider serviceProvider)
+    public DatabaseSeeder(
+        IServiceProvider serviceProvider,
+        IOptions<AdminUserOptions> adminUserOptions,
+        ILogger<DatabaseSeeder> logger)
     {
         provider = serviceProvider;
+        this.adminUserOptions = adminUserOptions.Value;
+        this.logger = logger;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -27,6 +37,10 @@ public class DatabaseSeeder : IHostedService
         await SeedAppModules(dbContext);
 
         await SeedInvestmentAssetIOLTypes(dbContext);
+
+        await SeedRoles(dbContext);
+
+        await SeedAdminUser(dbContext);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
@@ -184,6 +198,174 @@ public class DatabaseSeeder : IHostedService
             await dbContext.AddRangeAsync(newInvestmentAssetTypes);
             await dbContext.SaveChangesAsync();
         }
+    }
+
+    private async Task SeedRoles(FinanceDbContext dbContext)
+    {
+        var roles = await dbContext.Role.ToArrayAsync();
+
+        var enumValues = Enum.GetValues(typeof(RoleEnum)).Cast<RoleEnum>().ToArray();
+        var newRoles = new List<Role>();
+
+        Action<RoleEnum> collectRole = (roleEnum) =>
+        {
+            if (!roles.Any(o => o.Id == roleEnum))
+            {
+                newRoles.Add(new Role { Id = roleEnum, Name = roleEnum.ToString(), Deactivated = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
+            }
+        };
+
+        foreach (var roleEnum in enumValues)
+        {
+            collectRole(roleEnum);
+        }
+
+        if (newRoles.Any())
+        {
+            await dbContext.AddRangeAsync(newRoles);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    private async Task SeedAdminUser(FinanceDbContext dbContext)
+    {
+        // Check if admin user seeding is enabled
+        if (!adminUserOptions.EnableSeeding)
+        {
+            logger.LogInformation("Admin user seeding is disabled");
+            return;
+        }
+
+        // Only seed admin user if UserId is configured
+        if (string.IsNullOrWhiteSpace(adminUserOptions.UserId))
+        {
+            logger.LogInformation("No admin UserId configured, skipping admin user seeding");
+            return;
+        }
+
+        // Validate user exists in Auth0 (always required for security)
+        using var validationScope = provider.CreateScope();
+        var auth0ValidationService = validationScope.ServiceProvider.GetRequiredService<IAuth0UserValidationService>();
+
+        var userExistsInAuth0 = await auth0ValidationService.ValidateUserExistsAsync(adminUserOptions.UserId);
+        if (!userExistsInAuth0)
+        {
+            logger.LogWarning("Admin user {AdminUserId} does not exist in Auth0. Skipping admin user seeding for security", adminUserOptions.UserId);
+            return;
+        }
+
+        // Get user info from Auth0 for better seeding
+        var auth0UserInfo = await auth0ValidationService.GetUserInfoAsync(adminUserOptions.UserId);
+        if (auth0UserInfo != null)
+        {
+            logger.LogInformation("Validated admin user {AdminUserId} exists in Auth0. Email: {Email}", adminUserOptions.UserId, auth0UserInfo.Email);
+        }
+
+        // Check if admin user already exists
+        var existingIdentity = await dbContext.Identity
+            .Include(i => i.User)
+            .FirstOrDefaultAsync(i => i.Provider == IdentityProviderEnum.Auth &&
+                                    i.SourceId == adminUserOptions.UserId);
+
+        if (existingIdentity != null)
+        {
+            // Admin user already exists, check if they have admin role
+            var existingUserRole = await dbContext.UserRole
+                .FirstOrDefaultAsync(ur => ur.UserId == existingIdentity.User.Id &&
+                                         ur.RoleId == RoleEnum.Admin);
+
+            if (existingUserRole == null)
+            {
+                // User exists but doesn't have admin role, add it
+                var adminRole = await dbContext.Role.FirstOrDefaultAsync(r => r.Id == RoleEnum.Admin);
+                if (adminRole != null)
+                {
+                    var userRole = new UserRole
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = existingIdentity.User.Id,
+                        User = existingIdentity.User,
+                        RoleId = RoleEnum.Admin,
+                        Role = adminRole,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    await dbContext.UserRole.AddAsync(userRole);
+                    await dbContext.SaveChangesAsync();
+                    logger.LogInformation("Added admin role to existing user {AdminUserId}", adminUserOptions.UserId);
+                }
+            }
+            else
+            {
+                logger.LogInformation("Admin user {AdminUserId} already has admin role", adminUserOptions.UserId);
+            }
+
+            return;
+        }
+
+        // Create new admin user
+        var now = DateTime.UtcNow;
+
+        // Get user info from Auth0 for better user data
+        string firstName = adminUserOptions.DefaultFirstName;
+        string lastName = adminUserOptions.DefaultLastName;
+        string username = adminUserOptions.DefaultUsername;
+
+        // Use Auth0 user info if available (we already have it from validation above)
+        if (auth0UserInfo != null)
+        {
+            firstName = auth0UserInfo.GivenName ?? firstName;
+            lastName = auth0UserInfo.FamilyName ?? lastName;
+            username = auth0UserInfo.Name ?? auth0UserInfo.Email ?? username;
+        }
+
+        // Create User
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Username = username,
+            FirstName = firstName,
+            LastName = lastName,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        await dbContext.User.AddAsync(user);
+
+        // Create Identity
+        var identity = new Identity
+        {
+            Id = Guid.NewGuid(),
+            Provider = IdentityProviderEnum.Auth,
+            SourceId = adminUserOptions.UserId,
+            User = user,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        await dbContext.Identity.AddAsync(identity);
+
+        // Get or create Admin role and assign to user
+        var adminRoleEntity = await dbContext.Role.FirstOrDefaultAsync(r => r.Id == RoleEnum.Admin);
+        if (adminRoleEntity != null)
+        {
+            var userRole = new UserRole
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                User = user,
+                RoleId = RoleEnum.Admin,
+                Role = adminRoleEntity,
+                CreatedAt = now,
+                UpdatedAt = now
+            };
+
+            await dbContext.UserRole.AddAsync(userRole);
+        }
+
+        await dbContext.SaveChangesAsync();
+        logger.LogInformation("Successfully seeded admin user {AdminUserId} with admin role", adminUserOptions.UserId);
     }
 
     public static class CurrencyConstants

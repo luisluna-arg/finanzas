@@ -6,11 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Base;
 
-[ApiController]
 public abstract class ApiBaseController<TEntity, TId, TDto>(
     IMappingService mappingService,
     IMediator mediator)
-    : ControllerBase
+    : SecuredApiController
     where TDto : Dto<TId>
     where TEntity : IEntity?
 {

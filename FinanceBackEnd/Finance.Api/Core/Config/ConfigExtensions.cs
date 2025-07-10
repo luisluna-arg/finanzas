@@ -1,3 +1,5 @@
+using Finance.Api.Core.Options;
+using Finance.Api.Core.Services;
 using Finance.Application.Extensions;
 using Finance.Application.Mapping;
 using Finance.Application.Repositories;
@@ -6,7 +8,6 @@ using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Scalar.AspNetCore;
 
 namespace Finance.Api.Core.Config;
 
@@ -17,8 +18,6 @@ public static class ConfigExtensions
     public static void MainServices(this IServiceCollection services)
     {
         var applicationAssembly = typeof(AppModuleRepository).Assembly;
-
-        services.AddOpenApi();
 
         services.AddMediatR(o => o.RegisterServicesFromAssembly(applicationAssembly));
 
@@ -38,10 +37,19 @@ public static class ConfigExtensions
         });
 
         services.AddScoped<IOLInvestmentExcelHelper>();
+
+        // Add Auth0 user validation service
+        services.AddScoped<IAuth0UserValidationService, Auth0UserValidationService>();
     }
 
     public static void ConfigureDataBase(this IServiceCollection services, WebApplicationBuilder builder)
     {
+        // Configure Auth0 options
+        services.Configure<Auth0Options>(builder.Configuration.GetSection(Auth0Options.SectionName));
+
+        // Configure Admin User options
+        services.Configure<AdminUserOptions>(builder.Configuration.GetSection(AdminUserOptions.SectionName));
+
         // Add Context to dependency injection
         services.AddDbContext<FinanceDbContext>(opt =>
         {
@@ -65,22 +73,19 @@ public static class ConfigExtensions
     {
         app.UseHttpsRedirection();
         app.UseRouting();
-        app.UseAuthorization();
 
+        // Important: Add CORS before authentication middleware
         app.UseCors(AllowOriginsForCORSPolicy);
 
+        // Authentication and authorization middleware
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        // Configure controllers
         app.MapControllers();
-    }
 
-    public static void ConfigureOpenApi(this WebApplication app)
-    {
-        app.MapOpenApi();
-
-        app.UseSwaggerUI(opts =>
-        {
-            opts.SwaggerEndpoint("/openapi/v1.json", "Finances API v1");
-        });
-
-        app.MapScalarApiReference();
+        // Configure Swagger and API reference for both development and production
+        // Only in production we'll protect the Scalar endpoint
+        SwaggerConfig.ConfigureOpenApiUI(app);
     }
 }

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Base;
 
-[ApiController]
 public abstract class ApiBaseQueryController<TEntity, TId, TDto>(IMappingService mappingService, IMediator mediator)
     : ApiBaseController<TEntity, TId, TDto>(mappingService, mediator)
     where TDto : Dto<TId>

@@ -12,15 +12,15 @@ public static class RepositoryExtensions
         this IServiceCollection services,
         IEnumerable<Type> assemblyTypes)
     {
+        // Find all repository types except AppModuleRepository (it's registered separately)
         var repositoryTypeTuples = assemblyTypes
             .Where(t => t.Namespace == "Finance.Application.Repositories")
+            .Where(t => t.IsClass && !t.IsAbstract)
+            .Where(t => t.Name != "AppModuleRepository")
             .Where(t =>
             {
                 var interfaces = t.GetInterfaces();
-                return interfaces.Any(x => x.Name == "IRepository`2") &&
-                    interfaces.All(x =>
-                        x.Name != "IAppModuleRepository" &&
-                        x.GetGenericArguments().All(o => o.Name != "TEntity" && o.Name != "TId"));
+                return interfaces.Any(x => x.Name == "IRepository`2");
             })
             .Select(t => (t.GetInterfaces().First(x => x.Name == "IRepository`2"), t))
             .ToArray();
@@ -32,8 +32,17 @@ public static class RepositoryExtensions
             services.AddScoped(repositoryInterface, repositoryType);
         }
 
+        // First register the specific repository
         services.AddScoped<IAppModuleRepository, AppModuleRepository>();
+        
+        // Then register the generic repository with the concrete implementation
+        // This ensures that when IRepository<AppModule, Guid> is requested, 
+        // an AppModuleRepository instance is provided, not an IAppModuleRepository
         services.AddScoped<IRepository<AppModule, Guid>, AppModuleRepository>();
+        
+        // Register entity service for AppModule manually
+        services.AddScoped<IEntityService<AppModule, Guid>, EntityService<AppModule, Guid>>();
+        
         services.AddScoped<CurrencyConversionService>();
     }
     
@@ -67,18 +76,29 @@ public static class RepositoryExtensions
     public static IEnumerable<(Type ServiceInterfaceType, Type ServiceType)> GetEntityServiceTypes(
         this IEnumerable<Type> assemblyTypes)
     {
-        // Find service interface and class types
-        var servicesTypes = assemblyTypes.Where(t =>
-            t.Namespace == "Finance.Application.Services" &&
-            t.GetInterfaces().Any(i => i.Name.StartsWith("IEntityService")));
+        // Find the IEntityService<,> interface and EntityService<,> class types directly
+        var serviceInterface = typeof(IEntityService<,>);
+        var serviceClass = typeof(EntityService<,>);
+        
+        if (serviceInterface == null || serviceClass == null)
+        {
+            return Enumerable.Empty<(Type, Type)>();
+        }
 
-        var serviceInterface = servicesTypes.First(t => t.IsInterface);
-        var serviceClass = servicesTypes.First(t => t.IsClass);
-
-        // Get all repository types to match against
+        // Get all repository types to match against - only concrete implementations
         var repositoryTypes = assemblyTypes
             .Where(t => t.Namespace == "Finance.Application.Repositories")
-            .Where(t => t.IsClass && !t.IsAbstract)
+            .Where(t => t.IsClass && !t.IsAbstract && !t.IsInterface)
+            .ToList();
+            
+        // Get repository interfaces to exclude special cases
+        var repositoryInterfaces = assemblyTypes
+            .Where(t => (t.Namespace == "Finance.Application.Repositories" || t.Namespace == "Finance.Application.Repositories.Base") && t.IsInterface)
+            .ToList();
+            
+        // Special case for IAppModuleRepository - skip it as it's registered manually
+        var specialRepositoryInterfaces = repositoryInterfaces
+            .Where(t => t.Name == "IAppModuleRepository")
             .ToList();
 
         return assemblyTypes
@@ -88,6 +108,10 @@ public static class RepositoryExtensions
             {
                 var idType = GetEntityIdType(entityType);
                 if (idType == null)
+                    return ((Type?)null, (Type?)null);
+                    
+                // Skip AppModule as it has a special repository registration
+                if (entityType.Name == "AppModule")
                     return ((Type?)null, (Type?)null);
 
                 // Check if there's a repository for this entity type
