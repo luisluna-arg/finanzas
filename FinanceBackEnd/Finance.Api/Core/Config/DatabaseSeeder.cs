@@ -1,6 +1,6 @@
-using Finance.Api.Core.Options;
-using Finance.Api.Core.Services;
 using Finance.Application.Helpers;
+using Finance.Authentication.Options;
+using Finance.Authentication.Services;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Persistance;

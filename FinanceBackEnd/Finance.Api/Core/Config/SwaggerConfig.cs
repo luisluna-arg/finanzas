@@ -1,10 +1,16 @@
-using System.Security.Claims;
-using Finance.Api.Core.Authorization;
-using Finance.Api.Core.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+#pragma warning disable IDE0005 // Using directive is unnecessary
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using Swashbuckle.AspNetCore.SwaggerUI;
+#pragma warning restore IDE0005
 
 // Disable StyleCop spacing rules for collection initializers in this file
 #pragma warning disable SA1009 // Closing parenthesis should be spaced correctly
@@ -83,48 +89,8 @@ public static class SwaggerConfig
         return services;
     }
 
-    /// <summary>
-    /// Configures Auth0 authentication and authorization for the application.
-    /// </summary>
-    /// <param name="services">The IServiceCollection to add authentication and authorization services to.</param>
-    /// <param name="configuration">The application configuration containing Auth0 settings.</param>
-    public static void ConfigureAuth0Authentication(this IServiceCollection services, IConfiguration configuration)
-    {
-        var auth0Options = configuration.GetSection(Auth0Options.SectionName).Get<Auth0Options>()
-            ?? throw new InvalidOperationException("Auth0 configuration is missing.");
-
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.Authority = $"https://{auth0Options.Domain}/";
-            options.Audience = auth0Options.Audience;
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                NameClaimType = ClaimTypes.NameIdentifier,
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true
-            };
-        });
-
-        // Configure authorization policies with database access
-        services.AddAuthorization(options =>
-        {
-            // Get DbContext from service provider at configuration time
-            var sp = services.BuildServiceProvider();
-            var dbContext = sp.GetRequiredService<Finance.Persistance.FinanceDbContext>();
-
-            // ^ Will throw InvalidOperationException if DbContext is not available
-
-            // Configure policies with database context
-            AuthorizationPolicyProvider.ConfigurePoliciesWithDb(options, dbContext);
-        });
-    }
+    // Removed ConfigureAuth0Authentication method as it's now called directly from Program.cs
+    // using the Finance.Authentication.Extensions.AuthenticationExtensions class
 
     /// <summary>
     /// Configures OpenAPI/Swagger for the application.

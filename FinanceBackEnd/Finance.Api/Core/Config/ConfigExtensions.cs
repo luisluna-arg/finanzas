@@ -1,5 +1,3 @@
-using Finance.Api.Core.Options;
-using Finance.Api.Core.Services;
 using Finance.Application.Extensions;
 using Finance.Application.Mapping;
 using Finance.Application.Repositories;
@@ -37,18 +35,15 @@ public static class ConfigExtensions
         });
 
         services.AddScoped<IOLInvestmentExcelHelper>();
-
-        // Add Auth0 user validation service
-        services.AddScoped<IAuth0UserValidationService, Auth0UserValidationService>();
     }
 
     public static void ConfigureDataBase(this IServiceCollection services, WebApplicationBuilder builder)
     {
         // Configure Auth0 options
-        services.Configure<Auth0Options>(builder.Configuration.GetSection(Auth0Options.SectionName));
+        services.Configure<Authentication.Options.Auth0Options>(builder.Configuration.GetSection(Authentication.Options.Auth0Options.SectionName));
 
         // Configure Admin User options
-        services.Configure<AdminUserOptions>(builder.Configuration.GetSection(AdminUserOptions.SectionName));
+        services.Configure<Authentication.Options.AdminUserOptions>(builder.Configuration.GetSection(Authentication.Options.AdminUserOptions.SectionName));
 
         // Add Context to dependency injection
         services.AddDbContext<FinanceDbContext>(opt =>

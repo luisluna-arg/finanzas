@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Domain", "Finance.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Migrations", "Finance.Migrations\Finance.Migrations.csproj", "{07941F27-5614-424A-A929-57DCC27AE006}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Authentication", "Finance.Authentication\Finance.Authentication.csproj", "{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{07941F27-5614-424A-A929-57DCC27AE006}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07941F27-5614-424A-A929-57DCC27AE006}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07941F27-5614-424A-A929-57DCC27AE006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -12,8 +12,8 @@ builder.Services.MainServices();
 // Add Swagger with authentication
 builder.Services.AddSwaggerWithAuth();
 
-// Configure Auth0 authentication and authorization
-builder.Services.ConfigureAuth0Authentication(builder.Configuration);
+// Configure Auth0 authentication and authorization using the authentication extension
+Finance.Authentication.Extensions.AuthenticationExtensions.ConfigureAuth0Authentication(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
