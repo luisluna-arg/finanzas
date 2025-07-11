@@ -2,11 +2,14 @@ using Finance.Application.Dtos.Base;
 using Finance.Application.Mapping;
 using Finance.Domain.Models.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Base;
 
 [ApiController]
+[Authorize(Policy = "AdminPolicy")]
+[Produces("application/json")]
 public abstract class ApiBaseCommandController<TEntity, TId, TDto>(IMappingService mapper, IMediator mediator)
     : ApiBaseController<TEntity, TId, TDto>(mapper, mediator)
     where TDto : Dto<TId>

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerUI;
 #pragma warning restore IDE0005
 
@@ -38,7 +39,41 @@ public static class SwaggerConfig
         // Add OpenAPI/Swagger services with authentication
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Finances API", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Finances API",
+                Version = "v1",
+                Description = "API for managing financial data",
+                Contact = new OpenApiContact
+                {
+                    Name = "Finance API Team"
+                }
+            });
+
+            // Ensure all controllers are included in the documentation
+            c.EnableAnnotations();
+
+            // Include XML comments if they exist
+            var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml");
+            foreach (var xmlFile in xmlFiles)
+            {
+                c.IncludeXmlComments(xmlFile);
+            }
+
+            // Use controller name as the tag for grouping
+            c.TagActionsBy(api =>
+            {
+                if (api.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor controllerActionDescriptor)
+                {
+                    // Use the controller name without the "Controller" suffix
+                    var controllerName = controllerActionDescriptor.ControllerName;
+                    return new[] { controllerName };
+                }
+
+                return new[] { "Other" };
+            });
+
+            c.DocInclusionPredicate((name, api) => true);
 
             // Audience will be provided in additional parameters
 
@@ -98,16 +133,19 @@ public static class SwaggerConfig
     /// <param name="app">The WebApplication to configure OpenAPI/Swagger UI for.</param>
     public static void ConfigureOpenApiUI(this WebApplication app)
     {
-        // Use the Swashbuckle version of UseSwagger
+        // Use the Swashbuckle version of UseSwagger - only call once
         SwaggerBuilderExtensions.UseSwagger(app);
 
-        // Add SwaggerUI
-        _ = app.UseSwaggerUI(opts =>
+        // Configure Swagger UI with authentication
+        app.UseSwaggerUI(opts =>
         {
             // Point to the Swagger JSON endpoint
             opts.SwaggerEndpoint("/swagger/v1/swagger.json", "Finances API v1");
 
-            // Configure Auth0 implicit flow for Swagger UI - simpler approach
+            // Make sure the route prefix is set to "swagger"
+            opts.RoutePrefix = "swagger";
+
+            // Configure Auth0 implicit flow for Swagger UI
             var clientId = app.Configuration["Auth0:Application:ClientId"];
             var domain = app.Configuration["Auth0:Domain"];
             var audience = app.Configuration["Auth0:Audience"];
@@ -188,8 +226,23 @@ public static class SwaggerConfig
             }
         });
 
-        // Configure Scalar with authentication - Map it to a specific endpoint
+        // Configure Scalar with the path to the API reference
+        // The Scalar package should automatically find the Swagger JSON endpoint
         var scalarEndpoint = app.MapScalarApiReference("/api-reference");
+
+        // Add a mechanism to check if the Swagger JSON is generating properly
+        // This should help diagnose why Scalar isn't showing any endpoints
+
+        // Configure a diagnostic endpoint to check that Swagger JSON is generated correctly
+        app.MapGet("/api/swagger-json", async (HttpContext context) =>
+        {
+            context.Response.ContentType = "text/html";
+            await context.Response.WriteAsync("<html><head><title>Swagger JSON</title></head><body>");
+            await context.Response.WriteAsync("<h1>Swagger JSON Diagnostic</h1>");
+            await context.Response.WriteAsync("<p>Check if the Swagger JSON endpoint is accessible:</p>");
+            await context.Response.WriteAsync("<a href=\"/swagger/v1/swagger.json\" target=\"_blank\">View Swagger JSON</a>");
+            await context.Response.WriteAsync("</body></html>");
+        });
 
         // Make Scalar UI accessible from the root path as well
         app.MapGet("/", context =>

@@ -34,6 +34,9 @@ public static class ConfigExtensions
                 policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
         });
 
+        // Make sure API Explorer is enabled for controller discovery
+        services.AddEndpointsApiExplorer();
+
         services.AddScoped<IOLInvestmentExcelHelper>();
     }
 
@@ -52,7 +55,10 @@ public static class ConfigExtensions
             opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDb"));
         });
         services.AddDatabaseDeveloperPageExceptionFilter();
-        services.AddControllers().AddNewtonsoftJson(o =>
+
+        // Configure controllers with Newtonsoft JSON
+        services.AddControllers()
+        .AddNewtonsoftJson(o =>
         {
             o.SerializerSettings.Converters.Add(new StringEnumConverter
             {
