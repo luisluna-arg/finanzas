@@ -14,6 +14,18 @@ const COMMON_HEADERS = {
   'Content-Type': 'application/json',
 };
 
+// Token provider function type
+type TokenProvider = () => Promise<string>;
+
+let tokenProvider: TokenProvider | null = null;
+
+/**
+ * Set the function that provides the Auth0 access token
+ */
+export function setTokenProvider(provider: TokenProvider) {
+  tokenProvider = provider;
+}
+
 // Error processing
 async function processErrorResponse(response: Response): Promise<string> {
   try {
@@ -27,6 +39,18 @@ async function processErrorResponse(response: Response): Promise<string> {
       return `Status: ${response.status} ${response.statusText}`;
     }
   }
+}
+
+// Helper to get headers with Authorization
+async function getAuthHeaders() {
+  if (!tokenProvider) {
+    throw new Error("Token provider not set. Please call setTokenProvider in your app startup.");
+  }
+  const token = await tokenProvider();
+  return {
+    ...COMMON_HEADERS,
+    Authorization: `Bearer ${token}`,
+  };
 }
 
 /**
@@ -49,7 +73,7 @@ class ApiClient {
     try {
       const response = await fetch(url, {
         method: 'GET',
-        headers: COMMON_HEADERS,
+        headers: await getAuthHeaders(),
         // Add cache control for better performance
         cache: 'default',
       });
@@ -89,7 +113,7 @@ class ApiClient {
 
       const response = await fetch(url, {
         method: 'POST',
-        headers: COMMON_HEADERS,
+        headers: await getAuthHeaders(),
         body: JSON.stringify(data),
       });
 
@@ -134,7 +158,7 @@ class ApiClient {
 
       const response = await fetch(url, {
         method: 'PUT',
-        headers: COMMON_HEADERS,
+        headers: await getAuthHeaders(),
         body: JSON.stringify(data),
       });
 
@@ -179,7 +203,7 @@ class ApiClient {
 
       const response = await fetch(url, {
         method: 'DELETE',
-        headers: COMMON_HEADERS,
+        headers: await getAuthHeaders(),
         ...(data && { body: JSON.stringify(data) }),
       });
 
@@ -228,7 +252,7 @@ class ApiClient {
 
       const response = await fetch(url, {
         method: 'PATCH',
-        headers: COMMON_HEADERS,
+        headers: await getAuthHeaders(),
         ...(data && { body: JSON.stringify(data) }),
       });
 

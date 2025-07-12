@@ -11,9 +11,15 @@ import { Navigation, Auth0Debug } from "./components";
 import { ProtectedRoute } from "./auth";
 import { FundsDashboard, CurrencyExchangeDashboard } from "./pages";
 import { AppShell, Container, Loader, Center, Box } from "@mantine/core";
+import { useEffect } from "react";
+import { setTokenProvider } from "./services/ApiClient";
 
 function App() {
-  const { isLoading } = useAuth();
+  const { isLoading, getAccessToken } = useAuth();
+
+  useEffect(() => {
+    setTokenProvider(getAccessToken);
+  }, [getAccessToken]);
 
   if (isLoading) {
     return (
