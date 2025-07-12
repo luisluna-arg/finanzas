@@ -1,14 +1,12 @@
 #pragma warning disable IDE0005 // Using directive is unnecessary
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Scalar.AspNetCore;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerUI;
 #pragma warning restore IDE0005
@@ -225,36 +223,5 @@ public static class SwaggerConfig
                 opts.OAuthAdditionalQueryStringParams(additionalParams);
             }
         });
-
-        // Configure Scalar with the path to the API reference
-        // The Scalar package should automatically find the Swagger JSON endpoint
-        var scalarEndpoint = app.MapScalarApiReference("/api-reference");
-
-        // Add a mechanism to check if the Swagger JSON is generating properly
-        // This should help diagnose why Scalar isn't showing any endpoints
-
-        // Configure a diagnostic endpoint to check that Swagger JSON is generated correctly
-        app.MapGet("/api/swagger-json", async (HttpContext context) =>
-        {
-            context.Response.ContentType = "text/html";
-            await context.Response.WriteAsync("<html><head><title>Swagger JSON</title></head><body>");
-            await context.Response.WriteAsync("<h1>Swagger JSON Diagnostic</h1>");
-            await context.Response.WriteAsync("<p>Check if the Swagger JSON endpoint is accessible:</p>");
-            await context.Response.WriteAsync("<a href=\"/swagger/v1/swagger.json\" target=\"_blank\">View Swagger JSON</a>");
-            await context.Response.WriteAsync("</body></html>");
-        });
-
-        // Make Scalar UI accessible from the root path as well
-        app.MapGet("/", context =>
-        {
-            context.Response.Redirect("/api-reference");
-            return Task.CompletedTask;
-        });
-
-        // Do not require authorization for Scalar during development to make it easier to access
-        if (!app.Environment.IsDevelopment())
-        {
-            scalarEndpoint.RequireAuthorization();
-        }
     }
 }

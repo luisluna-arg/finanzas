@@ -86,7 +86,6 @@ public static class ConfigExtensions
         app.MapControllers();
 
         // Configure Swagger and API reference for both development and production
-        // Only in production we'll protect the Scalar endpoint
         SwaggerConfig.ConfigureOpenApiUI(app);
     }
 }
