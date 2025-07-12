@@ -3,7 +3,7 @@ using Finance.Api.Core.Config;
 var builder = WebApplication.CreateBuilder(args);
 
 // Explicitly set the URLs the application will listen on
-builder.WebHost.UseUrls("http://localhost:5000", "https://localhost:7000");
+builder.WebHost.UseUrls("http://localhost:5000", "https://localhost:5100");
 
 builder.Services.ConfigureDataBase(builder);
 
