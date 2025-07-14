@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Migrations", "Finan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Authentication", "Finance.Authentication\Finance.Authentication.csproj", "{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CQRSDispatch", "CQRSDispatch\CQRSDispatch.csproj", "{1CB44F2D-23FB-416C-9A33-424E6DDBA954}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,9 @@ Global
 		{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CB44F2D-23FB-416C-9A33-424E6DDBA954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CB44F2D-23FB-416C-9A33-424E6DDBA954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CB44F2D-23FB-416C-9A33-424E6DDBA954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CB44F2D-23FB-416C-9A33-424E6DDBA954}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
