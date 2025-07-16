@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -14,7 +15,7 @@ public class GetAllLatestCurrencyExchangeRatesQueryHandler
     {
     }
 
-    public override async Task<ICollection<CurrencyExchangeRate>> Handle(
+    public override async Task<DataResult<List<CurrencyExchangeRate>>> ExecuteAsync(
         GetAllLatestCurrencyExchangeRatesQuery request,
         CancellationToken cancellationToken)
     {
@@ -47,7 +48,7 @@ public class GetAllLatestCurrencyExchangeRatesQueryHandler
                     .ThenByDescending(o => o.TimeStamp)
                     .AsEnumerable());
 
-        return await groupResult.Select(o => o.First()).ToArrayAsync();
+        return DataResult<List<CurrencyExchangeRate>>.Success(await groupResult.Select(o => o.First()).ToListAsync(cancellationToken));
     }
 }
 

@@ -1,4 +1,5 @@
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
@@ -12,13 +13,13 @@ public class CreateFundMovementCommandHandler(
     IRepository<Movement, Guid> movementRepository,
     IRepository<Currency, Guid> currencyRepository,
     IAppModuleRepository appModuleRepository)
-    : BaseResponseHandler<CreateFundMovementCommand, Movement>(db)
+    : BaseCommandHandler<CreateFundMovementCommand, Movement>(db)
 {
     private readonly IRepository<Movement, Guid> _movementRepository = movementRepository;
     private readonly IRepository<Currency, Guid> _currencyRepository = currencyRepository;
     private readonly IAppModuleRepository _appModuleRepository = appModuleRepository;
 
-    public override async Task<Movement> Handle(CreateFundMovementCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Movement>> ExecuteAsync(CreateFundMovementCommand command, CancellationToken cancellationToken)
     {
         AppModule? appModule = await _appModuleRepository.GetFundsAsync(cancellationToken);
 
@@ -38,6 +39,6 @@ public class CreateFundMovementCommandHandler(
 
         await _movementRepository.AddAsync(newMovement, cancellationToken);
 
-        return await Task.FromResult(newMovement);
+        return DataResult<Movement>.Success(newMovement);
     }
 }

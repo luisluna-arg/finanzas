@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Users;
 
-public class GetAllUsersQuery : GetAllQuery<User?>;
+public class GetAllUsersQuery : GetAllQuery<User>;
 
-public class GetAllUsersQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllUsersQuery, User?>(db)
+public class GetAllUsersQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllUsersQuery, User>(db)
 {
-    public override async Task<ICollection<User?>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<User>>> ExecuteAsync(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.User
             .Include(u => u.Roles)
@@ -22,6 +23,6 @@ public class GetAllUsersQueryHandler(FinanceDbContext db) : BaseCollectionHandle
             query = query.Where(o => !o.Deactivated);
         }
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        return DataResult<List<User>>.Success(await query.ToListAsync(cancellationToken));
     }
 }

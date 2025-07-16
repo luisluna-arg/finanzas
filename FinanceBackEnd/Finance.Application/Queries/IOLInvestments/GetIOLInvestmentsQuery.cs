@@ -1,13 +1,15 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Finance.Application.Repositories.Base;
 
 namespace Finance.Application.Queries.IOLInvestments;
 
-public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetIOLInvestmentsQuery, IOLInvestment?>
+public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetIOLInvestmentsQuery, IOLInvestment>
 {
     private readonly IRepository<IOLInvestment, Guid> repository;
 
@@ -19,7 +21,7 @@ public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetIOLInves
         repository = investmentAssetIOLRepository;
     }
 
-    public override async Task<ICollection<IOLInvestment?>> Handle(GetIOLInvestmentsQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<IOLInvestment>>> ExecuteAsync(GetIOLInvestmentsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<IOLInvestment> query = repository.GetDbSet().Include(o => o.Asset).ThenInclude(o => o.Type).AsQueryable();
 
@@ -30,12 +32,12 @@ public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetIOLInves
 
         if (request.From.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.GreaterThanOrEqual, request.From.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.GreaterThanOrEqual, request.From.Value);
         }
 
         if (request.To.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(request.AssetSymbol))
@@ -43,11 +45,11 @@ public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetIOLInves
             query = query.Where(o => o.Asset.Symbol == request.AssetSymbol!);
         }
 
-        return await query.ToArrayAsync();
+        return DataResult<List<IOLInvestment>>.Success(await query.ToListAsync(cancellationToken));
     }
 }
 
-public class GetIOLInvestmentsQuery : GetAllQuery<IOLInvestment?>
+public class GetIOLInvestmentsQuery : GetAllQuery<IOLInvestment>
 {
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.

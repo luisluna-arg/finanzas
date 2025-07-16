@@ -1,14 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Domain.Enums;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.AppModules;
 
-public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModuleCommand, AppModule>
+public class CreateAppModuleCommandHandler : BaseCommandHandler<CreateAppModuleCommand, AppModule>
 {
     private readonly IRepository<AppModuleType, AppModuleTypeEnum> appModuleTypeRepository;
     private readonly IAppModuleRepository appModuleRepository;
@@ -26,7 +27,7 @@ public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModule
         this.currencyRepository = currencyRepository;
     }
 
-    public override async Task<AppModule> Handle(CreateAppModuleCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<AppModule>> ExecuteAsync(CreateAppModuleCommand command, CancellationToken cancellationToken)
     {
         var currency = await currencyRepository.GetByIdAsync(command.CurrencyId, cancellationToken);
         if (currency == null) throw new Exception("Currency not found");
@@ -44,11 +45,11 @@ public class CreateAppModuleCommandHandler : BaseResponseHandler<CreateAppModule
 
         await appModuleRepository.AddAsync(newAppModule, cancellationToken);
 
-        return await Task.FromResult(newAppModule);
+        return new DataResult<AppModule>(true, newAppModule, "App module created successfully");
     }
 }
 
-public class CreateAppModuleCommand : IRequest<AppModule>
+public class CreateAppModuleCommand : ICommand
 {
     [Required]
     public string Name { get; set; } = string.Empty;

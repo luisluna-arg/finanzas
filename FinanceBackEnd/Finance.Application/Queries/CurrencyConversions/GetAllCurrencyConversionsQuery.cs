@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.CurrencyConvertions;
 
-public class GetAllCurrencyConversionsQuery : GetAllQuery<CurrencyConversion?>;
+public class GetAllCurrencyConversionsQuery : GetAllQuery<CurrencyConversion>;
 
-public class GetAllCurrencyConversionsQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllCurrencyConversionsQuery, CurrencyConversion?>(db)
+public class GetAllCurrencyConversionsQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllCurrencyConversionsQuery, CurrencyConversion>(db)
 {
-    public override async Task<ICollection<CurrencyConversion?>> Handle(GetAllCurrencyConversionsQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<CurrencyConversion>>> ExecuteAsync(GetAllCurrencyConversionsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.CurrencyConversion.AsQueryable();
 
@@ -19,6 +20,6 @@ public class GetAllCurrencyConversionsQueryHandler(FinanceDbContext db) : BaseCo
             query = query.Where(o => !o.Deactivated);
         }
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        return DataResult<List<CurrencyConversion>>.Success(await query.ToListAsync(cancellationToken));
     }
 }

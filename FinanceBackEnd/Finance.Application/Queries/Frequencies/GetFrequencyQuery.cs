@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Enums;
@@ -14,8 +15,8 @@ public class GetFrequencyQuery : GetSingleByIdQuery<Frequency?, FrequencyEnum>
     public override FrequencyEnum Id { get; set; } = default!;
 }
 
-public class GetFrequencyQueryHandler(FinanceDbContext db) : BaseResponseHandler<GetFrequencyQuery, Frequency?>(db)
+public class GetFrequencyQueryHandler(FinanceDbContext db) : BaseQueryHandler<GetFrequencyQuery, Frequency?>(db)
 {
-    public override async Task<Frequency?> Handle(GetFrequencyQuery request, CancellationToken cancellationToken)
-        => await DbContext.Frequency.FirstOrDefaultAsync(o => o.Id == request.Id);
+    public override async Task<DataResult<Frequency?>> ExecuteAsync(GetFrequencyQuery request, CancellationToken cancellationToken)
+        => DataResult<Frequency?>.Success(await DbContext.Frequency.FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken));
 }

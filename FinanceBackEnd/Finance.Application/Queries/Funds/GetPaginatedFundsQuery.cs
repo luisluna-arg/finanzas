@@ -1,13 +1,14 @@
 using Finance.Application.Queries.Base;
 using Finance.Application.Commons;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Funds;
 
-public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQuery, PaginatedResult<Fund>>
+public class GetPaginatedFundsQueryHandler : IQueryHandler<GetPaginatedFundsQuery, PaginatedResult<Fund>>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -17,7 +18,7 @@ public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQu
         this.dbContext = dbContext;
     }
 
-    public async Task<PaginatedResult<Fund>> Handle(GetPaginatedFundsQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<PaginatedResult<Fund>>> ExecuteAsync(GetPaginatedFundsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<Fund> query = dbContext
             .Fund
@@ -61,9 +62,9 @@ public class GetPaginatedFundsQueryHandler : IRequestHandler<GetPaginatedFundsQu
             .ThenBy(o => o.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        return new PaginatedResult<Fund>(paginatedItems, page, pageSize, totalItems);
+        return DataResult<PaginatedResult<Fund>>.Success(new PaginatedResult<Fund>(paginatedItems, page, pageSize, totalItems));
     }
 }
 

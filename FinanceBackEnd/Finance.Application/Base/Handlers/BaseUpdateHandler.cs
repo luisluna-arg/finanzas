@@ -4,36 +4,37 @@ using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using FluentValidation;
-using MediatR;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 
 namespace Finance.Application.Commands.CreditCards;
 
 public abstract class BaseUpdateCommandHandler<TEntity, TId, TCommand>(
     IRepository<TEntity, TId> repository,
     FinanceDbContext db)
-    : BaseResponseHandler<TCommand, TEntity>(db)
-    where TEntity : Entity<TId>
+    : BaseCommandHandler<TCommand, TEntity>(db)
+    where TEntity : Entity<TId>, new()
     where TCommand : BaseUpdateCommand<TEntity, TId>
 {
     protected IRepository<TEntity, TId> Repository { get => repository; }
 
-    public override async Task<TEntity> Handle(TCommand request, CancellationToken cancellationToken)
+    public override async Task<DataResult<TEntity>> ExecuteAsync(TCommand command, CancellationToken cancellationToken = default)
     {
-        var record = await Repository.GetByIdAsync(request.Id, cancellationToken);
+        var record = await Repository.GetByIdAsync(command.Id, cancellationToken);
         if (record == null) throw new Exception($"{typeof(TEntity).Name} not found");
 
-        record = await UpdateRecord(request, record, cancellationToken);
+        record = await UpdateRecord(command, record, cancellationToken);
 
         await Repository.UpdateAsync(record, cancellationToken);
         await Repository.PersistAsync(cancellationToken);
 
-        return record;
+        return DataResult<TEntity>.Success(record);
     }
 
     protected abstract Task<TEntity> UpdateRecord(TCommand command, TEntity record, CancellationToken cancellationToken);
 }
 
-public abstract class BaseUpdateCommand<TEntity, TId> : IRequest<TEntity>
+public abstract class BaseUpdateCommand<TEntity, TId> : ICommand
 {
     [Required]
     public TId Id { get; set; } = default!;

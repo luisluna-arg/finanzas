@@ -1,13 +1,15 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Finance.Application.Repositories.Base;
 
 namespace Finance.Application.Queries.Funds;
 
-public class GetFundsQueryHandler : BaseCollectionHandler<GetFundsQuery, Fund?>
+public class GetFundsQueryHandler : BaseCollectionHandler<GetFundsQuery, Fund>
 {
     private readonly IRepository<Fund, Guid> repository;
 
@@ -19,7 +21,7 @@ public class GetFundsQueryHandler : BaseCollectionHandler<GetFundsQuery, Fund?>
         this.repository = movementRepository;
     }
 
-    public override async Task<ICollection<Fund?>> Handle(GetFundsQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<Fund>>> ExecuteAsync(GetFundsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<Fund> query = repository.GetDbSet()
             .Include(o => o.Currency)
@@ -33,12 +35,12 @@ public class GetFundsQueryHandler : BaseCollectionHandler<GetFundsQuery, Fund?>
 
         if (request.From.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.GreaterThanOrEqual, request.From.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.GreaterThanOrEqual, request.From.Value);
         }
 
         if (request.To.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
         if (request.CurrencyId.HasValue)
@@ -56,11 +58,11 @@ public class GetFundsQueryHandler : BaseCollectionHandler<GetFundsQuery, Fund?>
             query = query.Where(o => o.DailyUse == request.DailyUse.Value);
         }
 
-        return await query.ToArrayAsync();
+        return DataResult<List<Fund>>.Success(await query.ToListAsync(cancellationToken));
     }
 }
 
-public class GetFundsQuery : GetAllQuery<Fund?>
+public class GetFundsQuery : GetAllQuery<Fund>
 {
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.

@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.Banks;
 
-public class UpdateBankCommandHandler : BaseResponseHandler<UpdateBankCommand, Bank>
+public class UpdateBankCommandHandler : BaseCommandHandler<UpdateBankCommand, Bank>
 {
     private readonly IRepository<Bank, Guid> bankRepository;
 
@@ -19,7 +20,7 @@ public class UpdateBankCommandHandler : BaseResponseHandler<UpdateBankCommand, B
         this.bankRepository = bankRepository;
     }
 
-    public override async Task<Bank> Handle(UpdateBankCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Bank>> ExecuteAsync(UpdateBankCommand command, CancellationToken cancellationToken)
     {
         var bank = await bankRepository.GetByIdAsync(command.Id, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
@@ -28,11 +29,11 @@ public class UpdateBankCommandHandler : BaseResponseHandler<UpdateBankCommand, B
 
         await bankRepository.UpdateAsync(bank, cancellationToken);
 
-        return await Task.FromResult(bank);
+        return DataResult<Bank>.Success(bank);
     }
 }
 
-public class UpdateBankCommand : IRequest<Bank>
+public class UpdateBankCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }

@@ -1,14 +1,15 @@
 using Finance.Application.Queries.Base;
 using Finance.Application.Commons;
 using Finance.Domain.Enums;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Debits;
 
-public class GetPaginatedDebitsQueryHandler : IRequestHandler<GetPaginatedDebitsQuery, PaginatedResult<Debit>>
+public class GetPaginatedDebitsQueryHandler : IQueryHandler<GetPaginatedDebitsQuery, PaginatedResult<Debit>>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -18,7 +19,7 @@ public class GetPaginatedDebitsQueryHandler : IRequestHandler<GetPaginatedDebits
         this.dbContext = dbContext;
     }
 
-    public async Task<PaginatedResult<Debit>> Handle(GetPaginatedDebitsQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<PaginatedResult<Debit>>> ExecuteAsync(GetPaginatedDebitsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<Debit> query = dbContext.Set<Debit>()
             .Include(o => o.Origin)
@@ -70,7 +71,7 @@ public class GetPaginatedDebitsQueryHandler : IRequestHandler<GetPaginatedDebits
 
         var paginatedResult = new PaginatedResult<Debit>(paginatedItems, page, pageSize, totalItems);
 
-        return paginatedResult;
+        return DataResult<PaginatedResult<Debit>>.Success(paginatedResult);
     }
 }
 

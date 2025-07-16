@@ -1,25 +1,26 @@
 using Finance.Domain.Enums;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
 
 namespace Finance.Application.Commands.IOLInvestments;
 
-public class DeactivateIOLInvestmentAssetTypeCommandHandler : IRequestHandler<DeactivateIOLInvestmentAssetTypeCommand, IOLInvestmentAssetType?>
+public class DeactivateIOLInvestmentAssetTypeCommandHandler : ICommandHandler<DeactivateIOLInvestmentAssetTypeCommand, DataResult<IOLInvestmentAssetType?>>
 {
-    private readonly IEntityService<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> service;
+    private readonly IEntityService<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> _service;
 
     public DeactivateIOLInvestmentAssetTypeCommandHandler(
-        IEntityService<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> repository)
+        IEntityService<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task<IOLInvestmentAssetType?> Handle(DeactivateIOLInvestmentAssetTypeCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivatedAsync(request.Id, true, cancellationToken);
+    public async Task<DataResult<IOLInvestmentAssetType?>> ExecuteAsync(DeactivateIOLInvestmentAssetTypeCommand request, CancellationToken cancellationToken)
+        => DataResult<IOLInvestmentAssetType?>.Success(await _service.SetDeactivatedAsync(request.Id, true, cancellationToken));
 }
 
-public class DeactivateIOLInvestmentAssetTypeCommand : IRequest<IOLInvestmentAssetType?>
+public class DeactivateIOLInvestmentAssetTypeCommand : ICommand<DataResult<IOLInvestmentAssetType?>>
 {
     public IOLInvestmentAssetTypeEnum Id { get; set; }
 }

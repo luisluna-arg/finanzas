@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Roles;
 
-public class GetAllRolesQuery : GetAllQuery<Role?>;
+public class GetAllRolesQuery : GetAllQuery<Role>;
 
-public class GetAllRolesQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllRolesQuery, Role?>(db)
+public class GetAllRolesQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllRolesQuery, Role>(db)
 {
-    public override async Task<ICollection<Role?>> Handle(GetAllRolesQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<Role>>> ExecuteAsync(GetAllRolesQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.Role.AsQueryable();
 
@@ -19,6 +20,6 @@ public class GetAllRolesQueryHandler(FinanceDbContext db) : BaseCollectionHandle
             query = query.Where(o => !o.Deactivated);
         }
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        return DataResult<List<Role>>.Success(await query.ToListAsync(cancellationToken));
     }
 }

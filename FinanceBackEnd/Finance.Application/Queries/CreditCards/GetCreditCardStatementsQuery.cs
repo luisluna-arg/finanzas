@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.CreditCards;
 
-public class GetCreditCardStatementQueryHandler : BaseCollectionHandler<GetCreditCardStatementsQuery, CreditCardStatement?>
+public class GetCreditCardStatementQueryHandler : BaseCollectionHandler<GetCreditCardStatementsQuery, CreditCardStatement>
 {
     public GetCreditCardStatementQueryHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<ICollection<CreditCardStatement?>> Handle(
+    public override async Task<DataResult<List<CreditCardStatement>>> ExecuteAsync(
         GetCreditCardStatementsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext
@@ -32,14 +33,14 @@ public class GetCreditCardStatementQueryHandler : BaseCollectionHandler<GetCredi
             query = query.Where(o => !o.Deactivated);
         }
 
-        return await query
+        return DataResult<List<CreditCardStatement>>.Success(await query
             .OrderByDescending(o => o.ClosureDate)
             .ThenBy(o => o.CreditCard.Name)
-            .ToArrayAsync();
+            .ToListAsync(cancellationToken));
     }
 }
 
-public class GetCreditCardStatementsQuery : GetAllQuery<CreditCardStatement?>
+public class GetCreditCardStatementsQuery : GetAllQuery<CreditCardStatement>
 {
     public Guid? CreditCardId { get; private set; }
 }

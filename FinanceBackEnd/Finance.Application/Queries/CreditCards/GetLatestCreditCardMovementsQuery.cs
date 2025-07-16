@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -13,8 +14,9 @@ public class GetLatestCreditCardMovementsQueryHandler : BaseCollectionHandler<Ge
     {
     }
 
-    public override async Task<ICollection<CreditCardMovement>> Handle(GetLatestCreditCardMovementsQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<CreditCardMovement>>> ExecuteAsync(GetLatestCreditCardMovementsQuery request, CancellationToken cancellationToken)
     {
+        List<CreditCardMovement> result;
         try
         {
             var query = DbContext.CreditCardMovement.Include(o => o.CreditCard).ThenInclude(o => o.Bank).AsQueryable();
@@ -27,19 +29,21 @@ public class GetLatestCreditCardMovementsQueryHandler : BaseCollectionHandler<Ge
             }
             else
             {
-                dates = await query.GroupBy(o => o.CreditCardId).Select(o => o.Max(o => o.TimeStamp)).ToArrayAsync();
+                dates = await query.GroupBy(o => o.CreditCardId).Select(o => o.Max(o => o.TimeStamp)).ToArrayAsync(cancellationToken);
             }
 
-            return await query.Where(o => dates.Contains(o.TimeStamp))
+            result = await query.Where(o => dates.Contains(o.TimeStamp))
                 .OrderByDescending(o => o.TimeStamp)
                 .ThenBy(o => o.CreditCard.Name)
                 .ThenBy(o => o.Concept)
-                .ToArrayAsync();
+                .ToListAsync(cancellationToken);
         }
         catch
         {
-            return [];
+            result = [];
         }
+
+        return DataResult<List<CreditCardMovement>>.Success(result);
     }
 }
 

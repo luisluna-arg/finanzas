@@ -1,17 +1,18 @@
 using Finance.Application.Base.Handlers;
 using Finance.Domain.SpecialTypes;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.Incomes;
 
-public class UpdateIncomeCommandHandler : BaseResponseHandler<UpdateIncomeCommand, Income>
+public class UpdateIncomeCommandHandler : BaseCommandHandler<UpdateIncomeCommand, Income>
 {
-    private readonly IRepository<Bank, Guid> bankRepository;
-    private readonly IRepository<Currency, Guid> currencyRepository;
-    private readonly IRepository<Income, Guid> incomeRepository;
+    private readonly IRepository<Bank, Guid> _bankRepository;
+    private readonly IRepository<Currency, Guid> _currencyRepository;
+    private readonly IRepository<Income, Guid> _incomeRepository;
 
     public UpdateIncomeCommandHandler(
         FinanceDbContext db,
@@ -20,20 +21,20 @@ public class UpdateIncomeCommandHandler : BaseResponseHandler<UpdateIncomeComman
         IRepository<Income, Guid> incomeRepository)
         : base(db)
     {
-        this.bankRepository = bankRepository;
-        this.currencyRepository = currencyRepository;
-        this.incomeRepository = incomeRepository;
+        _bankRepository = bankRepository;
+        _currencyRepository = currencyRepository;
+        _incomeRepository = incomeRepository;
     }
 
-    public override async Task<Income> Handle(UpdateIncomeCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Income>> ExecuteAsync(UpdateIncomeCommand command, CancellationToken cancellationToken)
     {
-        var income = await incomeRepository.GetByIdAsync(command.Id, cancellationToken);
+        var income = await _incomeRepository.GetByIdAsync(command.Id, cancellationToken);
         if (income == null) throw new Exception("Income not found");
 
-        var currency = await currencyRepository.GetByIdAsync(command.CurrencyId, cancellationToken);
+        var currency = await _currencyRepository.GetByIdAsync(command.CurrencyId, cancellationToken);
         if (currency == null) throw new Exception("Currency not found");
 
-        var bank = await bankRepository.GetByIdAsync(command.BankId, cancellationToken);
+        var bank = await _bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
 
         income.Currency = currency;
@@ -41,13 +42,13 @@ public class UpdateIncomeCommandHandler : BaseResponseHandler<UpdateIncomeComman
         income.Amount = command.Amount;
         income.TimeStamp = command.TimeStamp;
 
-        await incomeRepository.UpdateAsync(income, cancellationToken);
+        await _incomeRepository.UpdateAsync(income, cancellationToken);
 
-        return await Task.FromResult(income);
+        return DataResult<Income>.Success(income);
     }
 }
 
-public class UpdateIncomeCommand : IRequest<Income>
+public class UpdateIncomeCommand : ICommand
 {
     required public Guid Id { get; set; }
 

@@ -1,13 +1,14 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Funds;
 
-public class GetLatestFundQueryHandler : BaseResponseHandler<GetLatestFundQuery, Fund?>
+public class GetLatestFundQueryHandler : BaseQueryHandler<GetLatestFundQuery, Fund?>
 {
     private readonly IRepository<Fund, Guid> movementRepository;
 
@@ -19,7 +20,7 @@ public class GetLatestFundQueryHandler : BaseResponseHandler<GetLatestFundQuery,
         this.movementRepository = movementRepository;
     }
 
-    public override async Task<Fund?> Handle(GetLatestFundQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<Fund?>> ExecuteAsync(GetLatestFundQuery request, CancellationToken cancellationToken)
     {
         var query = movementRepository.GetDbSet()
             .Include(o => o.Bank)
@@ -31,11 +32,11 @@ public class GetLatestFundQueryHandler : BaseResponseHandler<GetLatestFundQuery,
             query = query.Where(o => o.DailyUse == request.DailyUse.Value);
         }
 
-        return await query.FirstOrDefaultAsync(o => o.CurrencyId == request.BankId);
+        return DataResult<Fund?>.Success(await query.FirstOrDefaultAsync(o => o.CurrencyId == request.BankId, cancellationToken));
     }
 }
 
-public class GetLatestFundQuery : IRequest<Fund>
+public class GetLatestFundQuery : IQuery<Fund?>
 {
     private Guid bankId;
 
@@ -45,6 +46,5 @@ public class GetLatestFundQuery : IRequest<Fund>
     }
 
     public Guid BankId { get => bankId; }
-
     public bool? DailyUse { get; set; }
 }

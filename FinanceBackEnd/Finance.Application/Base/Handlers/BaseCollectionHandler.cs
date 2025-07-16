@@ -1,11 +1,11 @@
-using MediatR;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Persistance;
 
 namespace Finance.Application.Base.Handlers;
 
-public abstract class BaseCollectionHandler<TRequest, TEntity> : IRequestHandler<TRequest, ICollection<TEntity>>
-    where TRequest : IRequest<ICollection<TEntity>>
-    where TEntity : class?
+public abstract class BaseCollectionHandler<TQuery, TResult> : IQueryHandler<TQuery, List<TResult>>
+    where TQuery : IQuery<List<TResult>>
 {
     protected BaseCollectionHandler(FinanceDbContext db)
     {
@@ -14,5 +14,5 @@ public abstract class BaseCollectionHandler<TRequest, TEntity> : IRequestHandler
 
     protected FinanceDbContext DbContext { get; private set; }
 
-    public abstract Task<ICollection<TEntity>> Handle(TRequest request, CancellationToken cancellationToken);
+    public abstract Task<DataResult<List<TResult>>> ExecuteAsync(TQuery command, CancellationToken cancellationToken = default);
 }

@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -7,7 +8,7 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.AppModules;
 
-public class GetAppModuleTypeQueryHandler : BaseResponseHandler<GetAppModuleTypeQuery, AppModuleType?>
+public class GetAppModuleTypeQueryHandler : BaseQueryHandler<GetAppModuleTypeQuery, AppModuleType?>
 {
     private readonly IRepository<AppModuleType, AppModuleTypeEnum> appModuleTypeRepository;
 
@@ -19,8 +20,8 @@ public class GetAppModuleTypeQueryHandler : BaseResponseHandler<GetAppModuleType
         this.appModuleTypeRepository = appModuleTypeRepository;
     }
 
-    public override async Task<AppModuleType?> Handle(GetAppModuleTypeQuery request, CancellationToken cancellationToken)
-        => await appModuleTypeRepository.GetByIdAsync(request.Id, cancellationToken);
+    public override async Task<DataResult<AppModuleType?>> ExecuteAsync(GetAppModuleTypeQuery request, CancellationToken cancellationToken)
+        => DataResult<AppModuleType?>.Success(await appModuleTypeRepository.GetByIdAsync(request.Id, cancellationToken));
 }
 
-public class GetAppModuleTypeQuery : GetSingleByIdQuery<AppModuleType?, AppModuleTypeEnum>;
+public class GetAppModuleTypeQuery : GetSingleByIdQuery<AppModuleType, AppModuleTypeEnum>;

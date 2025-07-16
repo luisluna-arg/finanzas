@@ -1,39 +1,38 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Commands.DebitOrigins;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using Finance.Domain.Enums;
-using MediatR;
 
 namespace Finance.Application.Commands.Debits;
 
-public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand, Debit>
+public class CreateDebitCommandHandler : BaseCommandHandler<CreateDebitCommand, Debit>
 {
-    private readonly IMediator mediator;
-
-    private readonly IRepository<Debit, Guid> debitRepository;
-
-    private readonly IRepository<DebitOrigin, Guid> debitOriginRepository;
+    private readonly IDispatcher _dispatcher;
+    private readonly IRepository<Debit, Guid> _debitRepository;
+    private readonly IRepository<DebitOrigin, Guid> _debitOriginRepository;
 
     public CreateDebitCommandHandler(
         FinanceDbContext db,
-        IMediator mediator,
+        IDispatcher dispatcher,
         IRepository<Debit, Guid> debitRepository,
         IRepository<DebitOrigin, Guid> debitOriginRepository)
         : base(db)
     {
-        this.mediator = mediator;
-        this.debitRepository = debitRepository;
-        this.debitOriginRepository = debitOriginRepository;
+        _dispatcher = dispatcher;
+        _debitRepository = debitRepository;
+        _debitOriginRepository = debitOriginRepository;
     }
 
-    public override async Task<Debit> Handle(CreateDebitCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Debit>> ExecuteAsync(CreateDebitCommand command, CancellationToken cancellationToken)
     {
         var originName = command.Origin.Trim();
 
-        var origin = await debitOriginRepository.GetByAsync(
+        var origin = await _debitOriginRepository.GetByAsync(
             new Dictionary<string, object>()
             {
                 { "Name", originName },
@@ -43,13 +42,14 @@ public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand,
 
         if (origin == null)
         {
-            var createDebitOriginRequest = new CreateDebitOriginCommand()
+            var createDebitOriginCommand = new CreateDebitOriginCommand()
             {
                 Name = originName,
                 AppModuleId = command.AppModuleId
             };
 
-            origin = await mediator.Send(createDebitOriginRequest)!;
+            DataResult<DebitOrigin> result = await _dispatcher.DispatchAsync(createDebitOriginCommand);
+            origin = result.Data;
         }
 
         var newDebit = new Debit()
@@ -60,13 +60,13 @@ public class CreateDebitCommandHandler : BaseResponseHandler<CreateDebitCommand,
             Frequency = command.Frequency
         };
 
-        await debitRepository.AddAsync(newDebit, cancellationToken);
+        await _debitRepository.AddAsync(newDebit, cancellationToken);
 
-        return await Task.FromResult(newDebit);
+        return DataResult<Debit>.Success(newDebit);
     }
 }
 
-public class CreateDebitCommand : IRequest<Debit>
+public class CreateDebitCommand : ICommand
 {
     public Guid AppModuleId { get; set; }
 

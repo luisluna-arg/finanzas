@@ -1,24 +1,28 @@
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
+using CQRSDispatch;
 
 namespace Finance.Application.Commands.Currencies;
 
-public class ActivateCurrencyCommandHandler : IRequestHandler<ActivateCurrencyCommand, Currency?>
+public class ActivateCurrencyCommandHandler : ICommandHandler<ActivateCurrencyCommand, DataResult<Currency?>>
 {
-    private readonly IEntityService<Currency, Guid> service;
+    private readonly IEntityService<Currency, Guid> _service;
 
     public ActivateCurrencyCommandHandler(
-        IEntityService<Currency, Guid> repository)
+        IEntityService<Currency, Guid> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task<Currency?> Handle(ActivateCurrencyCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivatedAsync(request.Id, false, cancellationToken);
+    public async Task<DataResult<Currency?>> ExecuteAsync(ActivateCurrencyCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _service.SetDeactivatedAsync(request.Id, false, cancellationToken);
+        return DataResult<Currency?>.Success(result);
+    }
 }
 
-public class ActivateCurrencyCommand : IRequest<Currency?>
+public class ActivateCurrencyCommand : ICommand
 {
     public Guid Id { get; set; }
 }

@@ -1,13 +1,14 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.SpecialTypes;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.Movements;
 
-public class UpdateMovementCommandHandler : BaseResponseHandler<PartialUpdateMovementCommand, Movement>
+public class UpdateMovementCommandHandler : BaseCommandHandler<PartialUpdateMovementCommand, Movement>
 {
     private readonly IRepository<Movement, Guid> movementRepository;
 
@@ -19,7 +20,7 @@ public class UpdateMovementCommandHandler : BaseResponseHandler<PartialUpdateMov
         this.movementRepository = movementRepository;
     }
 
-    public override async Task<Movement> Handle(PartialUpdateMovementCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Movement>> ExecuteAsync(PartialUpdateMovementCommand command, CancellationToken cancellationToken)
     {
         var movement = await movementRepository.GetByIdAsync(command.Id, cancellationToken);
         if (movement == null) throw new Exception("Movement not found");
@@ -32,11 +33,11 @@ public class UpdateMovementCommandHandler : BaseResponseHandler<PartialUpdateMov
 
         await movementRepository.UpdateAsync(movement, cancellationToken);
 
-        return await Task.FromResult(movement);
+        return DataResult<Movement>.Success(movement);
     }
 }
 
-public class PartialUpdateMovementCommand : IRequest<Movement>
+public class PartialUpdateMovementCommand : ICommand
 {
     required public Guid Id { get; set; }
 

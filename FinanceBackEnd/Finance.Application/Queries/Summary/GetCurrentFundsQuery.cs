@@ -1,28 +1,29 @@
 using Finance.Application.Dtos.Summary;
-using MediatR;
 using Finance.Persistance;
 using Finance.Persistance.Constants;
 using Microsoft.EntityFrameworkCore;
 using FundDto = Finance.Application.Dtos.Summary.Fund;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery, TotalFunds>
+public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, TotalFunds>
 {
-    private readonly FinanceDbContext db;
+    private readonly FinanceDbContext _db;
 
     public GetCurrentFundsQueryHandler(
         FinanceDbContext db)
     {
-        this.db = db;
+        _db = db;
     }
 
-    public async Task<TotalFunds> Handle(GetCurrentFundsQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<TotalFunds>> ExecuteAsync(GetCurrentFundsQuery request, CancellationToken cancellationToken)
     {
         var result = new TotalFunds();
 
-        var fundsQuery = db.Fund
+        var fundsQuery = _db.Fund
             .Include(o => o.Bank)
             .Include(o => o.Currency)
                 .ThenInclude(o => o != null ? o.Symbols : null)
@@ -38,7 +39,7 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
             .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
             .ToArrayAsync(cancellationToken);
 
-        var currencyRates = await db.CurrencyExchangeRate
+        var currencyRates = await _db.CurrencyExchangeRate
             .Where(o => !o.Deactivated)
             .GroupBy(o => new { o.BaseCurrencyId, o.QuoteCurrencyId })
             .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
@@ -114,11 +115,11 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
             result.Add(fundDto);
         }
 
-        return result;
+        return DataResult<TotalFunds>.Success(result);
     }
 }
 
-public class GetCurrentFundsQuery : IRequest<TotalFunds>
+public class GetCurrentFundsQuery : IQuery<TotalFunds>
 {
     public bool? DailyUse { get; set; }
     public Guid? CurrencyId { get; set; } = Guid.Parse(CurrencyConstants.PesoId);

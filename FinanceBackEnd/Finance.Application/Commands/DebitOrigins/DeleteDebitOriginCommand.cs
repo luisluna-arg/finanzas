@@ -1,24 +1,28 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
 
 namespace Finance.Application.Commands.DebitOrigins;
 
-public class DeleteDebitOriginCommandHandler : IRequestHandler<DeleteDebitOriginCommand>
+public class DeleteDebitOriginCommandHandler : ICommandHandler<DeleteDebitOriginCommand>
 {
-    private readonly IEntityService<DebitOrigin, Guid> service;
+    private readonly IEntityService<DebitOrigin, Guid> _service;
 
     public DeleteDebitOriginCommandHandler(
         IEntityService<DebitOrigin, Guid> service)
     {
-        this.service = service;
+        _service = service;
     }
 
-    public async Task Handle(DeleteDebitOriginCommand request, CancellationToken cancellationToken)
-        => await service.DeleteAsync(request.Ids, cancellationToken);
+    public async Task<CommandResult> ExecuteAsync(DeleteDebitOriginCommand request, CancellationToken cancellationToken)
+    {
+        await _service.DeleteAsync(request.Ids, cancellationToken);
+        return CommandResult.Success();
+    }
 }
 
-public class DeleteDebitOriginCommand : IRequest
+public class DeleteDebitOriginCommand : ICommand
 {
     public Guid[] Ids { get; set; } = [];
 }

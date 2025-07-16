@@ -1,12 +1,13 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.Incomes;
 
-public class CreateIncomeCommandHandler : BaseResponseHandler<CreateIncomeCommand, Income>
+public class CreateIncomeCommandHandler : BaseCommandHandler<CreateIncomeCommand, Income>
 {
     private readonly IRepository<Bank, Guid> bankRepository;
     private readonly IRepository<Currency, Guid> currencyRepository;
@@ -24,7 +25,7 @@ public class CreateIncomeCommandHandler : BaseResponseHandler<CreateIncomeComman
         this.incomeRepository = incomeRepository;
     }
 
-    public override async Task<Income> Handle(CreateIncomeCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Income>> ExecuteAsync(CreateIncomeCommand command, CancellationToken cancellationToken)
     {
         Bank? bank = await bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
@@ -44,11 +45,11 @@ public class CreateIncomeCommandHandler : BaseResponseHandler<CreateIncomeComman
 
         await this.incomeRepository.AddAsync(newIncome, cancellationToken);
 
-        return await Task.FromResult(newIncome);
+        return DataResult<Income>.Success(newIncome);
     }
 }
 
-public class CreateIncomeCommand : IRequest<Income>
+public class CreateIncomeCommand : ICommand
 {
     public virtual Guid BankId { get; set; }
 

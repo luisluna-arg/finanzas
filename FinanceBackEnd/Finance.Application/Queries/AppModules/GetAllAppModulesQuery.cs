@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Enums;
@@ -14,7 +15,7 @@ public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModul
     {
     }
 
-    public override async Task<ICollection<AppModule>> Handle(GetAllAppModulesQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<AppModule>>> ExecuteAsync(GetAllAppModulesQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.AppModule
             .Include(o => o.Currency)
@@ -32,8 +33,8 @@ public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModul
         }
 
         // Ensure all required properties are loaded
-        var result = await query.ToArrayAsync();
-        
+        var result = await query.ToListAsync(cancellationToken);
+
         // Validate all modules have their required properties
         foreach (var module in result)
         {
@@ -43,7 +44,7 @@ public class GetAllAppModulesQueryHandler : BaseCollectionHandler<GetAllAppModul
             }
         }
 
-        return result;
+        return DataResult<List<AppModule>>.Success(result);
     }
 }
 

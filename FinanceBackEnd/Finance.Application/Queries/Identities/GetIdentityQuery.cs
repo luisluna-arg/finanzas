@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -8,8 +9,8 @@ namespace Finance.Application.Queries.Identities;
 
 public class GetIdentityQuery() : GetSingleByIdQuery<Identity?, Guid>();
 
-public class GetIdentityQueryHandler(FinanceDbContext db) : BaseResponseHandler<GetIdentityQuery, Identity?>(db)
+public class GetIdentityQueryHandler(FinanceDbContext db) : BaseQueryHandler<GetIdentityQuery, Identity?>(db)
 {
-    public override async Task<Identity?> Handle(GetIdentityQuery request, CancellationToken cancellationToken)
-        => await DbContext.Identity.FirstOrDefaultAsync(o => o.Id == request.Id);
+    public override async Task<DataResult<Identity?>> ExecuteAsync(GetIdentityQuery request, CancellationToken cancellationToken)
+        => DataResult<Identity?>.Success(await DbContext.Identity.FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken));
 }

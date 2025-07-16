@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.CreditCards;
 
-public class CreateCreditCardCommandHandler : BaseResponseHandler<CreateCreditCardCommand, CreditCard>
+public class CreateCreditCardCommandHandler : BaseCommandHandler<CreateCreditCardCommand, CreditCard>
 {
     private readonly IRepository<CreditCard, Guid> creditCardRepository;
     private readonly IRepository<Bank, Guid> bankRepository;
@@ -22,7 +23,7 @@ public class CreateCreditCardCommandHandler : BaseResponseHandler<CreateCreditCa
         this.creditCardRepository = creditCardRepository;
     }
 
-    public override async Task<CreditCard> Handle(CreateCreditCardCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<CreditCard>> ExecuteAsync(CreateCreditCardCommand command, CancellationToken cancellationToken)
     {
         var bank = await bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
@@ -36,11 +37,11 @@ public class CreateCreditCardCommandHandler : BaseResponseHandler<CreateCreditCa
 
         await creditCardRepository.AddAsync(newCreditCard, cancellationToken);
 
-        return await Task.FromResult(newCreditCard);
+        return DataResult<CreditCard>.Success(newCreditCard);
     }
 }
 
-public class CreateCreditCardCommand : IRequest<CreditCard>
+public class CreateCreditCardCommand : ICommand
 {
     [Required]
     public Guid BankId { get; set; }

@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.Banks;
 
-public class CreateBankCommandHandler : BaseResponseHandler<CreateBankCommand, Bank>
+public class CreateBankCommandHandler : BaseCommandHandler<CreateBankCommand, Bank>
 {
     private readonly IRepository<Bank, Guid> bankRepository;
 
@@ -19,7 +20,7 @@ public class CreateBankCommandHandler : BaseResponseHandler<CreateBankCommand, B
         this.bankRepository = bankRepository;
     }
 
-    public override async Task<Bank> Handle(CreateBankCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Bank>> ExecuteAsync(CreateBankCommand command, CancellationToken cancellationToken)
     {
         var newBank = new Bank()
         {
@@ -28,11 +29,11 @@ public class CreateBankCommandHandler : BaseResponseHandler<CreateBankCommand, B
 
         await bankRepository.AddAsync(newBank, cancellationToken);
 
-        return await Task.FromResult(newBank);
+        return DataResult<Bank>.Success(newBank);
     }
 }
 
-public class CreateBankCommand : IRequest<Bank>
+public class CreateBankCommand : ICommand
 {
     [Required]
     public string Name { get; set; } = string.Empty;

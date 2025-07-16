@@ -2,7 +2,8 @@ using System.Runtime.Versioning;
 using Finance.Application.Base.Handlers;
 using Finance.Helpers;
 using Finance.Persistance;
-using MediatR;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Commands.Funds;
@@ -16,7 +17,7 @@ public class ProcessImageCommandHandler : BaseResponselessHandler<ProcessImageCo
     {
     }
 
-    public override async Task Handle(ProcessImageCommand command, CancellationToken cancellationToken)
+    public override async Task<CommandResult> ExecuteAsync(ProcessImageCommand command, CancellationToken cancellationToken)
     {
         var ocrHelper = new OcrHelper();
 
@@ -32,10 +33,11 @@ public class ProcessImageCommandHandler : BaseResponselessHandler<ProcessImageCo
         response.ContentLength = stream.Length;
         stream.Seek(0, SeekOrigin.Begin);
         await stream.CopyToAsync(response.Body);
+        return CommandResult.Success();
     }
 }
 
-public class ProcessImageCommand : IRequest
+public class ProcessImageCommand : ICommand
 {
     required public HttpContext HttpContext { get; set; }
     required public IFormFileCollection Files { get; set; }

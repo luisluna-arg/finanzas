@@ -1,24 +1,28 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
 
 namespace Finance.Application.Commands.Incomes;
 
-public class DeleteIncomesCommandHandler : IRequestHandler<DeleteIncomesCommand>
+public class DeleteIncomesCommandHandler : ICommandHandler<DeleteIncomesCommand>
 {
-    private readonly IEntityService<Income, Guid> service;
+    private readonly IEntityService<Income, Guid> _service;
 
     public DeleteIncomesCommandHandler(
-        IEntityService<Income, Guid> repository)
+        IEntityService<Income, Guid> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task Handle(DeleteIncomesCommand request, CancellationToken cancellationToken)
-        => await service.DeleteAsync(request.Ids, cancellationToken);
+    public async Task<CommandResult> ExecuteAsync(DeleteIncomesCommand request, CancellationToken cancellationToken)
+    {
+        await _service.DeleteAsync(request.Ids, cancellationToken);
+        return CommandResult.Success();
+    }
 }
 
-public class DeleteIncomesCommand : IRequest
+public class DeleteIncomesCommand : ICommand
 {
     public Guid[] Ids { get; set; } = [];
 }

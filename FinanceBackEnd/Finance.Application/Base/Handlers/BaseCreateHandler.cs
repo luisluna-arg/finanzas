@@ -3,28 +3,29 @@ using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using FluentValidation;
-using MediatR;
+using CQRSDispatch.Interfaces;
+using CQRSDispatch;
 
 namespace Finance.Application.Commands.CreditCards;
 
-public abstract class BaseCreateCommand<TEntity> : IRequest<TEntity>;
+public abstract class BaseCreateCommand<TEntity> : ICommand;
 
-public abstract class BaseCreateCommandHandler<TEntity, TId, TCommand>(
+public abstract class BaseCreateCommandHandler<TCommand, TEntity, TId>(
     IRepository<TEntity, TId> repository,
     FinanceDbContext db)
-    : BaseResponseHandler<TCommand, TEntity>(db)
-    where TEntity : Entity<TId>
+    : BaseCommandHandler<TCommand, TEntity>(db)
+    where TEntity : Entity<TId>, new()
     where TCommand : BaseCreateCommand<TEntity>
 {
     protected IRepository<TEntity, TId> Repository { get => repository; }
 
-    public override async Task<TEntity> Handle(TCommand request, CancellationToken cancellationToken)
+    public override async Task<DataResult<TEntity>> ExecuteAsync(TCommand command, CancellationToken cancellationToken = default)
     {
-        var record = await BuildRecord(request, cancellationToken);
+        var record = await BuildRecord(command, cancellationToken);
 
         await Repository.AddAsync(record, cancellationToken);
 
-        return record;
+        return DataResult<TEntity>.Success(record);
     }
 
     protected abstract Task<TEntity> BuildRecord(TCommand command, CancellationToken cancellationToken);

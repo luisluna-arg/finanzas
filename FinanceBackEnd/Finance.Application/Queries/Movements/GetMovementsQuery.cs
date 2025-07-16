@@ -1,13 +1,15 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Finance.Application.Repositories.Base;
 
 namespace Finance.Application.Queries.Movements;
 
-public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery, Movement?>
+public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery, Movement>
 {
     private readonly IRepository<Movement, Guid> movementRepository;
 
@@ -19,7 +21,7 @@ public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery,
         this.movementRepository = movementRepository;
     }
 
-    public override async Task<ICollection<Movement?>> Handle(GetMovementsQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<Movement>>> ExecuteAsync(GetMovementsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<Movement> query = movementRepository.GetDbSet()
             .Include(o => o.AppModule)
@@ -33,12 +35,12 @@ public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery,
 
         if (request.From.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.GreaterThanOrEqual, request.From.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.GreaterThanOrEqual, request.From.Value);
         }
 
         if (request.To.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
         if (request.AppModuleId.HasValue)
@@ -51,11 +53,11 @@ public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery,
             query = query.Where(o => o.BankId == request.BankId.Value);
         }
 
-        return await query.ToArrayAsync();
+        return DataResult<List<Movement>>.Success(await query.ToListAsync(cancellationToken));
     }
 }
 
-public class GetMovementsQuery : GetAllQuery<Movement?>
+public class GetMovementsQuery : GetAllQuery<Movement>
 {
     public Guid? AppModuleId { get; private set; }
 

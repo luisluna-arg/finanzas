@@ -1,24 +1,35 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
 
 namespace Finance.Application.Commands.AppModules;
 
-public class ActivateAppModuleCommandHandler : IRequestHandler<ActivateAppModuleCommand, AppModule?>
+public class ActivateAppModuleCommandHandler : ICommandHandler<ActivateAppModuleCommand, DataResult<AppModule?>>
 {
-    private readonly IEntityService<AppModule, Guid> service;
+    private readonly IEntityService<AppModule, Guid> _service;
 
     public ActivateAppModuleCommandHandler(
-        IEntityService<AppModule, Guid> repository)
+        IEntityService<AppModule, Guid> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task<AppModule?> Handle(ActivateAppModuleCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivatedAsync(request.Id, false, cancellationToken);
+    public async Task<DataResult<AppModule?>> ExecuteAsync(ActivateAppModuleCommand request, CancellationToken cancellationToken)
+    {
+        var aa = await _service.SetDeactivatedAsync(request.Id, false, cancellationToken);
+        if (aa != null)
+        {
+            return new DataResult<AppModule?>(true, aa, "App module activated successfully");
+        }
+        else
+        {
+            return DataResult<AppModule?>.Failure("App module not found or already active");
+        }
+    }
 }
 
-public class ActivateAppModuleCommand : IRequest<AppModule?>
+public class ActivateAppModuleCommand : ICommand
 {
     public Guid Id { get; set; }
 }

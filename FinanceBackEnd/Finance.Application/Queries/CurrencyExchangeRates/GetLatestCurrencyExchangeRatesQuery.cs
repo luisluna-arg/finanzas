@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.CurrencyExchangeRates;
 
-public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<GetLatestCurrencyExchangeRatesQuery, CurrencyExchangeRate?>
+public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<GetLatestCurrencyExchangeRatesQuery, CurrencyExchangeRate>
 {
     public GetLatestCurrencyExchangeRatesQueryHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<ICollection<CurrencyExchangeRate?>> Handle(GetLatestCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<CurrencyExchangeRate>>> ExecuteAsync(GetLatestCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.CurrencyExchangeRate
             .Include(o => o.BaseCurrency)
@@ -39,17 +40,21 @@ public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<
             .OrderBy(o => o.BaseCurrency.Name)
             .ThenBy(o => o.QuoteCurrency.Name)
             .ThenByDescending(o => o.TimeStamp)
-            .ToArrayAsync();
+            .ToArrayAsync(cancellationToken);
 
         var groupResult = partialResult.GroupBy(
             child => new { child.BaseCurrencyId, child.QuoteCurrencyId },
             (key, group) => group);
 
-        return await Task.FromResult(groupResult.Select(o => o.First()).ToArray());
+        return DataResult<List<CurrencyExchangeRate>>.Success(
+            groupResult
+                .Select(g => g.OrderByDescending(o => o.TimeStamp).FirstOrDefault())
+                .Where(x => x != null)
+                .ToList()!);
     }
 }
 
-public class GetLatestCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate?>
+public class GetLatestCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate>
 {
     public Guid? BaseCurrencyId { get; set; }
 

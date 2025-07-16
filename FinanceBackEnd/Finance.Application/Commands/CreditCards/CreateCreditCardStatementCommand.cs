@@ -10,7 +10,7 @@ public class CreateCreditCardStatementCommandHandler(
     IRepository<CreditCardStatement, Guid> creditCardStatementRepository,
     IRepository<CreditCard, Guid> bankRepository,
     FinanceDbContext db)
-    : BaseCreateCommandHandler<CreditCardStatement, Guid, CreateCreditCardStatementCommand>(
+    : BaseCreateCommandHandler<CreateCreditCardStatementCommand, CreditCardStatement, Guid>(
         creditCardStatementRepository, db)
 {
     private IRepository<CreditCard, Guid> BankRepository { get => bankRepository; }

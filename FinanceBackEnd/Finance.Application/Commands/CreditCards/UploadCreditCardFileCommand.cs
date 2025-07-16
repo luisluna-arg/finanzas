@@ -1,10 +1,11 @@
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Helpers.ExcelHelper;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<Upload
         this.excelHelper = new CreditCardExcelHelper();
     }
 
-    public override async Task Handle(UploadCreditCardFileCommand command, CancellationToken cancellationToken)
+    public override async Task<CommandResult> ExecuteAsync(UploadCreditCardFileCommand command, CancellationToken cancellationToken)
     {
         var issuer = await issuerRepository.GetByIdAsync(command.CreditCardId, cancellationToken);
         if (issuer == null) throw new Exception($"Credit Card Issuer not found, Id: {command.CreditCardId}");
@@ -36,7 +37,7 @@ public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<Upload
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
 
         var newRecords = excelHelper.Read(command.File, issuer, dateKind);
-        if (newRecords == null || !newRecords.Any()) return;
+        if (newRecords == null || !newRecords.Any()) return CommandResult.Failure("No records found in the uploaded file.");
 
         var minDate = newRecords.Min(o => o.TimeStamp);
         var maxDate = newRecords.Max(o => o.TimeStamp);
@@ -59,10 +60,12 @@ public class UploadCreditCardFileCommandHandler : BaseResponselessHandler<Upload
             .ToArray();
 
         await repository.AddRangeAsync(newRecords, cancellationToken, true);
+
+        return CommandResult.Success();
     }
 }
 
-public class UploadCreditCardFileCommand : IRequest
+public class UploadCreditCardFileCommand : ICommand
 {
     public UploadCreditCardFileCommand(IFormFile file, string creditCardId, DateTimeKind dateKind)
     {

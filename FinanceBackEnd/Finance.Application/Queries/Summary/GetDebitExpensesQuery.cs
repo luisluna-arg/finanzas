@@ -1,17 +1,18 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Summary;
-using MediatR;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetDebitExpensesQuery : IRequest<Expense>;
+public class GetDebitExpensesQuery : IQuery<Expense>;
 
-public class GetDebitExpensesQueryHandler(FinanceDbContext db) : IRequestHandler<GetDebitExpensesQuery, Expense>
+public class GetDebitExpensesQueryHandler(FinanceDbContext db) : IQueryHandler<GetDebitExpensesQuery, Expense>
 {
     private readonly FinanceDbContext _db = db;
 
-    public async Task<Expense> Handle(GetDebitExpensesQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<Expense>> ExecuteAsync(GetDebitExpensesQuery request, CancellationToken cancellationToken)
     {
         var debitOrigins = _db.DebitOrigin.Where(o => !o.Deactivated).ToArray();
         var debitTotal = 0m;
@@ -26,6 +27,6 @@ public class GetDebitExpensesQueryHandler(FinanceDbContext db) : IRequestHandler
             debitTotal += item != null ? item.Amount : 0;
         }
 
-        return new Expense() { Id = "debits", Label = "Débitos", Value = debitTotal };
+        return DataResult<Expense>.Success(new Expense() { Id = "debits", Label = "Débitos", Value = debitTotal });
     }
 }
