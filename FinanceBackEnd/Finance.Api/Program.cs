@@ -2,8 +2,17 @@ using Finance.Api.Core.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Explicitly set the URLs the application will listen on
-builder.WebHost.UseUrls("http://localhost:5000", "https://localhost:5100");
+// Configure URLs from appsettings or environment variables
+var httpUrl = builder.Configuration["Urls:Http"];
+var httpsUrl = builder.Configuration["Urls:Https"];
+
+if (string.IsNullOrEmpty(httpUrl))
+    throw new InvalidOperationException("HTTP URL is required. Please configure 'Urls:Http' in appsettings.json or set the 'Urls__Http' environment variable.");
+
+if (string.IsNullOrEmpty(httpsUrl))
+    throw new InvalidOperationException("HTTPS URL is required. Please configure 'Urls:Https' in appsettings.json or set the 'Urls__Https' environment variable.");
+
+builder.WebHost.UseUrls(httpUrl, httpsUrl);
 
 builder.Services.ConfigureDataBase(builder);
 

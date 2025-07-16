@@ -89,7 +89,10 @@ public static class SwaggerConfig
                         {
                             { "openid", "Open ID" },
                             { "profile", "Profile" },
-                            { "email", "Email" }
+                            { "email", "Email" },
+                            { "read:data", "Read data" },
+                            { "write:data", "Write data" },
+                            { "delete:data", "Delete data" }
                         }
                     }
                 },
@@ -108,7 +111,7 @@ public static class SwaggerConfig
                             Id = "oauth2"
                         }
                     },
-                    ["openid", "profile", "email"]
+                    ["openid", "profile", "email", "read:data", "write:data", "delete:data"]
                 }
             });
         });
@@ -151,12 +154,10 @@ public static class SwaggerConfig
             // Only configure OAuth if we have the required parameters
             if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(domain))
             {
-                // Get client secret from configuration
-                var clientSecret = app.Configuration["Auth0:Application:ClientSecret"];
-
                 // Set OAuth2 flow properties
                 opts.OAuthClientId(clientId);
-                opts.OAuthClientSecret(clientSecret); // Include the client secret from config
+
+                // opts.OAuthClientSecret(clientSecret); // Commented out for security
                 opts.OAuthRealm(domain);
                 opts.OAuthAppName("Finances API - Swagger");
 
@@ -165,9 +166,14 @@ public static class SwaggerConfig
                 // Try to determine the actual host and scheme from the request if available
                 var request = app.Services.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.Request;
 
-                // Default values
+                // Get host from configuration - fail if not available
                 string scheme = "https";
-                string host = app.Environment.IsDevelopment() ? "localhost:7000" : (app.Configuration["ApplicationUrl"] ?? "localhost");
+                var httpsUrl = app.Configuration["Urls:Https"];
+                if (string.IsNullOrEmpty(httpsUrl))
+                    throw new InvalidOperationException("HTTPS URL is required for Swagger configuration. Please configure 'Urls:Https' in appsettings.json or set the 'Urls__Https' environment variable.");
+
+                string host = GetHostFromUrl(httpsUrl)
+                    ?? throw new InvalidOperationException($"Invalid HTTPS URL format: {httpsUrl}. Unable to extract host for Swagger configuration.");
 
                 // Override with actual values if available
                 if (request != null && request.Host.HasValue)
@@ -195,14 +201,15 @@ public static class SwaggerConfig
                 // Make sure this matches the redirect URL registered in Auth0
                 string redirectUrl = $"{scheme}://{host}/swagger/oauth2-redirect.html";
 
-                // Use authorization code flow with PKCE - configure client ID and secret
+                // Use authorization code flow with PKCE - configure client ID only for security
                 opts.OAuthConfigObject = new Swashbuckle.AspNetCore.SwaggerUI.OAuthConfigObject
                 {
                     ClientId = clientId,
-                    ClientSecret = clientSecret, // Include the client secret in the config object
+
+                    // ClientSecret = clientSecret, // Commented out for security - not needed for public clients
                     AppName = "Finances API - Swagger",
-                    Scopes = ["openid", "profile", "email"],
-                    UsePkceWithAuthorizationCodeGrant = true // Try to enable PKCE if supported
+                    Scopes = ["openid", "profile", "email", "read:data", "write:data", "delete:data"],
+                    UsePkceWithAuthorizationCodeGrant = false // Disable PKCE temporarily to test
                 };
 
                 // Explicitly set OAuth URLs since they aren't available in OAuthConfigObject
@@ -223,5 +230,26 @@ public static class SwaggerConfig
                 opts.OAuthAdditionalQueryStringParams(additionalParams);
             }
         });
+    }
+
+    /// <summary>
+    /// Extracts the host (hostname:port) from a URL string.
+    /// </summary>
+    /// <param name="url">The URL to extract the host from.</param>
+    /// <returns>The host part of the URL, or null if the URL is invalid.</returns>
+    private static string? GetHostFromUrl(string? url)
+    {
+        if (string.IsNullOrEmpty(url))
+            return null;
+
+        try
+        {
+            var uri = new Uri(url);
+            return uri.Authority; // Returns hostname:port
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

@@ -1,3 +1,6 @@
+using CQRSDispatch;
+using CQRSDispatch.Extensions;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Extensions;
 using Finance.Application.Mapping;
 using Finance.Application.Repositories;
@@ -17,7 +20,10 @@ public static class ConfigExtensions
     {
         var applicationAssembly = typeof(AppModuleRepository).Assembly;
 
-        services.AddMediatR(o => o.RegisterServicesFromAssembly(applicationAssembly));
+        // Register command and query handlers from Application assembly
+        services.AddRequestHandlers([applicationAssembly]);
+
+        services.AddScoped<IDispatcher, Dispatcher>();
 
         services.AddMappers();
 
