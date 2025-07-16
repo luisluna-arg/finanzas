@@ -6,8 +6,8 @@ public class AppModule : AuditedEntity<Guid>
 {
     public AppModule() { }
 
-    required public string Name { get; set; } = string.Empty;
-    required public virtual Currency Currency { get; set; }
-    required public virtual AppModuleType Type { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public virtual Currency Currency { get; set; } = default!;
+    public virtual AppModuleType Type { get; set; } = default!;
     public virtual ICollection<Movement> Movements { get; set; } = [];
 }

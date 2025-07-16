@@ -4,7 +4,7 @@ using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.Models;
 
-public class Movement() : AuditedEntity<Guid>()
+public class Movement : AuditedEntity<Guid>
 {
     [ForeignKey("AppModuleId")]
     public Guid AppModuleId { get; set; }
@@ -19,4 +19,8 @@ public class Movement() : AuditedEntity<Guid>()
     required public string? Concept2 { get; set; }
     required public Money Amount { get; set; }
     required public Money? Total { get; set; }
+
+    public Movement() : base()
+    {
+    }
 }
