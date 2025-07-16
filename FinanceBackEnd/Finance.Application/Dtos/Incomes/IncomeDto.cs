@@ -16,7 +16,7 @@ public record IncomeDto : Dto<Guid>
     public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
 
     public Money Amount { get; set; } = 0m;
-    
+
     public IncomeDto()
     {
     }

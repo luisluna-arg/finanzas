@@ -11,7 +11,7 @@ public record CreditCardStatementDto : Dto<Guid>
     public DateTime ClosureDate { get; set; } = DateTime.UtcNow;
 
     public DateTime ExpiringDate { get; set; } = DateTime.UtcNow;
-    
+
     public CreditCardStatementDto()
     {
     }

@@ -5,7 +5,7 @@ public record KeyValueEntityDto<TEnum> : AuditedEntityDto<TEnum>
 {
     public string Name { get; set; } = string.Empty;
     public override string ToString() => Name;
-    
+
     public KeyValueEntityDto()
     {
     }

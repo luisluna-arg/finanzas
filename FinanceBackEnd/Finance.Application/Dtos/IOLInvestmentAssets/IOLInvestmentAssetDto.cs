@@ -10,7 +10,7 @@ public record IOLInvestmentAssetDto : Dto<Guid>
     public string Symbol { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public IOLInvestmentAssetTypeDto Type { get; set; } = default!;
-    
+
     public IOLInvestmentAssetDto()
     {
     }

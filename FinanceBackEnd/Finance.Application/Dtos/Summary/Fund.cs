@@ -9,7 +9,7 @@ public class Fund : BaseSummaryItem
     public string DefaultCurrency { get; set; } = string.Empty;
     public string DefaultCurrencySymbol { get; set; } = string.Empty;
     public Guid DefaultCurrencyId { get; set; } = Guid.Empty;
-    
+
     public Fund()
     {
     }

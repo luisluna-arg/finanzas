@@ -14,7 +14,7 @@ public record CurrencyExchangeRateDto : Dto<Guid>
     public decimal SellRate { get; set; } = 0M;
 
     public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
-    
+
     public CurrencyExchangeRateDto()
     {
     }

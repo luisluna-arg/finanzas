@@ -14,7 +14,7 @@ public record DebitDto : Dto<Guid>
     public string AppModule { get; set; } = string.Empty;
     public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
     public Money Amount { get; set; } = default!;
-    
+
     public DebitDto()
     {
     }

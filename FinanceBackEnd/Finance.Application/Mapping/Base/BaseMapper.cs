@@ -40,23 +40,23 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
 
     public virtual IEnumerable<TTarget> Map(IEnumerable<TSource> source)
         => source.Select(Map).ToList();
-        
+
     protected virtual void MapCommonProperties(TSource source, TTarget target)
     {
         var sourceProperties = typeof(TSource).GetProperties();
         var targetProperties = typeof(TTarget).GetProperties();
-        
+
         foreach (var sourceProperty in sourceProperties)
         {
-            var targetProperty = targetProperties.FirstOrDefault(p => 
-                p.Name == sourceProperty.Name && 
+            var targetProperty = targetProperties.FirstOrDefault(p =>
+                p.Name == sourceProperty.Name &&
                 p.CanWrite);
-                
+
             if (targetProperty != null)
             {
                 // Get the source property value
                 var value = sourceProperty.GetValue(source);
-                
+
                 if (value == null)
                 {
                     targetProperty.SetValue(target, null);
@@ -99,7 +99,7 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
 
     private bool IsSimpleType(Type type)
     {
-        return type.IsPrimitive 
+        return type.IsPrimitive
             || type.IsEnum
             || type == typeof(string)
             || type == typeof(decimal)

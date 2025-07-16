@@ -12,7 +12,7 @@ public class BaseSummaryTotals<TItem>
 
     protected BaseSummaryTotals(ICollection<TItem> items)
     {
-        this.items = [..items];
+        this.items = [.. items];
     }
 
     public List<TItem> Items { get => items; }

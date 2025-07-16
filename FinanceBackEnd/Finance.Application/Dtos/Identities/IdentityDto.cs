@@ -9,7 +9,7 @@ public record IdentityDto : Dto<Guid>
     public string SourceId { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    
+
     public IdentityDto()
     {
     }

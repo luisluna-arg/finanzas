@@ -9,7 +9,7 @@ public record CurrencyConversionDto : Dto<Guid>
     public decimal Amount { get; set; } = 0M;
 
     public Guid? CurrencyId { get; set; } = null;
-    
+
     public CurrencyConversionDto()
     {
     }

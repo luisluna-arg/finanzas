@@ -39,7 +39,7 @@ public class MappingService : IMappingService
 
     public ICollection<TResult> Map<TResult>(IEnumerable<object> source)
         => source.Select(s => Map<TResult>(s)).ToList();
-        
+
     public bool HasMapper<TSource, TTarget>()
     {
         return HasMapper(typeof(TSource), typeof(TTarget));
@@ -51,7 +51,7 @@ public class MappingService : IMappingService
             .OrderBy(s => s.GetType().HasSubclasses())
             .Any(s => s.IsMappingEnabled(sourceType, targetType));
     }
-    
+
     public object Map(object source, Type targetType)
     {
         var sourceType = source.GetType();

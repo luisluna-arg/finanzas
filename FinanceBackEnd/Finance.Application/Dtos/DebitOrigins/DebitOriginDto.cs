@@ -10,7 +10,7 @@ public record DebitOriginDto : Dto<Guid>
     public string Name { get; set; } = string.Empty;
 
     public int RecordCount { get; set; } = 0;
-    
+
     public DebitOriginDto()
     {
     }

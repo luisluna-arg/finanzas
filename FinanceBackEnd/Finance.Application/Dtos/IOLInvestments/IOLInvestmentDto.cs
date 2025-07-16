@@ -28,7 +28,7 @@ public record IOLInvestmentDto : Dto<Guid>
     public decimal AverageReturn { get; set; } = 0M;
 
     public decimal Valued { get; set; } = 0M;
-    
+
     public IOLInvestmentDto()
     {
     }

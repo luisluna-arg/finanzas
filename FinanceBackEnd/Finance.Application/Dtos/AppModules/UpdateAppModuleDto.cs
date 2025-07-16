@@ -9,7 +9,7 @@ public abstract record UpdateAppModuleDto : Dto<Guid>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Guid CurrencyId { get; set; } = Guid.Empty;
-    
+
     protected UpdateAppModuleDto()
     {
     }

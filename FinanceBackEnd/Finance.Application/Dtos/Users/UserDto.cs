@@ -12,7 +12,7 @@ public record UserDto : Dto<Guid>
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public ICollection<IdentityDto> Identities { get; set; } = [];
     public ICollection<RoleDto> Roles { get; set; } = [];
-    
+
     public UserDto()
     {
     }
