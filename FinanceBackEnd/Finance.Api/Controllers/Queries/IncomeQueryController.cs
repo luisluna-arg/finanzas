@@ -1,30 +1,43 @@
+using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
-using Finance.Application.Dtos.Incomes;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.Incomes;
-using Finance.Domain.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/incomes")]
-public class IncomeQueryController(IMappingService mapper, IMediator mediator)
-    : ApiBaseQueryController<Income?, Guid, IncomeDto>(mapper, mediator)
+public class IncomeQueryController(IMappingService mapper, IDispatcher dispatcher)
+    : SecuredApiController
 {
+    protected IMappingService MappingService { get => mapper; }
+    protected IDispatcher Dispatcher { get => dispatcher; }
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetIncomesQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromQuery] GetSingleIncomeQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedIncomesQuery request)
-        => await Handle(request!);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet("latest/{appModuleId}")]
     public async Task<IActionResult> Latest(Guid appModuleId)
-        => await Handle(new GetLatestIncomeQuery(appModuleId));
+    {
+        var result = await Dispatcher.DispatchQueryAsync(new GetLatestIncomeQuery(appModuleId));
+        return Ok(result.Data);
+    }
 }

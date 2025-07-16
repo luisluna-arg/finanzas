@@ -1,20 +1,19 @@
+using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Base;
 using Finance.Application.Mapping;
-using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Interfaces;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Base;
 
 public abstract class BasicQueryController<TEntity, TId, TDto, TGetAllQuery, TGetByIdQuery>(
     IMappingService mapper,
-    IMediator mediator)
-    : ApiBaseQueryController<TEntity, TId, TDto>(mapper, mediator)
+    IDispatcher dispatcher)
+    : ApiBaseQueryController<TEntity?, TId, TDto>(mapper, dispatcher)
     where TDto : Dto<TId>
-    where TEntity : IEntity?
-    where TGetAllQuery : GetAllQuery<TEntity>
-    where TGetByIdQuery : GetSingleByIdQuery<TEntity, TId>
+    where TEntity : class, IEntity
+    where TGetAllQuery : class, IQuery<List<TEntity>>
+    where TGetByIdQuery : class, IQuery<TEntity?>
 {
     /// <summary>
     /// Gets all entities of this type.
@@ -23,7 +22,7 @@ public abstract class BasicQueryController<TEntity, TId, TDto, TGetAllQuery, TGe
     /// <returns>A collection of entities.</returns>
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] TGetAllQuery request)
-        => await Handle(request);
+        => Ok(await MapAndSendList<TGetAllQuery, TEntity>(request));
 
     /// <summary>
     /// Gets an entity by its ID.
@@ -32,5 +31,5 @@ public abstract class BasicQueryController<TEntity, TId, TDto, TGetAllQuery, TGe
     /// <returns>The entity with the specified ID.</returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromQuery] TGetByIdQuery request)
-        => await Handle(request);
+        => Ok(await MapAndSendSingle<TGetByIdQuery, TEntity>(request));
 }

@@ -1,15 +1,15 @@
 using System.ComponentModel;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Commands.Debits;
 using Finance.Application.Mapping;
 using Finance.Domain.Enums;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/debits/monthly")]
-public class MonthlyDebitCommandController(IMappingService mapper, IMediator mediator)
-    : DebitCommandController(mapper, mediator)
+public class MonthlyDebitCommandController(IMappingService mapper, IDispatcher dispatcher)
+    : DebitCommandController(mapper, dispatcher)
 {
     [HttpPost]
     public new async Task<IActionResult> Create(CreateDebitCommand command)

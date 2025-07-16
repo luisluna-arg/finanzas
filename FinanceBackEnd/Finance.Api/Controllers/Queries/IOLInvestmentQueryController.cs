@@ -1,26 +1,36 @@
+using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
-using Finance.Application.Dtos.IOLInvestments;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.IOLInvestments;
-using Finance.Domain.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/iol-investment")]
-public class IOLInvestmentQueryController(IMappingService mapper, IMediator mediator)
-    : ApiBaseQueryController<IOLInvestment?, Guid, IOLInvestmentDto>(mapper, mediator)
+public class IOLInvestmentQueryController(IMappingService mapper, IDispatcher dispatcher)
+    : SecuredApiController
 {
+    protected IMappingService MappingService { get => mapper; }
+    protected IDispatcher Dispatcher { get => dispatcher; }
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetIOLInvestmentsQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedIOLInvestmentsQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromQuery] GetSingleIOLInvestmentQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 }
