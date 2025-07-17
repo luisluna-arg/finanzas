@@ -2,18 +2,30 @@ using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
 
-public class KeyValueEntity<TEnum>() : AuditedEntity<TEnum>()
+public class KeyValueEntity<TEnum, TSelf> : AuditedEntity<TEnum>
     where TEnum : struct, Enum
+    where TSelf : KeyValueEntity<TEnum, TSelf>, new()
 {
     public static readonly string DefaultName = "Default";
 
-    public required string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
-    public static T Default<T>(string? name = null) where T : KeyValueEntity<TEnum>
+    public KeyValueEntity() : base()
     {
-        // Use reflection to create an instance and set the Name property
-        var instance = (T)Activator.CreateInstance(typeof(T))!;
+    }
+
+    public static TSelf Default(string? name = null)
+    {
+        var instance = new TSelf();
         instance.Name = name ?? DefaultName;
+        return instance;
+    }
+
+    public static TSelf Create(TEnum @enum)
+    {
+        var instance = new TSelf();
+        instance.Id = @enum;
+        instance.Name = @enum.ToString();
         return instance;
     }
 

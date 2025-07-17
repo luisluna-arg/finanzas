@@ -62,7 +62,7 @@ public class UpdateIOLInvestmentCommandHandler : BaseCommandHandler<UpdateIOLInv
 
             if (assetType == null)
             {
-                assetType = KeyValueEntity<IOLInvestmentAssetTypeEnum>.Default<IOLInvestmentAssetType>();
+                assetType = KeyValueEntity<IOLInvestmentAssetTypeEnum, IOLInvestmentAssetType>.Default();
             }
 
             asset = new IOLInvestmentAsset()

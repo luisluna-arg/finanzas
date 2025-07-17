@@ -53,7 +53,7 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
                         {
                             Symbol = assetSymbol,
                             Description = assetDescription,
-                            Type = KeyValueEntity<IOLInvestmentAssetTypeEnum>.Default<IOLInvestmentAssetType>(),
+                            Type = KeyValueEntity<IOLInvestmentAssetTypeEnum, IOLInvestmentAssetType>.Default(),
                             Currency = Currency.Default(symbols:
                                 !string.IsNullOrWhiteSpace(currencySymbol) ?
                                     [CurrencySymbol.Default(symbol: currencySymbol)] : [])

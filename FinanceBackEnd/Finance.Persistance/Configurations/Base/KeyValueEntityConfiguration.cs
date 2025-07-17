@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Finance.Persistance.Configurations.Base;
 
 public abstract class KeyValueEntityConfiguration<T, TEnum> : AuditedEntityConfiguration<T, TEnum>
-    where T : KeyValueEntity<TEnum>
+    where T : KeyValueEntity<TEnum, T>, new()
     where TEnum : struct, Enum
 {
     public override void Configure(EntityTypeBuilder<T> builder)

@@ -63,7 +63,7 @@ public class CreateIOLInvestmentCommandHandler : BaseCommandHandler<CreateIOLInv
 
             if (assetType == null)
             {
-                assetType = KeyValueEntity<IOLInvestmentAssetTypeEnum>.Default<IOLInvestmentAssetType>();
+                assetType = KeyValueEntity<IOLInvestmentAssetTypeEnum, IOLInvestmentAssetType>.Default();
             }
 
             var currency = (await currencyRepository.GetByIdAsync(command.CurrencyId ?? Guid.Parse(CurrencyConstants.PesoId), cancellationToken))!;
