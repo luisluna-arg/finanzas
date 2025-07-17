@@ -52,7 +52,7 @@ public class GetPaginatedCreditCardMovementsQueryHandler : IQueryHandler<GetPagi
             .OrderByDescending(o => o.TimeStamp)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var paginatedResult = new PaginatedResult<CreditCardMovement>(paginatedItems, page, pageSize, totalItems);
 

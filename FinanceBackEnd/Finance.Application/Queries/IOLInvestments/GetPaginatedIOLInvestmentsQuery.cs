@@ -55,7 +55,7 @@ public class GetPaginatedIOLInvestmentsQueryHandler : IQueryHandler<GetPaginated
             .ThenBy(o => o.Asset.Description)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return DataResult<PaginatedResult<IOLInvestment?>>.Success(
             new PaginatedResult<IOLInvestment?>(paginatedItems, page, pageSize, totalItems));

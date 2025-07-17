@@ -67,7 +67,7 @@ public class GetPaginatedDebitsQueryHandler : IQueryHandler<GetPaginatedDebitsQu
             .ThenBy(o => o.Origin.Name)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var paginatedResult = new PaginatedResult<Debit>(paginatedItems, page, pageSize, totalItems);
 

@@ -63,7 +63,7 @@ public class GetPaginatedIncomesQueryHandler : IQueryHandler<GetPaginatedIncomes
             .ThenBy(o => o.Id)
             .Skip(skip)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return DataResult<PaginatedResult<Income>>.Success(new PaginatedResult<Income>(paginatedItems, page, pageSize, totalItems));
     }
