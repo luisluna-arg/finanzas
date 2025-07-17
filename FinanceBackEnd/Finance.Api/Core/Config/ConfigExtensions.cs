@@ -31,6 +31,8 @@ public static class ConfigExtensions
 
         services.AddEntityServices();
 
+        services.AddSagaServices();
+
         services.AddScoped<ICurrencyConverter, CurrencyConverter>();
 
         services.AddCors(options =>
