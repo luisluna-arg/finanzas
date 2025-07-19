@@ -1,0 +1,11 @@
+{
+    "runtime": "Net90",
+    "swaggerGenerators": {
+        "aspNetCoreToOpenApi": {
+            "project": "Finance.Api.csproj",
+            "aspNetCoreEnvironment": "Development",
+            "output": "wwwroot/swagger/v1/swagger.json",
+            "documentName": "v1"
+        }
+    }
+}
