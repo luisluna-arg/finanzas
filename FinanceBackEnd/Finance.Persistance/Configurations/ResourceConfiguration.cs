@@ -1,12 +1,35 @@
 using Finance.Domain.Models;
+using Finance.Domain.Models.Base;
 using Finance.Persistance.Configurations.Base;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Finance.Persistance.Configurations;
 
-public class CreditCardMovementResourceConfiguration : AuditedEntityConfiguration<CreditCardMovementResource, Guid>;
-public class CreditCardResourceConfiguration : AuditedEntityConfiguration<CreditCardResource, Guid>;
-public class CreditCardStatementResourceConfiguration : AuditedEntityConfiguration<CreditCardStatementResource, Guid>;
-public class CurrencyExchangeRateResourceConfiguration : AuditedEntityConfiguration<CurrencyExchangeRateResource, Guid>;
-public class DebitResourceConfiguration : AuditedEntityConfiguration<DebitResource, Guid>;
-public class FundResourceConfiguration : AuditedEntityConfiguration<FundResource, Guid>;
+public class EntityResourceConfiguration<TEntityResource, TEntity, TId> : AuditedEntityConfiguration<TEntityResource, TId>
+    where TEntity : Entity<TId>
+    where TEntityResource : EntityResource<TEntity, TId>
+    where TId : struct
+{
+    public override void Configure(EntityTypeBuilder<TEntityResource> builder)
+    {
+        base.Configure(builder);
+        builder.HasOne(fr => fr.Resource)
+            .WithMany()
+            .HasForeignKey(fr => fr.ResourceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(fr => fr.ResourceSource)
+            .WithMany()
+            .HasForeignKey(fr => fr.ResourceSourceId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+public class CreditCardMovementResourceConfiguration : EntityResourceConfiguration<CreditCardMovementResource, CreditCardMovement, Guid>;
+public class CreditCardResourceConfiguration : EntityResourceConfiguration<CreditCardResource, CreditCard, Guid>;
+public class CreditCardStatementResourceConfiguration : EntityResourceConfiguration<CreditCardStatementResource, CreditCardStatement, Guid>;
+public class CurrencyExchangeRateResourceConfiguration : EntityResourceConfiguration<CurrencyExchangeRateResource, CurrencyExchangeRate, Guid>;
+public class DebitResourceConfiguration : EntityResourceConfiguration<DebitResource, Debit, Guid>;
+public class FundResourceConfiguration : EntityResourceConfiguration<FundResource, Fund, Guid>;
 public class ResourceConfiguration : AuditedEntityConfiguration<Resource, Guid>;
