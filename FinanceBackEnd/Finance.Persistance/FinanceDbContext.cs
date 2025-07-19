@@ -28,7 +28,6 @@ public class FinanceDbContext(DbContextOptions<FinanceDbContext> options) : DbCo
     public DbSet<IOLInvestmentAssetType> IOLInvestmentAssetType => Set<IOLInvestmentAssetType>();
     public DbSet<Movement> Movement => Set<Movement>();
     public DbSet<User> User => Set<User>();
-    public DbSet<UserRole> UserRole => Set<UserRole>();
     public DbSet<Role> Role => Set<Role>();
     public DbSet<Resource> Resource => Set<Resource>();
     public DbSet<ResourceOwner> ResourceOwner => Set<ResourceOwner>();
@@ -48,7 +47,6 @@ public class FinanceDbContext(DbContextOptions<FinanceDbContext> options) : DbCo
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseSerialColumns();
-
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppModuleConfiguration).Assembly);
 
         base.OnModelCreating(modelBuilder);

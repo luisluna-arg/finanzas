@@ -1,5 +1,6 @@
 using Finance.Domain.Models;
 using Finance.Persistance.Configurations.Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Finance.Persistance.Configurations;
@@ -22,17 +23,28 @@ public class UserConfiguration : AuditedEntityConfiguration<User, Guid>
             .Property(o => o.Username)
             .HasMaxLength(100);
 
-        // Configure many-to-many relationship through UserRole junction table
+        // Configure many-to-many relationship for User <-> Role with custom key type
         builder
             .HasMany(u => u.Roles)
-            .WithMany()
-            .UsingEntity<UserRole>(
-                j => j.HasOne(ur => ur.Role)
-                      .WithMany()
-                      .HasForeignKey(ur => ur.RoleId),
-                j => j.HasOne(ur => ur.User)
-                      .WithMany()
-                      .HasForeignKey(ur => ur.UserId),
-                j => j.HasKey(ur => ur.Id));
+            .WithMany() // Removed (r => r.Users) since Role does not have a Users navigation property
+            .UsingEntity<Dictionary<string, object>>(
+                "UserRole",
+                j => j
+                    .HasOne<Role>()
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade),
+                j => j
+                    .HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade),
+                j =>
+                {
+                    j.HasKey("UserId", "RoleId");
+                    j.Property("RoleId").HasColumnType("smallint");
+                });
     }
 }

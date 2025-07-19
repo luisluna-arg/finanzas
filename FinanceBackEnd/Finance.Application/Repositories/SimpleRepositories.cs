@@ -62,4 +62,3 @@ public class ResourceRepository(FinanceDbContext dbContext) : BaseRepository<Res
 // User related repositories
 public class RoleRepository(FinanceDbContext dbContext) : BaseRepository<Role, RoleEnum>(dbContext);
 public class UserRepository(FinanceDbContext dbContext) : BaseRepository<User, Guid>(dbContext);
-public class UserRoleRepository(FinanceDbContext dbContext) : BaseRepository<UserRole, Guid>(dbContext);

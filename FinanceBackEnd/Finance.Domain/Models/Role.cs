@@ -2,4 +2,6 @@ using Finance.Domain.Enums;
 
 namespace Finance.Domain.Models;
 
-public class Role : KeyValueEntity<RoleEnum, Role>;
+public class Role : KeyValueEntity<RoleEnum, Role>
+{
+}
