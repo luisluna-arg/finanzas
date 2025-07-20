@@ -31,9 +31,8 @@ jobs:
       - name: Apply database migrations
         run: |
           dotnet tool install --global dotnet-ef
-          dotnet tool restore
-          dotnet ef database update
-        working-directory: FinanceBackEnd/Finance.Api
+          dotnet ef database update --project ./Finance.Migrations --context FinanceDbContext
+        working-directory: FinanceBackEnd
       # - name: Test
       #   run: dotnet test
       #   working-directory: FinanceBackEnd/Finance.Api
