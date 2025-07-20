@@ -6,6 +6,7 @@ using Finance.Application.Queries.Users;
 using Finance.Api.Controllers.Requests;
 using Finance.Application.Services.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
+using Finance.Application.Extensions;
 
 namespace Finance.Application.Services;
 
@@ -19,11 +20,18 @@ public class UserService(
     public IDispatcher _dispatcher { get; } = dispatcher;
     public IdentityService _identityService { get; } = identityService;
 
-    public async Task<(User result, bool success)> Create(CreateUserSagaRequest request, IDbContextTransaction? transaction = null)
+    public async Task<(User result, bool success, string error)> Create(CreateUserSagaRequest request, IDbContextTransaction? transaction = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         try
         {
+            var userSourceIds = request.Identities.Select(i => i.SourceId).ToArray();
+            var existingUserResult = await _dispatcher.DispatchQueryAsync(new GetUserBySourceIdsQuery(userSourceIds));
+            if (existingUserResult.IsSuccess)
+            {
+                throw new Exception("User with the same source IDs already exists");
+            }
+
             var userCommand = new CreateUserCommand
             {
                 Username = request.Username,
@@ -40,28 +48,35 @@ public class UserService(
             foreach (var identity in request.Identities)
             {
                 var identityRequest = new CreateIdentitySagaRequest(userResult.Data.Id, identity.Provider, identity.SourceId);
-                var (createdIdentity, identitySuccess) = await _identityService.Create(identityRequest);
+                var (createdIdentity, identitySuccess, error) = await _identityService.Create(identityRequest, localTransaction);
                 if (!identitySuccess)
                 {
-                    throw new Exception("Failed to create identity");
+                    throw new Exception($"Failed to create identity: {error}");
                 }
             }
 
             await localTransaction.CommitAsync();
-            return (userResult.Data, true);
+            return (userResult.Data, true, string.Empty);
         }
-        catch
+        catch (Exception ex)
         {
             await localTransaction.RollbackAsync();
-            return (new User { Username = string.Empty, FirstName = string.Empty, LastName = string.Empty }, false);
+            return (new User { Username = string.Empty, FirstName = string.Empty, LastName = string.Empty }, false, ex.GetInnerMostMessage());
         }
     }
 
-    public async Task<(User result, bool success)> Update(UpdateUserSagaRequest request, IDbContextTransaction? transaction = null)
+    public async Task<(User result, bool success, string error)> Update(UpdateUserSagaRequest request, IDbContextTransaction? transaction = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         try
         {
+            var userSourceIds = request.Identities.Select(i => i.SourceId).ToArray();
+            var existingUserResult = await _dispatcher.DispatchQueryAsync(new GetUserBySourceIdsQuery(userSourceIds));
+            if (!existingUserResult.IsSuccess)
+            {
+                throw new Exception("User with the same source IDs already exists");
+            }
+
             var userCommand = new UpdateUserCommand
             {
                 UserId = request.UserId,
@@ -79,24 +94,24 @@ public class UserService(
             foreach (var identity in request.Identities)
             {
                 var identityRequest = new UpdateIdentitySagaRequest(request.UserId, identity.Id, identity.Provider, identity.SourceId);
-                var (updatedIdentity, identitySuccess) = await _identityService.Update(identityRequest);
+                var (updatedIdentity, identitySuccess, error) = await _identityService.Update(identityRequest, localTransaction);
                 if (!identitySuccess)
                 {
-                    throw new Exception("Failed to update identity");
+                    throw new Exception($"Failed to update identity: {error}");
                 }
             }
 
             await localTransaction.CommitAsync();
-            return (userResult.Data, true);
+            return (userResult.Data, true, string.Empty);
         }
-        catch
+        catch (Exception ex)
         {
             await localTransaction.RollbackAsync();
-            return (new User { Id = request.UserId, Username = string.Empty, FirstName = string.Empty, LastName = string.Empty }, false);
+            return (new User { Id = request.UserId, Username = string.Empty, FirstName = string.Empty, LastName = string.Empty }, false, ex.GetInnerMostMessage());
         }
     }
 
-    public async Task<bool> Delete(DeleteUserSagaRequest request, IDbContextTransaction? transaction = null)
+    public async Task<(bool success, string error)> Delete(DeleteUserSagaRequest request, IDbContextTransaction? transaction = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         try
@@ -113,20 +128,20 @@ public class UserService(
             foreach (var identity in identities.Data)
             {
                 var identityRequest = new DeleteIdentitySagaRequest(request.UserId, identity.Id);
-                var result = await _identityService.Delete(identityRequest);
+                var (result, error) = await _identityService.Delete(identityRequest, localTransaction);
                 if (!result)
                 {
-                    throw new Exception("Failed to delete identity");
+                    throw new Exception($"Failed to delete identity: {error}");
                 }
             }
 
             await localTransaction.CommitAsync();
-            return true;
+            return (true, string.Empty);
         }
-        catch
+        catch (Exception ex)
         {
             await localTransaction.RollbackAsync();
-            return false;
+            return (false, ex.GetInnerMostMessage());
         }
     }
 }

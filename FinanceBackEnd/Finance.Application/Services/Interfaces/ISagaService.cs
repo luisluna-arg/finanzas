@@ -9,7 +9,7 @@ public interface ISagaService<TCreateRequest, TUpdateRequest, TDeleteRequest, TE
     where TDeleteRequest : ISagaRequest
     where TEntity : IEntity?
 {
-    Task<(TEntity result, bool success)> Create(TCreateRequest request, IDbContextTransaction? transaction = null);
-    Task<(TEntity result, bool success)> Update(TUpdateRequest request, IDbContextTransaction? transaction = null);
-    Task<bool> Delete(TDeleteRequest request, IDbContextTransaction? transaction = null);
+    Task<(TEntity result, bool success, string error)> Create(TCreateRequest request, IDbContextTransaction? transaction = null);
+    Task<(TEntity result, bool success, string error)> Update(TUpdateRequest request, IDbContextTransaction? transaction = null);
+    Task<(bool success, string error)> Delete(TDeleteRequest request, IDbContextTransaction? transaction = null);
 }

@@ -4,11 +4,11 @@ using Finance.Domain.Enums;
 
 namespace Finance.Application.Commands;
 
-public class CreateUserSagaRequest : CreateUserCommand, ISagaRequest
+public abstract class BaseUserSagaRequest : CreateUserCommand, ISagaRequest
 {
     public IEnumerable<IdentityDto> Identities { get; set; }
 
-    public CreateUserSagaRequest(string username, string firstName, string lastName, IEnumerable<RoleEnum> roles, IEnumerable<IdentityDto> identities)
+    public BaseUserSagaRequest(string username, string firstName, string lastName, IEnumerable<RoleEnum> roles, IEnumerable<IdentityDto> identities)
         : base()
     {
         Username = username;

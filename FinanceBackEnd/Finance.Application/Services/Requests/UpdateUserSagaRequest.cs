@@ -1,14 +1,14 @@
+using Finance.Application.Dtos.Identities;
 using Finance.Application.Services.Interfaces;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
 
 namespace Finance.Application.Commands;
 
 public class UpdateUserSagaRequest : UpdateUserCommand, ISagaRequest
 {
-    public IEnumerable<Identity> Identities { get; set; }
+    public IEnumerable<IdentityDto> Identities { get; set; }
 
-    public UpdateUserSagaRequest(Guid userId, string username, string firstName, string lastName, IEnumerable<RoleEnum> roles, IEnumerable<Identity> identities)
+    public UpdateUserSagaRequest(Guid userId, string username, string firstName, string lastName, IEnumerable<RoleEnum> roles, IEnumerable<IdentityDto> identities)
     {
         UserId = userId;
         Username = username;
