@@ -64,11 +64,15 @@ public static class SwaggerConfig
                 if (api.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor controllerActionDescriptor)
                 {
                     // Use the controller name without the "Controller" suffix
-                    var controllerName = controllerActionDescriptor.ControllerName;
-                    return new[] { controllerName };
+                    var controllerName = controllerActionDescriptor.ControllerName
+                        .Replace("Command", string.Empty)
+                        .Replace("Query", string.Empty)
+                        .Replace("Controller", string.Empty);
+
+                    return [controllerName];
                 }
 
-                return new[] { "Other" };
+                return ["Other"];
             });
 
             c.DocInclusionPredicate((name, api) => true);

@@ -7,6 +7,7 @@ public record IdentityDto : Dto<Guid>
 {
     public IdentityProviderEnum Provider { get; set; } = default;
     public string SourceId { get; set; } = string.Empty;
+    public Guid UserId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

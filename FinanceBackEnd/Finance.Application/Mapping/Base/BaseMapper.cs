@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace Finance.Application.Mapping.Base;
 
 public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
@@ -17,10 +19,14 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
 
     public object Map(object source)
     {
-        if (source is not TSource typedSource)
-            throw new InvalidCastException($"Expected type {typeof(TSource).Name}, but got {source.GetType().Name}.");
+        if (source is TSource typedSource)
+            return Map(typedSource)!;
 
-        return Map(typedSource)!;
+        // If the source is a collection of TSource, map each item to TTarget
+        if (source is IEnumerable<TSource> typedSourceCollection)
+            return Map(typedSourceCollection).ToList();
+
+        throw new InvalidCastException($"Expected type {typeof(TSource).Name} or IEnumerable<{typeof(TSource).Name}>, but got {source.GetType().Name}.");
     }
 
     public IEnumerable<object> Map(IEnumerable<object> source)
@@ -54,8 +60,44 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
 
             if (targetProperty != null)
             {
-                // Get the source property value
                 var value = sourceProperty.GetValue(source);
+
+                // Always initialize collections, even if source is null
+                if (IsCollectionType(targetProperty.PropertyType))
+                {
+                    var targetElementType = GetCollectionElementType(targetProperty.PropertyType);
+                    if (value == null && targetElementType != null)
+                    {
+                        var emptyCollection = CreateCollectionOfType(targetProperty.PropertyType, targetElementType, new List<object>());
+                        targetProperty.SetValue(target, emptyCollection);
+                        continue;
+                    }
+                }
+
+                // Handle collection mapping
+                if (IsCollectionType(sourceProperty.PropertyType) && IsCollectionType(targetProperty.PropertyType))
+                {
+                    var sourceElementType = GetCollectionElementType(sourceProperty.PropertyType);
+                    var targetElementType = GetCollectionElementType(targetProperty.PropertyType);
+                    if (sourceElementType != null && targetElementType != null &&
+                        MappingService.HasMapper(sourceElementType, targetElementType))
+                    {
+                        try
+                        {
+                            var sourceEnumerable = value == null ? new List<object>() : ((IEnumerable)value).Cast<object>();
+                            var mappedItems = sourceEnumerable
+                                .Select(item => MappingService.Map(item, targetElementType))
+                                .ToList();
+                            var targetCollection = CreateCollectionOfType(targetProperty.PropertyType, targetElementType, mappedItems);
+                            targetProperty.SetValue(target, targetCollection);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error mapping collection property {sourceProperty.Name}: {ex.Message}");
+                        }
+                        continue;
+                    }
+                }
 
                 if (value == null)
                 {
@@ -73,12 +115,10 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
                 // Handle complex type mapping
                 if (!IsSimpleType(sourceProperty.PropertyType) && !IsSimpleType(targetProperty.PropertyType))
                 {
-                    // Check if there is a mapper for these types
                     if (MappingService.HasMapper(sourceProperty.PropertyType, targetProperty.PropertyType))
                     {
                         try
                         {
-                            // Use the direct Map method with target type
                             var mappedValue = MappingService.Map(value, targetProperty.PropertyType);
                             if (mappedValue != null)
                             {
@@ -87,9 +127,7 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
                         }
                         catch (Exception ex)
                         {
-                            // Log the error for debugging purposes
                             System.Diagnostics.Debug.WriteLine($"Error mapping property {sourceProperty.Name}: {ex.Message}");
-                            // If mapping fails, don't set the property
                         }
                     }
                 }
@@ -121,5 +159,62 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
             }
         }
         return false;
+    }
+
+    private bool IsCollectionType(Type type)
+    {
+        if (type == typeof(string)) return false;
+        return typeof(IEnumerable).IsAssignableFrom(type) && type.IsGenericType;
+    }
+
+    private Type? GetCollectionElementType(Type type)
+    {
+        if (type.IsArray)
+            return type.GetElementType();
+        if (type.IsGenericType)
+            return type.GetGenericArguments().FirstOrDefault();
+        return null;
+    }
+
+    private object? CreateCollectionOfType(Type collectionType, Type elementType, List<object> items)
+    {
+        if (collectionType.IsArray)
+        {
+            var array = Array.CreateInstance(elementType, items.Count);
+            items.Select((item, i) => { array.SetValue(item, i); return item; }).ToList();
+            return array;
+        }
+        if (typeof(IList).IsAssignableFrom(collectionType))
+        {
+            var constructedListType = typeof(List<>).MakeGenericType(elementType);
+
+            var list = (IList)Activator.CreateInstance(constructedListType, items.ToArray())!;
+            if (collectionType.IsAssignableFrom(constructedListType))
+                return list;
+
+            var ctor = collectionType.GetConstructor([constructedListType]);
+            if (ctor != null)
+                return ctor.Invoke([list]);
+            if (collectionType.IsGenericType)
+            {
+                var genericDef = collectionType.GetGenericTypeDefinition();
+                if (genericDef == typeof(ICollection<>) || genericDef == typeof(IEnumerable<>) || genericDef == typeof(IReadOnlyCollection<>))
+                    return list;
+            }
+            return list;
+        }
+        if (collectionType.IsInterface && collectionType.IsGenericType)
+        {
+            var constructedListType = typeof(List<>).MakeGenericType(elementType);
+            var list = (IList)Activator.CreateInstance(constructedListType)!;
+
+            foreach (var item in items)
+            {
+                list.Add(item);
+            }
+
+            return list;
+        }
+        return null;
     }
 }

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CQRSDispatch;
 using CQRSDispatch.Extensions;
 using CQRSDispatch.Interfaces;
@@ -7,6 +8,7 @@ using Finance.Application.Repositories;
 using Finance.Domain.DataConverters;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
@@ -66,12 +68,17 @@ public static class ConfigExtensions
 
         // Configure controllers with Newtonsoft JSON
         services.AddControllers()
-        .AddNewtonsoftJson(o =>
+        .AddNewtonsoftJson(options =>
         {
-            o.SerializerSettings.Converters.Add(new StringEnumConverter
+            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            options.SerializerSettings.Converters.Add(new StringEnumConverter
             {
                 NamingStrategy = new CamelCaseNamingStrategy()
             });
+        })
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
         // Add the DatabaseSeeder as a hosted service
