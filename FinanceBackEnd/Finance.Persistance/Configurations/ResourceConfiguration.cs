@@ -23,6 +23,10 @@ public class EntityResourceConfiguration<TEntityResource, TEntity, TId> : Audite
             .WithMany()
             .HasForeignKey(fr => fr.ResourceSourceId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasIndex(fr => new { fr.ResourceId, fr.ResourceSourceId })
+            .IsUnique();
     }
 }
 

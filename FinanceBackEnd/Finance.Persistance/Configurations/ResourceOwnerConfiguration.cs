@@ -19,5 +19,9 @@ public class ResourceOwnerConfiguration : AuditedEntityConfiguration<ResourceOwn
             .WithMany()
             .HasForeignKey(ro => ro.ResourceId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasIndex(ro => new { ro.UserId, ro.ResourceId })
+            .IsUnique();
     }
 }

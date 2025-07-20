@@ -23,6 +23,10 @@ public class UserConfiguration : AuditedEntityConfiguration<User, Guid>
             .Property(o => o.Username)
             .HasMaxLength(100);
 
+        builder
+            .HasIndex(o => o.Username)
+            .IsUnique();
+
         // Configure many-to-many relationship for User <-> Role with custom key type
         builder
             .HasMany(u => u.Roles)

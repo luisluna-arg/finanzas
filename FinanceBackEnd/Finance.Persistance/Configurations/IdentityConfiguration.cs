@@ -17,6 +17,10 @@ public class IdentityConfiguration : AuditedEntityConfiguration<Identity, Guid>
             .HasMaxLength(100);
 
         builder
+            .HasIndex(o => o.SourceId)
+            .IsUnique();
+
+        builder
             .Property(o => o.Provider)
             .HasConversion(
                 v => (short)v,
