@@ -11,9 +11,14 @@ public class DeleteUserCommand : ICommand<CommandResult>
     public Guid UserId { get; set; }
 }
 
-public class DeleteUserCommandHandler(FinanceDbContext dbContext) : ICommandHandler<DeleteUserCommand, CommandResult>
+public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, CommandResult>
 {
-    public FinanceDbContext DbContext { get; } = dbContext;
+    public FinanceDbContext DbContext { get; }
+
+    public DeleteUserCommandHandler(FinanceDbContext dbContext)
+    {
+        DbContext = dbContext;
+    }
 
     public async Task<CommandResult> ExecuteAsync(DeleteUserCommand command, CancellationToken cancellationToken = default)
     {

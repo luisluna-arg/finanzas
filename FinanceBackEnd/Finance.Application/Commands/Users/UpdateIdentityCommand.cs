@@ -11,8 +11,10 @@ public class UpdateIdentityCommand : BaseIdentityCommand
     public Guid IdentityId { get; internal set; }
 }
 
-public class UpdateIdentityCommandHandler(FinanceDbContext dbContext) : BaseCommandHandler<UpdateIdentityCommand, Identity>(dbContext)
+public class UpdateIdentityCommandHandler : BaseCommandHandler<UpdateIdentityCommand, Identity>
 {
+    public UpdateIdentityCommandHandler(FinanceDbContext dbContext) : base(dbContext) { }
+
     public async override Task<DataResult<Identity>> ExecuteAsync(UpdateIdentityCommand request, CancellationToken cancellationToken = default)
     {
         var user = await DbContext.User.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);

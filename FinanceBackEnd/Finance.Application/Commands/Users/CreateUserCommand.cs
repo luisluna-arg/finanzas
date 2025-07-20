@@ -8,16 +8,22 @@ namespace Finance.Application.Commands;
 
 public class CreateUserCommand : BaseUserCommand;
 
-public class CreateUserCommandHandler(FinanceDbContext dbContext) : BaseCommandHandler<CreateUserCommand, User>(dbContext)
+public class CreateUserCommandHandler : BaseCommandHandler<CreateUserCommand, User>
 {
-    public async override Task<DataResult<User>> ExecuteAsync(CreateUserCommand request, CancellationToken cancellationToken = default)
+    public CreateUserCommandHandler(FinanceDbContext dbContext) : base(dbContext) { }
+
+    public async override Task<DataResult<User>> ExecuteAsync(CreateUserCommand command, CancellationToken cancellationToken = default)
     {
+        var roles = DbContext.Role
+            .Where(r => command.Roles.Contains(r.Id))
+            .ToList();
+
         var user = new User
         {
-            Username = request.Username,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Roles = request.Roles.Select(r => Role.Create(r)).ToList()
+            Username = command.Username,
+            FirstName = command.FirstName,
+            LastName = command.LastName,
+            Roles = roles
         };
         DbContext.User.Add(user);
 

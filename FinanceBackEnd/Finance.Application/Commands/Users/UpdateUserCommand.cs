@@ -12,8 +12,10 @@ public class UpdateUserCommand : BaseUserCommand
     public Guid UserId { get; set; }
 }
 
-public class UpdateUserCommandHandler(FinanceDbContext dbContext) : BaseCommandHandler<UpdateUserCommand, User>(dbContext)
+public class UpdateUserCommandHandler : BaseCommandHandler<UpdateUserCommand, User>
 {
+    public UpdateUserCommandHandler(FinanceDbContext dbContext) : base(dbContext) { }
+
     public override Task<DataResult<User>> ExecuteAsync(UpdateUserCommand command, CancellationToken cancellationToken = default)
     {
         var user = DbContext.User.FirstOrDefault(u => u.Username == command.Username);
@@ -22,9 +24,13 @@ public class UpdateUserCommandHandler(FinanceDbContext dbContext) : BaseCommandH
             return Task.FromResult(DataResult<User>.Failure("User not found"));
         }
 
+        var roles = DbContext.Role
+            .Where(r => command.Roles.Contains(r.Id))
+            .ToList();
+
         user.FirstName = command.FirstName;
         user.LastName = command.LastName;
-        user.Roles = command.Roles.Select(Role.Create).ToList();
+        user.Roles = roles;
 
         DbContext.SaveChanges();
 

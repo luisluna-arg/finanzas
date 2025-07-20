@@ -8,8 +8,10 @@ namespace Finance.Application.Commands;
 
 public class CreateIdentityCommand : BaseIdentityCommand;
 
-public class CreateIdentityCommandHandler(FinanceDbContext dbContext) : BaseCommandHandler<CreateIdentityCommand, Identity>(dbContext)
+public class CreateIdentityCommandHandler : BaseCommandHandler<CreateIdentityCommand, Identity>
 {
+    public CreateIdentityCommandHandler(FinanceDbContext dbContext) : base(dbContext) { }
+
     public async override Task<DataResult<Identity>> ExecuteAsync(CreateIdentityCommand request, CancellationToken cancellationToken = default)
     {
         var user = await DbContext.User.Include(u => u.Identities).FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
@@ -26,6 +28,6 @@ public class CreateIdentityCommandHandler(FinanceDbContext dbContext) : BaseComm
 
         await DbContext.SaveChangesAsync(cancellationToken);
 
-        return DataResult<Identity>.Success();
+        return DataResult<Identity>.Success(identity);
     }
 }
