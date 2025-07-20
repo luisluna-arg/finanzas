@@ -1,10 +1,12 @@
 using Finance.Domain.Models;
 using Finance.Persistance.Configurations;
+using Finance.Persistance.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Persistance;
 
-public class FinanceDbContext(DbContextOptions<FinanceDbContext> options) : DbContext(options)
+public class FinanceDbContext : DbContext
 {
     public DbSet<AppModule> AppModule => Set<AppModule>();
     public DbSet<AppModuleType> AppModuleType => Set<AppModuleType>();
@@ -43,10 +45,22 @@ public class FinanceDbContext(DbContextOptions<FinanceDbContext> options) : DbCo
     public DbSet<IOLInvestmentResource> IOLInvestmentResource => Set<IOLInvestmentResource>();
     public DbSet<MovementResource> MovementResource => Set<MovementResource>();
 
+    private IHttpContextAccessor? HttpContextAccessor { get; }
+
+    internal string CurrentUserId => HttpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "IdentityNotFound";
+
+    public FinanceDbContext(DbContextOptions<FinanceDbContext> options, IHttpContextAccessor? httpContextAccessor)
+        : base(options)
+    {
+        HttpContextAccessor = httpContextAccessor;
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseSerialColumns();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppModuleConfiguration).Assembly);
+
+        modelBuilder.AddQueryFilters(this);
 
         base.OnModelCreating(modelBuilder);
     }
