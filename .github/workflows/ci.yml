@@ -1,40 +1,52 @@
 name: Continuous Integration
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
-  pull_request:
-    branches:
-      - main
+    pull_request:
+        branches:
+            - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 9.0.x
-      - name: Secrets injection in appsettings.json
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: "**/appsettings.json"
-        env:
-          ConnectionStrings.PostgresDb: "${{ secrets.DB_CONNECTION }}"
-      - name: Build with dotnet
-        run: dotnet build
-        working-directory: FinanceBackEnd/Finance.Api
-      - name: Apply database migrations
-        run: |
-          dotnet tool install --global dotnet-ef
-          dotnet ef database update --project ./Finance.Migrations --context FinanceDbContext
-        working-directory: FinanceBackEnd
-        env:
-          ConnectionStrings__PostgresDb: ${{ secrets.DB_CONNECTION }}
-      # - name: Test
-      #   run: dotnet test
-      #   working-directory: FinanceBackEnd/Finance.Api
+    deployment:
+        name: Deployment
+        runs-on: ubuntu-latest
+        if: >-
+            (github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'FinanceBackEnd/Finance.Migrations/')) ||
+            (github.event_name == 'pull_request' && contains(join(github.event.pull_request.changed_files, ','), 'FinanceBackEnd/Finance.Migrations/'))
+        steps:
+            - name: Check Supabase DB availability
+              run: |
+                  set -e
+                  sudo apt-get update && sudo apt-get install -y postgresql-client
+                  CONNSTR="${{ secrets.DB_CONNECTION }}"
+                  HOST=$(echo $CONNSTR | sed -n 's/.*host=\?\([^ ]*\).*/\1/p')
+                  PORT=$(echo $CONNSTR | sed -n 's/.*port=\?\([^ ]*\).*/\1/p')
+                  USER=$(echo $CONNSTR | sed -n 's/.*user=\?\([^ ]*\).*/\1/p')
+                  DBNAME=$(echo $CONNSTR | sed -n 's/.*database=\?\([^ ]*\).*/\1/p')
+                  PASSWORD=$(echo $CONNSTR | sed -n 's/.*password=\?\([^ ]*\).*/\1/p')
+                  export PGPASSWORD=$PASSWORD
+                  pg_isready -h $HOST -p $PORT -U $USER -d $DBNAME
+            - uses: actions/checkout@v2
+            - name: Setup .NET Core
+              uses: actions/setup-dotnet@v1
+              with:
+                  dotnet-version: 9.0.x
+            - name: Secrets injection in appsettings.json
+              uses: microsoft/variable-substitution@v1
+              with:
+                  files: "**/appsettings.json"
+              env:
+                  ConnectionStrings.PostgresDb: "${{ secrets.DB_CONNECTION }}"
+            - name: Build with dotnet
+              run: dotnet build
+              working-directory: FinanceBackEnd/Finance.Api
+            - name: Apply database migrations
+              run: |
+                  dotnet tool install --global dotnet-ef
+                  dotnet ef database update --project ./Finance.Migrations --context FinanceDbContext
+              working-directory: FinanceBackEnd
+              env:
+                  ConnectionStrings__PostgresDb: ${{ secrets.DB_CONNECTION }}
