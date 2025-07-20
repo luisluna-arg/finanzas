@@ -2,21 +2,25 @@ using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
 using Finance.Application.Services;
 using FluentValidation;
-using MediatR;
+using CQRSDispatch.Interfaces;
+using CQRSDispatch;
 
 namespace Finance.Application.Commands.CreditCards;
 
 public class BaseDeleteCommandHandler<TEntity, TId>(IEntityService<TEntity, TId> service)
-    : IRequestHandler<BaseDeleteCommand<TId>>
+    : ICommandHandler<BaseDeleteCommand<TId>>
     where TEntity : Entity<TId>
 {
     protected IEntityService<TEntity, TId> Service { get => service; }
 
-    public virtual async Task Handle(BaseDeleteCommand<TId> request, CancellationToken cancellationToken)
-        => await Service.DeleteAsync(request.Ids, cancellationToken);
+    public virtual async Task<CommandResult> ExecuteAsync(BaseDeleteCommand<TId> command, CancellationToken cancellationToken = default)
+    {
+        await Service.DeleteAsync(command.Ids, cancellationToken);
+        return CommandResult.Success();
+    }
 }
 
-public class BaseDeleteCommand<TId> : IRequest
+public class BaseDeleteCommand<TId> : ICommand
 {
     public TId[] Ids { get; set; } = [];
 }

@@ -9,7 +9,7 @@ public class FinanceDbContextFactory : IDesignTimeDbContextFactory<FinanceDbCont
 {
     // UserSecretsId defined directly in the Migrations project
     private const string UserSecretsId = "2439153f-d8fa-426d-821a-e701e182b22c";
-    
+
     public FinanceDbContext CreateDbContext(string[] args)
     {
         // Build configuration within the Migrations project itself
@@ -21,14 +21,15 @@ public class FinanceDbContextFactory : IDesignTimeDbContextFactory<FinanceDbCont
             .AddEnvironmentVariables();
 
         var configuration = configurationBuilder.Build();
-        
+
         // Get the connection string from configuration
         var connectionString = configuration.GetConnectionString("PostgresDb");
-        
+
         // Create DbContext options
         var optionsBuilder = new DbContextOptionsBuilder<FinanceDbContext>();
         optionsBuilder.UseNpgsql(connectionString, o => o.MigrationsAssembly(GetType().Assembly));
-        
-        return new FinanceDbContext(optionsBuilder.Options);
+
+        // Pass null for IHttpContextAccessor since it's not available at design time
+        return new FinanceDbContext(optionsBuilder.Options, null);
     }
 }

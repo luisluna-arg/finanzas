@@ -1,21 +1,22 @@
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Comparers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Helpers;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Commands.Funds;
 
 public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFileCommand>
 {
-    private readonly IAppModuleRepository appModuleRepository;
-    private readonly IRepository<Movement, Guid> movementRepository;
-    private readonly IRepository<Bank, Guid> bankRepository;
-    private readonly FundsExcelHelper excelHelper;
+    private readonly IAppModuleRepository _appModuleRepository;
+    private readonly IRepository<Movement, Guid> _movementRepository;
+    private readonly IRepository<Bank, Guid> _bankRepository;
+    private readonly FundsExcelHelper _excelHelper;
 
     public UploadFundFileCommandHandler(
         FinanceDbContext db,
@@ -24,30 +25,30 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
         IRepository<Bank, Guid> bankRepository)
         : base(db)
     {
-        this.appModuleRepository = appModuleRepository;
-        this.movementRepository = movementRepository;
-        this.bankRepository = bankRepository;
-        this.excelHelper = new FundsExcelHelper();
+        _appModuleRepository = appModuleRepository;
+        _movementRepository = movementRepository;
+        _bankRepository = bankRepository;
+        _excelHelper = new FundsExcelHelper();
     }
 
-    public override async Task Handle(UploadFundFileCommand command, CancellationToken cancellationToken)
+    public override async Task<CommandResult> ExecuteAsync(UploadFundFileCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetFundsAsync(cancellationToken);
+        var appModule = await _appModuleRepository.GetFundsAsync(cancellationToken);
 
         var dateKind = command.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
 
-        var bank = await bankRepository.GetByAsync("Id", command.BankId, cancellationToken);
+        var bank = await _bankRepository.GetByAsync("Id", command.BankId, cancellationToken);
         if (bank == null) throw new Exception($"Bank not found, Id: {command.BankId}");
 
-        var newRecords = excelHelper.Read(command.File, appModule, bank, dateKind);
-        if (newRecords == null || !newRecords.Any()) return;
+        var newRecords = _excelHelper.Read(command.File, appModule, bank, dateKind);
+        if (newRecords == null || !newRecords.Any()) return CommandResult.Failure("No records found in the uploaded file.");
 
         var minDate = newRecords.Min(o => o.TimeStamp);
         var maxDate = newRecords.Max(o => o.TimeStamp);
 
         var timeStampProperty = "TimeStamp";
-        var existingRecords = movementRepository
+        var existingRecords = _movementRepository
             .FilterBy(timeStampProperty, ExpressionOperator.GreaterThanOrEqual, minDate)
             .FilterBy(timeStampProperty, ExpressionOperator.LessThanOrEqual, maxDate)
             .Where(o => o.AppModule.Id == appModule.Id)
@@ -58,11 +59,13 @@ public class UploadFundFileCommandHandler : BaseResponselessHandler<UploadFundFi
             .Where(o => existingRecords.All(x => movementComparer.Equals(x, o)))
             .ToArray();
 
-        await movementRepository.AddRangeAsync(newRecords, cancellationToken, true);
+        await _movementRepository.AddRangeAsync(newRecords, cancellationToken, true);
+
+        return CommandResult.Success();
     }
 }
 
-public class UploadFundFileCommand : IRequest
+public class UploadFundFileCommand : ICommand
 {
     public UploadFundFileCommand(IFormFile file, Guid bankId, DateTimeKind dateKind)
     {

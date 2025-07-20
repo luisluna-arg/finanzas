@@ -1,12 +1,13 @@
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.CreditCards;
 
-public class CreateCreditCardMovementCommandHandler : BaseResponseHandler<CreateCreditCardMovementCommand, CreditCardMovement>
+public class CreateCreditCardMovementCommandHandler : BaseCommandHandler<CreateCreditCardMovementCommand, CreditCardMovement>
 {
     private readonly IRepository<CreditCard, Guid> creditCardRepository;
     private readonly IRepository<CreditCardMovement, Guid> creditCardMovementRepository;
@@ -21,7 +22,7 @@ public class CreateCreditCardMovementCommandHandler : BaseResponseHandler<Create
         this.creditCardMovementRepository = creditCardMovementRepository;
     }
 
-    public override async Task<CreditCardMovement> Handle(CreateCreditCardMovementCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<CreditCardMovement>> ExecuteAsync(CreateCreditCardMovementCommand command, CancellationToken cancellationToken)
     {
         var creditCard = await creditCardRepository.GetByIdAsync(command.CreditCardId, cancellationToken);
         if (creditCard == null) throw new Exception($"Credit Card not found, Id: {command.CreditCardId}");
@@ -40,11 +41,11 @@ public class CreateCreditCardMovementCommandHandler : BaseResponseHandler<Create
 
         await creditCardMovementRepository.AddAsync(newCreditCardMovement, cancellationToken);
 
-        return await Task.FromResult(newCreditCardMovement);
+        return DataResult<CreditCardMovement>.Success(newCreditCardMovement);
     }
 }
 
-public class CreateCreditCardMovementCommand : IRequest<CreditCardMovement>
+public class CreateCreditCardMovementCommand : ICommand
 {
     public Guid CreditCardId { get; set; }
     public DateTime TimeStamp { get; set; }

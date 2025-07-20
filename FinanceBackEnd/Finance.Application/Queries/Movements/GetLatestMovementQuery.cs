@@ -1,13 +1,14 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Movements;
 
-public class GetLatestMovementQueryHandler : BaseResponseHandler<GetLatestMovementQuery, Movement?>
+public class GetLatestMovementQueryHandler : BaseQueryHandler<GetLatestMovementQuery, Movement?>
 {
     private readonly IRepository<Movement, Guid> movementRepository;
 
@@ -19,11 +20,14 @@ public class GetLatestMovementQueryHandler : BaseResponseHandler<GetLatestMoveme
         this.movementRepository = movementRepository;
     }
 
-    public override async Task<Movement?> Handle(GetLatestMovementQuery request, CancellationToken cancellationToken)
-        => await movementRepository.GetDbSet().Include(o => o.AppModule).FirstOrDefaultAsync(o => o.AppModuleId == request.AppModuleId);
+    public override async Task<DataResult<Movement?>> ExecuteAsync(GetLatestMovementQuery request, CancellationToken cancellationToken)
+    {
+        var result = await movementRepository.GetDbSet().Include(o => o.AppModule).FirstOrDefaultAsync(o => o.AppModuleId == request.AppModuleId);
+        return DataResult<Movement?>.Success(result);
+    }
 }
 
-public class GetLatestMovementQuery : IRequest<Movement>
+public class GetLatestMovementQuery : IQuery<Movement?>
 {
     private Guid appModuleId;
 

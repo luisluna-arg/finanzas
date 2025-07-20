@@ -1,33 +1,29 @@
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 
 namespace Finance.Application.Commands.Movements;
 
-public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMovementCommand, Movement>
+public class CreateFundMovementCommand : CreateMovementBaseCommand;
+
+public class CreateFundMovementCommandHandler(
+    FinanceDbContext db,
+    IRepository<Movement, Guid> movementRepository,
+    IRepository<Currency, Guid> currencyRepository,
+    IAppModuleRepository appModuleRepository)
+    : BaseCommandHandler<CreateFundMovementCommand, Movement>(db)
 {
-    private readonly IRepository<Movement, Guid> movementRepository;
-    private readonly IRepository<Currency, Guid> currencyRepository;
-    private readonly IAppModuleRepository appModuleRepository;
+    private readonly IRepository<Movement, Guid> _movementRepository = movementRepository;
+    private readonly IRepository<Currency, Guid> _currencyRepository = currencyRepository;
+    private readonly IAppModuleRepository _appModuleRepository = appModuleRepository;
 
-    public CreateFundMovementCommandHandler(
-        FinanceDbContext db,
-        IRepository<Movement, Guid> movementRepository,
-        IRepository<Currency, Guid> currencyRepository,
-        IAppModuleRepository appModuleRepository)
-        : base(db)
+    public override async Task<DataResult<Movement>> ExecuteAsync(CreateFundMovementCommand command, CancellationToken cancellationToken)
     {
-        this.movementRepository = movementRepository;
-        this.currencyRepository = currencyRepository;
-        this.appModuleRepository = appModuleRepository;
-    }
+        AppModule? appModule = await _appModuleRepository.GetFundsAsync(cancellationToken);
 
-    public override async Task<Movement> Handle(CreateFundMovementCommand command, CancellationToken cancellationToken)
-    {
-        AppModule? appModule = await this.appModuleRepository.GetFundsAsync(cancellationToken);
-
-        Currency? currency = command.CurrencyId.HasValue ? await this.currencyRepository.GetByIdAsync(command.CurrencyId.Value, cancellationToken) : null;
+        Currency? currency = command.CurrencyId.HasValue ? await _currencyRepository.GetByIdAsync(command.CurrencyId.Value, cancellationToken) : null;
 
         var newMovement = new Movement()
         {
@@ -41,12 +37,8 @@ public class CreateFundMovementCommandHandler : BaseResponseHandler<CreateFundMo
             Total = command.Total,
         };
 
-        await movementRepository.AddAsync(newMovement, cancellationToken);
+        await _movementRepository.AddAsync(newMovement, cancellationToken);
 
-        return await Task.FromResult(newMovement);
+        return DataResult<Movement>.Success(newMovement);
     }
-}
-
-public class CreateFundMovementCommand : CreateMovementBaseCommand
-{
 }

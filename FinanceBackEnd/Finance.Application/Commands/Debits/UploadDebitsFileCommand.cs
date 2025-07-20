@@ -1,3 +1,5 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
@@ -5,7 +7,6 @@ using Finance.Helpers.ExcelHelper;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,10 +14,10 @@ namespace Finance.Application.Commands.Debits;
 
 public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebitsFileCommand>
 {
-    private readonly IAppModuleRepository appModuleRepository;
-    private readonly IRepository<Debit, Guid> repository;
-    private readonly IRepository<DebitOrigin, Guid> originRepository;
-    private readonly DebitsExcelHelper excelHelper;
+    private readonly IAppModuleRepository _appModuleRepository;
+    private readonly IRepository<Debit, Guid> _repository;
+    private readonly IRepository<DebitOrigin, Guid> _originRepository;
+    private readonly DebitsExcelHelper _excelHelper;
 
     public UploadDebitsFileCommandHandler(
         FinanceDbContext db,
@@ -25,29 +26,29 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
         IRepository<DebitOrigin, Guid> debitOriginRepository)
         : base(db)
     {
-        this.appModuleRepository = appModuleRepository;
-        this.originRepository = debitOriginRepository;
-        this.repository = debitRepository;
-        this.excelHelper = new DebitsExcelHelper();
+        _appModuleRepository = appModuleRepository;
+        _originRepository = debitOriginRepository;
+        _repository = debitRepository;
+        _excelHelper = new DebitsExcelHelper();
     }
 
-    public override async Task Handle(UploadDebitsFileCommand command, CancellationToken cancellationToken)
+    public override async Task<CommandResult> ExecuteAsync(UploadDebitsFileCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
+        var appModule = await _appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
         if (appModule == null) throw new Exception($"App module not found, Id: {command.AppModuleId}");
 
         var dateKind = command.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
 
-        var newRecords = excelHelper.Read(command.File, appModule, dateKind);
-        if (newRecords == null || !newRecords.Any()) return;
+        var newRecords = _excelHelper.Read(command.File, appModule, dateKind);
+        if (newRecords == null || !newRecords.Any()) return CommandResult.Failure("No records found in the uploaded file.");
 
         var minDate = newRecords.Min(o => o.TimeStamp);
         var maxDate = newRecords.Max(o => o.TimeStamp);
 
-        var records = await repository.GetDbSet()
+        var records = await _repository.GetDbSet()
                 .Include(o => o.Origin)
-                .ToArrayAsync();
+                .ToArrayAsync(cancellationToken);
 
         var origins = new Dictionary<string, DebitOrigin>();
 
@@ -62,7 +63,7 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
 
             var origin = origins.ContainsKey(record.Origin.Name) ?
                 origins[record.Origin.Name] :
-                await originRepository.GetByAsync("Name", record.Origin.Name, cancellationToken);
+                await _originRepository.GetByAsync("Name", record.Origin.Name, cancellationToken);
 
             if (origin != null)
             {
@@ -73,11 +74,11 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
                 origins.Add(record.Origin.Name, record.Origin);
             }
 
-            await repository.AddAsync(record, cancellationToken, false);
+            await _repository.AddAsync(record, cancellationToken, false);
         }
 
         var timeStampProperty = "TimeStamp";
-        var existingRecords = repository
+        var existingRecords = _repository
             .FilterBy(timeStampProperty, ExpressionOperator.GreaterThanOrEqual, minDate)
             .FilterBy(timeStampProperty, ExpressionOperator.LessThanOrEqual, maxDate)
             .Include(o => o.Origin)
@@ -92,11 +93,13 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
                 x.Amount != o.Amount))
             .ToArray();
 
-        await repository.AddRangeAsync(newRecords, cancellationToken, true);
+        await _repository.AddRangeAsync(newRecords, cancellationToken, true);
+
+        return CommandResult.Success();
     }
 }
 
-public class UploadDebitsFileCommand : IRequest
+public class UploadDebitsFileCommand : ICommand
 {
     public UploadDebitsFileCommand(IFormFile file, string appModuleId, DateTimeKind dateKind, FrequencyEnum frequency)
     {

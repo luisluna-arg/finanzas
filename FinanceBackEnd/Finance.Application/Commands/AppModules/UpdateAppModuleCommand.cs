@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.AppModules;
 
-public class UpdateAppModuleCommandHandler : BaseResponseHandler<UpdateAppModuleCommand, AppModule>
+public class UpdateAppModuleCommandHandler : BaseCommandHandler<UpdateAppModuleCommand, AppModule>
 {
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IRepository<Currency, Guid> currencyRepository;
@@ -22,7 +23,7 @@ public class UpdateAppModuleCommandHandler : BaseResponseHandler<UpdateAppModule
         this.currencyRepository = currencyRepository;
     }
 
-    public override async Task<AppModule> Handle(UpdateAppModuleCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<AppModule>> ExecuteAsync(UpdateAppModuleCommand command, CancellationToken cancellationToken)
     {
         var appModule = await appModuleRepository.GetByIdAsync(command.Id, cancellationToken);
         if (appModule == null) throw new Exception("App Module not found");
@@ -35,11 +36,11 @@ public class UpdateAppModuleCommandHandler : BaseResponseHandler<UpdateAppModule
 
         await appModuleRepository.UpdateAsync(appModule, cancellationToken);
 
-        return await Task.FromResult(appModule);
+        return DataResult<AppModule>.Success(appModule);
     }
 }
 
-public class UpdateAppModuleCommand : IRequest<AppModule>
+public class UpdateAppModuleCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }

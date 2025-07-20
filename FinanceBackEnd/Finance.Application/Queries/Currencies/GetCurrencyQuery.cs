@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,22 +7,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.Currencies;
 
-public class GetCurrencyQueryHandler : BaseResponseHandler<GetCurrencyQuery, Currency?>
+public class GetCurrencyQuery : GetSingleByIdQuery<Currency?, Guid>;
+
+public class GetCurrencyQueryHandler(FinanceDbContext db, IRepository<Currency, Guid> repository)
+    : BaseQueryHandler<GetCurrencyQuery, Currency?>(db)
 {
-    private readonly IRepository<Currency, Guid> currencyRepository;
+    private readonly IRepository<Currency, Guid> _repository = repository;
 
-    public GetCurrencyQueryHandler(
-        FinanceDbContext db,
-        IRepository<Currency, Guid> currencyRepository)
-        : base(db)
-    {
-        this.currencyRepository = currencyRepository;
-    }
-
-    public override async Task<Currency?> Handle(GetCurrencyQuery request, CancellationToken cancellationToken)
-        => await currencyRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetCurrencyQuery : GetSingleByIdQuery<Currency?, Guid>
-{
+    public override async Task<DataResult<Currency?>> ExecuteAsync(GetCurrencyQuery request, CancellationToken cancellationToken)
+        => DataResult<Currency?>.Success(await _repository.GetByIdAsync(request.Id, cancellationToken));
 }

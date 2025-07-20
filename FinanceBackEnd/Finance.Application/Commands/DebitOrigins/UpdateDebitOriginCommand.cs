@@ -1,17 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.DebitOrigins;
 
-public class UpdateDebitOriginCommandHandler : BaseResponseHandler<UpdateDebitOriginCommand, DebitOrigin>
+public class UpdateDebitOriginCommandHandler : BaseCommandHandler<UpdateDebitOriginCommand, DebitOrigin>
 {
-    private readonly IAppModuleRepository appModuleRepository;
-
-    private readonly IRepository<DebitOrigin, Guid> debitOriginRepository;
+    private readonly IAppModuleRepository _appModuleRepository;
+    private readonly IRepository<DebitOrigin, Guid> _debitOriginRepository;
 
     public UpdateDebitOriginCommandHandler(
         FinanceDbContext db,
@@ -19,29 +19,29 @@ public class UpdateDebitOriginCommandHandler : BaseResponseHandler<UpdateDebitOr
         IRepository<DebitOrigin, Guid> debitOriginRepository)
         : base(db)
     {
-        this.appModuleRepository = appModuleRepository;
-        this.debitOriginRepository = debitOriginRepository;
+        _appModuleRepository = appModuleRepository;
+        _debitOriginRepository = debitOriginRepository;
     }
 
-    public override async Task<DebitOrigin> Handle(UpdateDebitOriginCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<DebitOrigin>> ExecuteAsync(UpdateDebitOriginCommand command, CancellationToken cancellationToken)
     {
-        var debitOrigin = await debitOriginRepository.GetByIdAsync(command.Id, cancellationToken);
+        var debitOrigin = await _debitOriginRepository.GetByIdAsync(command.Id, cancellationToken);
         if (debitOrigin == null) throw new Exception("Debit Origin not found");
 
-        var appModule = await appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
+        var appModule = await _appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
         if (appModule == null) throw new Exception("App module not found");
 
         debitOrigin.AppModule = appModule;
         debitOrigin.Name = command.Name;
         debitOrigin.Deactivated = command.Deactivated;
 
-        await debitOriginRepository.UpdateAsync(debitOrigin, cancellationToken);
+        await _debitOriginRepository.UpdateAsync(debitOrigin, cancellationToken);
 
-        return await Task.FromResult(debitOrigin);
+        return DataResult<DebitOrigin>.Success(debitOrigin);
     }
 }
 
-public class UpdateDebitOriginCommand : IRequest<DebitOrigin>
+public class UpdateDebitOriginCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }

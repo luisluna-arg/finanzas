@@ -1,61 +1,62 @@
 using Finance.Application.Dtos.Summary;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
 using Finance.Application.Services;
 using Finance.Persistance.Constants;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetGeneralSummaryQueryHandler : IRequestHandler<GetGeneralSummaryQuery, TotalGeneralSummary>
+public class GetGeneralSummaryQueryHandler : IQueryHandler<GetGeneralSummaryQuery, TotalGeneralSummary>
 {
-    private readonly IMediator mediator;
-    private readonly CurrencyConversionService currencyConverterService;
+    private readonly IDispatcher _dispatcher;
+    private readonly CurrencyConversionService _currencyConverterService;
 
     public GetGeneralSummaryQueryHandler(
-        IMediator mediator,
+        IDispatcher dispatcher,
         CurrencyConversionService currencyConverter)
     {
-        this.mediator = mediator;
-        this.currencyConverterService = currencyConverter;
+        _dispatcher = dispatcher;
+        _currencyConverterService = currencyConverter;
     }
 
-    public async Task<TotalGeneralSummary> Handle(GetGeneralSummaryQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<TotalGeneralSummary>> ExecuteAsync(GetGeneralSummaryQuery request, CancellationToken cancellationToken)
     {
         var pesosCurrencyId = Guid.Parse(CurrencyConstants.PesoId);
 
-        var currentIncomes = (await mediator.Send(new GetCurrentIncomesQuery())) as ICollection<IAmountHolder>;
+        var currentIncomes = (await _dispatcher.DispatchQueryAsync<List<Income>>(new GetCurrentIncomesQuery())) as ICollection<IAmountHolder>;
 
         currentIncomes = currentIncomes!.GroupBy(g => g.CurrencyId).Select(g =>
         {
             return new Income() { CurrencyId = g.First().CurrencyId, Amount = g.Sum(a => a.Amount) };
         }).ToArray();
 
-        var convertedIncomes = (await currencyConverterService.ConvertCollection(currentIncomes!, pesosCurrencyId)).Sum(m => m);
+        var convertedIncomes = (await _currencyConverterService.ConvertCollection(currentIncomes!, pesosCurrencyId)).Sum(m => m);
 
-        var investments = (await mediator.Send(new GetCurrentInvestmentsQuery())).Items.Sum(e => e.Valued);
+        var investments = (await _dispatcher.DispatchQueryAsync<TotalInvestments>(new GetCurrentInvestmentsQuery())).Data.Items.Sum(e => e.Valued);
 
-        var dailyFunds = (await mediator.Send(new GetCurrentFundsQuery() { DailyUse = true })).Items.Sum(e => e.Value);
+        var dailyFunds = (await _dispatcher.DispatchQueryAsync<TotalFunds>(new GetCurrentFundsQuery() { DailyUse = true })).Data.Items.Sum(e => e.Value);
 
-        var notDailyFunds = (await mediator.Send(new GetCurrentFundsQuery() { DailyUse = false })).Items.Sum(e => e.Value);
+        var notDailyFunds = (await _dispatcher.DispatchQueryAsync<TotalFunds>(new GetCurrentFundsQuery() { DailyUse = false })).Data.Items.Sum(e => e.Value);
 
         var totalFunds = dailyFunds + notDailyFunds + investments;
 
         var result = new TotalGeneralSummary(
         [
-            new GeneralSummary(Guid.NewGuid().ToString(), "Ingresos", convertedIncomes),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Inversiones", investments),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Fondos ($)", dailyFunds),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Fondos (U$D / Crypto)", notDailyFunds),
-            new GeneralSummary(Guid.NewGuid().ToString(), "Dinero total", totalFunds)
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Ingresos", Value = convertedIncomes },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Inversiones", Value = investments },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Fondos ($)", Value = dailyFunds },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Fondos (U$D / Crypto)", Value = notDailyFunds },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Dinero total", Value = totalFunds }
         ]);
 
-        return result;
+        return DataResult<TotalGeneralSummary>.Success(result);
     }
 }
 
-public class GetGeneralSummaryQuery : IRequest<TotalGeneralSummary>
+public class GetGeneralSummaryQuery : IQuery<TotalGeneralSummary>
 {
     public bool? DailyUse { get; set; }
 }

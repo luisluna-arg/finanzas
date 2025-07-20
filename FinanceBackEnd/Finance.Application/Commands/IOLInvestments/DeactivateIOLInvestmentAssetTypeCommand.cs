@@ -1,24 +1,25 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
 
 namespace Finance.Application.Commands.IOLInvestments;
 
-public class DeactivateIOLInvestmentAssetCommandHandler : IRequestHandler<DeactivateIOLInvestmentAssetCommand, IOLInvestmentAsset?>
+public class DeactivateIOLInvestmentAssetCommandHandler : ICommandHandler<DeactivateIOLInvestmentAssetCommand, DataResult<IOLInvestmentAsset?>>
 {
-    private readonly IEntityService<IOLInvestmentAsset, Guid> service;
+    private readonly IEntityService<IOLInvestmentAsset, Guid> _service;
 
     public DeactivateIOLInvestmentAssetCommandHandler(
-        IEntityService<IOLInvestmentAsset, Guid> repository)
+        IEntityService<IOLInvestmentAsset, Guid> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task<IOLInvestmentAsset?> Handle(DeactivateIOLInvestmentAssetCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivatedAsync(request.Id, true, cancellationToken);
+    public async Task<DataResult<IOLInvestmentAsset?>> ExecuteAsync(DeactivateIOLInvestmentAssetCommand request, CancellationToken cancellationToken)
+        => DataResult<IOLInvestmentAsset?>.Success(await _service.SetDeactivatedAsync(request.Id, true, cancellationToken));
 }
 
-public class DeactivateIOLInvestmentAssetCommand : IRequest<IOLInvestmentAsset?>
+public class DeactivateIOLInvestmentAssetCommand : ICommand<DataResult<IOLInvestmentAsset?>>
 {
     public Guid Id { get; set; }
 }

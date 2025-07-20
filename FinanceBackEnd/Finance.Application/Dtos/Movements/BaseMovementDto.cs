@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Finance.Application.Dtos.Base;
 using Finance.Domain.SpecialTypes;
 using MovementEntity = Finance.Domain.Models.Movement;
 

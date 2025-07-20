@@ -4,4 +4,12 @@
     <!-- disable S125 -->
     <Rule Id="S125" Action="None" />
   </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <!-- Disable spacing rules -->
+    <Rule Id="SA1000" Action="None" />
+    <Rule Id="SA1009" Action="None" />
+    <Rule Id="SA1010" Action="None" />
+    <Rule Id="SA1026" Action="None" />
+    <Rule Id="SA1027" Action="None" />
+  </Rules>
 </RuleSet>

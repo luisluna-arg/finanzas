@@ -1,22 +1,23 @@
-using AutoMapper;
+using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Commands.IOLInvestments;
 using Finance.Application.Dtos.IOLInvestmentAssetTypes;
+using Finance.Application.Mapping;
+using Finance.Domain.Enums;
 using Finance.Domain.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/iol-investment-asset-type")]
-public class IOLInvestmentAssetTypeCommandController(IMapper mapper, IMediator mediator)
-    : ApiBaseCommandController<IOLInvestmentAssetType?, ushort, IOLInvestmentAssetTypeDto>(mapper, mediator)
+public class IOLInvestmentAssetTypeCommandController(IMappingService mapper, IDispatcher dispatcher)
+    : ApiBaseCommandController<IOLInvestmentAssetType?, IOLInvestmentAssetTypeEnum, IOLInvestmentAssetTypeDto>(mapper, dispatcher)
 {
     [HttpPatch("activate/{id}")]
-    public async Task<IActionResult> Activate(ushort id)
-        => await Handle(new ActivateIOLInvestmentAssetTypeCommand { Id = id });
+    public async Task<IActionResult> Activate(IOLInvestmentAssetTypeEnum id)
+        => await Handle404(new ActivateIOLInvestmentAssetTypeCommand { Id = id });
 
     [HttpPatch("deactivate/{id}")]
-    public async Task<IActionResult> Deactivate(ushort id)
+    public async Task<IActionResult> Deactivate(IOLInvestmentAssetTypeEnum id)
         => await Handle404(new DeactivateIOLInvestmentAssetTypeCommand { Id = id });
 }

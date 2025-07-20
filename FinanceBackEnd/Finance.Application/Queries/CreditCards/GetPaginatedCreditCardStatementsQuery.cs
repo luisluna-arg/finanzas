@@ -1,14 +1,15 @@
 using Finance.Application.Queries.Base;
 using Finance.Application.Commons;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.CreditCards;
 
 public class GetPaginatedCreditCardStatementsQueryHandler
-    : IRequestHandler<GetPaginatedCreditCardStatementsQuery, PaginatedResult<CreditCardStatement>>
+    : IQueryHandler<GetPaginatedCreditCardStatementsQuery, PaginatedResult<CreditCardStatement>>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -18,7 +19,7 @@ public class GetPaginatedCreditCardStatementsQueryHandler
         this.dbContext = dbContext;
     }
 
-    public async Task<PaginatedResult<CreditCardStatement>> Handle(GetPaginatedCreditCardStatementsQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<PaginatedResult<CreditCardStatement>>> ExecuteAsync(GetPaginatedCreditCardStatementsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<CreditCardStatement> query = dbContext
             .Set<CreditCardStatement>()
@@ -55,11 +56,11 @@ public class GetPaginatedCreditCardStatementsQueryHandler
             .OrderByDescending(o => o.ClosureDate)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var paginatedResult = new PaginatedResult<CreditCardStatement>(paginatedItems, page, pageSize, totalItems);
 
-        return paginatedResult;
+        return DataResult<PaginatedResult<CreditCardStatement>>.Success(paginatedResult);
     }
 }
 

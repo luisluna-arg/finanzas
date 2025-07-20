@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.Currencies;
 
-public class CreateCurrencyCommandHandler : BaseResponseHandler<CreateCurrencyCommand, Currency>
+public class CreateCurrencyCommandHandler : BaseCommandHandler<CreateCurrencyCommand, Currency>
 {
     private readonly IRepository<Currency, Guid> currencyRepository;
 
@@ -19,7 +20,7 @@ public class CreateCurrencyCommandHandler : BaseResponseHandler<CreateCurrencyCo
         this.currencyRepository = currencyRepository;
     }
 
-    public override async Task<Currency> Handle(CreateCurrencyCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Currency>> ExecuteAsync(CreateCurrencyCommand command, CancellationToken cancellationToken)
     {
         var newCurrency = new Currency()
         {
@@ -33,11 +34,11 @@ public class CreateCurrencyCommandHandler : BaseResponseHandler<CreateCurrencyCo
 
         await currencyRepository.AddAsync(newCurrency, cancellationToken);
 
-        return await Task.FromResult(newCurrency);
+        return DataResult<Currency>.Success(newCurrency);
     }
 }
 
-public class CreateCurrencyCommand : IRequest<Currency>
+public class CreateCurrencyCommand : ICommand
 {
     [Required]
     public string Name { get; set; } = string.Empty;

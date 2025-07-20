@@ -1,17 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.DebitOrigins;
 
-public class CreateDebitOriginCommandHandler : BaseResponseHandler<CreateDebitOriginCommand, DebitOrigin>
+public class CreateDebitOriginCommandHandler : BaseCommandHandler<CreateDebitOriginCommand, DebitOrigin>
 {
-    private readonly IAppModuleRepository appModuleRepository;
-
-    private readonly IRepository<DebitOrigin, Guid> debitOriginRepository;
+    private readonly IAppModuleRepository _appModuleRepository;
+    private readonly IRepository<DebitOrigin, Guid> _debitOriginRepository;
 
     public CreateDebitOriginCommandHandler(
         FinanceDbContext db,
@@ -19,13 +19,13 @@ public class CreateDebitOriginCommandHandler : BaseResponseHandler<CreateDebitOr
         IRepository<DebitOrigin, Guid> debitOriginRepository)
         : base(db)
     {
-        this.appModuleRepository = appModuleRepository;
-        this.debitOriginRepository = debitOriginRepository;
+        _appModuleRepository = appModuleRepository;
+        _debitOriginRepository = debitOriginRepository;
     }
 
-    public override async Task<DebitOrigin> Handle(CreateDebitOriginCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<DebitOrigin>> ExecuteAsync(CreateDebitOriginCommand command, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
+        var appModule = await _appModuleRepository.GetByIdAsync(command.AppModuleId, cancellationToken);
         if (appModule == null) throw new Exception("App module not found");
 
         var newDebitOrigin = new DebitOrigin()
@@ -35,13 +35,13 @@ public class CreateDebitOriginCommandHandler : BaseResponseHandler<CreateDebitOr
             Deactivated = command.Deactivated
         };
 
-        await debitOriginRepository.AddAsync(newDebitOrigin, cancellationToken);
+        await _debitOriginRepository.AddAsync(newDebitOrigin, cancellationToken);
 
-        return await Task.FromResult(newDebitOrigin);
+        return DataResult<DebitOrigin>.Success(newDebitOrigin);
     }
 }
 
-public class CreateDebitOriginCommand : IRequest<DebitOrigin>
+public class CreateDebitOriginCommand : ICommand<DataResult<DebitOrigin>>
 {
     [Required]
     public Guid AppModuleId { get; set; }

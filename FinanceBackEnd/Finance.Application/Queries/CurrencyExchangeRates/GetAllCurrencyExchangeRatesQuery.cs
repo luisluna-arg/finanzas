@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.CurrencyExchangeRates;
 
-public class GetAllCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<GetAllCurrencyExchangeRatesQuery, CurrencyExchangeRate?>
+public class GetAllCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<GetAllCurrencyExchangeRatesQuery, CurrencyExchangeRate>
 {
     public GetAllCurrencyExchangeRatesQueryHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<ICollection<CurrencyExchangeRate?>> Handle(GetAllCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<CurrencyExchangeRate>>> ExecuteAsync(GetAllCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.CurrencyExchangeRate
             .Include(o => o.BaseCurrency)
@@ -50,11 +51,11 @@ public class GetAllCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<Get
             .ThenBy(o => o.QuoteCurrency.Name)
             .ThenByDescending(o => o.TimeStamp);
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        return DataResult<List<CurrencyExchangeRate>>.Success(await query.ToListAsync(cancellationToken));
     }
 }
 
-public class GetAllCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate?>
+public class GetAllCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate>
 {
     public Guid? BaseCurrencyId { get; set; }
 

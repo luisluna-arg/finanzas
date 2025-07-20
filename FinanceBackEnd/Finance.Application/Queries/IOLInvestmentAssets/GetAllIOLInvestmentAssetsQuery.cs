@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,14 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.IOLInvestmentAssets;
 
-public class GetAllIOLInvestmentAssetsQueryHandler : BaseCollectionHandler<GetAllIOLInvestmentAssetsQuery, IOLInvestmentAsset?>
-{
-    public GetAllIOLInvestmentAssetsQueryHandler(FinanceDbContext db)
-        : base(db)
-    {
-    }
+public class GetAllIOLInvestmentAssetsQuery : GetAllQuery<IOLInvestmentAsset>;
 
-    public override async Task<ICollection<IOLInvestmentAsset?>> Handle(GetAllIOLInvestmentAssetsQuery request, CancellationToken cancellationToken)
+public class GetAllIOLInvestmentAssetsQueryHandler(FinanceDbContext db)
+    : BaseCollectionHandler<GetAllIOLInvestmentAssetsQuery, IOLInvestmentAsset>(db)
+{
+    public override async Task<DataResult<List<IOLInvestmentAsset>>> ExecuteAsync(GetAllIOLInvestmentAssetsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.IOLInvestmentAsset
             .Include(o => o.Type)
@@ -26,10 +25,6 @@ public class GetAllIOLInvestmentAssetsQueryHandler : BaseCollectionHandler<GetAl
 
         query = query.OrderBy(o => o.Symbol).ThenBy(o => o.Description).ThenBy(o => o.Type.Name);
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        return DataResult<List<IOLInvestmentAsset>>.Success(await query.ToListAsync(cancellationToken));
     }
-}
-
-public class GetAllIOLInvestmentAssetsQuery : GetAllQuery<IOLInvestmentAsset?>
-{
 }

@@ -1,25 +1,26 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 using Finance.Persistance.Constants;
 
 namespace Finance.Application.Commands.IOLInvestments;
 
-public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLInvestmentCommand, IOLInvestment>
+public class CreateIOLInvestmentCommandHandler : BaseCommandHandler<CreateIOLInvestmentCommand, IOLInvestment>
 {
     private readonly IRepository<IOLInvestmentAsset, Guid> iolInvestmentAssetRepository;
     private readonly IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository;
-    private readonly IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypeRepository;
+    private readonly IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> investmentAssetIOLTypeRepository;
     private readonly IRepository<Currency, Guid> currencyRepository;
 
     public CreateIOLInvestmentCommandHandler(
         FinanceDbContext db,
         IRepository<IOLInvestmentAsset, Guid> investmentAssetIOLRepository,
         IRepository<IOLInvestment, Guid> investmentAssetIOLRecordRepository,
-        IRepository<IOLInvestmentAssetType, ushort> investmentAssetIOLTypeRepository,
+        IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> investmentAssetIOLTypeRepository,
         IRepository<Currency, Guid> currencyRepository)
         : base(db)
     {
@@ -29,7 +30,7 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
         this.currencyRepository = currencyRepository;
     }
 
-    public override async Task<IOLInvestment> Handle(CreateIOLInvestmentCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<IOLInvestment>> ExecuteAsync(CreateIOLInvestmentCommand command, CancellationToken cancellationToken)
     {
         var newInvestmentAssetIOL = new IOLInvestment()
         {
@@ -49,7 +50,7 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
 
         await investmentAssetIOLRecordRepository.AddAsync(newInvestmentAssetIOL, cancellationToken);
 
-        return newInvestmentAssetIOL;
+        return DataResult<IOLInvestment>.Success(newInvestmentAssetIOL);
     }
 
     private async Task<IOLInvestmentAsset> GetAssetAsync(CreateIOLInvestmentCommand command, CancellationToken cancellationToken)
@@ -62,7 +63,7 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
 
             if (assetType == null)
             {
-                assetType = IOLInvestmentAssetType.Default();
+                assetType = KeyValueEntity<IOLInvestmentAssetTypeEnum, IOLInvestmentAssetType>.Default();
             }
 
             var currency = (await currencyRepository.GetByIdAsync(command.CurrencyId ?? Guid.Parse(CurrencyConstants.PesoId), cancellationToken))!;
@@ -80,7 +81,7 @@ public class CreateIOLInvestmentCommandHandler : BaseResponseHandler<CreateIOLIn
     }
 }
 
-public class CreateIOLInvestmentCommand : IRequest<IOLInvestment>
+public class CreateIOLInvestmentCommand : ICommand
 {
     required public string AssetSymbol { get; set; } = string.Empty;
 

@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using ExcelDataReader;
 using Finance.Domain.Models;
+using Finance.Domain.Enums;
 using Finance.Helpers;
 using Microsoft.AspNetCore.Http;
 
@@ -52,7 +53,7 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
                         {
                             Symbol = assetSymbol,
                             Description = assetDescription,
-                            Type = IOLInvestmentAssetType.Default(),
+                            Type = KeyValueEntity<IOLInvestmentAssetTypeEnum, IOLInvestmentAssetType>.Default(),
                             Currency = Currency.Default(symbols:
                                 !string.IsNullOrWhiteSpace(currencySymbol) ?
                                     [CurrencySymbol.Default(symbol: currencySymbol)] : [])

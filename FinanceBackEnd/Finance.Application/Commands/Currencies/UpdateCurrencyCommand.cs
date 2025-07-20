@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.Currencies;
 
-public class UpdateCurrencyCommandHandler : BaseResponseHandler<UpdateCurrencyCommand, Currency>
+public class UpdateCurrencyCommandHandler : BaseCommandHandler<UpdateCurrencyCommand, Currency>
 {
     private readonly IRepository<Currency, Guid> _currencyRepository;
     private readonly IRepository<CurrencySymbol, Guid> _currencySymbolRepository;
@@ -18,11 +19,11 @@ public class UpdateCurrencyCommandHandler : BaseResponseHandler<UpdateCurrencyCo
         IRepository<CurrencySymbol, Guid> currencySymbolRepository)
         : base(db)
     {
-        this._currencyRepository = currencyRepository;
-        this._currencySymbolRepository = currencySymbolRepository;
+        _currencyRepository = currencyRepository;
+        _currencySymbolRepository = currencySymbolRepository;
     }
 
-    public override async Task<Currency> Handle(UpdateCurrencyCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Currency>> ExecuteAsync(UpdateCurrencyCommand command, CancellationToken cancellationToken)
     {
         var currency = await _currencyRepository.GetByIdAsync(command.Id, cancellationToken);
         if (currency == null) throw new Exception("Currency not found");
@@ -57,11 +58,11 @@ public class UpdateCurrencyCommandHandler : BaseResponseHandler<UpdateCurrencyCo
 
         await _currencyRepository.UpdateAsync(currency, cancellationToken);
 
-        return await Task.FromResult(currency);
+        return DataResult<Currency>.Success(currency);
     }
 }
 
-public class UpdateCurrencyCommand : IRequest<Currency>
+public class UpdateCurrencyCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }

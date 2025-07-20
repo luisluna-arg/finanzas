@@ -2,15 +2,12 @@ using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
 
-public class AppModule : Entity<Guid>
+public class AppModule : AuditedEntity<Guid>
 {
-    required public string Name { get; set; } = string.Empty;
+    public AppModule() { }
 
-    required public DateTime CreatedAt { get; set; }
-
-    required public virtual Currency Currency { get; set; }
-
-    required public virtual AppModuleType Type { get; set; }
-
+    public string Name { get; set; } = string.Empty;
+    public virtual Currency Currency { get; set; } = default!;
+    public virtual AppModuleType Type { get; set; } = default!;
     public virtual ICollection<Movement> Movements { get; set; } = [];
 }

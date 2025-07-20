@@ -1,14 +1,15 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Extensions;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetCurrentIncomesQueryHandler : BaseResponseHandler<GetCurrentIncomesQuery, ICollection<Income>>
+public class GetCurrentIncomesQueryHandler : BaseQueryHandler<GetCurrentIncomesQuery, List<Income>>
 {
     private readonly IRepository<Income, Guid> incomeRepository;
 
@@ -20,7 +21,7 @@ public class GetCurrentIncomesQueryHandler : BaseResponseHandler<GetCurrentIncom
         this.incomeRepository = incomeRepository;
     }
 
-    public override async Task<ICollection<Income>> Handle(GetCurrentIncomesQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<Income>>> ExecuteAsync(GetCurrentIncomesQuery request, CancellationToken cancellationToken)
     {
         var query = incomeRepository.GetDbSet()
             .Include(o => o.Bank)
@@ -44,13 +45,13 @@ public class GetCurrentIncomesQueryHandler : BaseResponseHandler<GetCurrentIncom
             .OrderByDescending(i => i.TimeStamp)
             .GroupBy(g => new { g.BankId, g.CurrencyId })
             .Select(g => g.First())
-            .ToArrayAsync();
+            .ToListAsync(cancellationToken);
 
-        return data;
+        return DataResult<List<Income>>.Success(data);
     }
 }
 
-public class GetCurrentIncomesQuery : IRequest<ICollection<Income>>
+public class GetCurrentIncomesQuery : IQuery<List<Income>>
 {
     public GetCurrentIncomesQuery(
         Guid? bankId = default,

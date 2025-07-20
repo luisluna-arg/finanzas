@@ -1,16 +1,17 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.Funds;
 
-public class CreateFundCommandHandler : BaseResponseHandler<CreateFundCommand, Fund>
+public class CreateFundCommandHandler : BaseCommandHandler<CreateFundCommand, Fund>
 {
-    private readonly IRepository<Bank, Guid> bankRepository;
-    private readonly IRepository<Currency, Guid> currencyRepository;
-    private readonly IRepository<Fund, Guid> fundRepository;
+    private readonly IRepository<Bank, Guid> _bankRepository;
+    private readonly IRepository<Currency, Guid> _currencyRepository;
+    private readonly IRepository<Fund, Guid> _fundRepository;
 
     public CreateFundCommandHandler(
         FinanceDbContext db,
@@ -19,17 +20,17 @@ public class CreateFundCommandHandler : BaseResponseHandler<CreateFundCommand, F
         IRepository<Fund, Guid> fundRepository)
         : base(db)
     {
-        this.bankRepository = bankRepository;
-        this.currencyRepository = currencyRepository;
-        this.fundRepository = fundRepository;
+        _bankRepository = bankRepository;
+        _currencyRepository = currencyRepository;
+        _fundRepository = fundRepository;
     }
 
-    public override async Task<Fund> Handle(CreateFundCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Fund>> ExecuteAsync(CreateFundCommand command, CancellationToken cancellationToken)
     {
-        Bank? bank = await bankRepository.GetByIdAsync(command.BankId, cancellationToken);
+        Bank? bank = await _bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
 
-        Currency? currency = await currencyRepository.GetByIdAsync(command.CurrencyId, cancellationToken);
+        Currency? currency = await _currencyRepository.GetByIdAsync(command.CurrencyId, cancellationToken);
         if (currency == null) throw new Exception("Currency not found");
 
         var newFund = new Fund()
@@ -43,13 +44,13 @@ public class CreateFundCommandHandler : BaseResponseHandler<CreateFundCommand, F
             DailyUse = command.DailyUse ?? false
         };
 
-        await this.fundRepository.AddAsync(newFund, cancellationToken);
+        await _fundRepository.AddAsync(newFund, cancellationToken);
 
-        return await Task.FromResult(newFund);
+        return DataResult<Fund>.Success(newFund);
     }
 }
 
-public class CreateFundCommand : IRequest<Fund>
+public class CreateFundCommand : ICommand
 {
     public virtual Guid BankId { get; set; }
 

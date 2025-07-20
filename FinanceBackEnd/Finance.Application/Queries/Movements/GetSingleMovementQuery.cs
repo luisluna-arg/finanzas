@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,22 +7,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.Movements;
 
-public class GetSingleMovementQueryHandler : BaseResponseHandler<GetSingleMovementQuery, Movement?>
+public class GetSingleMovementQuery : GetSingleByIdQuery<Movement?, Guid>;
+
+public class GetSingleMovementQueryHandler(FinanceDbContext db, IRepository<Movement, Guid> repository)
+    : BaseQueryHandler<GetSingleMovementQuery, Movement?>(db)
 {
-    private readonly IRepository<Movement, Guid> movementRepository;
+    private readonly IRepository<Movement, Guid> _repository = repository;
 
-    public GetSingleMovementQueryHandler(
-        FinanceDbContext db,
-        IRepository<Movement, Guid> movementRepository)
-        : base(db)
-    {
-        this.movementRepository = movementRepository;
-    }
-
-    public override async Task<Movement?> Handle(GetSingleMovementQuery request, CancellationToken cancellationToken)
-        => await movementRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetSingleMovementQuery : GetSingleByIdQuery<Movement?, Guid>
-{
+    public override async Task<DataResult<Movement?>> ExecuteAsync(GetSingleMovementQuery command, CancellationToken cancellationToken = default)
+        => DataResult<Movement?>.Success(await _repository.GetByIdAsync(command.Id, cancellationToken));
 }

@@ -1,13 +1,15 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Finance.Application.Repositories.Base;
 
 namespace Finance.Application.Queries.Movements;
 
-public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovementsQuery, Movement?>
+public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovementsQuery, Movement>
 {
     private readonly IAppModuleRepository appModuleRepository;
     private readonly IRepository<Movement, Guid> repository;
@@ -22,7 +24,7 @@ public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovemen
         this.repository = movementRepository;
     }
 
-    public override async Task<ICollection<Movement?>> Handle(GetFundMovementsQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<Movement>>> ExecuteAsync(GetFundMovementsQuery request, CancellationToken cancellationToken)
     {
         var fundModule = await appModuleRepository.GetFundsAsync(cancellationToken);
         if (fundModule == null) throw new Exception($"Funds module not found");
@@ -41,19 +43,19 @@ public class GetFundMovementsQueryHandler : BaseCollectionHandler<GetFundMovemen
 
         if (request.From.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.GreaterThanOrEqual, request.From.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.GreaterThanOrEqual, request.From.Value);
         }
 
         if (request.To.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
-        return await query.ToArrayAsync();
+        return DataResult<List<Movement>>.Success(await query.ToListAsync(cancellationToken));
     }
 }
 
-public class GetFundMovementsQuery : GetAllQuery<Movement?>
+public class GetFundMovementsQuery : GetAllQuery<Movement>
 {
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.

@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
-public class UpdateCurrencyExchangeRateCommandHandler : BaseResponseHandler<UpdateCurrencyExchangeRateCommand, CurrencyExchangeRate>
+public class UpdateCurrencyExchangeRateCommandHandler : BaseCommandHandler<UpdateCurrencyExchangeRateCommand, CurrencyExchangeRate>
 {
     private readonly IRepository<CurrencyExchangeRate, Guid> currencyExchangeRateRepository;
 
@@ -19,7 +20,7 @@ public class UpdateCurrencyExchangeRateCommandHandler : BaseResponseHandler<Upda
         this.currencyExchangeRateRepository = currencyExchangeRateRepository;
     }
 
-    public override async Task<CurrencyExchangeRate> Handle(UpdateCurrencyExchangeRateCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<CurrencyExchangeRate>> ExecuteAsync(UpdateCurrencyExchangeRateCommand command, CancellationToken cancellationToken)
     {
         var currencyExchangeRate = await currencyExchangeRateRepository.GetByIdAsync(command.Id, cancellationToken);
         if (currencyExchangeRate == null) throw new Exception("Currency exchange rate not found");
@@ -29,11 +30,11 @@ public class UpdateCurrencyExchangeRateCommandHandler : BaseResponseHandler<Upda
 
         await currencyExchangeRateRepository.UpdateAsync(currencyExchangeRate, cancellationToken);
 
-        return await Task.FromResult(currencyExchangeRate);
+        return DataResult<CurrencyExchangeRate>.Success(currencyExchangeRate);
     }
 }
 
-public class UpdateCurrencyExchangeRateCommand : IRequest<CurrencyExchangeRate>
+public class UpdateCurrencyExchangeRateCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }

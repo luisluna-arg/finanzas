@@ -1,8 +1,9 @@
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.CurrencyConvertions;
 
@@ -18,11 +19,14 @@ public class DeleteCurrencyConversionCommandHandler : BaseResponselessHandler<De
         this.currencyConversionRepository = currencyConversionRepository;
     }
 
-    public override async Task Handle(DeleteCurrencyConversionCommand command, CancellationToken cancellationToken)
-        => await currencyConversionRepository.DeleteAsync(command.Id, cancellationToken);
+    public override async Task<CommandResult> ExecuteAsync(DeleteCurrencyConversionCommand command, CancellationToken cancellationToken)
+    {
+        await currencyConversionRepository.DeleteAsync(command.Id, cancellationToken);
+        return CommandResult.Success();
+    }
 }
 
-public class DeleteCurrencyConversionCommand : IRequest
+public class DeleteCurrencyConversionCommand : ICommand
 {
     required public Guid Id { get; set; }
 }

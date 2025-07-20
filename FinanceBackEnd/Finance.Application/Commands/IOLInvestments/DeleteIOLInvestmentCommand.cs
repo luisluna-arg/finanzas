@@ -1,24 +1,28 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
 
 namespace Finance.Application.Commands.IOLInvestments;
 
-public class DeleteIOLInvestmentCommandHandler : IRequestHandler<DeleteIOLInvestmentCommand>
+public class DeleteIOLInvestmentCommandHandler : ICommandHandler<DeleteIOLInvestmentCommand>
 {
-    private readonly IEntityService<IOLInvestment, Guid> service;
+    private readonly IEntityService<IOLInvestment, Guid> _service;
 
     public DeleteIOLInvestmentCommandHandler(
-        IEntityService<IOLInvestment, Guid> repository)
+        IEntityService<IOLInvestment, Guid> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task Handle(DeleteIOLInvestmentCommand request, CancellationToken cancellationToken)
-        => await service.DeleteAsync(request.Ids, cancellationToken);
+    public async Task<CommandResult> ExecuteAsync(DeleteIOLInvestmentCommand request, CancellationToken cancellationToken)
+    {
+        await _service.DeleteAsync(request.Ids, cancellationToken);
+        return CommandResult.Success();
+    }
 }
 
-public class DeleteIOLInvestmentCommand : IRequest
+public class DeleteIOLInvestmentCommand : ICommand
 {
     public Guid[] Ids { get; set; } = [];
 }

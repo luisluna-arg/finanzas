@@ -24,12 +24,12 @@ if (-not [string]::IsNullOrWhiteSpace($specificMigrationPrompt)) {
         # Try to find the migration by name (case insensitive)
         $migrations = Get-ChildItem -Path "$migrationsDir" -Filter "*.cs" | 
             Where-Object { $_.Name -match "^\d{14}_(.*)\.cs$" -and $_.Name -notmatch "\.Designer\.cs$" }
-            
+
         $matchingMigration = $migrations | Where-Object { 
             $migName = $_.Name -replace "^\d{14}_(.*)\.cs$", '$1'
             $migName -eq $specificMigrationPrompt
         } | Select-Object -First 1
-        
+
         if ($matchingMigration) {
             $specificMigration = $matchingMigration.Name -replace "\.cs$", ""
             Write-Host "Found matching migration: $specificMigration" -ForegroundColor Green
@@ -40,7 +40,7 @@ if (-not [string]::IsNullOrWhiteSpace($specificMigrationPrompt)) {
     } else {
         $specificMigration = $specificMigrationPrompt
     }
-    
+
     $migrationParam = " $specificMigration"
 }
 
@@ -52,13 +52,13 @@ try {
     # Show what we're about to do
     $targetMessage = if ([string]::IsNullOrWhiteSpace($specificMigration)) { "to latest migration" } else { "to migration '$specificMigration'" }
     Write-Host "Updating database $targetMessage..." -ForegroundColor Cyan
-    
+
     # Run the EF Core command to update the database
     Write-Host "Run from '$solutionDir'" -ForegroundColor Blue
     $command = "dotnet ef database update$migrationParam --project ./Finance.Migrations --context FinanceDbContext $verboseFlag"
     Write-Host "Executing: $command" -ForegroundColor DarkGray
     $output = Invoke-Expression $command
-    
+
     # Display command output
     $output
 

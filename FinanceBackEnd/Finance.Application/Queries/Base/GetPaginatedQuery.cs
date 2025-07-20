@@ -1,9 +1,9 @@
+using CQRSDispatch.Interfaces;
 using Finance.Application.Commons;
-using MediatR;
 
 namespace Finance.Application.Queries.Base;
 
-public abstract class GetPaginatedQuery<T> : IRequest<PaginatedResult<T>>
+public abstract class GetPaginatedQuery<T> : IQuery<PaginatedResult<T>>
 {
     public bool IncludeDeactivated { get; set; }
 

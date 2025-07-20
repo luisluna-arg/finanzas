@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Enums;
@@ -7,14 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Debits;
 
-public class GetLatestDebitsQueryHandler : BaseCollectionHandler<GetLatestDebitsQuery, Debit?>
+public class GetLatestDebitsQueryHandler : BaseCollectionHandler<GetLatestDebitsQuery, Debit>
 {
     public GetLatestDebitsQueryHandler(FinanceDbContext db)
         : base(db)
     {
     }
 
-    public override async Task<ICollection<Debit?>> Handle(GetLatestDebitsQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<Debit>>> ExecuteAsync(GetLatestDebitsQuery request, CancellationToken cancellationToken)
     {
         var originIds = DbContext.DebitOrigin.Where(o => o.AppModuleId == request.AppModuleId).Select(o => o.Id).ToArray();
 
@@ -35,16 +36,16 @@ public class GetLatestDebitsQueryHandler : BaseCollectionHandler<GetLatestDebits
             var record = await baseQuery
                         .Where(o => o.OriginId == id)
                         .OrderByDescending(e => e.TimeStamp)
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefaultAsync(cancellationToken);
 
             if (record != null) debits.Add(record);
         }
 
-        return debits.OrderBy(x => x.Origin.Name).ToArray();
+        return DataResult<List<Debit>>.Success(debits.OrderBy(x => x.Origin.Name).ToList());
     }
 }
 
-public class GetLatestDebitsQuery : GetAllQuery<Debit?>
+public class GetLatestDebitsQuery : GetAllQuery<Debit>
 {
     public Guid? AppModuleId { get; set; }
 

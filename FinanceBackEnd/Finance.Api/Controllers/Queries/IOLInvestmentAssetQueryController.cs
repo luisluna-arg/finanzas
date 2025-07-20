@@ -1,22 +1,31 @@
-using AutoMapper;
+using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
-using Finance.Application.Dtos.IOLInvestmentAssets;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.IOLInvestmentAssets;
-using Finance.Domain.Models;
-using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/iol-investment-asset")]
-public class IOLInvestmentAssetQueryController(IMapper mapper, IMediator mediator)
-    : ApiBaseQueryController<IOLInvestmentAsset?, Guid, IOLInvestmentAssetDto>(mapper, mediator)
+[Authorize(Policy = "AdminOrOwnerPolicy")]
+public class IOLInvestmentAssetQueryController(IMappingService mapper, IDispatcher dispatcher)
+    : SecuredApiController
 {
+    protected IMappingService MappingService { get => mapper; }
+    protected IDispatcher Dispatcher { get => dispatcher; }
+
     [HttpGet]
     public async Task<IActionResult> GetTypes()
-    => await Handle(new GetAllIOLInvestmentAssetsQuery());
+    {
+        var result = await Dispatcher.DispatchQueryAsync(new GetAllIOLInvestmentAssetsQuery());
+        return Ok(result.Data);
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTypeById(Guid id)
-        => await Handle(new GetIOLInvestmentAssetQuery { Id = id });
+    {
+        var result = await Dispatcher.DispatchQueryAsync(new GetIOLInvestmentAssetQuery { Id = id });
+        return Ok(result.Data);
+    }
 }

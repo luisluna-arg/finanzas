@@ -1,5 +1,7 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Models;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +15,7 @@ public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCredi
     {
     }
 
-    public override async Task<ICollection<CreditCardMovement>> Handle(GetCreditCardMovementsQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<CreditCardMovement>>> ExecuteAsync(GetCreditCardMovementsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.CreditCardMovement.Include(o => o.CreditCard).ThenInclude(o => o.Bank).AsQueryable();
 
@@ -24,19 +26,19 @@ public class GetCreditCardMovementsQueryHandler : BaseCollectionHandler<GetCredi
 
         if (request.From.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.GreaterThanOrEqual, request.From.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.GreaterThanOrEqual, request.From.Value);
         }
 
         if (request.To.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Application.Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
-        return await query
+        return DataResult<List<CreditCardMovement>>.Success(await query
             .OrderBy(o => o.CreditCard.Name)
             .ThenBy(o => o.CreditCard.Bank.Name)
             .OrderByDescending(o => o.TimeStamp)
-            .ToArrayAsync();
+            .ToListAsync(cancellationToken));
     }
 }
 

@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,14 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.IOLInvestmentAssetTypes;
 
-public class GetAllIOLInvestmentAssetTypesQueryHandler : BaseCollectionHandler<GetAllIOLInvestmentAssetTypesQuery, IOLInvestmentAssetType?>
-{
-    public GetAllIOLInvestmentAssetTypesQueryHandler(FinanceDbContext db)
-        : base(db)
-    {
-    }
+public class GetAllIOLInvestmentAssetTypesQuery : GetAllQuery<IOLInvestmentAssetType>;
 
-    public override async Task<ICollection<IOLInvestmentAssetType?>> Handle(GetAllIOLInvestmentAssetTypesQuery request, CancellationToken cancellationToken)
+public class GetAllIOLInvestmentAssetTypesQueryHandler(FinanceDbContext db)
+    : BaseCollectionHandler<GetAllIOLInvestmentAssetTypesQuery, IOLInvestmentAssetType>(db)
+{
+    public override async Task<DataResult<List<IOLInvestmentAssetType>>> ExecuteAsync(GetAllIOLInvestmentAssetTypesQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.IOLInvestmentAssetType.AsQueryable();
 
@@ -24,10 +23,6 @@ public class GetAllIOLInvestmentAssetTypesQueryHandler : BaseCollectionHandler<G
 
         query = query.OrderBy(o => o.Name);
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        return DataResult<List<IOLInvestmentAssetType>>.Success(await query.ToListAsync(cancellationToken));
     }
-}
-
-public class GetAllIOLInvestmentAssetTypesQuery : GetAllQuery<IOLInvestmentAssetType?>
-{
 }

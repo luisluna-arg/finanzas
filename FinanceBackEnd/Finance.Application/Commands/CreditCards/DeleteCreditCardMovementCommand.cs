@@ -1,24 +1,28 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
 
 namespace Finance.Application.Commands.CreditCards;
 
-public class DeleteCreditCardMovementCommandHandler : IRequestHandler<DeleteCreditCardMovementCommand>
+public class DeleteCreditCardMovementCommandHandler : ICommandHandler<DeleteCreditCardMovementCommand>
 {
-    private readonly IEntityService<CreditCardMovement, Guid> service;
+    private readonly IEntityService<CreditCardMovement, Guid> _service;
 
     public DeleteCreditCardMovementCommandHandler(
-        IEntityService<CreditCardMovement, Guid> repository)
+        IEntityService<CreditCardMovement, Guid> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task Handle(DeleteCreditCardMovementCommand request, CancellationToken cancellationToken)
-        => await service.DeleteAsync(request.Ids, cancellationToken);
+    public async Task<CommandResult> ExecuteAsync(DeleteCreditCardMovementCommand request, CancellationToken cancellationToken)
+    {
+        await _service.DeleteAsync(request.Ids, cancellationToken);
+        return CommandResult.Success();
+    }
 }
 
-public class DeleteCreditCardMovementCommand : IRequest
+public class DeleteCreditCardMovementCommand : ICommand
 {
     public Guid[] Ids { get; set; } = [];
 }

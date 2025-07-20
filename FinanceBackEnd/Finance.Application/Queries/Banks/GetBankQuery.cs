@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,22 +7,12 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.Banks;
 
-public class GetBankQueryHandler : BaseResponseHandler<GetBankQuery, Bank?>
+public class GetBankQuery : GetSingleByIdQuery<Bank?, Guid>;
+
+public class GetBankQueryHandler(FinanceDbContext db, IRepository<Bank, Guid> repository) : BaseQueryHandler<GetBankQuery, Bank?>(db)
 {
-    private readonly IRepository<Bank, Guid> bankRepository;
+    private readonly IRepository<Bank, Guid> _repository = repository;
 
-    public GetBankQueryHandler(
-        FinanceDbContext db,
-        IRepository<Bank, Guid> bankRepository)
-        : base(db)
-    {
-        this.bankRepository = bankRepository;
-    }
-
-    public override async Task<Bank?> Handle(GetBankQuery request, CancellationToken cancellationToken)
-        => await bankRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetBankQuery : GetSingleByIdQuery<Bank?, Guid>
-{
+    public override async Task<DataResult<Bank?>> ExecuteAsync(GetBankQuery request, CancellationToken cancellationToken)
+        => DataResult<Bank?>.Success(await _repository.GetByIdAsync(request.Id, cancellationToken));
 }

@@ -1,20 +1,17 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
-using Finance.Application.Repositories;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.DebitOrigins;
 
-public class GetAllDebitOriginsQueryHandler : BaseCollectionHandler<GetAllDebitOriginsQuery, DebitOrigin?>
-{
-    public GetAllDebitOriginsQueryHandler(FinanceDbContext db, IRepository<DebitOrigin, Guid> bankRepository)
-        : base(db)
-    {
-    }
+public class GetAllDebitOriginsQuery : GetAllQuery<DebitOrigin>;
 
-    public override async Task<ICollection<DebitOrigin?>> Handle(GetAllDebitOriginsQuery request, CancellationToken cancellationToken)
+public class GetAllDebitOriginsQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllDebitOriginsQuery, DebitOrigin>(db)
+{
+    public override async Task<DataResult<List<DebitOrigin>>> ExecuteAsync(GetAllDebitOriginsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.DebitOrigin
             .Include(o => o.AppModule)
@@ -28,10 +25,6 @@ public class GetAllDebitOriginsQueryHandler : BaseCollectionHandler<GetAllDebitO
             query = query.Where(o => !o.Deactivated);
         }
 
-        return await Task.FromResult(await query.ToArrayAsync());
+        return DataResult<List<DebitOrigin>>.Success(await query.ToListAsync(cancellationToken));
     }
-}
-
-public class GetAllDebitOriginsQuery : GetAllQuery<DebitOrigin?>
-{
 }

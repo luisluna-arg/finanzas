@@ -18,9 +18,9 @@ If you don't already have an Auth0 account, sign up for one at [https://auth0.co
 ## Step 3: Configure the Application
 
 1. In your application settings, set the following URLs:
-   - Allowed Callback URLs: `http://localhost:5173, http://localhost:5173/`
-   - Allowed Logout URLs: `http://localhost:5173, http://localhost:5173/`
-   - Allowed Web Origins: `http://localhost:5173`
+   - Allowed Callback URLs: `http://localhost:5200, http://localhost:5200/`
+   - Allowed Logout URLs: `http://localhost:5200, http://localhost:5200/`
+   - Allowed Web Origins: `http://localhost:5200`
 
 2. Save your changes
 
@@ -32,7 +32,7 @@ If you don't already have an Auth0 account, sign up for one at [https://auth0.co
 ```
 VITE_AUTH0_DOMAIN=your-auth0-domain.auth0.com
 VITE_AUTH0_CLIENT_ID=your-auth0-client-id
-VITE_AUTH0_REDIRECT_URI=http://localhost:5173
+VITE_AUTH0_REDIRECT_URI=http://localhost:5200
 # VITE_AUTH0_AUDIENCE=your-api-identifier  # Uncomment and add only if you're calling an API
 ```
 

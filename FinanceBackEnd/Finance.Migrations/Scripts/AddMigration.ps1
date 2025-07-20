@@ -44,7 +44,7 @@ try {
     $command = "dotnet ef migrations add $migrationName --project ./Finance.Migrations --context FinanceDbContext $verboseFlag"
     Write-Host "Executing: $command" -ForegroundColor DarkGray
     $output = Invoke-Expression $command
-    
+
     # Display command output
     $output
 
@@ -71,7 +71,7 @@ if ([string]::IsNullOrWhiteSpace($applyMigration)) {
 }
 if ($applyMigration.ToLower() -eq "y") {
     Write-Host "Applying migration to the database..." -ForegroundColor Cyan
-    
+
     # Call the UpdateDatabase.ps1 script to handle the database update
     $updateScriptPath = Join-Path -Path $currentDir -ChildPath "UpdateDatabase.ps1"
     if (Test-Path $updateScriptPath) {
@@ -79,7 +79,7 @@ if ($applyMigration.ToLower() -eq "y") {
         & $updateScriptPath
     } else {
         Write-Host "Warning: UpdateDatabase.ps1 script not found. Using direct command..." -ForegroundColor Yellow
-        
+
         try {
             # Change to the solution directory
             Push-Location -Path $solutionDir
@@ -88,7 +88,7 @@ if ($applyMigration.ToLower() -eq "y") {
             $command = "dotnet ef database update --project ./Finance.Migrations --context FinanceDbContext $verboseFlag"
             Write-Host "Executing: $command" -ForegroundColor DarkGray
             $output = Invoke-Expression $command
-            
+
             # Display command output
             $output
 

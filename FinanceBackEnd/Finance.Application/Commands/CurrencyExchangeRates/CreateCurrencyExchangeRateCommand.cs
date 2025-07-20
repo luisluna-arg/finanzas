@@ -1,16 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
-public class CreateCurrencyExchangeRateCommandHandler : BaseResponseHandler<CreateCurrencyExchangeRateCommand, CurrencyExchangeRate>
+public class CreateCurrencyExchangeRateCommandHandler : BaseCommandHandler<CreateCurrencyExchangeRateCommand, CurrencyExchangeRate>
 {
-    private readonly IRepository<Currency, Guid> currencyRepository;
-    private readonly IRepository<CurrencyExchangeRate, Guid> currencyExchangeRateRepository;
+    private readonly IRepository<Currency, Guid> _currencyRepository;
+    private readonly IRepository<CurrencyExchangeRate, Guid> _currencyExchangeRateRepository;
 
     public CreateCurrencyExchangeRateCommandHandler(
         FinanceDbContext db,
@@ -18,16 +19,16 @@ public class CreateCurrencyExchangeRateCommandHandler : BaseResponseHandler<Crea
         IRepository<CurrencyExchangeRate, Guid> currencyExchangeRateRepository)
         : base(db)
     {
-        this.currencyRepository = currencyRepository;
-        this.currencyExchangeRateRepository = currencyExchangeRateRepository;
+        _currencyRepository = currencyRepository;
+        _currencyExchangeRateRepository = currencyExchangeRateRepository;
     }
 
-    public override async Task<CurrencyExchangeRate> Handle(CreateCurrencyExchangeRateCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<CurrencyExchangeRate>> ExecuteAsync(CreateCurrencyExchangeRateCommand command, CancellationToken cancellationToken)
     {
-        var baseCurrency = await currencyRepository.GetByIdAsync(command.BaseCurrencyId, cancellationToken);
+        var baseCurrency = await _currencyRepository.GetByIdAsync(command.BaseCurrencyId, cancellationToken);
         if (baseCurrency == null) throw new Exception("Base currency not found");
 
-        var quoteCurrency = await currencyRepository.GetByIdAsync(command.QuoteCurrencyId, cancellationToken);
+        var quoteCurrency = await _currencyRepository.GetByIdAsync(command.QuoteCurrencyId, cancellationToken);
         if (quoteCurrency == null) throw new Exception("Quote currency not found");
 
         var newCurrency = new CurrencyExchangeRate()
@@ -39,13 +40,13 @@ public class CreateCurrencyExchangeRateCommandHandler : BaseResponseHandler<Crea
             TimeStamp = command.TimeStamp.Ticks != 0 ? command.TimeStamp : DateTime.Now
         };
 
-        await currencyExchangeRateRepository.AddAsync(newCurrency, cancellationToken);
+        await _currencyExchangeRateRepository.AddAsync(newCurrency, cancellationToken);
 
-        return await Task.FromResult(newCurrency);
+        return DataResult<CurrencyExchangeRate>.Success(newCurrency);
     }
 }
 
-public class CreateCurrencyExchangeRateCommand : IRequest<CurrencyExchangeRate>
+public class CreateCurrencyExchangeRateCommand : ICommand
 {
     [Required]
     public Guid BaseCurrencyId { get; set; }

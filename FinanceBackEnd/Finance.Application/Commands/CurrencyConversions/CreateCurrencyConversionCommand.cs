@@ -1,16 +1,17 @@
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 
 namespace Finance.Application.Commands.CurrencyConvertions;
 
-public class CreateCurrencyConversionCommandHandler : BaseResponseHandler<CreateCurrencyConversionCommand, CurrencyConversion>
+public class CreateCurrencyConversionCommandHandler : BaseCommandHandler<CreateCurrencyConversionCommand, CurrencyConversion>
 {
-    private readonly IRepository<Movement, Guid> movementRepository;
-    private readonly IRepository<Currency, Guid> currencyRepository;
-    private readonly IRepository<CurrencyConversion, Guid> currencyConversionRepository;
+    private readonly IRepository<Movement, Guid> _movementRepository;
+    private readonly IRepository<Currency, Guid> _currencyRepository;
+    private readonly IRepository<CurrencyConversion, Guid> _currencyConversionRepository;
 
     public CreateCurrencyConversionCommandHandler(
         FinanceDbContext db,
@@ -19,30 +20,30 @@ public class CreateCurrencyConversionCommandHandler : BaseResponseHandler<Create
         IRepository<CurrencyConversion, Guid> currencyConversionRepository)
         : base(db)
     {
-        this.movementRepository = movementRepository;
-        this.currencyRepository = currencyRepository;
-        this.currencyConversionRepository = currencyConversionRepository;
+        _movementRepository = movementRepository;
+        _currencyRepository = currencyRepository;
+        _currencyConversionRepository = currencyConversionRepository;
     }
 
-    public override async Task<CurrencyConversion> Handle(CreateCurrencyConversionCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<CurrencyConversion>> ExecuteAsync(CreateCurrencyConversionCommand command, CancellationToken cancellationToken)
     {
-        var movement = await movementRepository.GetByIdAsync(command.MovementId, cancellationToken);
+        var movement = await _movementRepository.GetByIdAsync(command.MovementId, cancellationToken);
         if (movement == null) throw new Exception("Movement not found");
 
         var newCurrencyConversion = new CurrencyConversion()
         {
             Movement = movement,
-            Currency = command.CurrencyId.HasValue ? await currencyRepository.GetByIdAsync(command.CurrencyId.Value, cancellationToken) : null,
+            Currency = command.CurrencyId.HasValue ? await _currencyRepository.GetByIdAsync(command.CurrencyId.Value, cancellationToken) : null,
             Amount = command.Amount,
         };
 
-        await this.currencyConversionRepository.AddAsync(newCurrencyConversion, cancellationToken);
+        await _currencyConversionRepository.AddAsync(newCurrencyConversion, cancellationToken);
 
-        return await Task.FromResult(newCurrencyConversion);
+        return DataResult<CurrencyConversion>.Success(newCurrencyConversion);
     }
 }
 
-public class CreateCurrencyConversionCommand : IRequest<CurrencyConversion>
+public class CreateCurrencyConversionCommand : ICommand
 {
     required public Guid MovementId { get; set; }
 

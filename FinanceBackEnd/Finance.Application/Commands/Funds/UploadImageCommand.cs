@@ -1,7 +1,8 @@
 using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Commands.Funds;
@@ -18,11 +19,14 @@ public class UploadImageCommandHandler : BaseResponselessHandler<UploadImageComm
         this.appModuleRepository = appModuleRepository;
     }
 
-    public override async Task Handle(UploadImageCommand command, CancellationToken cancellationToken)
-        => await appModuleRepository.GetFundsAsync(cancellationToken);
+    public override async Task<CommandResult> ExecuteAsync(UploadImageCommand command, CancellationToken cancellationToken)
+    {
+        await appModuleRepository.GetFundsAsync(cancellationToken);
+        return CommandResult.Success();
+    }
 }
 
-public class UploadImageCommand : IRequest
+public class UploadImageCommand : ICommand
 {
     required public IFormFileCollection Files { get; set; }
 

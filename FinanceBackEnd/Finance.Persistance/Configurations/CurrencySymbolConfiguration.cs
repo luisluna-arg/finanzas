@@ -20,7 +20,7 @@ public class CurrencySymbolConfiguration : IEntityTypeConfiguration<CurrencySymb
         builder
             .HasData(CurrencyConstants.CurrencyIds.SelectMany(o => SymbolMapper(o)).ToList());
     }
-    
+
     private ICollection<CurrencySymbol> SymbolMapper(string currencyId, bool deactivated = false)
         => CurrencyConstants.CurrencySymbols.ContainsKey(currencyId) ?
         CurrencyConstants.CurrencySymbols[currencyId]

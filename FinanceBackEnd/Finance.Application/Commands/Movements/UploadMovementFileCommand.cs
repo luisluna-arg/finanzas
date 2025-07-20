@@ -1,3 +1,5 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Comparers;
 using Finance.Domain.Models;
@@ -5,7 +7,6 @@ using Finance.Helpers;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Commands.Movements;
@@ -30,19 +31,19 @@ public class UploadMovementsFileCommandHandler : BaseResponselessHandler<UploadM
         this.excelHelper = new FundsExcelHelper();
     }
 
-    public override async Task Handle(UploadMovementsFileCommand command, CancellationToken cancellationToken)
+    public override async Task<CommandResult> ExecuteAsync(UploadMovementsFileCommand request, CancellationToken cancellationToken)
     {
-        var appModule = await appModuleRepository.GetByAsync("Id", command.AppModuleId, cancellationToken);
-        if (appModule == null) throw new Exception($"App Module not found, Id: {command.AppModuleId}");
+        var appModule = await appModuleRepository.GetByAsync("Id", request.AppModuleId, cancellationToken);
+        if (appModule == null) throw new Exception($"App Module not found, Id: {request.AppModuleId}");
 
-        var bank = await bankRepository.GetByAsync("Id", command.BankId, cancellationToken);
-        if (bank == null) throw new Exception($"Bank not found, Id: {command.BankId}");
+        var bank = await bankRepository.GetByAsync("Id", request.BankId, cancellationToken);
+        if (bank == null) throw new Exception($"Bank not found, Id: {request.BankId}");
 
-        var dateKind = command.DateKind;
+        var dateKind = request.DateKind;
         if (dateKind.Equals(DateTimeKind.Unspecified)) dateKind = DateTimeKind.Utc;
 
-        var newRecords = excelHelper.Read(command.File, appModule, bank, dateKind);
-        if (newRecords == null || !newRecords.Any()) return;
+        var newRecords = excelHelper.Read(request.File, appModule, bank, dateKind);
+        if (newRecords == null || !newRecords.Any()) return CommandResult.Failure("No records found in the uploaded file.");
 
         var minDate = newRecords.Min(o => o.TimeStamp);
         var maxDate = newRecords.Max(o => o.TimeStamp);
@@ -61,17 +62,19 @@ public class UploadMovementsFileCommandHandler : BaseResponselessHandler<UploadM
             .ToArray();
 
         await movementRepository.AddRangeAsync(newRecords, cancellationToken, true);
+
+        return CommandResult.Success();
     }
 }
 
-public class UploadMovementsFileCommand : IRequest
+public class UploadMovementsFileCommand : ICommand
 {
     public UploadMovementsFileCommand(IFormFile file, Guid appModuleId, Guid bankId, DateTimeKind dateKind)
     {
-        this.File = file;
-        this.AppModuleId = appModuleId;
-        this.BankId = bankId;
-        this.DateKind = dateKind;
+        File = file;
+        AppModuleId = appModuleId;
+        BankId = bankId;
+        DateKind = dateKind;
     }
 
     public IFormFile File { get; set; }

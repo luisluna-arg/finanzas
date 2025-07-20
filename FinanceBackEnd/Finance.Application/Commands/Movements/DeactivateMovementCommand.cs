@@ -1,24 +1,25 @@
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
+using CQRSDispatch;
 
 namespace Finance.Application.Commands.Movements;
 
-public class DeactivateMovementCommandHandler : IRequestHandler<DeactivateMovementCommand, Movement?>
+public class DeactivateMovementCommandHandler : ICommandHandler<DeactivateMovementCommand, DataResult<Movement?>>
 {
-    private readonly IEntityService<Movement, Guid> service;
+    private readonly IEntityService<Movement, Guid> _service;
 
     public DeactivateMovementCommandHandler(
-        IEntityService<Movement, Guid> repository)
+        IEntityService<Movement, Guid> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task<Movement?> Handle(DeactivateMovementCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivatedAsync(request.Id, true, cancellationToken);
+    public async Task<DataResult<Movement?>> ExecuteAsync(DeactivateMovementCommand request, CancellationToken cancellationToken)
+        => DataResult<Movement?>.Success(await _service.SetDeactivatedAsync(request.Id, true, cancellationToken));
 }
 
-public class DeactivateMovementCommand : IRequest<Movement?>
+public class DeactivateMovementCommand : ICommand<DataResult<Movement?>>
 {
     public Guid Id { get; set; }
 }

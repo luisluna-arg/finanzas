@@ -1,24 +1,28 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Services;
-using MediatR;
 
 namespace Finance.Application.Commands.AppModules;
 
-public class DeactivateAppModuleCommandHandler : IRequestHandler<DeactivateAppModuleCommand, AppModule?>
+public class DeactivateAppModuleCommandHandler : ICommandHandler<DeactivateAppModuleCommand, DataResult<AppModule?>>
 {
-    private readonly IEntityService<AppModule, Guid> service;
+    private readonly IEntityService<AppModule, Guid> _service;
 
     public DeactivateAppModuleCommandHandler(
-        IEntityService<AppModule, Guid> repository)
+        IEntityService<AppModule, Guid> service)
     {
-        this.service = repository;
+        _service = service;
     }
 
-    public async Task<AppModule?> Handle(DeactivateAppModuleCommand request, CancellationToken cancellationToken)
-        => await service.SetDeactivatedAsync(request.Id, true, cancellationToken);
+    public async Task<DataResult<AppModule?>> ExecuteAsync(DeactivateAppModuleCommand request, CancellationToken cancellationToken)
+    {
+        await _service.SetDeactivatedAsync(request.Id, true, cancellationToken);
+        return DataResult<AppModule?>.Success();
+    }
 }
 
-public class DeactivateAppModuleCommand : IRequest<AppModule?>
+public class DeactivateAppModuleCommand : ICommand<DataResult<AppModule?>>
 {
     public Guid Id { get; set; }
 }

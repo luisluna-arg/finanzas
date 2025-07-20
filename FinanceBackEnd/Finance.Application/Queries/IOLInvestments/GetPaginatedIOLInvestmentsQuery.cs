@@ -1,13 +1,14 @@
 using Finance.Application.Queries.Base;
 using Finance.Application.Commons;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.IOLInvestments;
 
-public class GetPaginatedIOLInvestmentsQueryHandler : IRequestHandler<GetPaginatedIOLInvestmentsQuery, PaginatedResult<IOLInvestment?>>
+public class GetPaginatedIOLInvestmentsQueryHandler : IQueryHandler<GetPaginatedIOLInvestmentsQuery, PaginatedResult<IOLInvestment?>>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -17,7 +18,7 @@ public class GetPaginatedIOLInvestmentsQueryHandler : IRequestHandler<GetPaginat
         this.dbContext = dbContext;
     }
 
-    public async Task<PaginatedResult<IOLInvestment?>> Handle(GetPaginatedIOLInvestmentsQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<PaginatedResult<IOLInvestment?>>> ExecuteAsync(GetPaginatedIOLInvestmentsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<IOLInvestment> query = dbContext.Set<IOLInvestment>()
             .Include(o => o.Asset)
@@ -54,9 +55,10 @@ public class GetPaginatedIOLInvestmentsQueryHandler : IRequestHandler<GetPaginat
             .ThenBy(o => o.Asset.Description)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        return new PaginatedResult<IOLInvestment?>(paginatedItems, page, pageSize, totalItems);
+        return DataResult<PaginatedResult<IOLInvestment?>>.Success(
+            new PaginatedResult<IOLInvestment?>(paginatedItems, page, pageSize, totalItems));
     }
 }
 

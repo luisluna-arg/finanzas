@@ -1,16 +1,16 @@
 using System.ComponentModel;
-using AutoMapper;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Commands.Debits;
 using Finance.Application.Helpers;
+using Finance.Application.Mapping;
 using Finance.Domain.Enums;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/debits/annual")]
-public class DebitAnnualCommandController(IMapper mapper, IMediator mediator)
-    : DebitCommandController(mapper, mediator)
+public class DebitAnnualCommandController(IMappingService mapper, IDispatcher dispatcher)
+    : DebitCommandController(mapper, dispatcher)
 {
     [HttpPost]
     public new async Task<IActionResult> Create(CreateDebitCommand command)
@@ -23,7 +23,7 @@ public class DebitAnnualCommandController(IMapper mapper, IMediator mediator)
     [Route("upload")]
     public async Task<IActionResult> Upload(IFormFile file, string appModuleId, [DefaultValue("Local")] string dateKind)
     {
-        await Handle(new UploadDebitsFileCommand(file, appModuleId, EnumHelper.Parse<DateTimeKind>(dateKind), FrequencyEnum.Annual));
+        await ExecuteAsync(new UploadDebitsFileCommand(file, appModuleId, EnumHelper.Parse<DateTimeKind>(dateKind), FrequencyEnum.Annual));
         return Ok();
     }
 }

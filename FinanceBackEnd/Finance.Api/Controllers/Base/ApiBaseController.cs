@@ -1,26 +1,27 @@
-using AutoMapper;
-using Finance.Application.Dtos;
-using Finance.Domain.Models.Interfaces;
-using MediatR;
+using CQRSDispatch.Interfaces;
+using Finance.Application.Dtos.Base;
+using Finance.Application.Mapping;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Base;
 
-[ApiController]
-public abstract class ApiBaseController<TEntity, TId, TDto>(
-    IMapper mapper,
-    IMediator mediator)
-    : ControllerBase
+public abstract class ApiBaseController<TId, TDto>(
+    IMappingService mappingService,
+    IDispatcher dispatcher)
+    : SecuredApiController
     where TDto : Dto<TId>
-    where TEntity : IEntity?
 {
-    protected IMapper Mapper { get => mapper; }
+    protected IMappingService MappingService { get => mappingService; }
 
-    protected IMediator Mediator { get => mediator; }
+    protected IDispatcher Dispatcher { get => dispatcher; }
 
-    protected async Task<IActionResult> Handle(IRequest<TEntity> command)
+    protected virtual async Task<IActionResult> ExecuteAsync(ICommand command)
         => Ok(await MapAndSend(command));
 
-    private async Task<TDto> MapAndSend(IRequest<TEntity> command)
-        => Mapper.Map<TDto>(await Mediator.Send(command));
+    protected virtual async Task<TDto?> MapAndSend(ICommand command)
+    {
+        var entity = await Dispatcher.DispatchCommandAsync(command);
+        if (entity is null) return default;
+        return MappingService.Map<TDto>(entity);
+    }
 }

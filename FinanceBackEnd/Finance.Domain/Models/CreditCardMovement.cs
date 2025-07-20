@@ -7,11 +7,13 @@ public class CreditCardMovement : Entity<Guid>
 {
     public Guid CreditCardId { get; set; }
     public virtual CreditCard CreditCard { get; set; } = default!;
-    required public DateTime TimeStamp { get; set; }
-    required public DateTime PlanStart { get; set; }
-    required public string Concept { get; set; }
-    required public ushort PaymentNumber { get; set; } = 1;
-    required public ushort PlanSize { get; set; } = 1;
-    required public Money Amount { get; set; } = 0;
-    required public Money AmountDollars { get; set; } = 0;
+    public DateTime TimeStamp { get; set; }
+    public DateTime PlanStart { get; set; }
+    public string Concept { get; set; } = string.Empty;
+    public ushort PaymentNumber { get; set; } = 1;
+    public ushort PlanSize { get; set; } = 1;
+    public Money Amount { get; set; } = 0;
+    public Money AmountDollars { get; set; } = 0;
+
+    public CreditCardMovement() : base() { }
 }

@@ -1,8 +1,10 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
+using Finance.Domain.Enums;
 using Finance.Application.Repositories;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Finance.Persistance.Constants;
@@ -14,7 +16,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
     private readonly IRepository<Currency, Guid> _currencyRepository;
     private readonly IRepository<IOLInvestment, Guid> _iolInvestment;
     private readonly IRepository<IOLInvestmentAsset, Guid> _iolInvestmentAsset;
-    private readonly IRepository<IOLInvestmentAssetType, ushort> _iolInvestmentAssetType;
+    private readonly IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> _iolInvestmentAssetType;
     private readonly IOLInvestmentExcelHelper _iolInvestmentExcelHelper;
 
     public UploadIOLInvestmentCommandHandler(
@@ -22,7 +24,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
         IRepository<Currency, Guid> currencyRepository,
         IRepository<IOLInvestment, Guid> iolInvestmentRepository,
         IRepository<IOLInvestmentAsset, Guid> iolInvestmentAssetRepository,
-        IRepository<IOLInvestmentAssetType, ushort> iolInvestmentAssetTypeRepository,
+        IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> iolInvestmentAssetTypeRepository,
         IOLInvestmentExcelHelper iolInvestmentExcelHelper)
         : base(db)
     {
@@ -33,7 +35,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
         _iolInvestmentExcelHelper = iolInvestmentExcelHelper;
     }
 
-    public override async Task Handle(UploadIOLInvestmentsCommand command, CancellationToken cancellationToken)
+    public override async Task<CommandResult> ExecuteAsync(UploadIOLInvestmentsCommand command, CancellationToken cancellationToken)
     {
         var files = command.File;
 
@@ -45,7 +47,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
 
             var records = await _iolInvestment.GetAllBy("TimeStamp", singleRecord.TimeStamp)
                 .Include(o => o.Asset)
-                .ToArrayAsync();
+                .ToArrayAsync(cancellationToken);
 
             var assets = new Dictionary<string, IOLInvestmentAsset>();
             var assetTypes = new Dictionary<string, IOLInvestmentAssetType>();
@@ -91,15 +93,19 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
             }
 
             await _iolInvestment.PersistAsync(cancellationToken);
+
+            return CommandResult.Success();
         }
+
+        return CommandResult.Failure("No records found in the uploaded file.");
     }
 }
 
-public class UploadIOLInvestmentsCommand : IRequest
+public class UploadIOLInvestmentsCommand : ICommand
 {
     public UploadIOLInvestmentsCommand(IFormFile file)
     {
-        this.File = file;
+        File = file;
     }
 
     public IFormFile File { get; set; }

@@ -2,7 +2,8 @@ using System.Runtime.Versioning;
 using Finance.Application.Base.Handlers;
 using Finance.Helpers;
 using Finance.Persistance;
-using MediatR;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Commands.Funds;
@@ -15,7 +16,7 @@ public class ProcessImageToTextCommandHandler : BaseResponselessHandler<ProcessI
     {
     }
 
-    public override async Task Handle(ProcessImageToTextCommand command, CancellationToken cancellationToken)
+    public override async Task<CommandResult> ExecuteAsync(ProcessImageToTextCommand command, CancellationToken cancellationToken)
     {
         var ocrHelper = new OcrHelper();
 
@@ -37,10 +38,11 @@ public class ProcessImageToTextCommandHandler : BaseResponselessHandler<ProcessI
         // Escribir contenido del MemoryStream en la respuesta HTTP
         stream.Seek(0, SeekOrigin.Begin);
         await stream.CopyToAsync(command.HttpContext.Response.Body);
+        return CommandResult.Success();
     }
 }
 
-public class ProcessImageToTextCommand : IRequest
+public class ProcessImageToTextCommand : ICommand
 {
     required public HttpContext HttpContext { get; set; }
 

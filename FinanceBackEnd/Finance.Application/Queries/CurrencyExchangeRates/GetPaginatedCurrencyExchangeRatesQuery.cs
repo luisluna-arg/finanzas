@@ -1,13 +1,14 @@
 using Finance.Application.Queries.Base;
 using Finance.Application.Commons;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Persistance;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.CurrencyExchangeRates;
 
-public class GetPaginatedCurrencyExchangeRatesQueryHandler : IRequestHandler<GetPaginatedCurrencyExchangeRatesQuery, PaginatedResult<CurrencyExchangeRate?>>
+public class GetPaginatedCurrencyExchangeRatesQueryHandler : IQueryHandler<GetPaginatedCurrencyExchangeRatesQuery, PaginatedResult<CurrencyExchangeRate?>>
 {
     private readonly FinanceDbContext dbContext;
 
@@ -17,7 +18,7 @@ public class GetPaginatedCurrencyExchangeRatesQueryHandler : IRequestHandler<Get
         this.dbContext = dbContext;
     }
 
-    public async Task<PaginatedResult<CurrencyExchangeRate?>> Handle(GetPaginatedCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<PaginatedResult<CurrencyExchangeRate?>>> ExecuteAsync(GetPaginatedCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
     {
         IQueryable<CurrencyExchangeRate> query = dbContext.Set<CurrencyExchangeRate>()
             .Include(o => o.BaseCurrency)
@@ -59,11 +60,11 @@ public class GetPaginatedCurrencyExchangeRatesQueryHandler : IRequestHandler<Get
             .ThenBy(o => o.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var paginatedResult = new PaginatedResult<CurrencyExchangeRate?>(paginatedItems, page, pageSize, totalItems);
 
-        return paginatedResult;
+        return DataResult<PaginatedResult<CurrencyExchangeRate?>>.Success(paginatedResult);
     }
 }
 

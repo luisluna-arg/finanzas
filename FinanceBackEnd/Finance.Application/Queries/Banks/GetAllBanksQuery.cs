@@ -1,20 +1,17 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
-using Finance.Application.Repositories;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Banks;
 
-public class GetAllBanksQueryHandler : BaseCollectionHandler<GetAllBanksQuery, Bank?>
-{
-    public GetAllBanksQueryHandler(FinanceDbContext db, IRepository<Bank, Guid> bankRepository)
-        : base(db)
-    {
-    }
+public class GetAllBanksQuery : GetAllQuery<Bank>;
 
-    public override async Task<ICollection<Bank?>> Handle(GetAllBanksQuery request, CancellationToken cancellationToken)
+public class GetAllBanksQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllBanksQuery, Bank>(db)
+{
+    public override async Task<DataResult<List<Bank>>> ExecuteAsync(GetAllBanksQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.Bank.AsQueryable();
 
@@ -23,10 +20,6 @@ public class GetAllBanksQueryHandler : BaseCollectionHandler<GetAllBanksQuery, B
             query = query.Where(o => !o.Deactivated);
         }
 
-        return await Task.FromResult(await query.OrderBy(o => o.Name).ToArrayAsync());
+        return DataResult<List<Bank>>.Success(await query.OrderBy(o => o.Name).ToListAsync(cancellationToken));
     }
-}
-
-public class GetAllBanksQuery : GetAllQuery<Bank?>
-{
 }

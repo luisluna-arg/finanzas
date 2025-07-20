@@ -1,31 +1,25 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Summary;
-using MediatR;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetDebitExpensesQueryHandler : IRequestHandler<GetDebitExpensesQuery, Expense>
+public class GetDebitExpensesQuery : IQuery<Expense>;
+
+public class GetDebitExpensesQueryHandler(FinanceDbContext db) : IQueryHandler<GetDebitExpensesQuery, Expense>
 {
-    private readonly IMediator mediator;
-    private readonly FinanceDbContext db;
+    private readonly FinanceDbContext _db = db;
 
-    public GetDebitExpensesQueryHandler(
-        IMediator mediator,
-        FinanceDbContext db)
+    public async Task<DataResult<Expense>> ExecuteAsync(GetDebitExpensesQuery request, CancellationToken cancellationToken)
     {
-        this.db = db;
-        this.mediator = mediator;
-    }
-
-    public async Task<Expense> Handle(GetDebitExpensesQuery request, CancellationToken cancellationToken)
-    {
-        var debitOrigins = db.DebitOrigin.Where(o => !o.Deactivated).ToArray();
+        var debitOrigins = _db.DebitOrigin.Where(o => !o.Deactivated).ToArray();
         var debitTotal = 0m;
 
         foreach (var debitOrigin in debitOrigins)
         {
-            var item = await db.Debit
+            var item = await _db.Debit
                 .Where(o => o.OriginId == debitOrigin.Id)
                 .OrderByDescending(o => o.TimeStamp)
                 .FirstOrDefaultAsync();
@@ -33,10 +27,6 @@ public class GetDebitExpensesQueryHandler : IRequestHandler<GetDebitExpensesQuer
             debitTotal += item != null ? item.Amount : 0;
         }
 
-        return new Expense("debits", "Débitos", debitTotal);
+        return DataResult<Expense>.Success(new Expense() { Id = "debits", Label = "Débitos", Value = debitTotal });
     }
-}
-
-public class GetDebitExpensesQuery : IRequest<Expense>
-{
 }

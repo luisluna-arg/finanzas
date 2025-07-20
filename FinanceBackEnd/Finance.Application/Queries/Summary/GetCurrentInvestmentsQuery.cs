@@ -1,39 +1,38 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Summary;
-using MediatR;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetCurrentInvestmentsQueryHandler : IRequestHandler<GetCurrentInvestmentsQuery, TotalInvestments>
+public class GetCurrentInvestmentsQuery : IQuery<TotalInvestments>;
+
+public class GetCurrentInvestmentsQueryHandler(FinanceDbContext db) : IQueryHandler<GetCurrentInvestmentsQuery, TotalInvestments>
 {
-    private readonly FinanceDbContext db;
+    private readonly FinanceDbContext _db = db;
 
-    public GetCurrentInvestmentsQueryHandler(
-        FinanceDbContext db)
-    {
-        this.db = db;
-    }
-
-    public Task<TotalInvestments> Handle(GetCurrentInvestmentsQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<TotalInvestments>> ExecuteAsync(GetCurrentInvestmentsQuery request, CancellationToken cancellationToken)
     {
         var result = new TotalInvestments();
 
-        var maxTimeStamp = db.IOLInvestment.Max(o => o.TimeStamp);
+        var maxTimeStamp = _db.IOLInvestment.Max(o => o.TimeStamp);
 
-        var investments = db.IOLInvestment
+        var investments = await _db.IOLInvestment
             .Include(o => o.Asset)
             .ThenInclude(o => o.Type)
             .Where(o => !o.Deactivated && o.TimeStamp == maxTimeStamp)
             .OrderBy(o => o.Asset.Symbol)
-            .ToArray();
+            .ToArrayAsync(cancellationToken);
 
-        result.Items.AddRange(investments.Select(o => new Investment($"{o.Id}", o.Asset.Symbol, o.AverageReturn, o.Valued)));
+        result.Items.AddRange(investments.Select(o => new Investment()
+        {
+            Id = $"{o.Id}",
+            Label = o.Asset.Symbol,
+            Value = o.Valued,
+            AverageReturn = o.AverageReturn
+        }));
 
-        return Task.FromResult(result);
+        return DataResult<TotalInvestments>.Success(result);
     }
-}
-
-public class GetCurrentInvestmentsQuery : IRequest<TotalInvestments>
-{
 }

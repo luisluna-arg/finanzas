@@ -1,28 +1,24 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Summary;
-using MediatR;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetCreditCardExpensesQueryHandler : IRequestHandler<GetCreditCardExpensesQuery, Expense>
+public class GetCreditCardExpensesQuery : IQuery<Expense>;
+
+public class GetCreditCardExpensesQueryHandler(FinanceDbContext db) : IQueryHandler<GetCreditCardExpensesQuery, Expense>
 {
-    private readonly FinanceDbContext db;
+    private readonly FinanceDbContext _db = db;
 
-    public GetCreditCardExpensesQueryHandler(
-        IMediator mediator,
-        FinanceDbContext db)
-    {
-        this.db = db;
-    }
-
-    public async Task<Expense> Handle(GetCreditCardExpensesQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<Expense>> ExecuteAsync(GetCreditCardExpensesQuery request, CancellationToken cancellationToken)
     {
         var total = 0;
-        var creditCards = db.CreditCard.Include(o => o.Bank).Where(o => !o.Deactivated).ToArray();
+        var creditCards = _db.CreditCard.Include(o => o.Bank).Where(o => !o.Deactivated).ToArray();
         foreach (var creditCard in creditCards)
         {
-            var baseQuery = db.CreditCardMovement.Where(o => o.CreditCardId == creditCard.Id);
+            var baseQuery = _db.CreditCardMovement.Where(o => o.CreditCardId == creditCard.Id);
             var count = await baseQuery.CountAsync();
             if (count > 0)
             {
@@ -31,10 +27,11 @@ public class GetCreditCardExpensesQueryHandler : IRequestHandler<GetCreditCardEx
             }
         }
 
-        return new Expense("creditCards", "Tarjetas de crédito", total);
+        return DataResult<Expense>.Success(new Expense()
+        {
+            Id = "creditCards",
+            Label = "Tarjetas de crédito",
+            Value = total
+        });
     }
-}
-
-public class GetCreditCardExpensesQuery : IRequest<Expense>
-{
 }

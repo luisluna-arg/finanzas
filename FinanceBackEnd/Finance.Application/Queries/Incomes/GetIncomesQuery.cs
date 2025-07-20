@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Incomes;
 
-public class GetIncomesQueryHandler : BaseCollectionHandler<GetIncomesQuery, Income?>
+public class GetIncomesQueryHandler : BaseCollectionHandler<GetIncomesQuery, Income>
 {
     private readonly IRepository<Income, Guid> repository;
 
@@ -19,7 +20,7 @@ public class GetIncomesQueryHandler : BaseCollectionHandler<GetIncomesQuery, Inc
         this.repository = movementRepository;
     }
 
-    public override async Task<ICollection<Income?>> Handle(GetIncomesQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<Income>>> ExecuteAsync(GetIncomesQuery request, CancellationToken cancellationToken)
     {
         IQueryable<Income> query = repository.GetDbSet()
             .Include(o => o.Currency)
@@ -51,11 +52,11 @@ public class GetIncomesQueryHandler : BaseCollectionHandler<GetIncomesQuery, Inc
             query = query.Where(o => o.BankId == request.BankId.Value);
         }
 
-        return await query.ToArrayAsync();
+        return DataResult<List<Income>>.Success(await query.ToListAsync(cancellationToken));
     }
 }
 
-public class GetIncomesQuery : GetAllQuery<Income?>
+public class GetIncomesQuery : GetAllQuery<Income>
 {
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.

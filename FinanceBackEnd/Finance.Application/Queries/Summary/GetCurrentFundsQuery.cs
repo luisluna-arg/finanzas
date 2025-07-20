@@ -1,28 +1,29 @@
 using Finance.Application.Dtos.Summary;
-using MediatR;
 using Finance.Persistance;
 using Finance.Persistance.Constants;
 using Microsoft.EntityFrameworkCore;
 using FundDto = Finance.Application.Dtos.Summary.Fund;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery, TotalFunds>
+public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, TotalFunds>
 {
-    private readonly FinanceDbContext db;
+    private readonly FinanceDbContext _db;
 
     public GetCurrentFundsQueryHandler(
         FinanceDbContext db)
     {
-        this.db = db;
+        _db = db;
     }
 
-    public async Task<TotalFunds> Handle(GetCurrentFundsQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<TotalFunds>> ExecuteAsync(GetCurrentFundsQuery request, CancellationToken cancellationToken)
     {
         var result = new TotalFunds();
 
-        var fundsQuery = db.Fund
+        var fundsQuery = _db.Fund
             .Include(o => o.Bank)
             .Include(o => o.Currency)
                 .ThenInclude(o => o != null ? o.Symbols : null)
@@ -38,7 +39,7 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
             .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
             .ToArrayAsync(cancellationToken);
 
-        var currencyRates = await db.CurrencyExchangeRate
+        var currencyRates = await _db.CurrencyExchangeRate
             .Where(o => !o.Deactivated)
             .GroupBy(o => new { o.BaseCurrencyId, o.QuoteCurrencyId })
             .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
@@ -58,17 +59,19 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
                 var currency = o.Currency;
                 var currencySymbol = currency?.Symbols.FirstOrDefault();
 
-                return new FundDto(
-                    $"{o.Id}",
-                    nameFormater(o),
-                    o.Amount,
-                    currency?.Id ?? Guid.Empty,
-                    currency?.ShortName ?? string.Empty,
-                    currencySymbol?.Symbol ?? string.Empty,
-                    o.Amount,
-                    currency?.Id ?? Guid.Empty,
-                    currency?.ShortName ?? string.Empty,
-                    currencySymbol?.Symbol ?? string.Empty);
+                return new FundDto()
+                {
+                    Id = $"{o.Id}",
+                    Label = nameFormater(o),
+                    Value = o.Amount,
+                    BaseCurrencyId = currency?.Id ?? Guid.Empty,
+                    BaseCurrency = currency?.ShortName ?? string.Empty,
+                    BaseCurrencySymbol = currencySymbol?.Symbol ?? string.Empty,
+                    QuoteCurrencyValue = o.Amount,
+                    DefaultCurrencyId = currency?.Id ?? Guid.Empty,
+                    DefaultCurrency = currency?.ShortName ?? string.Empty,
+                    DefaultCurrencySymbol = currencySymbol?.Symbol ?? string.Empty
+                };
             }));
 
         foreach (var fund in funds.Where(o => o.CurrencyId != request.CurrencyId))
@@ -95,27 +98,28 @@ public class GetCurrentFundsQueryHandler : IRequestHandler<GetCurrentFundsQuery,
                 amount = fund.Amount * currencyRate.BuyRate;
             }
 
-            var fundDto = new FundDto(
-                $"{fund.Id}",
-                nameFormater(fund),
-                fund.Amount,
-                baseCurrency?.Id ?? Guid.Empty,
-                baseCurrency?.ShortName ?? string.Empty,
-                baseCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty,
-                amount,
-                quoteCurrency?.Id ?? Guid.Empty,
-                quoteCurrency?.ShortName ?? string.Empty,
-                quoteCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty
-                );
+            var fundDto = new FundDto()
+            {
+                Id = $"{fund.Id}",
+                Label = nameFormater(fund),
+                Value = fund.Amount,
+                BaseCurrencyId = baseCurrency?.Id ?? Guid.Empty,
+                BaseCurrency = baseCurrency?.ShortName ?? string.Empty,
+                BaseCurrencySymbol = baseCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty,
+                QuoteCurrencyValue = amount,
+                DefaultCurrencyId = quoteCurrency?.Id ?? Guid.Empty,
+                DefaultCurrency = quoteCurrency?.ShortName ?? string.Empty,
+                DefaultCurrencySymbol = quoteCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty
+            };
 
             result.Add(fundDto);
         }
 
-        return result;
+        return DataResult<TotalFunds>.Success(result);
     }
 }
 
-public class GetCurrentFundsQuery : IRequest<TotalFunds>
+public class GetCurrentFundsQuery : IQuery<TotalFunds>
 {
     public bool? DailyUse { get; set; }
     public Guid? CurrencyId { get; set; } = Guid.Parse(CurrencyConstants.PesoId);

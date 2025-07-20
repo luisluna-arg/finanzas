@@ -15,6 +15,16 @@ csharp_using_directive_placement = outside_namespace:silent
 csharp_remove_unused_usings = true
 csharp_new_line_after_namespace = true
 
+# Explicitly disable StyleCop rules for spacing before brackets
+dotnet_diagnostic.SA1009.severity = none
+dotnet_diagnostic.SA1000.severity = none
+dotnet_diagnostic.SA1026.severity = none
+
+# Do not require space before open bracket
+csharp_space_before_open_square_brackets = false
+csharp_space_between_square_brackets = false
+csharp_space_before_brackets = false
+
 # Move 'X' into a named namespace
 dotnet_diagnostic.S3903.severity = None
 # XML comment analysis is disabled due to project configuration

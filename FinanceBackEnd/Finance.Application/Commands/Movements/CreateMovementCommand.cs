@@ -1,15 +1,16 @@
 using Finance.Application.Base.Handlers;
+using CQRSDispatch;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 
 namespace Finance.Application.Commands.Movements;
 
-public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCommand, Movement>
+public class CreateMovementCommandHandler : BaseCommandHandler<CreateMovementCommand, Movement>
 {
-    private readonly IRepository<Movement, Guid> movementRepository;
-    private readonly IRepository<Currency, Guid> currencyRepository;
-    private readonly IAppModuleRepository appModuleRepository;
+    private readonly IRepository<Movement, Guid> _movementRepository;
+    private readonly IRepository<Currency, Guid> _currencyRepository;
+    private readonly IAppModuleRepository _appModuleRepository;
 
     public CreateMovementCommandHandler(
         FinanceDbContext db,
@@ -18,17 +19,17 @@ public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCo
         IAppModuleRepository appModuleRepository)
         : base(db)
     {
-        this.movementRepository = movementRepository;
-        this.currencyRepository = currencyRepository;
-        this.appModuleRepository = appModuleRepository;
+        _movementRepository = movementRepository;
+        _currencyRepository = currencyRepository;
+        _appModuleRepository = appModuleRepository;
     }
 
-    public override async Task<Movement> Handle(CreateMovementCommand command, CancellationToken cancellationToken)
+    public override async Task<DataResult<Movement>> ExecuteAsync(CreateMovementCommand command, CancellationToken cancellationToken)
     {
-        AppModule? appModule = command.AppModuleId.HasValue ? await appModuleRepository.GetByIdAsync(command.AppModuleId.Value, cancellationToken) : await appModuleRepository.GetFundsAsync(cancellationToken);
+        AppModule? appModule = command.AppModuleId.HasValue ? await _appModuleRepository.GetByIdAsync(command.AppModuleId.Value, cancellationToken) : await _appModuleRepository.GetFundsAsync(cancellationToken);
         if (appModule == null) throw new Exception("AppModule not found");
 
-        Currency? currency = command.CurrencyId.HasValue ? await currencyRepository.GetByIdAsync(command.CurrencyId.Value, cancellationToken) : null;
+        Currency? currency = command.CurrencyId.HasValue ? await _currencyRepository.GetByIdAsync(command.CurrencyId.Value, cancellationToken) : null;
         if (currency == null) throw new Exception("Currency not found");
 
         var newMovement = new Movement()
@@ -43,9 +44,9 @@ public class CreateMovementCommandHandler : BaseResponseHandler<CreateMovementCo
             Total = command.Total,
         };
 
-        await this.movementRepository.AddAsync(newMovement, cancellationToken);
+        await _movementRepository.AddAsync(newMovement, cancellationToken);
 
-        return await Task.FromResult(newMovement);
+        return DataResult<Movement>.Success(newMovement);
     }
 }
 

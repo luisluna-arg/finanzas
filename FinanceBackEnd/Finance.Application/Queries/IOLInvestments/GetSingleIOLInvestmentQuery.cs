@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -6,22 +7,13 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.IOLInvestments;
 
-public class GetSingleIOLInvestmentQueryHandler : BaseResponseHandler<GetSingleIOLInvestmentQuery, IOLInvestment?>
+public class GetSingleIOLInvestmentQuery : GetSingleByIdQuery<IOLInvestment?, Guid>;
+
+public class GetSingleIOLInvestmentQueryHandler(FinanceDbContext db, IRepository<IOLInvestment, Guid> repository)
+    : BaseQueryHandler<GetSingleIOLInvestmentQuery, IOLInvestment?>(db)
 {
-    private readonly IRepository<IOLInvestment, Guid> investmentAssetIOLRepository;
+    private readonly IRepository<IOLInvestment, Guid> _repository = repository;
 
-    public GetSingleIOLInvestmentQueryHandler(
-        FinanceDbContext db,
-        IRepository<IOLInvestment, Guid> investmentAssetIOLRepository)
-        : base(db)
-    {
-        this.investmentAssetIOLRepository = investmentAssetIOLRepository;
-    }
-
-    public override async Task<IOLInvestment?> Handle(GetSingleIOLInvestmentQuery request, CancellationToken cancellationToken)
-        => await investmentAssetIOLRepository.GetByIdAsync(request.Id, cancellationToken);
-}
-
-public class GetSingleIOLInvestmentQuery : GetSingleByIdQuery<IOLInvestment?, Guid>
-{
+    public override async Task<DataResult<IOLInvestment?>> ExecuteAsync(GetSingleIOLInvestmentQuery request, CancellationToken cancellationToken)
+        => DataResult<IOLInvestment?>.Success(await _repository.GetByIdAsync(request.Id, cancellationToken));
 }

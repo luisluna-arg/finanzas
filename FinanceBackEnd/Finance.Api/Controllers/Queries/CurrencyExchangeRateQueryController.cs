@@ -1,35 +1,53 @@
-using AutoMapper;
+using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
-using Finance.Application.Dtos;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.CurrencyExchangeRates;
-using Finance.Domain.Models;
-using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/currencies/exchange-rates")]
-public class CurrencyExchangeRateQueryController(IMapper mapper, IMediator mediator)
-    : ApiBaseQueryController<CurrencyExchangeRate?, Guid, CurrencyExchangeRateDto>(mapper, mediator)
+[Authorize(Policy = "AdminOrOwnerPolicy")]
+public class CurrencyExchangeRateQueryController(IMappingService mapper, IDispatcher dispatcher)
+    : SecuredApiController
 {
+    protected IMappingService MappingService { get => mapper; }
+    protected IDispatcher Dispatcher { get => dispatcher; }
+
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetAllCurrencyExchangeRatesQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginated([FromQuery] GetPaginatedCurrencyExchangeRatesQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet]
     [Route("latest")]
     public async Task<IActionResult> Latest([FromQuery] GetLatestCurrencyExchangeRatesQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromQuery] GetCurrencyExchangeRateQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 
     [HttpGet("{QuoteCurrencyShortName}/latest")]
     public async Task<IActionResult> LatestByShortName([FromRoute] GetLatestCurrencyExchangeRateByShortNameQuery request)
-        => await Handle(request);
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return Ok(result.Data);
+    }
 }

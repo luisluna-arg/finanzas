@@ -1,19 +1,21 @@
 using Finance.Application.Queries.CurrencyExchangeRates;
 using Finance.Domain.SpecialTypes;
 using Finance.Domain.DataConverters;
+using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
 using Finance.Persistance;
-using MediatR;
+using CQRSDispatch;
 
 namespace Finance.Application.Services;
 
 public class CurrencyConversionService(
-    IMediator mediator,
+    IDispatcher dispatcher,
     FinanceDbContext dbContext,
     ICurrencyConverter currencyConverter)
 {
-    public FinanceDbContext DbContext { get => dbContext; }
+    public FinanceDbContext _dbContext { get => dbContext; }
+    public IDispatcher _dispatcher { get => dispatcher; }
 
     public async Task<Money> Convert(IAmountHolder currentIncome, Guid destinationCurrency)
     {
@@ -23,7 +25,7 @@ public class CurrencyConversionService(
         }
 
         var exchangeRate = (await GetExchangeRates(currentIncome.CurrencyId, destinationCurrency))
-            .FirstOrDefault(er => er.BaseCurrencyId == currentIncome.CurrencyId);
+            .Data.FirstOrDefault(er => er.BaseCurrencyId == currentIncome.CurrencyId);
         if (exchangeRate == null)
         {
             return 0;
@@ -44,12 +46,12 @@ public class CurrencyConversionService(
                 result.Add(item.Amount);
             }
 
-            var exchangeRate = exchangeRates.FirstOrDefault(er => er.BaseCurrencyId == item.CurrencyId);
+            var exchangeRate = exchangeRates.Data.FirstOrDefault(er => er.BaseCurrencyId == item.CurrencyId);
             if (exchangeRate != null)
             {
                 result.Add(currencyConverter.Convert(item.Amount, exchangeRate));
             }
-            else 
+            else
             {
                 result.Add(0);
             }
@@ -58,6 +60,10 @@ public class CurrencyConversionService(
         return result;
     }
 
-    private async Task<ICollection<CurrencyExchangeRate>> GetExchangeRates(Guid? baseCurrencyId = default, Guid? quoteCurrencyId = default)
-        => await mediator.Send(new GetAllLatestCurrencyExchangeRatesQuery(baseCurrencyId, quoteCurrencyId));
+    private async Task<DataResult<List<CurrencyExchangeRate>>> GetExchangeRates(Guid? baseCurrencyId = default, Guid? quoteCurrencyId = default)
+    {
+        var query = new GetAllLatestCurrencyExchangeRatesQuery(baseCurrencyId, quoteCurrencyId);
+        var result = await _dispatcher.DispatchQueryAsync<List<CurrencyExchangeRate>>(query);
+        return result;
+    }
 }

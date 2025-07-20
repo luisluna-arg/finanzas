@@ -1,10 +1,9 @@
 using Finance.Domain.SpecialTypes;
-using Finance.Domain.Models;
-using MediatR;
+using CQRSDispatch.Interfaces;
 
 namespace Finance.Application.Commands.Movements;
 
-public abstract class CreateMovementBaseCommand : IRequest<Movement>
+public abstract class CreateMovementBaseCommand : ICommand
 {
     public Guid? CurrencyId { get; set; } = null;
 

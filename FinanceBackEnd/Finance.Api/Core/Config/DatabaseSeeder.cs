@@ -1,18 +1,28 @@
 using Finance.Application.Helpers;
+using Finance.Authentication.Options;
+using Finance.Authentication.Services;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Finance.Api.Core.Config;
 
 public class DatabaseSeeder : IHostedService
 {
     private readonly IServiceProvider provider;
+    private readonly AdminUserOptions adminUserOptions;
+    private readonly ILogger<DatabaseSeeder> logger;
 
-    public DatabaseSeeder(IServiceProvider serviceProvider)
+    public DatabaseSeeder(
+        IServiceProvider serviceProvider,
+        IOptions<AdminUserOptions> adminUserOptions,
+        ILogger<DatabaseSeeder> logger)
     {
         provider = serviceProvider;
+        this.adminUserOptions = adminUserOptions.Value;
+        this.logger = logger;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -27,6 +37,10 @@ public class DatabaseSeeder : IHostedService
         await SeedAppModules(dbContext);
 
         await SeedInvestmentAssetIOLTypes(dbContext);
+
+        await SeedRoles(dbContext);
+
+        await SeedAdminUser(dbContext);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
@@ -71,9 +85,9 @@ public class DatabaseSeeder : IHostedService
 
         Action<AppModuleTypeEnum> collector = (appModuleTypeEnum) =>
         {
-            if (!appModuleTypes.Any(o => o.Id == (short)appModuleTypeEnum))
+            if (!appModuleTypes.Any(o => o.Id == appModuleTypeEnum))
             {
-                newAppModuleTypes.Add(new AppModuleType { Id = (short)appModuleTypeEnum, Name = appModuleTypeEnum });
+                newAppModuleTypes.Add(new AppModuleType { Id = appModuleTypeEnum, Name = appModuleTypeEnum.ToString() });
             }
         };
 
@@ -114,7 +128,7 @@ public class DatabaseSeeder : IHostedService
                 throw new SystemException($"Fatal error while seeding App database: AppModuleTypeEnum not found for ModuleId {moduleId}");
             }
 
-            var appModuleType = appModuleTypes.FirstOrDefault(x => x.Id == (short)AppModuleConstants.Types[moduleId]);
+            var appModuleType = appModuleTypes.FirstOrDefault(x => x.Id == AppModuleConstants.Types[moduleId]);
             if (appModuleType == null)
             {
                 throw new SystemException($"Fatal error while seeding App database: AppModuleType not found {AppModuleConstants.Types[moduleId]}");
@@ -169,7 +183,7 @@ public class DatabaseSeeder : IHostedService
 
         var newInvestmentAssetTypes = new List<IOLInvestmentAssetType>();
 
-        Action<ushort, string> collectInvestmentAssetTypes = (id, name) =>
+        Action<IOLInvestmentAssetTypeEnum, string> collectInvestmentAssetTypes = (id, name) =>
         {
             if (!investmentAssetTypes.Any(o => o.Id == id))
             {
@@ -177,12 +191,146 @@ public class DatabaseSeeder : IHostedService
             }
         };
 
-        enumValueInstances.ForEach(o => collectInvestmentAssetTypes((ushort)o, o.ToString()));
+        enumValueInstances.ForEach(o => collectInvestmentAssetTypes(o, o.ToString()));
 
         if (newInvestmentAssetTypes.Any())
         {
             await dbContext.AddRangeAsync(newInvestmentAssetTypes);
             await dbContext.SaveChangesAsync();
+        }
+    }
+
+    private async Task SeedRoles(FinanceDbContext dbContext)
+    {
+        var roles = await dbContext.Role.ToArrayAsync();
+
+        var enumValues = Enum.GetValues(typeof(RoleEnum)).Cast<RoleEnum>().ToArray();
+        var newRoles = new List<Role>();
+
+        Action<RoleEnum> collectRole = (roleEnum) =>
+        {
+            if (!roles.Any(o => o.Id == roleEnum))
+            {
+                newRoles.Add(new Role { Id = roleEnum, Name = roleEnum.ToString(), Deactivated = false, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow });
+            }
+        };
+
+        foreach (var roleEnum in enumValues)
+        {
+            collectRole(roleEnum);
+        }
+
+        if (newRoles.Any())
+        {
+            await dbContext.AddRangeAsync(newRoles);
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    private async Task SeedAdminUser(FinanceDbContext dbContext)
+    {
+        // Check if admin user seeding is enabled
+        if (!adminUserOptions.EnableSeeding)
+        {
+            logger.LogInformation("Admin user seeding is disabled");
+            return;
+        }
+
+        // Only seed admin user if UserId is configured
+        if (string.IsNullOrWhiteSpace(adminUserOptions.UserId))
+        {
+            logger.LogInformation("No admin UserId configured, skipping admin user seeding");
+            return;
+        }
+
+        // Validate user exists in Auth0 (always required for security)
+        using var validationScope = provider.CreateScope();
+        var auth0ValidationService = validationScope.ServiceProvider.GetRequiredService<IAuth0UserValidationService>();
+
+        var userExistsInAuth0 = await auth0ValidationService.ValidateUserExistsAsync(adminUserOptions.UserId);
+        if (!userExistsInAuth0)
+        {
+            logger.LogWarning("Admin user {AdminUserId} does not exist in Auth0. Skipping admin user seeding for security", adminUserOptions.UserId);
+            return;
+        }
+
+        // Get user info from Auth0 for better seeding
+        var auth0UserInfo = await auth0ValidationService.GetUserInfoAsync(adminUserOptions.UserId);
+        if (auth0UserInfo != null)
+        {
+            logger.LogInformation("Validated admin user {AdminUserId} exists in Auth0. Email: {Email}", adminUserOptions.UserId, auth0UserInfo.Email);
+        }
+
+        var now = DateTime.UtcNow;
+        string firstName = adminUserOptions.DefaultFirstName;
+        string lastName = adminUserOptions.DefaultLastName;
+        string username = adminUserOptions.DefaultUsername;
+        if (auth0UserInfo != null)
+        {
+            firstName = auth0UserInfo.GivenName ?? firstName;
+            lastName = auth0UserInfo.FamilyName ?? lastName;
+            username = auth0UserInfo.Name ?? auth0UserInfo.Email ?? username;
+        }
+
+        var adminRoleEntity = await dbContext.Role.FirstOrDefaultAsync(r => r.Id == RoleEnum.Admin);
+
+        // 1. Ensure user exists (by username or email)
+        var user = await dbContext.User
+            .Include(u => u.Roles)
+            .FirstOrDefaultAsync(u => u.Username == username || (auth0UserInfo != null && u.Username == auth0UserInfo.Email));
+        if (user == null)
+        {
+            user = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = username,
+                FirstName = firstName,
+                LastName = lastName,
+                CreatedAt = now,
+                UpdatedAt = now
+            };
+            await dbContext.User.AddAsync(user);
+            await dbContext.SaveChangesAsync();
+            logger.LogInformation("Created admin user {AdminUserId}", adminUserOptions.UserId);
+        }
+
+        // 2. Ensure identity exists and is linked to user
+        var identity = await dbContext.Identity
+            .Include(i => i.User)
+            .FirstOrDefaultAsync(i => i.Provider == IdentityProviderEnum.Auth && i.SourceId == adminUserOptions.UserId);
+        if (identity == null)
+        {
+            identity = new Identity
+            {
+                Id = Guid.NewGuid(),
+                Provider = IdentityProviderEnum.Auth,
+                SourceId = adminUserOptions.UserId,
+                User = user,
+                CreatedAt = now,
+                UpdatedAt = now
+            };
+            await dbContext.Identity.AddAsync(identity);
+            await dbContext.SaveChangesAsync();
+            logger.LogInformation("Created identity for admin user {AdminUserId}", adminUserOptions.UserId);
+        }
+        else if (identity.User == null || identity.User.Id != user.Id)
+        {
+            // Fix orphaned or mismatched identity
+            identity.User = user;
+            await dbContext.SaveChangesAsync();
+            logger.LogInformation("Re-linked identity to correct user for admin {AdminUserId}", adminUserOptions.UserId);
+        }
+
+        // 3. Ensure admin role is assigned
+        if (adminRoleEntity != null && !user.Roles.Any(r => r.Id == RoleEnum.Admin))
+        {
+            user.Roles.Add(adminRoleEntity);
+            await dbContext.SaveChangesAsync();
+            logger.LogInformation("Admin role assigned to user {AdminUserId}", adminUserOptions.UserId);
+        }
+        else if (adminRoleEntity != null)
+        {
+            logger.LogInformation("Admin user {AdminUserId} already has admin role", adminUserOptions.UserId);
         }
     }
 

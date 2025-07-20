@@ -1,34 +1,37 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Summary;
-using MediatR;
 using Finance.Persistance;
 
 namespace Finance.Application.Queries.Summary;
 
-public class GetTotalExpensesQueryHandler : IRequestHandler<GetTotalExpensesQuery, TotalExpenses>
+public class GetTotalExpensesQuery : IQuery<TotalExpenses>;
+
+public class GetTotalExpensesQueryHandler : IQueryHandler<GetTotalExpensesQuery, TotalExpenses>
 {
-    private readonly IMediator mediator;
-    private readonly FinanceDbContext db;
+    private readonly IDispatcher _dispatcher;
+    private readonly FinanceDbContext _db;
 
     public GetTotalExpensesQueryHandler(
-        IMediator mediator,
+        IDispatcher dispatcher,
         FinanceDbContext db)
     {
-        this.db = db;
-        this.mediator = mediator;
+        _db = db;
+        _dispatcher = dispatcher;
     }
 
-    public async Task<TotalExpenses> Handle(GetTotalExpensesQuery request, CancellationToken cancellationToken)
+    public async Task<DataResult<TotalExpenses>> ExecuteAsync(GetTotalExpensesQuery request, CancellationToken cancellationToken)
     {
         var result = new TotalExpenses();
 
-        result.Add(await mediator.Send(new GetCreditCardExpensesQuery()));
+        var creditCardExpensesResult = await _dispatcher.DispatchQueryAsync<Expense>(new GetCreditCardExpensesQuery());
 
-        result.Add(await mediator.Send(new GetDebitExpensesQuery()));
+        result.Add(creditCardExpensesResult.Data);
 
-        return result;
+        var debitExpensesResult = await _dispatcher.DispatchQueryAsync<Expense>(new GetDebitExpensesQuery());
+
+        result.Add(debitExpensesResult.Data);
+
+        return DataResult<TotalExpenses>.Success(result);
     }
-}
-
-public class GetTotalExpensesQuery : IRequest<TotalExpenses>
-{
 }

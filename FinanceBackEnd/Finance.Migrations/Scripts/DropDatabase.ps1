@@ -38,57 +38,57 @@ try {
 
     # Show what we're about to do
     Write-Host "Dropping the database..." -ForegroundColor Cyan
-    
+
     # Run the EF Core command to drop the database
     Write-Host "Run from '$solutionDir'" -ForegroundColor Blue
     $command = "dotnet ef database drop --force --project ./Finance.Migrations --context FinanceDbContext $verboseFlag"
     Write-Host "Executing: $command" -ForegroundColor DarkGray
     $output = Invoke-Expression $command
-    
+
     # Display command output
     $output
-    
+
     # Check if drop was successful
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Database dropped successfully!" -ForegroundColor Green
-        
+
         # Ask if the user wants to recreate a fresh database
         $recreateDb = Read-Host -Prompt "Do you want to recreate a fresh database with migrations? (y/n) [N]"
         if ([string]::IsNullOrWhiteSpace($recreateDb)) {
             $recreateDb = "n"  # Default to "no" if empty
         }
-        
+
         if ($recreateDb.ToLower() -eq "y") {
             Write-Host "Recreating database with migrations..." -ForegroundColor Cyan
-            
+
             # Return to original directory to run the update script
             Pop-Location
-            
+
             # Call the UpdateDatabase.ps1 script to handle the database creation
             $updateScriptPath = Join-Path -Path $currentDir -ChildPath "UpdateDatabase.ps1"
             if (Test-Path $updateScriptPath) {
                 & $updateScriptPath
             } else {
                 Write-Host "Warning: UpdateDatabase.ps1 script not found. Using direct command..." -ForegroundColor Yellow
-                
+    
                 # Change back to solution directory
                 Push-Location -Path $solutionDir
-                
+    
                 # Run the database update command directly as fallback
                 $updateCommand = "dotnet ef database update --project ./Finance.Migrations --context FinanceDbContext $verboseFlag"
                 Write-Host "Executing: $updateCommand" -ForegroundColor DarkGray
                 $updateOutput = Invoke-Expression $updateCommand
-                
+    
                 # Display command output
                 $updateOutput
-                
+    
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "Fresh database created successfully!" -ForegroundColor Green
                 } else {
                     Write-Host "Failed to create fresh database. See error details above." -ForegroundColor Red
                 }
             }
-            
+
             # Return to solution directory for consistency
             Push-Location -Path $solutionDir
         }

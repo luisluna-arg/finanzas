@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
@@ -13,9 +14,10 @@ public class GetLatestCreditCardStatementsQueryHandler : BaseCollectionHandler<G
     {
     }
 
-    public override async Task<ICollection<CreditCardStatement>> Handle(
+    public override async Task<DataResult<List<CreditCardStatement>>> ExecuteAsync(
         GetLatestCreditCardStatementsQuery request, CancellationToken cancellationToken)
     {
+        List<CreditCardStatement> result;
         try
         {
             var query = DbContext.CreditCardStatement
@@ -30,18 +32,20 @@ public class GetLatestCreditCardStatementsQueryHandler : BaseCollectionHandler<G
             }
             else
             {
-                dates = await query.GroupBy(o => o.CreditCardId).Select(o => o.Max(o => o.ClosureDate)).ToArrayAsync();
+                dates = await query.GroupBy(o => o.CreditCardId).Select(o => o.Max(o => o.ClosureDate)).ToArrayAsync(cancellationToken);
             }
 
-            return await query.Where(o => dates.Contains(o.ClosureDate))
-                .OrderByDescending(o => o.ClosureDate)
-                .ThenBy(o => o.CreditCard.Name)
-                .ToArrayAsync();
+            result = await query.Where(o => dates.Contains(o.ClosureDate))
+                    .OrderByDescending(o => o.ClosureDate)
+                    .ThenBy(o => o.CreditCard.Name)
+                    .ToListAsync(cancellationToken);
         }
         catch
         {
-            return [];
+            result = new();
         }
+
+        return DataResult<List<CreditCardStatement>>.Success(result);
     }
 }
 
