@@ -33,6 +33,8 @@ jobs:
           dotnet tool install --global dotnet-ef
           dotnet ef database update --project ./Finance.Migrations --context FinanceDbContext
         working-directory: FinanceBackEnd
+        env:
+          ConnectionStrings__PostgresDb: ${{ secrets.DB_CONNECTION }}
       # - name: Test
       #   run: dotnet test
       #   working-directory: FinanceBackEnd/Finance.Api
