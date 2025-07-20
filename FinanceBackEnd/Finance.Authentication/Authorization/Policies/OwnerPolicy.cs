@@ -1,5 +1,6 @@
 using Finance.Authentication.Authorization.Base;
 using Finance.Domain.Enums;
+using Finance.Persistance;
 
 namespace Finance.Authentication.Authorization.Policies;
 
@@ -8,7 +9,7 @@ namespace Finance.Authentication.Authorization.Policies;
 /// </summary>
 public class OwnerPolicy : RolePolicy
 {
-    public OwnerPolicy(Finance.Persistance.FinanceDbContext dbContext)
+    public OwnerPolicy(FinanceDbContext dbContext)
         : base("OwnerPolicy", [RoleEnum.Owner], dbContext)
     {
     }

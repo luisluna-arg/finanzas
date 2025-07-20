@@ -20,5 +20,6 @@ public static class AuthorizationPolicyProvider
         new OwnerPolicy(dbContext).Configure(options);
         new AdminPolicy(dbContext).Configure(options);
         new AdminOrOwnerPolicy(dbContext).Configure(options);
+        new AuthenticatedPolicy().Configure(options);
     }
 }
