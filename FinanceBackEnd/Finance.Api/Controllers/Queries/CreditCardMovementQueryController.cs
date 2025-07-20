@@ -4,11 +4,13 @@ using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.CreditCards;
 using Finance.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/credit-card-movements")]
+[Authorize(Policy = "AdminOrOwnerPolicy")]
 public class CreditCardMovementQueryController(IMappingService mapper, IDispatcher dispatcher)
     : ApiBaseQueryController<CreditCardMovement, Guid, CreditCardMovementDto>(mapper, dispatcher)
 {

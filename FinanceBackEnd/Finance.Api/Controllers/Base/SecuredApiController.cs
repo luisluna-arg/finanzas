@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Base;
 
 [ApiController]
-[Authorize(Policy = "AdminOrOwnerPolicy")]
+[Authorize(Policy = "AdminPolicy")]
 [Produces("application/json")]
 public abstract class SecuredApiController : ControllerBase
 {

@@ -2,11 +2,13 @@ using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.Movements;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/movements")]
+[Authorize(Policy = "AdminOrOwnerPolicy")]
 public class MovementQueryController(IMappingService mapper, IDispatcher dispatcher)
     : SecuredApiController
 {
