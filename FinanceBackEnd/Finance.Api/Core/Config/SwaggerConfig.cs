@@ -129,9 +129,6 @@ public static class SwaggerConfig
         return services;
     }
 
-    // Removed ConfigureAuth0Authentication method as it's now called directly from Program.cs
-    // using the Finance.Authentication.Extensions.AuthenticationExtensions class
-
     /// <summary>
     /// Configures OpenAPI/Swagger for the application.
     /// </summary>
