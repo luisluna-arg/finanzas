@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
     /// <param name="serviceLifetime">The service lifetime for the handlers.</param>
     private static void RegisterCommandHandlers(IServiceCollection services, Assembly assembly, ServiceLifetime serviceLifetime)
     {
+        // Register ICommandHandler<TCommand, TResult>
         var commandHandlerTypes = assembly.GetTypes()
             .Where(type => type.IsClass && !type.IsAbstract && !type.IsGenericTypeDefinition)
             .Where(type => type.GetInterfaces()
@@ -52,9 +53,32 @@ public static class ServiceCollectionExtensions
             {
                 var genericArguments = handlerInterface.GetGenericArguments();
                 var commandType = genericArguments[0];
-                var resultType = genericArguments[1];
+                // var resultType = genericArguments[1];
 
                 // Validate that the command type implements ICommand
+                if (typeof(ICommand).IsAssignableFrom(commandType))
+                {
+                    RegisterService(services, handlerInterface, handlerType, serviceLifetime);
+                }
+            }
+        }
+
+        // Register ICommandHandler<TCommand>
+        var simpleCommandHandlerTypes = assembly.GetTypes()
+            .Where(type => type.IsClass && !type.IsAbstract && !type.IsGenericTypeDefinition)
+            .Where(type => type.GetInterfaces()
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)));
+
+        foreach (var handlerType in simpleCommandHandlerTypes)
+        {
+            var handlerInterfaces = handlerType.GetInterfaces()
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>));
+
+            foreach (var handlerInterface in handlerInterfaces)
+            {
+                var genericArguments = handlerInterface.GetGenericArguments();
+                var commandType = genericArguments[0];
+
                 if (typeof(ICommand).IsAssignableFrom(commandType))
                 {
                     RegisterService(services, handlerInterface, handlerType, serviceLifetime);

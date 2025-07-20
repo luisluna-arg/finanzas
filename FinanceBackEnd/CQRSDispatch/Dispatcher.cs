@@ -86,7 +86,7 @@ public class Dispatcher : IDispatcher
         try
         {
             var commandType = command.GetType();
-            var handlerType = typeof(ICommandHandler<>).MakeGenericType(commandType);
+            var handlerType = typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(CommandResult));
             var handler = ServiceProvider.GetRequiredService(handlerType);
 
             var executeMethod = handlerType.GetMethod("ExecuteAsync")
