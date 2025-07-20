@@ -8,7 +8,7 @@ public class CreditCard : Entity<Guid>
     public virtual Bank Bank { get; set; } = default!;
     public Guid? CreditCardStatementId { get; set; }
     public virtual CreditCardStatement? CreditCardStatement { get; set; } = default!;
-    required public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public virtual ICollection<CreditCardMovement> Movements { get; set; } = [];
 
     public CreditCard()

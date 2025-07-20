@@ -14,11 +14,11 @@ public class Movement : AuditedEntity<Guid>
     public virtual Bank? Bank { get; set; } = default;
     public virtual Currency? Currency { get; set; } = default;
     public Guid? CurrencyId { get; set; } = null;
-    required public DateTime TimeStamp { get; set; }
-    required public string Concept1 { get; set; }
-    required public string? Concept2 { get; set; }
-    required public Money Amount { get; set; }
-    required public Money? Total { get; set; }
+    public DateTime TimeStamp { get; set; }
+    public string Concept1 { get; set; } = string.Empty;
+    public string? Concept2 { get; set; }
+    public Money Amount { get; set; }
+    public Money? Total { get; set; }
 
     public Movement() : base()
     {

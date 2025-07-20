@@ -8,6 +8,6 @@ public class DebitOrigin() : Entity<Guid>()
     [ForeignKey("AppModuleId")]
     public Guid AppModuleId { get; set; }
     public virtual AppModule AppModule { get; set; } = default!;
-    required public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public virtual ICollection<Debit> Debits { get; set; } = [];
 }

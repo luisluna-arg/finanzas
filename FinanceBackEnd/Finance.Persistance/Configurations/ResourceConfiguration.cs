@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Finance.Persistance.Configurations;
 
 public class EntityResourceConfiguration<TEntityResource, TEntity, TId> : AuditedEntityConfiguration<TEntityResource, TId>
-    where TEntity : Entity<TId>
+    where TEntity : Entity<TId>, new()
     where TEntityResource : EntityResource<TEntity, TId>
     where TId : struct
 {

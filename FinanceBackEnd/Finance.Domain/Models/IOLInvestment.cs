@@ -6,15 +6,15 @@ namespace Finance.Domain.Models;
 public class IOLInvestment() : AuditedEntity<Guid>
 {
     public Guid AssetId { get; set; }
-    required public virtual IOLInvestmentAsset Asset { get; set; }
-    required public DateTime TimeStamp { get; set; }
-    required public uint Alarms { get; set; } = 0;
-    required public uint Quantity { get; set; } = 0;
-    required public uint Assets { get; set; } = 0;
-    required public decimal DailyVariation { get; set; } = 0M;
-    required public Money LastPrice { get; set; } = 0M;
-    required public Money AverageBuyPrice { get; set; } = 0M;
-    required public Money AverageReturnPercent { get; set; } = 0M;
-    required public Money AverageReturn { get; set; } = 0M;
-    required public Money Valued { get; set; } = 0M;
+    public virtual IOLInvestmentAsset Asset { get; set; } = default!;
+    public DateTime TimeStamp { get; set; }
+    public uint Alarms { get; set; } = 0;
+    public uint Quantity { get; set; } = 0;
+    public uint Assets { get; set; } = 0;
+    public decimal DailyVariation { get; set; } = 0M;
+    public Money LastPrice { get; set; } = 0M;
+    public Money AverageBuyPrice { get; set; } = 0M;
+    public Money AverageReturnPercent { get; set; } = 0M;
+    public Money AverageReturn { get; set; } = 0M;
+    public Money Valued { get; set; } = 0M;
 }
