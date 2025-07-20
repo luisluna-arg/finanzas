@@ -29,6 +29,7 @@ public class FinanceDbContextFactory : IDesignTimeDbContextFactory<FinanceDbCont
         var optionsBuilder = new DbContextOptionsBuilder<FinanceDbContext>();
         optionsBuilder.UseNpgsql(connectionString, o => o.MigrationsAssembly(GetType().Assembly));
 
-        return new FinanceDbContext(optionsBuilder.Options);
+        // Pass null for IHttpContextAccessor since it's not available at design time
+        return new FinanceDbContext(optionsBuilder.Options, null);
     }
 }

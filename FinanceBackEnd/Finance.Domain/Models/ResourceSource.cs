@@ -1,4 +1,3 @@
-using Finance.Domain.Enums;
 using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
@@ -12,6 +11,5 @@ public class DebitResource : EntityResource<Debit, Guid>;
 public class FundResource : EntityResource<Fund, Guid>;
 public class IncomeResource : EntityResource<Income, Guid>;
 public class IOLInvestmentAssetResource : EntityResource<IOLInvestmentAsset, Guid>;
-public class IOLInvestmentAssetTypeResource : EntityResource<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum>;
 public class IOLInvestmentResource : EntityResource<IOLInvestment, Guid>;
 public class MovementResource : EntityResource<Movement, Guid>;

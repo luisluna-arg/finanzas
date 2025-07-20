@@ -40,7 +40,6 @@ public class FinanceDbContext(DbContextOptions<FinanceDbContext> options) : DbCo
     public DbSet<FundResource> FundResource => Set<FundResource>();
     public DbSet<IncomeResource> IncomeResource => Set<IncomeResource>();
     public DbSet<IOLInvestmentAssetResource> IOLInvestmentAssetResource => Set<IOLInvestmentAssetResource>();
-    public DbSet<IOLInvestmentAssetTypeResource> IOLInvestmentAssetTypeResource => Set<IOLInvestmentAssetTypeResource>();
     public DbSet<IOLInvestmentResource> IOLInvestmentResource => Set<IOLInvestmentResource>();
     public DbSet<MovementResource> MovementResource => Set<MovementResource>();
 
