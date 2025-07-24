@@ -1,5 +1,4 @@
 using Finance.Authentication.Authorization.Policies;
-using Finance.Persistance;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Finance.Authentication.Authorization;
@@ -10,16 +9,15 @@ namespace Finance.Authentication.Authorization;
 public static class AuthorizationPolicyProvider
 {
     /// <summary>
-    /// Configures all registered policies on the authorization options with access to the database context.
+    /// Configures all registered policies on the authorization options.
     /// </summary>
     /// <param name="options">The authorization options to configure.</param>
-    /// <param name="dbContext">The database context to use for data-based authorization decisions.</param>
-    public static void ConfigurePoliciesWithDb(AuthorizationOptions options, FinanceDbContext dbContext)
+    public static void ConfigurePolicies(IServiceProvider serviceProvider, AuthorizationOptions options)
     {
         // Basic configuration
-        new OwnerPolicy(dbContext).Configure(options);
-        new AdminPolicy(dbContext).Configure(options);
-        new AdminOrOwnerPolicy(dbContext).Configure(options);
-        new AuthenticatedPolicy().Configure(options);
+        new OwnerPolicy(serviceProvider).Configure(serviceProvider, options);
+        new AdminPolicy(serviceProvider).Configure(serviceProvider, options);
+        new AdminOrOwnerPolicy(serviceProvider).Configure(serviceProvider, options);
+        new AuthenticatedPolicy().Configure(serviceProvider, options);
     }
 }
