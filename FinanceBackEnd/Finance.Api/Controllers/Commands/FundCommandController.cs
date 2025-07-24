@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/funds")]
+[Authorize(Policy = "AdminOrOwnerPolicy")]
 public class FundCommandController(
     IMappingService mapper,
     IDispatcher dispatcher,

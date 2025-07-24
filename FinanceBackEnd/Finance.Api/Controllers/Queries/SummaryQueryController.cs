@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;
 
+// TODO I should be able to set Owner policy here, check authorization policies
 [Route("api/summary")]
 public class SummaryQueryController(IMappingService mapper, IDispatcher dispatcher)
     : SecuredApiController
