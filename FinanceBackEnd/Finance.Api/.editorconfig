@@ -58,11 +58,18 @@ dotnet_diagnostic.CS8618.severity = None
 # SettingsFileCodeFixProvider 
 dotnet_diagnostic.SA1602.severity = None
 # Remove unused usings
-dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0005.severity = warning
+# Show TODO comments as warnings, not errors
+dotnet_diagnostic.IDE0075.severity = warning
 # Disable warning for no summary
 dotnet_diagnostic.CS1591.severity = None
 # Disable warning for field should be private
 dotnet_diagnostic.SA1401.severity = None
+# Severity level for SonarAnalyzer S125 (commented code, including TODO)
+dotnet_diagnostic.S125.severity = warning
+# Severity level for SonarAnalyzer S1135 (TODO comment)
+dotnet_diagnostic.S1135.severity = warning
+
 
 # All .cs files in the Migrations directory should have their naming convention ignored
 [*Migrations/*.cs]

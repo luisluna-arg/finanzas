@@ -3,6 +3,8 @@
   <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.Rules">
     <!-- disable S125 -->
     <Rule Id="S125" Action="None" />
+    <!-- set S1135 (TODO comments) to warning -->
+    <Rule Id="S1135" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <!-- Disable spacing rules -->
