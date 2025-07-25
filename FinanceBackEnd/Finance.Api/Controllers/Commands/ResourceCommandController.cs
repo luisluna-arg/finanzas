@@ -1,6 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
-using Finance.Application.Commands;
+using Finance.Application.Commands.FundOwners;
 using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping;
 using Finance.Application.Services;
@@ -18,14 +18,24 @@ public class ResourceCommandController(IMappingService mapper, FundResourceOwner
     [HttpPost("fund/{fundId}/owner/{userId}")]
     public async Task<IActionResult> SetFundOwner(Guid fundId, Guid userId)
     {
-        await ResourceService.Set(new SetFundOwnerSagaRequest(userId, fundId));
+        var result = await ResourceService.Set(new SetFundOwnerSagaRequest(userId, fundId));
+        if (!result.success)
+        {
+            return BadRequest(result.result);
+        }
+
         return Ok();
     }
 
     [HttpDelete("fund/{fundId}/owner/{userId}")]
     public async Task<IActionResult> DeleteFundOwner(Guid fundId, Guid userId)
     {
-        await ResourceService.Delete(new DeleteFundOwnerSagaRequest(userId, fundId));
+        var result = await ResourceService.Delete(new DeleteFundOwnerSagaRequest(userId, fundId));
+        if (!result)
+        {
+            return BadRequest(result);
+        }
+
         return Ok();
     }
 }
