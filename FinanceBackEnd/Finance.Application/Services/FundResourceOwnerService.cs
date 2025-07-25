@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Finance.Application.Commands;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Queries.Resources;
+using Finance.Application.Commands.FundOwners;
 
 namespace Finance.Application.Services;
 
@@ -65,6 +66,7 @@ public class FundResourceOwnerService(
         {
             if (shouldCommit)
                 await localTransaction.RollbackAsync();
+            // TODO This should return a more meaningful error
             return (FundResource.Default<FundResource>(), false);
         }
     }
@@ -95,6 +97,7 @@ public class FundResourceOwnerService(
         {
             if (shouldCommit)
                 await localTransaction.RollbackAsync();
+            // TODO This should return a more meaningful error
             return false;
         }
     }

@@ -2,7 +2,7 @@ using Finance.Application.Dtos.Identities;
 using Finance.Application.Services.Interfaces;
 using Finance.Domain.Enums;
 
-namespace Finance.Application.Commands;
+namespace Finance.Application.Commands.Users;
 
 public class CreateUserSagaRequest : CreateUserCommand, ISagaRequest
 {

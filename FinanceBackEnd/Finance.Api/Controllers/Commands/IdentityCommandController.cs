@@ -1,6 +1,7 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Api.Controllers.Requests;
+using Finance.Api.Controllers.Requests.Identities;
 using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping;
 using Finance.Application.Services;

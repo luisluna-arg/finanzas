@@ -50,7 +50,7 @@ public class CreateFundCommandHandler : BaseCommandHandler<CreateFundCommand, Fu
     }
 }
 
-public class CreateFundCommand : ICommand
+public class CreateFundCommand : ICommand<DataResult<Fund>>
 {
     public virtual Guid BankId { get; set; }
 

@@ -2,10 +2,11 @@ using CQRSDispatch.Interfaces;
 using Finance.Persistance;
 using Finance.Domain.Models;
 using Microsoft.EntityFrameworkCore.Storage;
-using Finance.Api.Controllers.Requests;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Commands;
 using Finance.Application.Extensions;
+using Finance.Api.Controllers.Requests.Identities;
+using ExecutionContext = CQRSDispatch.ExecutionContext;
 
 namespace Finance.Application.Services;
 
@@ -17,7 +18,7 @@ public class IdentityService(
     public FinanceDbContext _dbContext { get; } = dbContext;
     public IDispatcher _dispatcher { get; } = dispatcher;
 
-    public async Task<(Identity result, bool success, string error)> Create(CreateIdentitySagaRequest request, IDbContextTransaction? transaction = null)
+    public async Task<(Identity result, bool success, string error)> Create(CreateIdentitySagaRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         var shouldCommit = transaction == null;
@@ -46,7 +47,7 @@ public class IdentityService(
         }
     }
 
-    public async Task<(Identity result, bool success, string error)> Update(UpdateIdentitySagaRequest request, IDbContextTransaction? transaction = null)
+    public async Task<(Identity result, bool success, string error)> Update(UpdateIdentitySagaRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         var shouldCommit = transaction == null;
@@ -69,7 +70,7 @@ public class IdentityService(
         }
     }
 
-    public async Task<(bool success, string error)> Delete(DeleteIdentitySagaRequest request, IDbContextTransaction? transaction = null)
+    public async Task<(bool success, string error)> Delete(DeleteIdentitySagaRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         var shouldCommit = transaction == null;

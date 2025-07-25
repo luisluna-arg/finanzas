@@ -1,7 +1,7 @@
 using Finance.Application.Commands;
 using Finance.Application.Services.Interfaces;
 
-namespace Finance.Api.Controllers.Requests;
+namespace Finance.Api.Controllers.Requests.Identities;
 
 public class DeleteIdentitySagaRequest : DeleteIdentityCommand, ISagaRequest
 {

@@ -2,7 +2,7 @@ using Finance.Application.Commands;
 using Finance.Application.Services.Interfaces;
 using Finance.Domain.Enums;
 
-namespace Finance.Api.Controllers.Requests;
+namespace Finance.Api.Controllers.Requests.Identities;
 
 public class UpdateIdentitySagaRequest : UpdateIdentityCommand, ISagaRequest
 {
