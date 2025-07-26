@@ -1,4 +1,5 @@
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.Base;
 using Finance.Application.Mapping;
 using Finance.Domain.Models.Interfaces;
@@ -8,7 +9,7 @@ namespace Finance.Api.Controllers.Base;
 
 public abstract class BasicQueryController<TEntity, TId, TDto, TGetAllQuery, TGetByIdQuery>(
     IMappingService mapper,
-    IDispatcher dispatcher)
+    IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseQueryController<TEntity?, TId, TDto>(mapper, dispatcher)
     where TDto : Dto<TId>
     where TEntity : class, IEntity

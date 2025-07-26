@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using CQRSDispatch;
 using CQRSDispatch.Extensions;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Extensions;
 using Finance.Application.Mapping;
 using Finance.Application.Repositories;
@@ -25,8 +26,6 @@ public static class ConfigExtensions
         // Register command and query handlers from Application assembly
         services.AddRequestHandlers([applicationAssembly]);
 
-        services.AddScoped<IDispatcher, Dispatcher>();
-
         services.AddMappers();
 
         services.AddRepositories();
@@ -34,6 +33,8 @@ public static class ConfigExtensions
         services.AddEntityServices();
 
         services.AddSagaServices();
+
+        services.AddDispatecherServices();
 
         services.AddScoped<ICurrencyConverter, CurrencyConverter>();
 
@@ -102,5 +103,16 @@ public static class ConfigExtensions
 
         // Configure Swagger and API reference for both development and production
         SwaggerConfig.ConfigureOpenApiUI(app);
+    }
+
+    public static void AddDispatecherServices(this IServiceCollection services)
+    {
+        services.AddScoped<FinanceDispatchContext>();
+
+        services.AddScoped<FinanceDispatchContextBuilder>();
+
+        services.AddScoped<IDispatcher<FinanceDispatchContext>, Dispatcher<FinanceDispatchContext>>();
+
+        services.AddScoped<IDispatchContextBuilderAsync<FinanceDispatchContext>, FinanceDispatchContextBuilder>();
     }
 }

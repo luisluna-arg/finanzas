@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.Banks;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.Banks;
@@ -9,5 +10,5 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/banks")]
-public class BankQueryController(IMappingService mapper, IDispatcher dispatcher)
+public class BankQueryController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : BasicQueryController<Bank, Guid, BankDto, GetAllBanksQuery, GetBankQuery>(mapper, dispatcher);

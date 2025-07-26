@@ -2,6 +2,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Api.Controllers.Requests;
 using Finance.Api.Controllers.Requests.Identities;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping;
 using Finance.Application.Services;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/identities")]
-public class IdentityCommandController(IMappingService mapper, IdentityService identityService, IDispatcher dispatcher)
+public class IdentityCommandController(IMappingService mapper, IdentityService identityService, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<Identity?, Guid, UserDto>(mapper, dispatcher)
 {
     private IdentityService IdentityService { get => identityService; }
@@ -19,48 +20,48 @@ public class IdentityCommandController(IMappingService mapper, IdentityService i
     [HttpPost]
     public async Task<IActionResult> Create(CreateIdentityRequest request)
     {
-        var (identity, success, error) = await IdentityService.Create(
+        var result = await IdentityService.Create(
             new CreateIdentitySagaRequest(
                 request.UserId,
                 request.Provider,
                 request.SourceId));
 
-        if (!success)
+        if (!result.IsSuccess)
         {
-            return BadRequest(new { Error = error });
+            return BadRequest(result.ErrorMessage);
         }
 
-        return Ok(identity);
+        return Ok(result.Data);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update(UpdateIdentityRequest request)
     {
-        var (identity, success, error) = await IdentityService.Update(
+        var result = await IdentityService.Update(
             new UpdateIdentitySagaRequest(
                 request.IdentityId,
                 request.UserId,
                 request.Provider,
                 request.SourceId));
 
-        if (!success)
+        if (!result.IsSuccess)
         {
-            return BadRequest(new { Error = error });
+            return BadRequest(result.ErrorMessage);
         }
 
-        return Ok(identity);
+        return Ok(result.Data);
     }
 
     [HttpDelete]
     public async Task<IActionResult> Delete(DeleteIdentityRequest request)
     {
-        var (success, error) = await IdentityService.Delete(
+        var result = await IdentityService.Delete(
             new DeleteIdentitySagaRequest(
                 request.IdentityId,
                 request.UserId));
-        if (!success)
+        if (!result.IsSuccess)
         {
-            return BadRequest(new { Error = error });
+            return BadRequest(result.ErrorMessage);
         }
 
         return Ok();

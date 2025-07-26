@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Commands.CurrencyExchangeRates;
 using Finance.Application.Dtos;
 using Finance.Application.Mapping;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/currencies/exchange-rates")]
-public class CurrencyExchangeRateController(IMappingService mapper, IDispatcher dispatcher)
+public class CurrencyExchangeRateController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<CurrencyExchangeRate?, Guid, CurrencyExchangeRateDto>(mapper, dispatcher)
 {
     [HttpPost]

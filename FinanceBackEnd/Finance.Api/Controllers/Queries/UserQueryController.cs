@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.Users;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/users")]
-public class UserQueryController(IMappingService mapper, IDispatcher dispatcher)
+public class UserQueryController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : BasicQueryController<User, Guid, UserDto, GetAllUsersQuery, GetUserByIdQuery>(mapper, dispatcher)
 {
     [HttpGet("by-source/{id}")]

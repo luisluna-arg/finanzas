@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Commands.Debits;
 using Finance.Application.Dtos.Debits;
 using Finance.Application.Helpers;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
-public abstract class DebitCommandController(IMappingService mapper, IDispatcher dispatcher)
+public abstract class DebitCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<Debit?, Guid, DebitDto>(mapper, dispatcher)
 {
     [HttpDelete]

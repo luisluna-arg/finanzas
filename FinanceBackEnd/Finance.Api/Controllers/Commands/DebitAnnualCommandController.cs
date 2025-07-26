@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Commands.Debits;
 using Finance.Application.Helpers;
 using Finance.Application.Mapping;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/debits/annual")]
-public class DebitAnnualCommandController(IMappingService mapper, IDispatcher dispatcher)
+public class DebitAnnualCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : DebitCommandController(mapper, dispatcher)
 {
     [HttpPost]

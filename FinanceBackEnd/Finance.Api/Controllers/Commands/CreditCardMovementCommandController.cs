@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Commands.CreditCards;
 using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Helpers;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/credit-card-movements")]
-public class CreditCardMovementCommandController(IMappingService mapper, IDispatcher dispatcher)
+public class CreditCardMovementCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<CreditCardMovement, Guid, CreditCardMovementDto>(mapper, dispatcher)
 {
     [HttpPost]

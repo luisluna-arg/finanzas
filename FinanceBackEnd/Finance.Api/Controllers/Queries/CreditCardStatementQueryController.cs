@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.CreditCards;
@@ -11,7 +12,7 @@ namespace Finance.Api.Controllers.Queries;
 
 [Route("api/credit-card-statements")]
 [Authorize(Policy = "AdminOrOwnerPolicy")]
-public class CreditCardStatementQueryController(IMappingService mapper, IDispatcher dispatcher)
+public class CreditCardStatementQueryController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseQueryController<CreditCardStatement, Guid, CreditCardStatementDto>(mapper, dispatcher)
 {
     [HttpGet]
