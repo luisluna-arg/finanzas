@@ -1,59 +1,10 @@
 using System.Net.Http.Json;
-using System.Text.Json.Serialization;
 using Auth0.ManagementApi;
 using Finance.Authentication.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Finance.Authentication.Services;
-
-/// <summary>
-/// Service for validating users in Auth0.
-/// </summary>
-public interface IAuth0UserValidationService
-{
-    /// <summary>
-    /// Validates that a user exists in Auth0.
-    /// </summary>
-    /// <param name="userId">The Auth0 user ID to validate.</param>
-    /// <returns>True if the user exists in Auth0, false otherwise.</returns>
-    Task<bool> ValidateUserExistsAsync(string userId);
-
-    /// <summary>
-    /// Gets user information from Auth0.
-    /// </summary>
-    /// <param name="userId">The Auth0 user ID.</param>
-    /// <returns>User information if found, null otherwise.</returns>
-    Task<Auth0UserInfo?> GetUserInfoAsync(string userId);
-}
-
-/// <summary>
-/// User information from Auth0.
-/// </summary>
-public class Auth0UserInfo
-{
-    public string UserId { get; set; } = string.Empty;
-    public string? Email { get; set; }
-    public string? Name { get; set; }
-    public string? GivenName { get; set; }
-    public string? FamilyName { get; set; }
-    public bool EmailVerified { get; set; }
-}
-
-/// <summary>
-/// Response model for Auth0 Management API token.
-/// </summary>
-public class Auth0TokenResponse
-{
-    [JsonPropertyName("access_token")]
-    public string? AccessToken { get; set; }
-
-    [JsonPropertyName("token_type")]
-    public string? TokenType { get; set; }
-
-    [JsonPropertyName("expires_in")]
-    public int ExpiresIn { get; set; }
-}
 
 /// <summary>
 /// Implementation of Auth0 user validation service.
