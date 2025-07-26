@@ -45,7 +45,7 @@ const FundsDashboard = () => {
   const formatNumber = useCallback((amount: number, currencyId?: string) => {
     // Use 2 decimals for USD and ARS (pesos), 8 for others
     const maxDecimals = getMaxDecimals(currencyId);
-    
+
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: maxDecimals,
@@ -62,7 +62,8 @@ const FundsDashboard = () => {
 
   // Calculate total once
   const totalValue = useMemo(() => {
-    return funds.reduce((total, fund) => total + fund.quoteCurrencyValue, 0);
+    const total = funds.reduce((sum, fund) => sum + fund.quoteCurrencyValue, 0);
+    return Math.round(total * 100) / 100;
   }, [funds]);
 
   // Default currency and symbol - calculated once
@@ -164,7 +165,8 @@ const FundsDashboard = () => {
                     Value in {fund.defaultCurrency}:
                   </Text>
                   <Text fw={500} c="blue">
-                    {fund.defaultCurrencySymbol} {formatNumber(fund.quoteCurrencyValue, fund.defaultCurrencyId)}
+                    {fund.defaultCurrencySymbol}{' '}
+                    {formatNumber(fund.quoteCurrencyValue, fund.defaultCurrencyId)}
                   </Text>
                 </Group>
               )}
@@ -234,7 +236,8 @@ const FundsDashboard = () => {
                   </Group>
                 </Table.Td>
                 <Table.Td fw={500} c="blue">
-                  {fund.defaultCurrencySymbol} {formatNumber(fund.quoteCurrencyValue, fund.defaultCurrencyId)}
+                  {fund.defaultCurrencySymbol}{' '}
+                  {formatNumber(fund.quoteCurrencyValue, fund.defaultCurrencyId)}
                 </Table.Td>
               </Table.Tr>
             ))}

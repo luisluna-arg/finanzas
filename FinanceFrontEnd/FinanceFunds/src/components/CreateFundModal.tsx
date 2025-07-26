@@ -57,7 +57,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
     validate: {
       bankId: (value: string) => (!value ? 'Bank is required' : null),
       currencyId: (value: string) => (!value ? 'Currency is required' : null),
-      amount: (value: number) => (value <= 0 ? 'Amount must be greater than 0' : null),
+      amount: (value: number) => (value < 0 ? 'Amount must not be negative' : null),
     },
   });
 
@@ -83,7 +83,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
           const banksArray = Array.isArray(banksData) ? banksData : [];
           setBanks(banksArray);
           Logger.debugLog('Banks state set to:', banksArray);
-          
+
           // Auto-select the first bank
           if (banksArray.length > 0 && !form.values.bankId) {
             form.setFieldValue('bankId', banksArray[0].id);
@@ -123,7 +123,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
           const currenciesArray = Array.isArray(currenciesData) ? currenciesData : [];
           setCurrencies(currenciesArray);
           Logger.debugLog('Currencies state set to:', currenciesArray);
-          
+
           // Auto-select the first currency (which will be Peso due to sorting)
           if (currenciesArray.length > 0 && !form.values.currencyId) {
             // Find Peso first, otherwise use first available
