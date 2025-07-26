@@ -1,9 +1,10 @@
-using Finance.Application.Dtos.Summary;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
+using Finance.Application.Dtos.Summary;
+using Finance.Application.Services;
 using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
-using Finance.Application.Services;
 using Finance.Persistance.Constants;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,11 +12,11 @@ namespace Finance.Application.Queries.Summary;
 
 public class GetGeneralSummaryQueryHandler : IQueryHandler<GetGeneralSummaryQuery, TotalGeneralSummary>
 {
-    private readonly IDispatcher _dispatcher;
+    private readonly IDispatcher<FinanceDispatchContext> _dispatcher;
     private readonly CurrencyConversionService _currencyConverterService;
 
     public GetGeneralSummaryQueryHandler(
-        IDispatcher dispatcher,
+        IDispatcher<FinanceDispatchContext> dispatcher,
         CurrencyConversionService currencyConverter)
     {
         _dispatcher = dispatcher;
