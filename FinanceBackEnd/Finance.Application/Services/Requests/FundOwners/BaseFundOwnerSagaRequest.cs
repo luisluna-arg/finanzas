@@ -7,9 +7,8 @@ namespace Finance.Application.Commands.FundOwners;
 public abstract class BaseFundOwnerSagaRequest<TResult> : OwnerBaseCommand<TResult>, ISagaRequest
     where TResult : RequestResult
 {
-    public BaseFundOwnerSagaRequest(Guid userId, Guid fundId)
+    public BaseFundOwnerSagaRequest(Guid fundId)
     {
-        UserId = userId;
         FundId = fundId;
     }
 

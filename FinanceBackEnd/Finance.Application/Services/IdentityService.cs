@@ -6,19 +6,21 @@ using Finance.Application.Services.Interfaces;
 using Finance.Application.Commands;
 using Finance.Application.Extensions;
 using Finance.Api.Controllers.Requests.Identities;
-using ExecutionContext = CQRSDispatch.ExecutionContext;
+using Microsoft.AspNetCore.Http;
+using Finance.Application.Auth;
+using CQRSDispatch;
 
 namespace Finance.Application.Services;
 
 public class IdentityService(
-    IDispatcher dispatcher,
+    IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
     : ISagaService<CreateIdentitySagaRequest, UpdateIdentitySagaRequest, DeleteIdentitySagaRequest, Identity>
 {
     public FinanceDbContext _dbContext { get; } = dbContext;
-    public IDispatcher _dispatcher { get; } = dispatcher;
+    public IDispatcher<FinanceDispatchContext> _dispatcher { get; } = dispatcher;
 
-    public async Task<(Identity result, bool success, string error)> Create(CreateIdentitySagaRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null)
+    public async Task<DataResult<Identity>> Create(CreateIdentitySagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         var shouldCommit = transaction == null;
@@ -33,21 +35,22 @@ public class IdentityService(
             var identityResult = await _dispatcher.DispatchAsync(command);
             if (!identityResult.IsSuccess || identityResult.Data == null)
             {
-                throw new Exception("Failed to create identity");
+                throw new Exception(identityResult.ErrorMessage);
             }
-            if (shouldCommit)
-                await localTransaction.CommitAsync();
-            return (identityResult.Data, true, string.Empty);
+
+            if (shouldCommit) await localTransaction.CommitAsync();
+
+            return DataResult<Identity>.Success(identityResult.Data);
         }
         catch (Exception ex)
         {
-            if (shouldCommit)
-                await localTransaction.RollbackAsync();
-            return (new Identity { Provider = default, SourceId = string.Empty }, false, ex.GetInnerMostMessage());
+            if (shouldCommit) await localTransaction.RollbackAsync();
+
+            return DataResult<Identity>.Failure(ex.GetInnerMostMessage());
         }
     }
 
-    public async Task<(Identity result, bool success, string error)> Update(UpdateIdentitySagaRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null)
+    public async Task<DataResult<Identity>> Update(UpdateIdentitySagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         var shouldCommit = transaction == null;
@@ -58,19 +61,20 @@ public class IdentityService(
             {
                 throw new Exception("Failed to update identity");
             }
-            if (shouldCommit)
-                await localTransaction.CommitAsync();
-            return (identityResult.Data, true, string.Empty);
+
+            if (shouldCommit) await localTransaction.CommitAsync();
+
+            return DataResult<Identity>.Success(identityResult.Data);
         }
         catch (Exception ex)
         {
-            if (shouldCommit)
-                await localTransaction.RollbackAsync();
-            return (new Identity { Id = request.IdentityId, Provider = default, SourceId = string.Empty }, false, ex.GetInnerMostMessage());
+            if (shouldCommit) await localTransaction.RollbackAsync();
+
+            return DataResult<Identity>.Failure(ex.GetInnerMostMessage());
         }
     }
 
-    public async Task<(bool success, string error)> Delete(DeleteIdentitySagaRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null)
+    public async Task<CommandResult> Delete(DeleteIdentitySagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         var shouldCommit = transaction == null;
@@ -81,15 +85,16 @@ public class IdentityService(
             {
                 throw new Exception("Failed to delete identity");
             }
-            if (shouldCommit)
-                await localTransaction.CommitAsync();
-            return (true, string.Empty);
+
+            if (shouldCommit) await localTransaction.CommitAsync();
+
+            return CommandResult.Success();
         }
         catch (Exception ex)
         {
-            if (shouldCommit)
-                await localTransaction.RollbackAsync();
-            return (false, ex.GetInnerMostMessage());
+            if (shouldCommit) await localTransaction.RollbackAsync();
+
+            return CommandResult.Failure(ex.GetInnerMostMessage());
         }
     }
 }

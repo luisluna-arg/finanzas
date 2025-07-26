@@ -6,33 +6,37 @@ using Finance.Application.Commands;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Queries.Resources;
 using Finance.Application.Commands.FundOwners;
+using Microsoft.AspNetCore.Http;
+using Finance.Application.Auth;
+using CQRSDispatch;
+using Finance.Application.Extensions;
 
 namespace Finance.Application.Services;
 
 public class FundResourceOwnerService(
-    IDispatcher dispatcher,
+    IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
     : IResourceOwnerSagaService<SetFundOwnerSagaRequest, DeleteFundOwnerSagaRequest, FundResource>
 {
     public FinanceDbContext _dbContext { get; } = dbContext;
-    public IDispatcher _dispatcher { get; } = dispatcher;
+    public IDispatcher<FinanceDispatchContext> _dispatcher { get; } = dispatcher;
 
-    public async Task<(FundResource result, bool success)> Set(SetFundOwnerSagaRequest request, IDbContextTransaction? transaction = null)
+    public async Task<DataResult<FundResource>> Set(SetFundOwnerSagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         var shouldCommit = transaction == null;
         try
         {
-            var resourceOwnership = await _dispatcher.DispatchQueryAsync(new GetResourceOwnershipQuery(request.UserId, request.FundId));
+            var resourceOwnership = await _dispatcher.DispatchQueryAsync(new GetResourceOwnershipQuery(request.FundId), httpRequest: httpRequest);
             if (resourceOwnership.IsSuccess && resourceOwnership.Data.Any())
             {
-                return (resourceOwnership.Data.First().FundResource, true);
+                return DataResult<FundResource>.Success(resourceOwnership.Data.First().FundResource);
             }
 
             var createResourceResult = await _dispatcher.DispatchAsync(new CreateResourceCommand());
             if (!createResourceResult.IsSuccess || createResourceResult.Data == null)
             {
-                throw new Exception("Failed to create resource");
+                throw new Exception(createResourceResult.ErrorMessage);
             }
 
             var createFundResourceCommand = new CreateFundResourceCommand
@@ -43,35 +47,32 @@ public class FundResourceOwnerService(
             var fundResourceResult = await _dispatcher.DispatchAsync(createFundResourceCommand);
             if (!fundResourceResult.IsSuccess || fundResourceResult.Data == null)
             {
-                throw new Exception("Failed to create fund resource");
+                throw new Exception(fundResourceResult.ErrorMessage);
             }
 
             var createResourceOwnerCommand = new CreateResourceOwnerCommand
             {
-                ResourceId = createResourceResult.Data.Id,
-                UserId = request.UserId
+                ResourceId = createResourceResult.Data.Id
             };
-            var resourceOwnerResult = await _dispatcher.DispatchAsync(createResourceOwnerCommand);
+            var resourceOwnerResult = await _dispatcher.DispatchAsync(createResourceOwnerCommand, httpRequest: httpRequest);
             if (!resourceOwnerResult.IsSuccess || resourceOwnerResult.Data == null)
             {
-                throw new Exception("Failed to create resource owner");
+                throw new Exception(resourceOwnerResult.ErrorMessage);
             }
 
-            if (shouldCommit)
-                await localTransaction.CommitAsync();
+            if (shouldCommit) await localTransaction.CommitAsync();
 
-            return (fundResourceResult.Data, true);
+            return DataResult<FundResource>.Success(fundResourceResult.Data);
         }
-        catch
+        catch (Exception ex)
         {
-            if (shouldCommit)
-                await localTransaction.RollbackAsync();
-            // TODO This should return a more meaningful error
-            return (FundResource.Default<FundResource>(), false);
+            if (shouldCommit) await localTransaction.RollbackAsync();
+
+            return DataResult<FundResource>.Failure(ex.GetInnerMostMessage());
         }
     }
 
-    public async Task<bool> Delete(DeleteFundOwnerSagaRequest request, IDbContextTransaction? transaction = null)
+    public async Task<CommandResult> Delete(DeleteFundOwnerSagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
     {
         var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
         var shouldCommit = transaction == null;
@@ -79,26 +80,24 @@ public class FundResourceOwnerService(
         {
             var deleteFundOwnerCommand = new DeleteFundOwnerCommand
             {
-                FundId = request.FundId,
-                UserId = request.UserId
+                FundId = request.FundId
             };
             var createResourceResult = await _dispatcher.DispatchAsync(deleteFundOwnerCommand);
 
             if (!createResourceResult.IsSuccess)
             {
-                throw new Exception("Failed to delete resource owner");
+                throw new Exception(createResourceResult.ErrorMessage);
             }
 
-            if (shouldCommit)
-                await localTransaction.CommitAsync();
-            return true;
+            if (shouldCommit) await localTransaction.CommitAsync();
+
+            return CommandResult.Success();
         }
-        catch
+        catch (Exception ex)
         {
-            if (shouldCommit)
-                await localTransaction.RollbackAsync();
-            // TODO This should return a more meaningful error
-            return false;
+            if (shouldCommit) await localTransaction.RollbackAsync();
+
+            return CommandResult.Failure(ex.GetInnerMostMessage());
         }
     }
 }

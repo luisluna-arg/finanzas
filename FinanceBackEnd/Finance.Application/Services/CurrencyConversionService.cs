@@ -6,16 +6,17 @@ using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
 using Finance.Persistance;
 using CQRSDispatch;
+using Finance.Application.Auth;
 
 namespace Finance.Application.Services;
 
 public class CurrencyConversionService(
-    IDispatcher dispatcher,
+    IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext,
     ICurrencyConverter currencyConverter)
 {
     public FinanceDbContext _dbContext { get => dbContext; }
-    public IDispatcher _dispatcher { get => dispatcher; }
+    public IDispatcher<FinanceDispatchContext> _dispatcher { get => dispatcher; }
 
     public async Task<Money> Convert(IAmountHolder currentIncome, Guid destinationCurrency)
     {

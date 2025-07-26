@@ -1,6 +1,7 @@
+using CQRSDispatch;
 using Finance.Domain.Models.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage;
-using ExecutionContext = CQRSDispatch.ExecutionContext;
 
 namespace Finance.Application.Services.Interfaces;
 
@@ -10,7 +11,7 @@ public interface ISagaService<TCreateRequest, TUpdateRequest, TDeleteRequest, TE
     where TDeleteRequest : ISagaRequest
     where TEntity : IEntity?
 {
-    Task<(TEntity result, bool success, string error)> Create(TCreateRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null);
-    Task<(TEntity result, bool success, string error)> Update(TUpdateRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null);
-    Task<(bool success, string error)> Delete(TDeleteRequest request, IDbContextTransaction? transaction = null, ExecutionContext? executionContext = null);
+    Task<DataResult<TEntity>> Create(TCreateRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null);
+    Task<DataResult<TEntity>> Update(TUpdateRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null);
+    Task<CommandResult> Delete(TDeleteRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null);
 }

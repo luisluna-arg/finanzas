@@ -6,7 +6,7 @@ namespace Finance.Application.Commands.FundOwners;
 
 public class SetFundOwnerSagaRequest : BaseFundOwnerSagaRequest<DataResult<FundResource>>, ISagaRequest
 {
-    public SetFundOwnerSagaRequest(Guid userId, Guid fundId) : base(userId, fundId)
+    public SetFundOwnerSagaRequest(Guid fundId) : base(fundId)
     {
     }
 }
