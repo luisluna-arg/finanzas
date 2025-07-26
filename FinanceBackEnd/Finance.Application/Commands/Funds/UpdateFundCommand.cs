@@ -49,7 +49,7 @@ public class UpdateFundCommandHandler : BaseCommandHandler<UpdateFundCommand, Fu
     }
 }
 
-public class UpdateFundCommand : ICommand
+public class UpdateFundCommand : ICommand<DataResult<Fund>>
 {
     required public Guid Id { get; set; }
 

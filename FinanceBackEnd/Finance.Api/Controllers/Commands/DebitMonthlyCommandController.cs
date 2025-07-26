@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Commands.Debits;
 using Finance.Application.Mapping;
 using Finance.Domain.Enums;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/debits/monthly")]
-public class MonthlyDebitCommandController(IMappingService mapper, IDispatcher dispatcher)
+public class MonthlyDebitCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : DebitCommandController(mapper, dispatcher)
 {
     [HttpPost]

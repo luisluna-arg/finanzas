@@ -3,6 +3,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
 using Finance.Persistance;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Commands;
 
@@ -16,13 +17,17 @@ public class CreateFundResourceCommandHandler(FinanceDbContext dbContext) : Base
 {
     public async override Task<DataResult<FundResource>> ExecuteAsync(CreateFundResourceCommand request, CancellationToken cancellationToken = default)
     {
-        var fund = await DbContext.Fund.FindAsync(request.FundId);
+        var fund = await DbContext.Fund
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(f => f.Id == request.FundId, cancellationToken);
         if (fund == null)
         {
             return DataResult<FundResource>.Failure("Fund not found");
         }
 
-        var resource = await DbContext.Resource.FindAsync(request.ResourceId);
+        var resource = await DbContext.Resource
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(r => r.Id == request.ResourceId, cancellationToken);
         if (resource == null)
         {
             return DataResult<FundResource>.Failure("Resource not found");

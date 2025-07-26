@@ -1,4 +1,5 @@
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Queries.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +14,9 @@ namespace Finance.Api.Controllers
     [Route("api/session")]
     [ApiExplorerSettings(GroupName = "Session")]
     [SwaggerTag("Session")]
-    public class SessionController(IDispatcher dispatcher) : ControllerBase
+    public class SessionController(IDispatcher<FinanceDispatchContext> dispatcher) : ControllerBase
     {
-        private IDispatcher Dispatcher { get => dispatcher; }
+        private IDispatcher<FinanceDispatchContext> Dispatcher { get => dispatcher; }
 
         /// <summary>
         /// Gets the current logged-in user's claims.

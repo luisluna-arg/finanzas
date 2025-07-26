@@ -1,14 +1,21 @@
 
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Commands;
 
-public class DeleteUserCommand : ICommand<CommandResult>
+public class DeleteUserCommand : IContextAwareCommand<FinanceDispatchContext, CommandResult>
 {
     public Guid UserId { get; set; }
+    public FinanceDispatchContext Context { get; private set; } = new();
+
+    public void SetContext(FinanceDispatchContext context)
+    {
+        Context = context;
+    }
 }
 
 public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, CommandResult>

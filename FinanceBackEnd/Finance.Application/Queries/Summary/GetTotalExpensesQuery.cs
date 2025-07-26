@@ -1,5 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.Summary;
 using Finance.Persistance;
 
@@ -9,11 +10,11 @@ public class GetTotalExpensesQuery : IQuery<TotalExpenses>;
 
 public class GetTotalExpensesQueryHandler : IQueryHandler<GetTotalExpensesQuery, TotalExpenses>
 {
-    private readonly IDispatcher _dispatcher;
+    private readonly IDispatcher<FinanceDispatchContext> _dispatcher;
     private readonly FinanceDbContext _db;
 
     public GetTotalExpensesQueryHandler(
-        IDispatcher dispatcher,
+        IDispatcher<FinanceDispatchContext> dispatcher,
         FinanceDbContext db)
     {
         _db = db;

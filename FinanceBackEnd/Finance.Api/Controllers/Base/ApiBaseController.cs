@@ -1,4 +1,5 @@
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.Base;
 using Finance.Application.Mapping;
 using Microsoft.AspNetCore.Mvc;
@@ -7,13 +8,13 @@ namespace Finance.Api.Controllers.Base;
 
 public abstract class ApiBaseController<TId, TDto>(
     IMappingService mappingService,
-    IDispatcher dispatcher)
+    IDispatcher<FinanceDispatchContext> dispatcher)
     : SecuredApiController
     where TDto : Dto<TId>
 {
     protected IMappingService MappingService { get => mappingService; }
 
-    protected IDispatcher Dispatcher { get => dispatcher; }
+    protected IDispatcher<FinanceDispatchContext> Dispatcher { get => dispatcher; }
 
     protected virtual async Task<IActionResult> ExecuteAsync(ICommand command)
         => Ok(await MapAndSend(command));

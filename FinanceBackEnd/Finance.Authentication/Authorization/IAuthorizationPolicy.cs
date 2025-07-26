@@ -16,5 +16,5 @@ public interface IAuthorizationPolicy
     /// Configures the policy.
     /// </summary>
     /// <param name="options">The authorization options to configure.</param>
-    void Configure(AuthorizationOptions options);
+    void Configure(IServiceProvider serviceProvider, AuthorizationOptions options);
 }

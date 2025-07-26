@@ -22,7 +22,7 @@ public class DeleteFundsCommandHandler : ICommandHandler<DeleteFundsCommand>
     }
 }
 
-public class DeleteFundsCommand : ICommand
+public class DeleteFundsCommand : ICommand<CommandResult>
 {
     public Guid[] Ids { get; set; } = [];
 }

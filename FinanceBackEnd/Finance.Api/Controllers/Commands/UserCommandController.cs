@@ -1,7 +1,7 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Api.Controllers.Requests;
-using Finance.Application.Commands;
+using Finance.Application.Auth;
 using Finance.Application.Commands.Users;
 using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping;
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/users")]
-public class UserCommandController(IMappingService mapper, UserService userService, IDispatcher dispatcher)
+public class UserCommandController(IMappingService mapper, UserService userService, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<User?, Guid, UserDto>(mapper, dispatcher)
 {
     private UserService UserService { get => userService; }
@@ -20,25 +20,25 @@ public class UserCommandController(IMappingService mapper, UserService userServi
     [HttpPost]
     public async Task<IActionResult> Create(CreateUserRequest request)
     {
-        var (user, success, error) = await UserService.Create(
+        var result = await UserService.Create(
             new CreateUserSagaRequest(
                 request.Email,
                 request.FirstName,
                 request.LastName,
                 request.Roles,
                 request.Identities));
-        if (!success)
+        if (!result.IsSuccess)
         {
-            return BadRequest(new { Error = error });
+            return BadRequest(result.ErrorMessage);
         }
 
-        return Ok(user);
+        return Ok(result.Data);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update(UpdateUserRequest request)
     {
-        var (user, success, message) = await UserService.Update(
+        var result = await UserService.Update(
             new UpdateUserSagaRequest(
                 request.Id,
                 request.Email,
@@ -46,21 +46,21 @@ public class UserCommandController(IMappingService mapper, UserService userServi
                 request.LastName,
                 request.Roles,
                 request.Identities));
-        if (!success)
+        if (!result.IsSuccess)
         {
-            return BadRequest(new { Error = message });
+            return BadRequest(result.ErrorMessage);
         }
 
-        return Ok(user);
+        return Ok(result.Data);
     }
 
     [HttpDelete]
     public async Task<IActionResult> Delete(DeleteUserRequest request)
     {
-        var (success, error) = await UserService.Delete(new DeleteUserSagaRequest(request.Id));
-        if (!success)
+        var result = await UserService.Delete(new DeleteUserSagaRequest(request.Id));
+        if (!result.IsSuccess)
         {
-            return BadRequest(new { Error = error });
+            return BadRequest(result.ErrorMessage);
         }
 
         return Ok();

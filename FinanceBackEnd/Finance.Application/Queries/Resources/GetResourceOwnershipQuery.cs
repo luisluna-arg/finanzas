@@ -1,20 +1,26 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Domain.Models;
 using Finance.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Resources;
 
-public class GetResourceOwnershipQuery : IQuery<List<(Resource Resource, ResourceOwner ResourceOwner, FundResource FundResource)>>
+public class GetResourceOwnershipQuery : IContextAwareQuery<FinanceDispatchContext, List<(Resource Resource, ResourceOwner ResourceOwner, FundResource FundResource)>>, IContextAware<FinanceDispatchContext>
 {
-    public Guid UserId { get; }
     public Guid FundId { get; }
+    public FinanceDispatchContext Context { get; private set; }
 
-    public GetResourceOwnershipQuery(Guid userId, Guid fundId)
+    public GetResourceOwnershipQuery(Guid fundId)
     {
-        UserId = userId;
         FundId = fundId;
+        Context = new();
+    }
+
+    public void SetContext(FinanceDispatchContext context)
+    {
+        Context = context;
     }
 }
 
@@ -31,7 +37,7 @@ public class GetResourceOwnershipQueryHandler : IQueryHandler<GetResourceOwnersh
     {
         var query =
             from r in DbContext.Resource
-            join o in DbContext.ResourceOwner.Include(ro => ro.User).Where(ro => ro.UserId == request.UserId)
+            join o in DbContext.ResourceOwner.Include(ro => ro.User).Where(ro => ro.UserId == request.Context.UserInfo.Id)
                 on r.Id equals o.ResourceId
             join fr in DbContext.FundResource.Include(ro => ro.ResourceSource).Where(fr => fr.ResourceSourceId == request.FundId)
                 on o.ResourceId equals fr.ResourceId

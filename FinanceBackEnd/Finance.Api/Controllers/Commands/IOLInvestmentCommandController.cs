@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Commands.IOLInvestments;
 using Finance.Application.Dtos.IOLInvestments;
 using Finance.Application.Mapping;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/iol-investment")]
-public class IOLInvestmentCommandController(IMappingService mapper, IDispatcher dispatcher)
+public class IOLInvestmentCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<IOLInvestment?, Guid, IOLInvestmentDto>(mapper, dispatcher)
 {
     [HttpPost]

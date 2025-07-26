@@ -48,8 +48,8 @@ public static class AuthenticationExtensions
             var sp = services.BuildServiceProvider();
             var dbContext = sp.GetRequiredService<FinanceDbContext>();
 
-            // Configure policies with database context
-            AuthorizationPolicyProvider.ConfigurePoliciesWithDb(options, dbContext);
+            // Configure policies with authorization options
+            AuthorizationPolicyProvider.ConfigurePolicies(sp, options);
         });
 
         // Register Auth0 user validation service

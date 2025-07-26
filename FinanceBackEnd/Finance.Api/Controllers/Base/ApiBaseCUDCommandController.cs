@@ -1,4 +1,5 @@
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.Base;
 using Finance.Application.Mapping;
 using Finance.Domain.Models.Interfaces;
@@ -13,7 +14,7 @@ public abstract class ApiBaseCUDCommandController<
     TCreateCommand,
     TUpdateCommand,
     TDeleteCommand
-    >(IMappingService mapper, IDispatcher dispatcher)
+    >(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<TEntity, TId, TDto>(mapper, dispatcher)
     where TDto : Dto<TId>
     where TEntity : IEntity?

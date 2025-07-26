@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Commands.Banks;
 using Finance.Application.Dtos.Banks;
 using Finance.Application.Mapping;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/banks")]
-public class BankCommandController(IMappingService mapper, IDispatcher dispatcher)
+public class BankCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<Bank?, Guid, BankDto>(mapper, dispatcher)
 {
     [HttpPost]

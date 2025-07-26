@@ -7,18 +7,19 @@ using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
 using Finance.Domain.Enums;
+using Finance.Application.Auth;
 
 namespace Finance.Application.Commands.Debits;
 
 public class CreateDebitCommandHandler : BaseCommandHandler<CreateDebitCommand, Debit>
 {
-    private readonly IDispatcher _dispatcher;
+    private readonly IDispatcher<FinanceDispatchContext> _dispatcher;
     private readonly IRepository<Debit, Guid> _debitRepository;
     private readonly IRepository<DebitOrigin, Guid> _debitOriginRepository;
 
     public CreateDebitCommandHandler(
         FinanceDbContext db,
-        IDispatcher dispatcher,
+        IDispatcher<FinanceDispatchContext> dispatcher,
         IRepository<Debit, Guid> debitRepository,
         IRepository<DebitOrigin, Guid> debitOriginRepository)
         : base(db)

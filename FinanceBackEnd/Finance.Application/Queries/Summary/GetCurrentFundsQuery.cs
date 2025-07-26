@@ -34,21 +34,40 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
             fundsQuery = fundsQuery.Where(o => o.DailyUse == request.DailyUse.Value);
         }
 
-        var funds = await fundsQuery
-            .GroupBy(o => new { o.BankId, o.CurrencyId })
-            .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
+        var bankIds = await fundsQuery.Select(o => o.BankId).Distinct().ToArrayAsync(cancellationToken);
+
+        var funds = new List<Domain.Models.Fund>();
+
+        foreach (var bankId in bankIds)
+        {
+            var latestFunds = await fundsQuery
+                .Where(f => f.BankId == bankId)
+                .GroupBy(f => f.CurrencyId)
+                .Select(g => g.OrderByDescending(x => x.TimeStamp).First())
+                .ToListAsync(cancellationToken);
+            funds.AddRange(latestFunds);
+        }
+
+        var currencyExchangeRates = _db.CurrencyExchangeRate
+            .Include(o => o.BaseCurrency)
+            .Include(o => o.QuoteCurrency)
+            .Where(o => !o.Deactivated);
+
+        var baseCurrencyIds = await currencyExchangeRates
+            .Select(o => o.BaseCurrencyId)
+            .Distinct()
             .ToArrayAsync(cancellationToken);
 
-        var currencyRates = await _db.CurrencyExchangeRate
-            .Where(o => !o.Deactivated)
-            .GroupBy(o => new { o.BaseCurrencyId, o.QuoteCurrencyId })
-            .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
-            .ToArrayAsync(cancellationToken);
-
-        var currencyRates2 = currencyRates
-            .GroupBy(o => string.Join("|", new[] { o.BaseCurrencyId, o.QuoteCurrencyId }.OrderBy(x => x)))
-            .Select(o => o.OrderByDescending(x => x.TimeStamp).First())
-            .ToArray();
+        var currencyRates = new List<CurrencyExchangeRate>();
+        foreach (var baseCurrencyId in baseCurrencyIds)
+        {
+            var latestRates = await currencyExchangeRates
+                .Where(o => o.BaseCurrencyId == baseCurrencyId)
+                .GroupBy(o => o.QuoteCurrencyId)
+                .Select(g => g.OrderByDescending(x => x.TimeStamp).First())
+                .ToListAsync(cancellationToken);
+            currencyRates.AddRange(latestRates);
+        }
 
         Func<Domain.Models.Fund, string> nameFormater = (o) => $"{o.Bank!.Name} {o.Currency!.Name}";
 
@@ -76,7 +95,7 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
 
         foreach (var fund in funds.Where(o => o.CurrencyId != request.CurrencyId))
         {
-            var currencyRate = currencyRates2
+            var currencyRate = currencyRates
                 .FirstOrDefault(o => o.BaseCurrencyId == fund.CurrencyId || o.QuoteCurrencyId == fund.CurrencyId);
             if (currencyRate == null) continue;
 

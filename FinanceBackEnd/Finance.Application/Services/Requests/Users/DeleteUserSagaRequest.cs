@@ -1,7 +1,7 @@
 
 using Finance.Application.Services.Interfaces;
 
-namespace Finance.Application.Commands;
+namespace Finance.Application.Commands.Users;
 
 public class DeleteUserSagaRequest : DeleteUserCommand, ISagaRequest
 {

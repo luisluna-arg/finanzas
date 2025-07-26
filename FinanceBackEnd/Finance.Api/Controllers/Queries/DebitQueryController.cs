@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.Debits;
 using Microsoft.AspNetCore.Authorization;
@@ -9,11 +10,11 @@ namespace Finance.Api.Controllers.Queries;
 
 [Route("api/debits/{frequency}")]
 [Authorize(Policy = "AdminOrOwnerPolicy")]
-public class DebitQueryController(IMappingService mapper, IDispatcher dispatcher)
+public class DebitQueryController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : SecuredApiController
 {
     protected IMappingService MappingService { get => mapper; }
-    protected IDispatcher Dispatcher { get => dispatcher; }
+    protected IDispatcher<FinanceDispatchContext> Dispatcher { get => dispatcher; }
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetAllDebitsQuery request)

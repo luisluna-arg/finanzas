@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.CurrencyConvertions;
 using Microsoft.AspNetCore.Mvc;
@@ -7,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Queries;
 
 [Route("api/currencies/conversions")]
-public class CurrencyConversionQueryController(IMappingService mapper, IDispatcher dispatcher)
+public class CurrencyConversionQueryController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : SecuredApiController
 {
     protected IMappingService MappingService { get => mapper; }
-    protected IDispatcher Dispatcher { get => dispatcher; }
+    protected IDispatcher<FinanceDispatchContext> Dispatcher { get => dispatcher; }
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] GetAllCurrencyConversionsQuery request)

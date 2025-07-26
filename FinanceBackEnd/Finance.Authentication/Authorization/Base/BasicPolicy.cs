@@ -22,15 +22,13 @@ public abstract class BasicPolicy : IAuthorizationPolicy
     /// Configures the Basic policy.
     /// </summary>
     /// <param name="options">The authorization options to configure.</param>
-    public virtual void Configure(AuthorizationOptions options)
+    public virtual void Configure(IServiceProvider serviceProvider, AuthorizationOptions options)
     {
-        // For now, just require authentication
-        // This is a temporary simplification until roles are properly configured
         options.AddPolicy(Name, policy =>
-            policy.RequireAssertion(context => CheckAuthenticated(context)));
+            policy.RequireAssertion(context => CheckAuthenticated(serviceProvider, context)));
     }
 
-    protected virtual bool CheckAuthenticated(AuthorizationHandlerContext context)
+    protected virtual bool CheckAuthenticated(IServiceProvider serviceProvider, AuthorizationHandlerContext context)
     {
         if (context.User.Identity?.IsAuthenticated != true)
         {

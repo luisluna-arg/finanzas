@@ -20,7 +20,7 @@ public class DeleteFundOwnerCommandHandler(FinanceDbContext dbContext) : IComman
     {
         var query =
             from r in DbContext.Resource
-            join o in DbContext.ResourceOwner.Where(ro => ro.UserId == command.UserId)
+            join o in DbContext.ResourceOwner.Where(ro => ro.UserId == command.Context.UserInfo.Id)
                 on r.Id equals o.ResourceId
             join fr in DbContext.FundResource.Where(fr => fr.ResourceSourceId == command.FundId)
                 on o.ResourceId equals fr.ResourceId

@@ -1,5 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Application.Auth;
 using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Dtos.DebitOrigins;
 using Finance.Application.Mapping;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/debit-origins")]
-public class DebitOriginCommandController(IMappingService mapper, IDispatcher dispatcher)
+public class DebitOriginCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<DebitOrigin?, Guid, DebitOriginDto>(mapper, dispatcher)
 {
     [HttpPost]

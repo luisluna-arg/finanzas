@@ -1,6 +1,6 @@
 using Finance.Authentication.Authorization.Base;
+using Finance.Authentication.Services;
 using Finance.Domain.Enums;
-using Finance.Persistance;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,15 +11,17 @@ namespace Finance.Authentication.Authorization.Policies;
 /// </summary>
 public class AdminOrOwnerPolicy : RolePolicy
 {
-    public AdminOrOwnerPolicy(FinanceDbContext dbContext)
-        : base("AdminOrOwnerPolicy", [RoleEnum.Owner], dbContext)
+    public AdminOrOwnerPolicy(IServiceProvider serviceProvider)
+        : base("AdminOrOwnerPolicy", serviceProvider, [RoleEnum.Owner])
     {
     }
 
     protected override bool AssertionAction(AuthorizationHandlerContext context, string userIdClaim)
     {
-        // This needs to be executed synchronously in an assertion
-        var userIsAdmin = DbContext.User
+        using var service = new AuthDbContextService(_serviceProvider);
+        var dbContext = service.GetDbContext();
+
+        var userIsAdmin = dbContext.User
             .Include(u => u.Identities)
             .Include(u => u.Roles)
             .Any(u => u.Identities.Any(i => i.SourceId == userIdClaim) && u.Roles.Any(r => r.Id == RoleEnum.Admin));
@@ -29,6 +31,12 @@ public class AdminOrOwnerPolicy : RolePolicy
             return true; // Admin users are always authorized
         }
 
-        return base.AssertionAction(context, userIdClaim);
+        // For Owner check, do the same DB query as RolePolicy
+        var userIsOwner = dbContext.User
+            .Include(u => u.Identities)
+            .Include(u => u.Roles)
+            .Any(u => u.Identities.Any(i => i.SourceId == userIdClaim) && u.Roles.Any(r => r.Id == RoleEnum.Owner));
+
+        return userIsOwner;
     }
 }
