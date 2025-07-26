@@ -9,11 +9,31 @@ public interface ICommand
 }
 
 /// <summary>
-/// Generic interface for command objects that return a specific result type.
-/// Inherits from <see cref="ICommand"/> and constrains the result to <see cref="RequestResult"/>.
+/// Interface for context-aware commands that support execution context injection.
 /// </summary>
-/// <typeparam name="TResult">The type of result returned by the command, must inherit from <see cref="RequestResult"/>.</typeparam>
+/// <typeparam name="TContext">The type of dispatch context.</typeparam>
+public interface IContextAwareCommand<TContext> : ICommand, IContextAware<TContext>
+    where TContext : DispatchContext, new()
+{
+}
+
+/// <summary>
+/// Generic interface for command objects that return a specific result type.
+/// Inherits from ICommand and constrains the result to RequestResult.
+/// </summary>
+/// <typeparam name="TResult">The type of result returned by the command, must inherit from RequestResult.</typeparam>
 public interface ICommand<TResult> : ICommand
+    where TResult : RequestResult
+{
+}
+
+/// <summary>
+/// Interface for context-aware commands that return a specific result type and support execution context injection.
+/// </summary>
+/// <typeparam name="TContext">The type of dispatch context.</typeparam>
+/// <typeparam name="TResult">The type of result returned by the command, must inherit from RequestResult.</typeparam>
+public interface IContextAwareCommand<TContext, TResult> : ICommand<TResult>, IContextAware<TContext>
+    where TContext : DispatchContext, new()
     where TResult : RequestResult
 {
 }
