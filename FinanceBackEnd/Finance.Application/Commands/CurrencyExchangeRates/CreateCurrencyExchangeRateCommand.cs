@@ -46,7 +46,7 @@ public class CreateCurrencyExchangeRateCommandHandler : BaseCommandHandler<Creat
     }
 }
 
-public class CreateCurrencyExchangeRateCommand : ICommand
+public class CreateCurrencyExchangeRateCommand : ICommand<DataResult<CurrencyExchangeRate>>
 {
     [Required]
     public Guid BaseCurrencyId { get; set; }

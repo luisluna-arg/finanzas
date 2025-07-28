@@ -15,7 +15,15 @@ public class CurrencyExchangeRateController(IMappingService mapper, IDispatcher<
 {
     [HttpPost]
     public async Task<IActionResult> Create(CreateCurrencyExchangeRateCommand command)
-        => await ExecuteAsync(command);
+    {
+        var result = await Dispatcher.DispatchAsync(command);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.ErrorMessage);
+        }
+
+        return Ok(MappingService.Map<CurrencyExchangeRateDto>(result));
+    }
 
     [HttpPut]
     public async Task<IActionResult> Update(UpdateCurrencyExchangeRateCommand command)
