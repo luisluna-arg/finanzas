@@ -7,8 +7,12 @@ export interface CurrencyExchangeRate {
   id: string;
   baseCurrency: Currency;
   quoteCurrency: Currency;
-  buyRate: number;
-  sellRate: number;
+  buyRate: {
+    value: number;
+  };
+  sellRate: {
+    value: number;
+  };
   timeStamp: string;
   deactivated?: boolean;
 }

@@ -15,10 +15,7 @@ import {
   ScrollArea,
   Button,
 } from '@mantine/core';
-import { 
-  IconCurrencyDollar, 
-  IconPlus, 
-} from '@tabler/icons-react';
+import { IconCurrencyDollar, IconPlus } from '@tabler/icons-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import CurrencyExchangeRateService from '../services/CurrencyExchangeRateService';
 import type { CurrencyExchangeRate } from '../services/types/CurrencyExchangeRateTypes';
@@ -85,6 +82,7 @@ const CurrencyExchangeDashboard = () => {
 
       // Update state in the next frame to avoid blocking the main thread
       setTimeout(() => {
+        console.log('Fetched exchange rates:', response);
         setExchangeRates(response || []);
         setError(null);
         if (showLoading) setLoading(false);
@@ -127,19 +125,29 @@ const CurrencyExchangeDashboard = () => {
                   </Text>
                 </Group>
               </Group>
-              
+
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Buy Rate:</Text>
-                <Text fw={500} c="green">{formatRate(rate.buyRate)}</Text>
-              </Group>
-              
-              <Group justify="space-between">
-                <Text size="sm" c="dimmed">Sell Rate:</Text>
-                <Text fw={500} c="red">{formatRate(rate.sellRate)}</Text>
+                <Text size="sm" c="dimmed">
+                  Buy Rate:
+                </Text>
+                <Text fw={500} c="green">
+                  {formatRate(rate.buyRate)}
+                </Text>
               </Group>
 
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Last Updated:</Text>
+                <Text size="sm" c="dimmed">
+                  Sell Rate:
+                </Text>
+                <Text fw={500} c="red">
+                  {formatRate(rate.sellRate)}
+                </Text>
+              </Group>
+
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Last Updated:
+                </Text>
                 <Text size="sm">{formatTimestamp(rate.timeStamp)}</Text>
               </Group>
             </Stack>
@@ -184,18 +192,16 @@ const CurrencyExchangeDashboard = () => {
                 </Table.Td>
                 <Table.Td>
                   <Text fw={500} c="green">
-                    {formatRate(rate.buyRate)}
+                    {formatRate(rate.buyRate.value)}
                   </Text>
                 </Table.Td>
                 <Table.Td>
                   <Text fw={500} c="red">
-                    {formatRate(rate.sellRate)}
+                    {formatRate(rate.sellRate.value)}
                   </Text>
                 </Table.Td>
                 <Table.Td>
-                  <Text size="sm">
-                    {formatTimestamp(rate.timeStamp)}
-                  </Text>
+                  <Text size="sm">{formatTimestamp(rate.timeStamp)}</Text>
                 </Table.Td>
               </Table.Tr>
             ))}
