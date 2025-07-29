@@ -4,25 +4,33 @@ using Finance.Application.Auth;
 using Finance.Application.Commands.CurrencyExchangeRates;
 using Finance.Application.Dtos;
 using Finance.Application.Mapping;
+using Finance.Application.Services;
+using Finance.Application.Services.Requests.CurrencyExchangeRates;
 using Finance.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/currencies/exchange-rates")]
-public class CurrencyExchangeRateController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
+public class CurrencyExchangeRateController(
+    IMappingService mapper,
+    IDispatcher<FinanceDispatchContext> dispatcher,
+    CurrencyExchangeRateService currencyExchangeRateService)
     : ApiBaseCommandController<CurrencyExchangeRate?, Guid, CurrencyExchangeRateDto>(mapper, dispatcher)
 {
+    private CurrencyExchangeRateService CurrencyExchangeRateService { get => currencyExchangeRateService; }
+
     [HttpPost]
-    public async Task<IActionResult> Create(CreateCurrencyExchangeRateCommand command)
+    public async Task<IActionResult> Create(CreateCurrencyExchangeRateSagaRequest command)
     {
-        var result = await Dispatcher.DispatchAsync(command);
+        var result = await CurrencyExchangeRateService.Create(command, httpRequest: HttpContext?.Request);
+
         if (!result.IsSuccess)
         {
             return BadRequest(result.ErrorMessage);
         }
 
-        return Ok(MappingService.Map<CurrencyExchangeRateDto>(result));
+        return Ok(result.Data);
     }
 
     [HttpPut]

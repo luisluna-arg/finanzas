@@ -1,12 +1,14 @@
+using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Api.Controllers.Requests;
 using Finance.Application.Auth;
-using Finance.Application.Commands.FundOwners;
 using Finance.Application.Commands.Funds;
+using Finance.Application.Commands.Funds.Owners;
 using Finance.Application.Dtos.Funds;
 using Finance.Application.Mapping;
 using Finance.Application.Services.Interfaces;
+using Finance.Application.Services.Orchestrators;
 using Finance.Application.Services.Requests.Funds;
 using Finance.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -18,12 +20,12 @@ namespace Finance.Api.Controllers.Commands;
 public class FundCommandController(
     IMappingService mapper,
     IDispatcher<FinanceDispatchContext> dispatcher,
-    IResourceOwnerSagaService<SetFundOwnerSagaRequest, DeleteFundOwnerSagaRequest, FundResource> fundResourceOwnerService,
+    IResourceOwnerSagaService<FundResource, FundResourceOrchestrator, SetFundOwnerSagaRequest, DataResult<FundResource>, DeleteFundOwnerSagaRequest, CommandResult> fundResourceOwnerService,
     ISagaService<CreateFundSagaRequest, UpdateFundSagaRequest, DeleteFundSagaRequest, Fund> fundService)
     : ApiBaseCommandController<Fund?, Guid, FundDto>(mapper, dispatcher)
 {
     private ISagaService<CreateFundSagaRequest, UpdateFundSagaRequest, DeleteFundSagaRequest, Fund> FundService { get => fundService; }
-    private IResourceOwnerSagaService<SetFundOwnerSagaRequest, DeleteFundOwnerSagaRequest, FundResource> FundResourceOwnerService { get => fundResourceOwnerService; }
+    private IResourceOwnerSagaService<FundResource, FundResourceOrchestrator, SetFundOwnerSagaRequest, DataResult<FundResource>, DeleteFundOwnerSagaRequest, CommandResult> FundResourceOwnerService { get => fundResourceOwnerService; }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateFundSagaRequest command)
@@ -66,9 +68,7 @@ public class FundCommandController(
     public async Task<IActionResult> DeleteResourceOwner(DeleteFundOwnerRequest request)
     {
         var result = await FundResourceOwnerService.Delete(
-            new DeleteFundOwnerSagaRequest(
-                request.FundId,
-                request.UserId));
+            new DeleteFundOwnerSagaRequest(request.FundId));
 
         if (!result.IsSuccess)
         {

@@ -16,7 +16,7 @@ public class ResourceQueryController(IMappingService mapper, IDispatcher<Finance
     [HttpGet("fund/{fundId}/owner/{userId}")]
     public async Task<IActionResult> GetFundOwner(Guid userId, Guid fundId)
     {
-        var resourceOwnership = await Dispatcher.DispatchQueryAsync(new GetResourceOwnershipQuery(fundId));
+        var resourceOwnership = await Dispatcher.DispatchQueryAsync(new GetFundOwnershipQuery(fundId));
         if (resourceOwnership.IsSuccess && resourceOwnership.Data.Any())
         {
             return Ok(resourceOwnership.Data.First());

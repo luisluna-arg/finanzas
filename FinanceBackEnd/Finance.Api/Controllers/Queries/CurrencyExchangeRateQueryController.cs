@@ -35,6 +35,12 @@ public class CurrencyExchangeRateQueryController(IMappingService mapper, IDispat
     public async Task<IActionResult> Latest([FromQuery] GetLatestCurrencyExchangeRatesQuery request)
     {
         var result = await Dispatcher.DispatchQueryAsync(request);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.ErrorMessage);
+        }
+
         return Ok(result.Data);
     }
 
@@ -42,6 +48,12 @@ public class CurrencyExchangeRateQueryController(IMappingService mapper, IDispat
     public async Task<IActionResult> GetById([FromQuery] GetCurrencyExchangeRateQuery request)
     {
         var result = await Dispatcher.DispatchQueryAsync(request);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.ErrorMessage);
+        }
+
         return Ok(result.Data);
     }
 
@@ -49,6 +61,12 @@ public class CurrencyExchangeRateQueryController(IMappingService mapper, IDispat
     public async Task<IActionResult> LatestByShortName([FromRoute] GetLatestCurrencyExchangeRateByShortNameQuery request)
     {
         var result = await Dispatcher.DispatchQueryAsync(request);
+
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.ErrorMessage);
+        }
+
         return Ok(result.Data);
     }
 }

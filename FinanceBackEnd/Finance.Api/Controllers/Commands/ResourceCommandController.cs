@@ -1,7 +1,7 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Commands.FundOwners;
+using Finance.Application.Commands.Funds.Owners;
 using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping;
 using Finance.Application.Services;
@@ -11,10 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/resources")]
-public class ResourceCommandController(IMappingService mapper, FundResourceOwnerService fundResourceOwnerService, IDispatcher<FinanceDispatchContext> dispatcher)
+public class ResourceCommandController(IMappingService mapper, FundOwnerService fundResourceOwnerService, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<User?, Guid, UserDto>(mapper, dispatcher)
 {
-    private FundResourceOwnerService ResourceService { get => fundResourceOwnerService; }
+    private FundOwnerService ResourceService { get => fundResourceOwnerService; }
 
     [HttpPost("fund/{fundId}/owner/{userId}")]
     public async Task<IActionResult> SetFundOwner(Guid fundId, Guid userId)
@@ -31,7 +31,7 @@ public class ResourceCommandController(IMappingService mapper, FundResourceOwner
     [HttpDelete("fund/{fundId}/owner/{userId}")]
     public async Task<IActionResult> DeleteFundOwner(Guid fundId, Guid userId)
     {
-        var result = await ResourceService.Delete(new DeleteFundOwnerSagaRequest(userId, fundId));
+        var result = await ResourceService.Delete(new DeleteFundOwnerSagaRequest(fundId));
         if (!result.IsSuccess)
         {
             return BadRequest(result.ErrorMessage);
