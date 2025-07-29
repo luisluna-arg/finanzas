@@ -165,19 +165,16 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
         var cancellationToken = CreateCancellationToken();
         try
         {
-            var queryType = query.GetType();
-            var handlerType = typeof(IQueryHandler<,>).MakeGenericType(queryType, typeof(TResult));
-            var handler = ServiceProvider.GetRequiredService(handlerType);
-
-            var executeMethod = handlerType.GetMethod("ExecuteAsync")
-                ?? throw new InvalidOperationException($"ExecuteAsync method not found on handler type {handlerType.Name}");
+            var handler = FindQueryHandlerInHierarchy<TResult>(query, ServiceProvider);
+            var executeMethod = handler.GetType().GetMethod("ExecuteAsync")
+                ?? throw new InvalidOperationException($"ExecuteAsync method not found on handler type {handler.GetType().Name}");
 
             var task = executeMethod.Invoke(handler, [query, cancellationToken]) as Task<DataResult<TResult>>
                 ?? throw new InvalidOperationException($"Handler ExecuteAsync method did not return expected Task<DataResult<{typeof(TResult).Name}>>");
 
             var result = await task;
 
-            Logger.LogInformation("Query dispatched successfully: {QueryType}", queryType.Name);
+            Logger.LogInformation("Query dispatched successfully: {QueryType}", query.GetType().Name);
             return result;
         }
         catch (Exception ex)
@@ -185,6 +182,20 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
             Logger.LogError(ex, "Error dispatching query: {QueryType}", query.GetType().Name);
             throw;
         }
+    }
+
+    private static object FindQueryHandlerInHierarchy<TResult>(IQuery<TResult> query, IServiceProvider provider)
+    {
+        var type = query.GetType();
+        while (type != null && type != typeof(object))
+        {
+            var handlerType = typeof(IQueryHandler<,>).MakeGenericType(type, typeof(TResult));
+            var handler = provider.GetService(handlerType);
+            if (handler != null)
+                return handler;
+            type = type.BaseType;
+        }
+        throw new InvalidOperationException($"No handler found for query type {query.GetType().Name} or its base types");
     }
 
     /// <summary>

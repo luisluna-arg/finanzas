@@ -39,7 +39,7 @@ public abstract class RequestResult
     /// </summary>
     /// <typeparam name="T">The type of RequestResult to create.</typeparam>
     /// <returns>A new instance indicating success.</returns>
-    protected static T Success<T>()
+    public static T Success<T>()
         where T : RequestResult, new()
         => new T { IsSuccess = true };
 
@@ -49,7 +49,7 @@ public abstract class RequestResult
     /// <typeparam name="T">The type of RequestResult to create.</typeparam>
     /// <param name="errorMessage">The error message describing the failure.</param>
     /// <returns>A new instance indicating failure with the specified error message.</returns>
-    protected static T Failure<T>(string errorMessage)
+    public static T Failure<T>(string errorMessage)
         where T : RequestResult, new()
         => new T { IsSuccess = false, ErrorMessage = errorMessage };
 }

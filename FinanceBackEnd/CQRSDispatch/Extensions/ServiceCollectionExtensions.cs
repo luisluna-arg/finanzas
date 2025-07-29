@@ -111,12 +111,8 @@ public static class ServiceCollectionExtensions
                 var queryType = genericArguments[0];
                 var resultType = genericArguments[1];
 
-                // Validate that the query type implements IQuery<TResult>
-                var queryInterfaceType = typeof(IQuery<>).MakeGenericType(resultType);
-                if (queryInterfaceType.IsAssignableFrom(queryType))
-                {
-                    RegisterService(services, handlerInterface, handlerType, serviceLifetime);
-                }
+                // Register all handlers regardless of inheritance chain
+                RegisterService(services, handlerInterface, handlerType, serviceLifetime);
             }
         }
     }
