@@ -2,15 +2,15 @@ using CQRSDispatch;
 using Finance.Application.Commands.Users;
 using Finance.Application.Services.Interfaces;
 
-namespace Finance.Application.Commands.FundOwners;
+namespace Finance.Application.Commands.Funds.Owners;
 
 public abstract class BaseFundOwnerSagaRequest<TResult> : OwnerBaseCommand<TResult>, ISagaRequest
     where TResult : RequestResult
 {
-    public BaseFundOwnerSagaRequest(Guid fundId)
+    public BaseFundOwnerSagaRequest(Guid id)
     {
-        FundId = fundId;
+        Id = id;
     }
 
-    public Guid FundId { get; set; }
+    public Guid Id { get; set; }
 }

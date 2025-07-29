@@ -1,11 +1,11 @@
 using CQRSDispatch;
 using Finance.Application.Services.Interfaces;
 
-namespace Finance.Application.Commands.FundOwners;
+namespace Finance.Application.Commands.Funds.Owners;
 
 public class DeleteFundOwnerSagaRequest : BaseFundOwnerSagaRequest<CommandResult>, ISagaRequest
 {
-    public DeleteFundOwnerSagaRequest(Guid userId, Guid fundId) : base(fundId)
+    public DeleteFundOwnerSagaRequest(Guid id) : base(id)
     {
     }
 }

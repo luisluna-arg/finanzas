@@ -6,10 +6,10 @@ namespace Finance.Application.Services.Requests.Funds;
 
 public class DeleteFundSagaRequest : ICommand, ISagaRequest
 {
-    public Guid FundId { get; }
-
-    public DeleteFundSagaRequest(Guid userId) : base()
+    public DeleteFundSagaRequest(Guid id) : base()
     {
-        FundId = userId;
+        Id = id;
     }
+
+    public Guid Id { get; }
 }
