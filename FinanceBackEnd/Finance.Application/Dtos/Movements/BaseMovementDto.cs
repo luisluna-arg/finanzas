@@ -35,7 +35,6 @@ public abstract record BaseMovementDto : Dto<Guid>
         return new MovementEntity()
         {
             TimeStamp = TimeStamp,
-            CreatedAt = CreatedAt,
             Concept1 = Concept1,
             Concept2 = Concept2,
             Amount = Amount,

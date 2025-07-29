@@ -22,7 +22,7 @@ public class EntityResourceConfiguration<TEntityResource, TEntity, TId> : Audite
         builder.HasOne(fr => fr.ResourceSource)
             .WithMany()
             .HasForeignKey(fr => fr.ResourceSourceId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasIndex(fr => new { fr.ResourceId, fr.ResourceSourceId })

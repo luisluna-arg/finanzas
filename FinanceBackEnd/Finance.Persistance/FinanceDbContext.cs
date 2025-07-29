@@ -1,4 +1,5 @@
 using Finance.Domain.Models;
+using Finance.Domain.Models.Interfaces;
 using Finance.Persistance.Configurations;
 using Finance.Persistance.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -63,5 +64,32 @@ public class FinanceDbContext : DbContext
         modelBuilder.AddQueryFilters(this);
 
         base.OnModelCreating(modelBuilder);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        SetAuditableDefaults();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    public override int SaveChanges()
+    {
+        SetAuditableDefaults();
+        return base.SaveChanges();
+    }
+
+    private void SetAuditableDefaults()
+    {
+        foreach (var entry in ChangeTracker.Entries<IAuditedEntity>())
+        {
+            if (entry.State == EntityState.Added && entry.Entity.CreatedAt == default)
+            {
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+        }
     }
 }

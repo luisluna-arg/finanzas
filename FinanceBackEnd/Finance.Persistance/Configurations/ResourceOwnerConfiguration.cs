@@ -18,7 +18,7 @@ public class ResourceOwnerConfiguration : AuditedEntityConfiguration<ResourceOwn
         builder.HasOne(ro => ro.Resource)
             .WithMany()
             .HasForeignKey(ro => ro.ResourceId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade); // Changed from Restrict to Cascade
 
         builder
             .HasIndex(ro => new { ro.UserId, ro.ResourceId })
