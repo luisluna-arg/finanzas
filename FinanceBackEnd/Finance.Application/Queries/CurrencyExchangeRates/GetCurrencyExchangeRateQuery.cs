@@ -5,7 +5,7 @@ using Finance.Persistance;
 
 namespace Finance.Application.Queries.CurrencyExchangeRates;
 
-public class GetCurrencyExchangeRateQuery : GetSingleByIdQuery<CurrencyExchangeRate?, Guid>;
+public class GetCurrencyExchangeRateQuery : GetSingleByIdQuery<CurrencyExchangeRate, Guid>;
 
 public class GetCurrencyExchangeRateQueryHandler(FinanceDbContext db, IRepository<CurrencyExchangeRate, Guid> currencyRepository)
     : GetSingleByIdQueryHandler<CurrencyExchangeRate, Guid>(db, currencyRepository);

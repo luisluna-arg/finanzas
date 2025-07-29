@@ -16,41 +16,39 @@ public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<
 
     public override async Task<DataResult<List<CurrencyExchangeRate>>> ExecuteAsync(GetLatestCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
     {
-        var query = DbContext.CurrencyExchangeRate
+        var latestQuery =
+            from o in DbContext.CurrencyExchangeRate
+            where (!request.BaseCurrencyId.HasValue || o.BaseCurrencyId == request.BaseCurrencyId.Value)
+               && (!request.QuoteCurrencyId.HasValue || o.QuoteCurrencyId == request.QuoteCurrencyId.Value)
+               && (request.IncludeDeactivated || !o.Deactivated)
+            group o by new { o.BaseCurrencyId, o.QuoteCurrencyId } into g
+            select new
+            {
+                g.Key.BaseCurrencyId,
+                g.Key.QuoteCurrencyId,
+                LatestTime = g.Max(x => x.TimeStamp)
+            };
+
+        var query =
+            from o in DbContext.CurrencyExchangeRate
+            join l in latestQuery
+                on new { o.BaseCurrencyId, o.QuoteCurrencyId, o.TimeStamp }
+                equals new { l.BaseCurrencyId, l.QuoteCurrencyId, TimeStamp = l.LatestTime }
+            where (!request.BaseCurrencyId.HasValue || o.BaseCurrencyId == request.BaseCurrencyId.Value)
+               && (!request.QuoteCurrencyId.HasValue || o.QuoteCurrencyId == request.QuoteCurrencyId.Value)
+               && (request.IncludeDeactivated || !o.Deactivated)
+            orderby o.BaseCurrency.Name, o.QuoteCurrency.Name
+            select o;
+
+        var result = await Task.Run(() => query
             .Include(o => o.BaseCurrency)
+                .ThenInclude(c => c.Symbols)
             .Include(o => o.QuoteCurrency)
-            .AsQueryable();
+                .ThenInclude(c => c.Symbols)
+            .ToList()
+        );
 
-        if (request.BaseCurrencyId.HasValue)
-        {
-            query = query.Where(o => o.BaseCurrencyId == request.BaseCurrencyId.Value);
-        }
-
-        if (request.QuoteCurrencyId.HasValue)
-        {
-            query = query.Where(o => o.QuoteCurrencyId == request.QuoteCurrencyId.Value);
-        }
-
-        if (!request.IncludeDeactivated)
-        {
-            query = query.Where(o => !o.Deactivated);
-        }
-
-        var partialResult = await query
-            .OrderBy(o => o.BaseCurrency.Name)
-            .ThenBy(o => o.QuoteCurrency.Name)
-            .ThenByDescending(o => o.TimeStamp)
-            .ToArrayAsync(cancellationToken);
-
-        var groupResult = partialResult.GroupBy(
-            child => new { child.BaseCurrencyId, child.QuoteCurrencyId },
-            (key, group) => group);
-
-        return DataResult<List<CurrencyExchangeRate>>.Success(
-            groupResult
-                .Select(g => g.OrderByDescending(o => o.TimeStamp).FirstOrDefault())
-                .Where(x => x != null)
-                .ToList()!);
+        return DataResult<List<CurrencyExchangeRate>>.Success(result);
     }
 }
 
