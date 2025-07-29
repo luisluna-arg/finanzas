@@ -1,10 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
 using CQRSDispatch;
-using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistance;
+using Finance.Application.Commands.Users;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
@@ -46,21 +45,12 @@ public class CreateCurrencyExchangeRateCommandHandler : BaseCommandHandler<Creat
     }
 }
 
-public class CreateCurrencyExchangeRateCommand : ICommand<DataResult<CurrencyExchangeRate>>
+public class CreateCurrencyExchangeRateCommand : OwnerBaseCommand<DataResult<CurrencyExchangeRate>>
 {
-    [Required]
     public Guid BaseCurrencyId { get; set; }
-
-    [Required]
     public Guid QuoteCurrencyId { get; set; }
-
-    [Required]
     public decimal BuyRate { get; set; } = 0m;
-
-    [Required]
     public decimal SellRate { get; set; } = 0m;
-
-    [Required]
     public DateTime TimeStamp { get; set; }
 }
 

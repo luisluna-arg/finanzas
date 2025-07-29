@@ -37,7 +37,6 @@ public class CreateAppModuleCommandHandler : BaseCommandHandler<CreateAppModuleC
 
         var newAppModule = new AppModule()
         {
-            CreatedAt = DateTime.UtcNow,
             Currency = currency,
             Name = command.Name,
             Type = appModuleType

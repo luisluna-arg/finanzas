@@ -39,7 +39,6 @@ public class CreateIncomeCommandHandler : BaseCommandHandler<CreateIncomeCommand
             Currency = currency,
             Amount = command.Amount,
             TimeStamp = command.TimeStamp,
-            CreatedAt = DateTime.UtcNow,
             Deactivated = false
         };
 

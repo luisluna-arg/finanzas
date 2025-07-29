@@ -7,6 +7,11 @@ using Finance.Persistance;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
+public class DeleteCurrencyExchangeRateCommand : ICommand<DataResult<bool>>
+{
+    public Guid[] Ids { get; set; } = [];
+}
+
 public class DeleteCurrencyExchangeRateCommandHandler : BaseResponselessHandler<DeleteCurrencyExchangeRateCommand>
 {
     private readonly IRepository<CurrencyExchangeRate, Guid> currencyRepository;
@@ -28,9 +33,4 @@ public class DeleteCurrencyExchangeRateCommandHandler : BaseResponselessHandler<
 
         return CommandResult.Success();
     }
-}
-
-public class DeleteCurrencyExchangeRateCommand : ICommand
-{
-    public Guid[] Ids { get; set; } = [];
 }

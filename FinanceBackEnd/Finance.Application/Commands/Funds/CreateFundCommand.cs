@@ -39,7 +39,6 @@ public class CreateFundCommandHandler : BaseCommandHandler<CreateFundCommand, Fu
             Currency = currency,
             Amount = command.Amount,
             TimeStamp = command.TimeStamp,
-            CreatedAt = DateTime.UtcNow,
             Deactivated = false,
             DailyUse = command.DailyUse ?? false
         };

@@ -35,7 +35,6 @@ public class CreateIOLInvestmentCommandHandler : BaseCommandHandler<CreateIOLInv
         var newInvestmentAssetIOL = new IOLInvestment()
         {
             Asset = await GetAssetAsync(command, cancellationToken),
-            CreatedAt = DateTime.UtcNow,
             TimeStamp = DateTime.UtcNow,
             Alarms = command.Alarms,
             Quantity = command.Quantity,

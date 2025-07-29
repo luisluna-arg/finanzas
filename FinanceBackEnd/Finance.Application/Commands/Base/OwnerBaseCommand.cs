@@ -8,6 +8,7 @@ public abstract class OwnerBaseCommand<TResult> : IContextAwareCommand<FinanceDi
     where TResult : RequestResult
 {
     public FinanceDispatchContext Context { get; private set; } = new();
+
     public void SetContext(FinanceDispatchContext context)
     {
         Context = context;
