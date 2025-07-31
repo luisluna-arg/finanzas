@@ -34,6 +34,14 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
             fundsQuery = fundsQuery.Where(o => o.DailyUse == request.DailyUse.Value);
         }
 
+        var defaultCurrency = await _db.Currency
+            .FirstOrDefaultAsync(o => o.Id == Guid.Parse(CurrencyConstants.DefaultCurrencyId), cancellationToken);
+
+        if (defaultCurrency == null)
+        {
+            return DataResult<TotalFunds>.Failure("Default currency not found.");
+        }
+
         var bankIds = await fundsQuery.Select(o => o.BankId).Distinct().ToArrayAsync(cancellationToken);
 
         var funds = new List<Domain.Models.Fund>();
@@ -87,16 +95,17 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
                     BaseCurrency = currency?.ShortName ?? string.Empty,
                     BaseCurrencySymbol = currencySymbol?.Symbol ?? string.Empty,
                     QuoteCurrencyValue = o.Amount,
-                    DefaultCurrencyId = currency?.Id ?? Guid.Empty,
-                    DefaultCurrency = currency?.ShortName ?? string.Empty,
-                    DefaultCurrencySymbol = currencySymbol?.Symbol ?? string.Empty
+                    DefaultCurrencyId = defaultCurrency?.Id ?? Guid.Empty,
+                    DefaultCurrency = defaultCurrency?.ShortName ?? string.Empty,
+                    DefaultCurrencySymbol = defaultCurrency?.Symbols.FirstOrDefault()?.Symbol ?? string.Empty
                 };
             }));
 
         foreach (var fund in funds.Where(o => o.CurrencyId != request.CurrencyId))
         {
             var currencyRate = currencyRates
-                .FirstOrDefault(o => o.BaseCurrencyId == fund.CurrencyId || o.QuoteCurrencyId == fund.CurrencyId);
+                .FirstOrDefault(o => (o.BaseCurrencyId == defaultCurrency!.Id && o.QuoteCurrencyId == fund.CurrencyId) ||
+                    (o.BaseCurrencyId == fund.CurrencyId && o.QuoteCurrencyId == defaultCurrency!.Id));
             if (currencyRate == null) continue;
 
             Currency baseCurrency, quoteCurrency;
@@ -126,9 +135,9 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
                 BaseCurrency = baseCurrency?.ShortName ?? string.Empty,
                 BaseCurrencySymbol = baseCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty,
                 QuoteCurrencyValue = amount,
-                DefaultCurrencyId = quoteCurrency?.Id ?? Guid.Empty,
-                DefaultCurrency = quoteCurrency?.ShortName ?? string.Empty,
-                DefaultCurrencySymbol = quoteCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty
+                DefaultCurrencyId = defaultCurrency?.Id ?? Guid.Empty,
+                DefaultCurrency = defaultCurrency?.ShortName ?? string.Empty,
+                DefaultCurrencySymbol = defaultCurrency?.Symbols.FirstOrDefault()?.Symbol ?? string.Empty
             };
 
             result.Add(fundDto);
