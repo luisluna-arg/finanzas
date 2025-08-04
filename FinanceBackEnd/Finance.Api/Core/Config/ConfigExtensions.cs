@@ -34,6 +34,8 @@ public static class ConfigExtensions
 
         services.AddSagaServices();
 
+        services.AddScoped<IOLInvestmentExcelHelper>();
+
         services.AddDispatecherServices();
 
         services.AddScoped<ICurrencyConverter, CurrencyConverter>();
@@ -47,8 +49,6 @@ public static class ConfigExtensions
 
         // Make sure API Explorer is enabled for controller discovery
         services.AddEndpointsApiExplorer();
-
-        services.AddScoped<IOLInvestmentExcelHelper>();
     }
 
     public static void ConfigureDataBase(this IServiceCollection services, WebApplicationBuilder builder)
