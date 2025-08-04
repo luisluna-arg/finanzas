@@ -12,33 +12,45 @@ public static class ModelBuilderExtensions
     /// </summary>
     public static void AddQueryFilters(this ModelBuilder modelBuilder, FinanceDbContext context)
     {
-        SetOWnerShipFilter<CreditCardMovement, Guid, CreditCardMovementResource>(modelBuilder, context);
-        SetOWnerShipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
-        SetOWnerShipFilter<CreditCardStatement, Guid, CreditCardStatementResource>(modelBuilder, context);
-        SetOWnerShipFilter<CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>(modelBuilder, context);
-        SetOWnerShipFilter<DebitOrigin, Guid, DebitOriginResource>(modelBuilder, context);
-        SetOWnerShipFilter<Debit, Guid, DebitResource>(modelBuilder, context);
-        SetOWnerShipFilter<Fund, Guid, FundResource>(modelBuilder, context);
-        SetOWnerShipFilter<Income, Guid, IncomeResource>(modelBuilder, context);
-        SetOWnerShipFilter<IOLInvestmentAsset, Guid, IOLInvestmentAssetResource>(modelBuilder, context);
-        SetOWnerShipFilter<IOLInvestment, Guid, IOLInvestmentResource>(modelBuilder, context);
-        SetOWnerShipFilter<Movement, Guid, MovementResource>(modelBuilder, context);
+        SetOwnershipFilter<CreditCardMovement, Guid, CreditCardMovementResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<CreditCardMovement, Guid, CreditCardMovementResource>(modelBuilder, context);
+        SetOwnershipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
+        SetOwnershipFilter<CreditCardStatement, Guid, CreditCardStatementResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<CreditCardStatement, Guid, CreditCardStatementResource>(modelBuilder, context);
+        SetOwnershipFilter<CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>(modelBuilder, context);
+        SetOwnershipFilter<DebitOrigin, Guid, DebitOriginResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<DebitOrigin, Guid, DebitOriginResource>(modelBuilder, context);
+        SetOwnershipFilter<Debit, Guid, DebitResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<Debit, Guid, DebitResource>(modelBuilder, context);
+        SetOwnershipFilter<Fund, Guid, FundResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<Fund, Guid, FundResource>(modelBuilder, context);
+        SetOwnershipFilter<Income, Guid, IncomeResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<Income, Guid, IncomeResource>(modelBuilder, context);
+        SetOwnershipFilter<IOLInvestmentAsset, Guid, IOLInvestmentAssetResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<IOLInvestmentAsset, Guid, IOLInvestmentAssetResource>(modelBuilder, context);
+        SetOwnershipFilter<IOLInvestment, Guid, IOLInvestmentResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<IOLInvestment, Guid, IOLInvestmentResource>(modelBuilder, context);
+        SetOwnershipFilter<Movement, Guid, MovementResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<Movement, Guid, MovementResource>(modelBuilder, context);
+        SetCurrencyConversionOwnershipFilter(modelBuilder, context);
     }
 
     /// <summary>
     /// Registers a global ownership query filter for the given entity type, restricting access to entities owned by the current user.
     /// </summary>
-    private static void SetOWnerShipFilter<TEntity, TId, TEntityResource>(ModelBuilder modelBuilder, FinanceDbContext context)
+    private static void SetOwnershipFilter<TEntity, TId, TEntityResource>(ModelBuilder modelBuilder, FinanceDbContext context)
         where TEntity : Entity<TId>, new()
         where TEntityResource : EntityResource<TEntity, TId>
     {
-        modelBuilder.Entity<TEntity>().HasQueryFilter(BuildFilter<TEntity, TId, TEntityResource>(context));
+        modelBuilder.Entity<TEntity>().HasQueryFilter(BuildOwnerShipFilter<TEntity, TId, TEntityResource>(context));
     }
 
     /// <summary>
     /// Builds a query filter expression for an entity, restricting access to entities joined to resources owned by the current user.
     /// </summary>
-    private static LambdaExpression BuildFilter<TEntity, TId, TEntityResource>(FinanceDbContext dbContext)
+    private static LambdaExpression BuildOwnerShipFilter<TEntity, TId, TEntityResource>(FinanceDbContext dbContext)
         where TEntity : Entity<TId>, new()
         where TEntityResource : EntityResource<TEntity, TId>
     {
@@ -136,5 +148,76 @@ public static class ModelBuilderExtensions
             .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
             .MakeGenericMethod(typeof(ResourceOwner));
         return Expression.Call(anyResourceOwnerMethod, setCall, roLambda);
+    }
+
+    /// <summary>
+    /// Registers a global ownership query filter for the resource entity, restricting access to resources owned by the current user.
+    /// </summary>
+    private static void SetResourceOwnershipFilter<TEntity, TId, TEntityResource>(ModelBuilder modelBuilder, FinanceDbContext context)
+        where TEntity : Entity<TId>, new()
+        where TEntityResource : EntityResource<TEntity, TId>
+    {
+        modelBuilder.Entity<TEntityResource>().HasQueryFilter(BuildResourceOwnershipFilter<TEntity, TId, TEntityResource>(context));
+    }
+
+    /// <summary>
+    /// Builds a query filter expression for a resource entity, restricting access to resources owned by the current user.
+    /// </summary>
+    private static LambdaExpression BuildResourceOwnershipFilter<TEntity, TId, TEntityResource>(FinanceDbContext dbContext)
+        where TEntity : Entity<TId>, new()
+        where TEntityResource : EntityResource<TEntity, TId>
+    {
+        // r => ctx.Set<ResourceOwner>().Any(ro => ro.ResourceId == r.ResourceId && ro.User.Identities.Any(i => i.SourceId == ctx.CurrentUserId))
+        var resourceParam = Expression.Parameter(typeof(TEntityResource), "r");
+        var resourceIdProp = Expression.Property(resourceParam, nameof(EntityResource<TEntity, TId>.ResourceId));
+
+        var resourceOwnerParam = Expression.Parameter(typeof(ResourceOwner), "ro");
+        var roResourceIdProp = Expression.Property(resourceOwnerParam, nameof(ResourceOwner.ResourceId));
+        var roUserProp = Expression.Property(resourceOwnerParam, nameof(ResourceOwner.User));
+        var roUserIdentitiesProp = Expression.Property(roUserProp, nameof(User.Identities));
+
+        var identParam = Expression.Parameter(typeof(Identity), "i");
+        var sourceIdProp = Expression.Property(identParam, nameof(Identity.SourceId));
+        var currentUserId = Expression.Property(Expression.Constant(dbContext), nameof(FinanceDbContext.CurrentUserId));
+        var idEquals = Expression.Equal(sourceIdProp, currentUserId);
+        var identLambda = Expression.Lambda(idEquals, identParam);
+
+        var asQueryableMethod = typeof(Queryable)
+            .GetMethods()
+            .Single(m => m.Name == nameof(Queryable.AsQueryable) && m.IsGenericMethodDefinition)
+            .MakeGenericMethod(typeof(Identity));
+        var identitiesQueryable = Expression.Call(asQueryableMethod, roUserIdentitiesProp);
+        var anyIdentityMethod = typeof(Queryable)
+            .GetMethods()
+            .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(Identity));
+        var anyIdentityCall = Expression.Call(anyIdentityMethod, identitiesQueryable, identLambda);
+
+        var roIdEquals = Expression.Equal(roResourceIdProp, resourceIdProp);
+        var roBody = Expression.AndAlso(roIdEquals, anyIdentityCall);
+        var roLambda = Expression.Lambda(roBody, resourceOwnerParam);
+
+        var setCall = Expression.Call(
+            Expression.Constant(dbContext),
+            nameof(DbContext.Set),
+            [typeof(ResourceOwner)]
+        );
+        var anyResourceOwnerMethod = typeof(Queryable)
+            .GetMethods()
+            .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(ResourceOwner));
+        var anyResourceOwnerCall = Expression.Call(anyResourceOwnerMethod, setCall, roLambda);
+
+        return Expression.Lambda(anyResourceOwnerCall, resourceParam);
+    }
+
+    private static void SetCurrencyConversionOwnershipFilter(ModelBuilder modelBuilder, FinanceDbContext context)
+    {
+        modelBuilder.Entity<CurrencyConversion>().HasQueryFilter(BuildCurrencyConversionOwnershipFilter(context));
+    }
+
+    private static Expression<Func<CurrencyConversion, bool>> BuildCurrencyConversionOwnershipFilter(FinanceDbContext context)
+    {
+        return cc => cc.Movement != null && cc.Currency != null;
     }
 }
