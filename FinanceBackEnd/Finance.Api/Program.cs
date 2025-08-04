@@ -1,19 +1,24 @@
 using Finance.Api.Core.Config;
 using Finance.Authentication.Extensions;
 
+var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+var isDevelopment = string.Equals(env, "Development", StringComparison.OrdinalIgnoreCase);
+if (isDevelopment)
+{
+    DotNetEnv.Env.LoadMulti([".env.local"]);
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure URLs from appsettings or environment variables
-var httpUrl = builder.Configuration["Urls:Http"];
-var httpsUrl = builder.Configuration["Urls:Https"];
-
-if (string.IsNullOrEmpty(httpUrl))
+var httpUrl = Environment.GetEnvironmentVariable("Urls__Http");
+if (string.IsNullOrWhiteSpace(httpUrl))
+{
     throw new InvalidOperationException("HTTP URL is required. Please configure 'Urls:Http' in appsettings.json or set the 'Urls__Http' environment variable.");
+}
 
-if (string.IsNullOrEmpty(httpsUrl))
-    throw new InvalidOperationException("HTTPS URL is required. Please configure 'Urls:Https' in appsettings.json or set the 'Urls__Https' environment variable.");
-
-builder.WebHost.UseUrls(httpUrl, httpsUrl);
+// builder.WebHost.UseUrls(httpUrl, httpsUrl);
+builder.WebHost.UseUrls(httpUrl);
 
 builder.Services.ConfigureDataBase(builder);
 

@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: ../../FinanceBackEnd
+      dockerfile: Finance.Api/Dockerfile
+      args:
+        AdminUser__DefaultFirstName: ${AdminUser__DefaultFirstName}
+        AdminUser__DefaultLastName: ${AdminUser__DefaultLastName}
+        AdminUser__DefaultUsername: ${AdminUser__DefaultUsername}
+        AdminUser__EnableSeeding: ${AdminUser__EnableSeeding}
+        AdminUser__UserId: ${AdminUser__UserId}
+        ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+        Auth0__Application__ClientId: ${Auth0__Application__ClientId}
+        Auth0__Application__ClientSecret: ${Auth0__Application__ClientSecret}
+        Auth0__Audience: ${Auth0__Audience}
+        Auth0__Domain: ${Auth0__Domain}
+        Auth0__ManagementApi__ClientId: ${Auth0__ManagementApi__ClientId}
+        Auth0__ManagementApi__ClientSecret: ${Auth0__ManagementApi__ClientSecret}
+        Auth0__RedirectUri: ${Auth0__RedirectUri}
+        ConnectionStrings__PostgresDb: ${ConnectionStrings__PostgresDb}
+        Urls__Http: ${Urls__Http}
+    ports:
+      - "5000:80"
+    restart: unless-stopped
+    volumes:
+      - ./dataprotection:/root/.aspnet/DataProtection-Keys
+
+  frontend:
+    build:
+      context: ../../FinanceFrontEnd/FinanceFunds
+      dockerfile: Dockerfile
+      args:
+        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
+        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
+        VITE_AUTH0_REDIRECT_URI: ${VITE_AUTH0_REDIRECT_URI}
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped

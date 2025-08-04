@@ -1,7 +1,11 @@
 /*
+**/.env
+**/.env.*
 !/.github/
 !/FinanceFrontEnd/
 !/FinanceBackEnd/
+!/Infra/
+/Infra/Funds/dataprotection/**
 
 /sql
 **/bin
