@@ -11,6 +11,6 @@
 /**/.vscode
 !/.vscode
 
-**/.env.development
+**/.env.*
 
 finanzas.sln
