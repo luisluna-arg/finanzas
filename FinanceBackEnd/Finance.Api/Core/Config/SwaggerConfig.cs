@@ -162,48 +162,12 @@ public static class SwaggerConfig
                 opts.OAuthRealm(domain);
                 opts.OAuthAppName("Finances API - Swagger");
 
-                // Set redirect URL for the OAuth flow
-
-                // Try to determine the actual host and scheme from the request if available
-                var request = app.Services.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.Request;
-
-                // Get host from configuration - fail if not available
-                string scheme = "https";
-                var httpsUrl = app.Configuration["Urls:Https"];
-                if (string.IsNullOrEmpty(httpsUrl))
-                    throw new InvalidOperationException("HTTPS URL is required for Swagger configuration. Please configure 'Urls:Https' in appsettings.json or set the 'Urls__Https' environment variable.");
-
-                string host = GetHostFromUrl(httpsUrl)
-                    ?? throw new InvalidOperationException($"Invalid HTTPS URL format: {httpsUrl}. Unable to extract host for Swagger configuration.");
-
-                // Override with actual values if available
-                if (request != null && request.Host.HasValue)
-                {
-                    scheme = request.Scheme ?? scheme;
-                    host = request.Host.Value;
-                }
-
-                // Allow explicit configuration override
-                if (app.Environment.IsDevelopment())
-                {
-                    var configScheme = app.Configuration["Swagger:Scheme"];
-                    if (!string.IsNullOrEmpty(configScheme))
-                    {
-                        scheme = configScheme;
-                    }
-
-                    var configHost = app.Configuration["Swagger:Host"];
-                    if (!string.IsNullOrEmpty(configHost))
-                    {
-                        host = configHost;
-                    }
-                }
-
                 // Make sure this matches the redirect URL registered in Auth0
-                string redirectUrl = $"{scheme}://{host}/swagger/oauth2-redirect.html";
+                var redirectUrl = Environment.GetEnvironmentVariable("Auth0__RedirectUri");
+                redirectUrl = $"{redirectUrl}/swagger/oauth2-redirect.html";
 
                 // Use authorization code flow with PKCE - configure client ID only for security
-                opts.OAuthConfigObject = new Swashbuckle.AspNetCore.SwaggerUI.OAuthConfigObject
+                opts.OAuthConfigObject = new OAuthConfigObject
                 {
                     ClientId = clientId,
 
@@ -231,26 +195,5 @@ public static class SwaggerConfig
                 opts.OAuthAdditionalQueryStringParams(additionalParams);
             }
         });
-    }
-
-    /// <summary>
-    /// Extracts the host (hostname:port) from a URL string.
-    /// </summary>
-    /// <param name="url">The URL to extract the host from.</param>
-    /// <returns>The host part of the URL, or null if the URL is invalid.</returns>
-    private static string? GetHostFromUrl(string? url)
-    {
-        if (string.IsNullOrEmpty(url))
-            return null;
-
-        try
-        {
-            var uri = new Uri(url);
-            return uri.Authority; // Returns hostname:port
-        }
-        catch
-        {
-            return null;
-        }
     }
 }
