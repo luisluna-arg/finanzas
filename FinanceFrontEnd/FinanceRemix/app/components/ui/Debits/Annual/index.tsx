@@ -1,7 +1,7 @@
 import urls from "@/utils/urls";
 import { useLoaderData } from "@remix-run/react";
-import { InputType } from "../../utils/InputType";
-import PaginatedTable from "../../utils/PaginatedTable";
+import { InputType } from "@/components/ui/utils/InputType";
+import PaginatedTable from "@/components/ui/utils/PaginatedTable";
 
 interface EndpointsCollection {
     pesosEndpoint?: string,

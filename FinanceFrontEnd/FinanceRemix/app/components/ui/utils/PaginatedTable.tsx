@@ -25,7 +25,7 @@ import {
   TableHead,
 } from "@/components/ui/shadcn/table";
 import { cn } from "@/lib/utils";
-import { Checkbox } from "../shadcn/checkbox";
+import { Checkbox } from "@/components/ui/shadcn/checkbox";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
 // TODO: PaginatedTable - Actions still need implementation
