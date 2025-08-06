@@ -131,7 +131,7 @@ const CurrencyExchangeDashboard = () => {
                   Buy Rate:
                 </Text>
                 <Text fw={500} c="green">
-                  {formatRate(rate.buyRate)}
+                  {formatRate(rate.buyRate.value)}
                 </Text>
               </Group>
 
@@ -140,7 +140,7 @@ const CurrencyExchangeDashboard = () => {
                   Sell Rate:
                 </Text>
                 <Text fw={500} c="red">
-                  {formatRate(rate.sellRate)}
+                  {formatRate(rate.sellRate.value)}
                 </Text>
               </Group>
 
