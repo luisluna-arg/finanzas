@@ -18,3 +18,9 @@
 **/.env.*
 
 finanzas.sln
+
+finance-backend.tar
+finance-frontend.tar
+secrets.local.env
+
+**/dataprotection/key-*.xml
