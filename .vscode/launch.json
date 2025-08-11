@@ -71,7 +71,7 @@
   ],
   "compounds": [
     {
-      "name": "API and React App",
+      "name": "API and Remix App",
       "configurations": [
         ".NET Core Launch (web)",
         "Remix App Launch"
