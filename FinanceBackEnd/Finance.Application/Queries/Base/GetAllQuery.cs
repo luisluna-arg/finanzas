@@ -8,7 +8,7 @@ public abstract class GetAllQuery<TEntity> : IContextAwareQuery<FinanceDispatchC
     where TEntity : IEntity?
 {
     public bool IncludeDeactivated { get; set; }
-    public FinanceDispatchContext Context { get; private set; } = new();
+    internal FinanceDispatchContext Context { get; private set; } = new();
 
     public void SetContext(FinanceDispatchContext context)
     {

@@ -10,7 +10,7 @@ namespace Finance.Application.Commands;
 public class DeleteUserCommand : IContextAwareCommand<FinanceDispatchContext, CommandResult>
 {
     public Guid UserId { get; set; }
-    public FinanceDispatchContext Context { get; private set; } = new();
+    internal FinanceDispatchContext Context { get; private set; } = new();
 
     public void SetContext(FinanceDispatchContext context)
     {
