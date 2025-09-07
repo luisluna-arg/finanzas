@@ -1,0 +1,9 @@
+{
+    "mcpServers": {
+        "finance-context": {
+            "command": "node",
+            "args": ["C:\\_dev\\finanzas\\_mcp\\backend\\build\\index.js"],
+            "env": {}
+        }
+    }
+}

@@ -24,3 +24,5 @@ finance-frontend.tar
 secrets.local.env
 
 **/dataprotection/key-*.xml
+
+!.bin
