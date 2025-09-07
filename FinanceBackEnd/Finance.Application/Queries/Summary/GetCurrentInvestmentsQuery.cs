@@ -16,12 +16,14 @@ public class GetCurrentInvestmentsQueryHandler(FinanceDbContext db) : IQueryHand
     {
         var result = new TotalInvestments();
 
-        var maxTimeStamp = _db.IOLInvestment.Max(o => o.TimeStamp);
+        var maxTimeStamp = await _db.IOLInvestment.MaxAsync(o => (DateTime?)o.TimeStamp, cancellationToken);
+        if (maxTimeStamp == null)
+            return DataResult<TotalInvestments>.Success(result);
 
         var investments = await _db.IOLInvestment
             .Include(o => o.Asset)
             .ThenInclude(o => o.Type)
-            .Where(o => !o.Deactivated && o.TimeStamp == maxTimeStamp)
+            .Where(o => !o.Deactivated && o.TimeStamp == maxTimeStamp.Value)
             .OrderBy(o => o.Asset.Symbol)
             .ToArrayAsync(cancellationToken);
 
