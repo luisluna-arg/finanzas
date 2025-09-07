@@ -1,29 +1,44 @@
 import { getBackendClient } from "@/data/getBackendClient";
+import { LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { SessionContants } from "@/services/auth/auth.constants";
+import { sessionStorage } from "@/services/auth/session.server";
 import Dashboard from "../components/ui/Dashboard";
 
-export const loader = async () => {
-  try {
-    let backendClient = await getBackendClient();
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+    // Get the session cookie from the request
+    const cookie = request.headers.get("Cookie");
+    const session = await sessionStorage.getSession(cookie);
+    const user = session.get(SessionContants.USER_KEY);
 
-    let [creditCards, latestCurrencyExchangeRates] = await Promise.all([
-      backendClient.CreditCardsQuery.get(),
-      backendClient.CurrencyExchangeRatesQuery.get(),
-    ]);
+    if (!user) {
+        console.log("[dashboard loader] No user in session, redirecting to login");
+        return redirect("/auth/login");
+    }
 
-    return {
-      creditCards,
-      latestCurrencyExchangeRates,
-    };
-  } catch (error) {
-    throw new Error("Failed to retrieve CreditCards. " + error);
-  }
+    // Fetch creditCards and latestCurrencyExchangeRates from your backend API
+    // Replace these with your actual API calls as needed
+    let creditCards = [];
+    let latestCurrencyExchangeRates = null;
+    try {
+        const backendClient = await getBackendClient(user.accessToken);
+        // console.log("[dashboard loader] Access token (first 50 chars):", user.accessToken?.substring(0, 50));
+        // console.log("[dashboard loader] User object:", JSON.stringify(user, null, 2));
+        creditCards = await backendClient.GetCreditCardsQuery().get();
+        latestCurrencyExchangeRates = await backendClient.GetCurrencyExchangeRatesQuery().get();
+    } catch (e) {
+        console.error("[dashboard loader] Error fetching dashboard data", e);
+    }
+
+    return { creditCards, latestCurrencyExchangeRates };
 };
 
 export const meta = () => {
-  return [{
-    title: "Dashboard",
-    description: "Home of the Finance app",
-  }];
+    return [
+        {
+            title: "Dashboard",
+            description: "Home of the Finance app",
+        },
+    ];
 };
 
 export default Dashboard;

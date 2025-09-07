@@ -16,8 +16,8 @@ export interface PaginatedQueryFilters {
 export class BasePaginatedQuery extends BaseQuery {
   protected getPaginatedEndpoint: string;
 
-  constructor(httpsAgent: Agent, endpoints: PaginatedQueryEndpoints) {
-    super(httpsAgent, endpoints);
+  constructor(httpsAgent: Agent, accessToken: string, endpoints: PaginatedQueryEndpoints) {
+    super(httpsAgent, accessToken, endpoints);
 
     this.getPaginatedEndpoint = endpoints.getPaginated;
   }
@@ -27,6 +27,9 @@ export class BasePaginatedQuery extends BaseQuery {
       const response = await axios.get(this.getPaginatedEndpoint, {
         params: filters,
         httpsAgent: this.httpsAgent,
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`,
+        },
       });
 
       return response.data;

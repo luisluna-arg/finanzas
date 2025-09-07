@@ -14,8 +14,8 @@ function Movements() {
 
   const AppModuleTypeEnumFundsId = 3;
 
-  const IOLInvestmentsUploadEndpoint = `${urls.iolInvestments.upload}?DateKind=Local&AppModuleId=${AppModuleTypeEnumFundsId}`;
-  const iolInvestmentsEndpoint = `${urls.iolInvestments.paginated}`;
+  const IOLInvestmentsUploadEndpoint = urls.proxy(urls.iolInvestments.upload, { DateKind: 'Local', AppModuleId: AppModuleTypeEnumFundsId });
+  const iolInvestmentsEndpoint = urls.proxy(urls.iolInvestments.paginated);
 
   const onFetchInvestmentsTable = (data: any) => {
   };

@@ -85,7 +85,7 @@ export interface ConditionalClass {
 
 export interface PaginatedTableProps {
   name: string;
-  data: any;
+  data?: any;
   url?: string;
   admin?: Admin;
   rowCount?: number;

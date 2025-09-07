@@ -1,5 +1,6 @@
 import urls from "@/utils/urls";
 import { useLoaderData } from "@remix-run/react";
+import { toNumber } from "@/utils/common";
 import { InputType } from "@/components/ui/utils/InputType";
 import PaginatedTable from "@/components/ui/utils/PaginatedTable";
 
@@ -22,10 +23,10 @@ function AnnualDebits() {
 
   const valueConditionalClass = {
     class: "text-success fw-bold",
-    eval: (field: any) => field != null && field.value > 0,
+    eval: (field: any) => field != null && toNumber(field) > 0,
   };
 
-  const valueMapper = (field: any) => (field != null ? field.value : null);
+  const valueMapper = (field: any) => (field != null ? toNumber(field) : null);
 
   const numericHeader = {
     classes: "text-end",

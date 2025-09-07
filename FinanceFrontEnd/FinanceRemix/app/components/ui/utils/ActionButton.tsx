@@ -37,15 +37,24 @@ export const VARIANTS = {
   ghost: "ghost",
 } as const;
 
-export type VariantType = keyof typeof VARIANTS | null | undefined;
+export type VariantType = string | null | undefined;
+
+export enum ButtonType {
+  None = "none",
+  Submit = "submit",
+}
 
 export interface ActionButtonProps {
-  type: ActionButtonType;
+  type?: ActionButtonType | ButtonType;
   text?: string;
   className?: string | Array<string>;
   variant?: VariantType;
   disabled?: boolean;
   onClick?: (e?: any) => Promise<void> | (() => void) | void;
+  // older components pass `action` prop name
+  action?: (() => void) | ((e?: any) => void) | Promise<void>;
+  // optional explicit button type enum used by some callers
+  buttonType?: ButtonType;
 }
 
 const ActionButton = ({
@@ -55,18 +64,35 @@ const ActionButton = ({
   variant,
   disabled,
   onClick,
+  action,
+  buttonType,
 }: ActionButtonProps) => {
-  const icon = icons[type];
+  let icon: JSX.Element | null = null;
+  let classes: Array<string> = [];
 
-  const classes = buttonClasses[type];
+  if (type && typeof type === "string" && (type in icons)) {
+    icon = icons[type as ActionButtonType];
+    classes = buttonClasses[type as ActionButtonType] ?? [];
+  }
 
   return (
     <Button
-      variant={variant ?? "outline"}
-      size={text ? undefined : "icon"}
+  variant={(variant as any) ?? "outline"}
+  size={text ? undefined : "icon"}
       className={cn(classes, className)}
-      onClick={onClick}
-      type={type === "submit" ? type : undefined}
+      onClick={(e: any) => {
+        const fn = onClick ?? action;
+        if (!fn) return;
+        try {
+          const res = (fn as any)(e);
+          if (res && typeof res.then === "function") {
+            res.catch((err: any) => console.error(err));
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }}
+  type={type === "submit" || buttonType === ButtonType.Submit ? ("submit" as any) : undefined}
       disabled={disabled ?? false}
     >
       {icon} {text ?? ""}

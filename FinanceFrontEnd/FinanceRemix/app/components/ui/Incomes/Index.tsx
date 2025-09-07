@@ -3,6 +3,7 @@ import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import moment from "moment";
 import urls from "@/utils/urls";
 import CommonUtils from "@/utils/common";
+import { toNumber } from "@/utils/common";
 import { InputType } from "@/components/ui/utils/InputType";
 import Picker from "@/components/ui/utils/Picker";
 import PaginatedTable, {
@@ -57,11 +58,11 @@ const Incomes: React.FC = () => {
 
   const valueConditionalClass: ConditionalClass = {
     class: "text-success fw-bold",
-    eval: (field: { value: number }) => field != null && field.value > 0,
+    eval: (field: any) => field != null && toNumber(field) > 0,
   };
 
-  const valueMapper = (field: { value: number }) =>
-    field != null ? field.value : null;
+  const valueMapper = (field: any) =>
+    field != null ? toNumber(field) : null;
 
   const numericHeader = {
     classes: "text-end",

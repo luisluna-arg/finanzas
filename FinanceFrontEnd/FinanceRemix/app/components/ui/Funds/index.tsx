@@ -8,6 +8,7 @@ import PaginatedTable, {
 } from "@/components/ui/utils/PaginatedTable";
 import { InputType } from "@/components/ui/utils/InputType";
 import CommonUtils from "@/utils/common";
+import { toNumber } from "@/utils/common";
 
 // Define types for the props and states
 interface PickerData {
@@ -23,11 +24,12 @@ interface LoaderData {
 const dateFormat = "DD/MM/YYYY";
 
 const buildFundsEndpoint = (bankId: string, currencyId: string) => {
-  const params = CommonUtils.Params({
+  return urls.proxy(urls.funds.paginated, {
     BankId: bankId,
     CurrencyId: currencyId,
+    Page: 1,
+    PageSize: 10,
   });
-  return `${urls.funds.paginated}?${params}`;
 };
 
 const Funds: React.FC = () => {
@@ -69,11 +71,10 @@ const Funds: React.FC = () => {
 
   const valueConditionalClass = {
     class: "text-success fw-bold",
-    eval: (field: { value: number }) => field != null && field.value > 0,
+    eval: (field: any) => field != null && toNumber(field) > 0,
   };
 
-  const valueMapper = (field: { value: number }) =>
-    field != null ? field.value : null;
+  const valueMapper = (field: any) => (field != null ? toNumber(field) : null);
 
   const numericHeader = {
     classes: "text-end",

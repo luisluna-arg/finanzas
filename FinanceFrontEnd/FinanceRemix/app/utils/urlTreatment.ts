@@ -6,7 +6,16 @@ export const parseUrl = (
   };
   baseUrl: string;
 } => {
-  const urlObject = new URL(url);
+  let urlObject: URL;
+  try {
+    urlObject = new URL(url);
+  } catch (e) {
+    // If url is relative (starts with /), provide a base using the current origin in the browser
+    // or fallback to http://localhost for environments without `window`.
+    const base = typeof window !== "undefined" ? window.location.origin : "http://localhost";
+    urlObject = new URL(url, base);
+  }
+
   const queryParams = Object.fromEntries(urlObject.searchParams.entries());
   const baseUrl = urlObject.origin + urlObject.pathname + urlObject.hash;
   return { queryParams, baseUrl };

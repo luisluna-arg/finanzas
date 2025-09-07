@@ -1,6 +1,7 @@
 import urls from "@/utils/urls";
 import { useLoaderData } from "@remix-run/react";
 import Table, { TableColumn } from "@/components/ui/utils/Table";
+import { toNumber } from "@/utils/common";
 
 interface EndpointsCollection {
   pesoDebits: any;
@@ -13,15 +14,14 @@ const TableColumns: Array<TableColumn> = [
   {
     id: "origin",
     label: "Origen",
+    mapper: (record: any) => record?.origin?.name ?? record?.name ?? "-",
   },
   {
     id: "amount_value",
     label: "Monto",
     className: "text-right",
     headerClassName: "text-right",
-    mapper: (d: any) => {
-      return d.amount.value;
-    },
+  mapper: (d: any) => toNumber(d?.amount ?? d, null as any),
   },
 ];
 

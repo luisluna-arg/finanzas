@@ -73,6 +73,30 @@ const urls = {
     totalExpenses: `${apiBaseUrl}/summary/totalExpenses`,
     currentInvestments: `${apiBaseUrl}/summary/currentInvestments`,
     general: `${apiBaseUrl}/summary/general`
+  },
+
+  /**
+   * Returns a proxy URL for a backend API path and optional params object.
+   * Example: urls.proxy('/summary/general', { DailyUse: true })
+   */
+  /**
+   * Accepts a full backend URL or a path, but always extracts just the path for the proxy.
+   */
+  proxy: (urlOrPath: string, params?: Record<string, any>) => {
+    // If urlOrPath is a full URL, extract the path and search
+    let path = urlOrPath;
+    try {
+      if (urlOrPath.startsWith('http')) {
+        const u = new URL(urlOrPath);
+        path = u.pathname + (u.search || '');
+      }
+    } catch {}
+    const search = params
+      ? "&" + Object.entries(params)
+          .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+          .join("&")
+      : "";
+    return `/api/proxy?path=${encodeURIComponent(path)}${search}`;
   }
 };
 

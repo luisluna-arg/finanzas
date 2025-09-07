@@ -8,6 +8,9 @@ installGlobals();
 
 export default defineConfig({
   plugins: [remix(), tsconfigPaths()],
+  server: {
+    port: 5300,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./app"),
