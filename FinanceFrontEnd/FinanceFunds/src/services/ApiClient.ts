@@ -1,13 +1,47 @@
 // Base API client for making HTTP requests
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import SafeLogger from '@/utils/SafeLogger';
+
+// Acquire configured API URL. In development, allow a localhost fallback for convenience.
+const rawApiUrl = import.meta.env.VITE_API_URL;
+const allowInsecure = Boolean(import.meta.env.VITE_ALLOW_INSECURE_API === 'true');
+let API_BASE_URL: string | undefined = rawApiUrl;
+
+if (!API_BASE_URL) {
+  if (import.meta.env.DEV) {
+    // In dev only, allow explicit localhost so dev servers work without env vars
+    API_BASE_URL = 'http://localhost:5000';
+  } else {
+    // In non-dev (staging/production) do not allow an implicit fallback
+    throw new Error(
+      'Missing required environment variable VITE_API_URL. Set the API base URL and ensure it uses HTTPS in production.'
+    );
+  }
+}
+
+// Ensure HTTPS is used in non-development environments unless explicitly allowed
+if (!import.meta.env.DEV && !allowInsecure) {
+  try {
+    const parsed = new URL(API_BASE_URL);
+    if (parsed.protocol !== 'https:') {
+      throw new Error(
+        `Insecure API base URL protocol '${parsed.protocol}'. Production requires HTTPS or set VITE_ALLOW_INSECURE_API=true to override.`
+      );
+    }
+  } catch (err) {
+    // Re-throw with clearer message
+    throw new Error(
+      `Invalid VITE_API_URL '${API_BASE_URL}'. Ensure it is a valid HTTPS URL. ${err instanceof Error ? err.message : ''}`
+    );
+  }
+}
 
 // Remove trailing slashes to avoid double slash issues in URL construction
 const BASE_URL = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
 
-// Only log in development
-import SafeLogger from '@/utils/SafeLogger';
-
-SafeLogger.info('API URL:', BASE_URL);
+// Only log the resolved API URL in development; avoid logging production endpoints
+if (import.meta.env.DEV) {
+  SafeLogger.info('API URL:', BASE_URL);
+}
 
 // Common headers
 const COMMON_HEADERS = {

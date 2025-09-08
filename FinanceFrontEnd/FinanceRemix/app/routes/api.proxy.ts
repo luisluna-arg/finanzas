@@ -23,6 +23,35 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     // Build the external API URL
     const apiBaseUrl =
         process.env.VITE_API_URL || process.env.VITE_API_ENDPOINT;
+
+    // In production/staging require an explicit API URL and enforce HTTPS
+    const allowInsecure =
+        process.env.ALLOW_INSECURE_API === "true" ||
+        process.env.VITE_ALLOW_INSECURE_API === "true";
+
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === "production") {
+        if (!apiBaseUrl) {
+            return JsonErrorResponse(
+                "Server misconfiguration: missing VITE_API_URL. Contact administrators.",
+                HttpStatusConstants.SERVICE_UNAVAILABLE
+            );
+        }
+        try {
+            const parsed = new URL(apiBaseUrl);
+            if (parsed.protocol !== "https:" && !allowInsecure) {
+                return JsonErrorResponse(
+                    "Insecure backend configuration: API base URL must use HTTPS in production unless ALLOW_INSECURE_API is enabled.",
+                    HttpStatusConstants.SERVICE_UNAVAILABLE
+                );
+            }
+        } catch (err) {
+            return JsonErrorResponse(
+                `Invalid VITE_API_URL: ${String(err)}`,
+                HttpStatusConstants.SERVICE_UNAVAILABLE
+            );
+        }
+    }
+
     const endpoint = `${apiBaseUrl}${apiPath}${
         queryString ? `?${queryString}` : ""
     }`;
