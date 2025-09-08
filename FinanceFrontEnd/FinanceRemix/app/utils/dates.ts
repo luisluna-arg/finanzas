@@ -37,7 +37,7 @@ const tryGet = (dateToCheck: string): moment.Moment | null => {
   let result: moment.Moment | null = null;
 
   formatsToCheck.forEach((format) => {
-    let localResult = moment(dateToCheck, format, true);
+    const localResult = moment(dateToCheck, format, true);
     if (localResult.isValid()) {
       result = localResult;
       return false; // exit the loop if a valid format is found

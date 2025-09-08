@@ -1,6 +1,7 @@
 import ApiClient from './ApiClient';
 import type { CurrenciesResponse } from './types/CurrencyTypes';
 import type { Currency } from './types/CurrencyTypes';
+import SafeLogger from '@/utils/SafeLogger';
 
 // Define a memory-efficient cache key
 const CURRENCIES_CACHE_KEY = 'all_currencies';
@@ -11,10 +12,10 @@ const CURRENCIES_CACHE_KEY = 'all_currencies';
 class CurrencyService {
   // Static shared cache storage
   private static cache: {
-    data: Map<string, any>;
+    data: Map<string, unknown>;
     timestamps: Map<string, number>;
   } = {
-    data: new Map(),
+    data: new Map<string, unknown>(),
     timestamps: new Map(),
   };
 
@@ -60,11 +61,11 @@ class CurrencyService {
     } catch (error) {
       // If we have stale data, return it rather than failing completely
       if (data.has(CURRENCIES_CACHE_KEY)) {
-        console.warn('Returning stale currency data due to API error');
+        SafeLogger.warn('Returning stale currency data due to API error');
         return data.get(CURRENCIES_CACHE_KEY) as CurrenciesResponse;
       }
 
-      console.error('Error fetching currencies:', error);
+      SafeLogger.error('Error fetching currencies:', error);
       throw error;
     }
   }
@@ -118,11 +119,11 @@ class CurrencyService {
     } catch (error) {
       // If we have stale data, return it rather than failing completely
       if (data.has(currencyCacheKey)) {
-        console.warn(`Returning stale data for currency ${id} due to API error`);
+        SafeLogger.warn(`Returning stale data for currency ${id} due to API error`);
         return data.get(currencyCacheKey) as Currency;
       }
 
-      console.error(`Error fetching currency with ID ${id}:`, error);
+      SafeLogger.error(`Error fetching currency with ID ${id}:`, error);
       throw error;
     }
   }

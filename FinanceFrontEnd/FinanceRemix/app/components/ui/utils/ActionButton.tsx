@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/shadcn/button";
 import { cn } from "@/lib/utils";
 import { CirclePlus, Eraser, SendHorizonal, Trash2Icon, SquarePen } from "lucide-react";
+import SafeLogger from "@/utils/SafeLogger";
 
 export const ACTION_BUTTON_KIND = {
   add: "add",
@@ -86,10 +87,10 @@ const ActionButton = ({
         try {
           const res = (fn as any)(e);
           if (res && typeof res.then === "function") {
-            res.catch((err: any) => console.error(err));
+            res.catch((err: any) => SafeLogger.error(err));
           }
         } catch (err) {
-          console.error(err);
+          SafeLogger.error(err);
         }
       }}
   type={type === "submit" || buttonType === ButtonType.Submit ? ("submit" as any) : undefined}

@@ -7,7 +7,7 @@ const ActionLink: React.FC<{
   isEnabled?: boolean;
   classes?: string[];
 }> = ({ text, action, isActive = false, isEnabled = false, classes }) => {
-  let localClasses = ["page-link", ...(classes ?? [])];
+  const localClasses = ["page-link", ...(classes ?? [])];
   if (isActive)
   {
     localClasses.push("active")

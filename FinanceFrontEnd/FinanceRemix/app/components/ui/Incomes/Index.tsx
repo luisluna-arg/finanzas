@@ -2,8 +2,8 @@ import React from "react";
 import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import moment from "moment";
 import urls from "@/utils/urls";
-import CommonUtils from "@/utils/common";
-import { toNumber } from "@/utils/common";
+import CommonUtils, { toNumber } from "@/utils/common";
+
 import { InputType } from "@/components/ui/utils/InputType";
 import Picker from "@/components/ui/utils/Picker";
 import PaginatedTable, {
@@ -41,7 +41,7 @@ const Incomes: React.FC = () => {
     currentBankId?: string;
     currentCurrencyId?: string;
   }) => {
-    var params = CommonUtils.Params({
+    const params = CommonUtils.Params({
       bankId: currentBankId ?? bankId,
       currencyId: currentCurrencyId ?? currencyId,
     });

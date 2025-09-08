@@ -84,7 +84,7 @@ function Movements() {
     numericColumn("valued", "Valorado"),
   ];
 
-  let enabled = Boolean(iolInvestmentsEndpoint);
+  const enabled = Boolean(iolInvestmentsEndpoint);
 
   return (
     <>

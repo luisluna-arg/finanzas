@@ -5,9 +5,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const BASE_URL = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
 
 // Only log in development
-if (import.meta.env.DEV) {
-  console.log('API URL:', BASE_URL);
-}
+import SafeLogger from '@/utils/SafeLogger';
+
+SafeLogger.info('API URL:', BASE_URL);
 
 // Common headers
 const COMMON_HEADERS = {
@@ -44,7 +44,7 @@ async function processErrorResponse(response: Response): Promise<string> {
 // Helper to get headers with Authorization
 async function getAuthHeaders() {
   if (!tokenProvider) {
-    throw new Error("Token provider not set. Please call setTokenProvider in your app startup.");
+    throw new Error('Token provider not set. Please call setTokenProvider in your app startup.');
   }
   const token = await tokenProvider();
   return {
@@ -88,7 +88,9 @@ class ApiClient {
       return await response.json();
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error(`API request error for ${url}:`, error);
+        // Use SafeLogger to redact sensitive values in dev and avoid raw console in code
+        const { default: SafeLogger } = await import('@/utils/SafeLogger');
+        SafeLogger.error(`API request error for ${url}:`, error);
       }
       throw error;
     }
@@ -101,15 +103,13 @@ class ApiClient {
    * @param data - The data to send in the request body
    * @returns Promise with the response data
    */
-  async post<T>(endpoint: string, data: any): Promise<T> {
+  async post<T>(endpoint: string, data?: unknown): Promise<T> {
     // Ensure endpoint doesn't start with a slash to avoid double slashes
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
     const url = `${BASE_URL}/${normalizedEndpoint}`;
 
     try {
-      if (import.meta.env.DEV) {
-        console.log(`Sending POST request to ${url} with data:`, data);
-      }
+      SafeLogger.info(`Sending POST request to ${url} with data:`, data);
 
       const response = await fetch(url, {
         method: 'POST',
@@ -126,15 +126,11 @@ class ApiClient {
 
       const responseData = await response.json();
 
-      if (import.meta.env.DEV) {
-        console.log(`Received response from ${url}:`, responseData);
-      }
+      SafeLogger.info(`Received response from ${url}:`, responseData);
 
       return responseData;
     } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error(`API request error for ${url}:`, error);
-      }
+      SafeLogger.error(`API request error for ${url}:`, error);
       throw error;
     }
   }
@@ -146,15 +142,13 @@ class ApiClient {
    * @param data - The data to send in the request body
    * @returns Promise with the response data
    */
-  async put<T>(endpoint: string, data: any): Promise<T> {
+  async put<T>(endpoint: string, data?: unknown): Promise<T> {
     // Ensure endpoint doesn't start with a slash to avoid double slashes
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
     const url = `${BASE_URL}/${normalizedEndpoint}`;
 
     try {
-      if (import.meta.env.DEV) {
-        console.log(`Sending PUT request to ${url} with data:`, data);
-      }
+      SafeLogger.info(`Sending PUT request to ${url} with data:`, data);
 
       const response = await fetch(url, {
         method: 'PUT',
@@ -171,15 +165,11 @@ class ApiClient {
 
       const responseData = await response.json();
 
-      if (import.meta.env.DEV) {
-        console.log(`Received response from ${url}:`, responseData);
-      }
+      SafeLogger.info(`Received response from ${url}:`, responseData);
 
       return responseData;
     } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error(`API request error for ${url}:`, error);
-      }
+      SafeLogger.error(`API request error for ${url}:`, error);
       throw error;
     }
   }
@@ -191,21 +181,24 @@ class ApiClient {
    * @param data - Optional data to send in the request body
    * @returns Promise with the response data
    */
-  async delete<T = void>(endpoint: string, data?: any): Promise<T> {
+  async delete<T = void>(endpoint: string, data?: unknown): Promise<T> {
     // Ensure endpoint doesn't start with a slash to avoid double slashes
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
     const url = `${BASE_URL}/${normalizedEndpoint}`;
 
     try {
-      if (import.meta.env.DEV) {
-        console.log(`Sending DELETE request to ${url}`, data ? `with data: ${JSON.stringify(data)}` : '');
-      }
+      SafeLogger.info(
+        `Sending DELETE request to ${url}`,
+        data ? `with data: ${JSON.stringify(data)}` : ''
+      );
 
-      const response = await fetch(url, {
+      const deleteOptions: RequestInit = {
         method: 'DELETE',
         headers: await getAuthHeaders(),
-        ...(data && { body: JSON.stringify(data) }),
-      });
+      };
+      if (data !== undefined) deleteOptions.body = JSON.stringify(data as unknown);
+
+      const response = await fetch(url, deleteOptions);
 
       if (!response.ok) {
         const errorMessage = await processErrorResponse(response);
@@ -218,17 +211,13 @@ class ApiClient {
       const text = await response.text();
       if (text) {
         const responseData = JSON.parse(text);
-        if (import.meta.env.DEV) {
-          console.log(`Received response from ${url}:`, responseData);
-        }
+        SafeLogger.info(`Received response from ${url}:`, responseData);
         return responseData;
       }
 
       return undefined as T;
     } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error(`API request error for ${url}:`, error);
-      }
+      SafeLogger.error(`API request error for ${url}:`, error);
       throw error;
     }
   }
@@ -240,21 +229,24 @@ class ApiClient {
    * @param data - Optional data to send in the request body
    * @returns Promise with the response data
    */
-  async patch<T = void>(endpoint: string, data?: any): Promise<T> {
+  async patch<T = void>(endpoint: string, data?: unknown): Promise<T> {
     // Ensure endpoint doesn't start with a slash to avoid double slashes
     const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
     const url = `${BASE_URL}/${normalizedEndpoint}`;
 
     try {
-      if (import.meta.env.DEV) {
-        console.log(`Sending PATCH request to ${url}`, data ? `with data: ${JSON.stringify(data)}` : '');
-      }
+      SafeLogger.info(
+        `Sending PATCH request to ${url}`,
+        data ? `with data: ${JSON.stringify(data)}` : ''
+      );
 
-      const response = await fetch(url, {
+      const patchOptions: RequestInit = {
         method: 'PATCH',
         headers: await getAuthHeaders(),
-        ...(data && { body: JSON.stringify(data) }),
-      });
+      };
+      if (data !== undefined) patchOptions.body = JSON.stringify(data as unknown);
+
+      const response = await fetch(url, patchOptions);
 
       if (!response.ok) {
         const errorMessage = await processErrorResponse(response);
@@ -267,17 +259,13 @@ class ApiClient {
       const text = await response.text();
       if (text) {
         const responseData = JSON.parse(text);
-        if (import.meta.env.DEV) {
-          console.log(`Received response from ${url}:`, responseData);
-        }
+        SafeLogger.info(`Received response from ${url}:`, responseData);
         return responseData;
       }
 
       return undefined as T;
     } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error(`API request error for ${url}:`, error);
-      }
+      SafeLogger.error(`API request error for ${url}:`, error);
       throw error;
     }
   }

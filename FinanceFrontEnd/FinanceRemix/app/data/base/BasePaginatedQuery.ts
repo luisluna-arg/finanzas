@@ -34,7 +34,8 @@ export class BasePaginatedQuery extends BaseQuery {
 
       return response.data;
     } catch (error) {
-      console.error("Error:", error);
+  const { default: serverLogger } = await import("@/utils/logger.server");
+  serverLogger.error("Error:", error);
       throw error;
     }
   }

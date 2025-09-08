@@ -20,7 +20,7 @@ const PaginationBar: React.FC<{
         />
       </li>
       {Array.from({ length: totalPages }, (_, i) => {
-        let isActive = i === page - 1 ? " active" : "";
+        const isActive = i === page - 1 ? " active" : "";
         return (
           <li key={i} className="page-item">
             <a className={"page-link" + isActive} href="#" onClick={() => action(i)}>{i + 1}</a>

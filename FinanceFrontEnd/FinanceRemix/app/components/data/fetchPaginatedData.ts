@@ -19,7 +19,7 @@ export async function fetchPaginatedData<T>(
   const params = objectToUrlParams(queryParams);
   const paginatedUrl = `${baseUrl}?${params}`;
 
-  let result = await fetchData<any>(`${paginatedUrl}`);
+  const result = await fetchData<any>(`${paginatedUrl}`);
   return {
     items: result.items,
     totalItems: result.totalItems,

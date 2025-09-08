@@ -25,7 +25,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     let selectedBankId = url.searchParams.get("bankId") ?? undefined;
     let selectedCurrencyId = url.searchParams.get("currencyId") ?? undefined;
 
-    let client = await getBackendClient(user.accessToken);
+    const client = await getBackendClient(user.accessToken);
 
     const getDataPromise = (bankId: string, currencyId: string) => {
         const url = `${urls.incomes.paginated}?${CommonUtils.Params({
@@ -37,7 +37,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         return client.get(url);
     };
 
-    let queries = [
+    const queries = [
         await client.GetBanksQuery().get(),
         await client.GetCurrenciesQuery().get(),
     ];

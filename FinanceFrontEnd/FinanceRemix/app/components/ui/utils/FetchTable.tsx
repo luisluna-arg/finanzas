@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SafeLogger from "../../../utils/SafeLogger";
 import dates from "@/utils/dates";
 import LoadingSpinner from "@/components/ui/utils/LoadingSpinner";
 import { InputType } from "@/components/ui/utils/InputType";
@@ -52,22 +53,22 @@ const FetchTable: React.FC<FetchTableProps> = ({
                     credentials: "same-origin",
                 });
                 if (!response.ok) {
-                    let errorText = `FetchTable fetch error: ${response.status} ${response.statusText}`;
+                    const errorText = `FetchTable fetch error: ${response.status} ${response.statusText}`;
                     let responseBody = "";
                     try {
                         responseBody = await response.text();
-                        console.log(responseBody);
+                        SafeLogger.log(responseBody);
                     } catch (e) {
                         responseBody = "[Unable to read response body]";
                     }
-                    console.error(errorText, { url, response, responseBody });
+                    SafeLogger.error(errorText, { url, response: { status: response.status }, responseBody });
                     throw new Error(`${errorText}\n${responseBody}`);
                 }
                 const result = await response.json();
 
                 setData(result.items ?? result);
             } catch (error: any) {
-                console.log("FetchTable error", { error, url });
+                SafeLogger.error("FetchTable error", { error: error?.message ?? String(error), url });
                 setError(error.message);
             } finally {
                 setLoading(false);

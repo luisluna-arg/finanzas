@@ -6,6 +6,7 @@ import type {
   UpdateCurrencyExchangeRateCommand,
   GetCurrencyExchangeRatesQuery,
 } from './types/CurrencyExchangeRateTypes';
+import SafeLogger from '@/utils/SafeLogger';
 
 // Define cache keys
 const EXCHANGE_RATES_CACHE_KEY = 'all_exchange_rates';
@@ -17,10 +18,10 @@ const LATEST_EXCHANGE_RATES_CACHE_KEY = 'latest_exchange_rates';
 class CurrencyExchangeRateService {
   // Static shared cache storage
   private static cache: {
-    data: Map<string, any>;
+    data: Map<string, unknown>;
     timestamps: Map<string, number>;
   } = {
-    data: new Map(),
+    data: new Map<string, unknown>(),
     timestamps: new Map(),
   };
 
@@ -48,7 +49,9 @@ class CurrencyExchangeRateService {
     }
 
     try {
-      const response = await ApiClient.get<CurrencyExchangeRatesResponse>('/api/currencies/exchange-rates');
+      const response = await ApiClient.get<CurrencyExchangeRatesResponse>(
+        '/api/currencies/exchange-rates'
+      );
 
       // Set response in cache
       data.set(EXCHANGE_RATES_CACHE_KEY, response);
@@ -66,11 +69,11 @@ class CurrencyExchangeRateService {
     } catch (error) {
       // If we have stale data, return it rather than failing completely
       if (data.has(EXCHANGE_RATES_CACHE_KEY)) {
-        console.warn('Returning stale exchange rates data due to API error');
+        SafeLogger.warn('Returning stale exchange rates data due to API error');
         return data.get(EXCHANGE_RATES_CACHE_KEY) as CurrencyExchangeRatesResponse;
       }
 
-      console.error('Error fetching exchange rates:', error);
+      SafeLogger.error('Error fetching exchange rates:', error);
       throw error;
     }
   }
@@ -102,8 +105,10 @@ class CurrencyExchangeRateService {
 
     try {
       const searchParams = new URLSearchParams();
-      if (query.quoteCurrencyShortName) searchParams.append('quoteCurrencyShortName', query.quoteCurrencyShortName);
-      if (query.baseCurrencyShortName) searchParams.append('baseCurrencyShortName', query.baseCurrencyShortName);
+      if (query.quoteCurrencyShortName)
+        searchParams.append('quoteCurrencyShortName', query.quoteCurrencyShortName);
+      if (query.baseCurrencyShortName)
+        searchParams.append('baseCurrencyShortName', query.baseCurrencyShortName);
 
       const url = `/api/currencies/exchange-rates/latest${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
       const response = await ApiClient.get<CurrencyExchangeRatesResponse>(url);
@@ -116,11 +121,11 @@ class CurrencyExchangeRateService {
     } catch (error) {
       // If we have stale data, return it rather than failing completely
       if (data.has(cacheKey)) {
-        console.warn('Returning stale latest exchange rates data due to API error');
+        SafeLogger.warn('Returning stale latest exchange rates data due to API error');
         return data.get(cacheKey) as CurrencyExchangeRatesResponse;
       }
 
-      console.error('Error fetching latest exchange rates:', error);
+      SafeLogger.error('Error fetching latest exchange rates:', error);
       throw error;
     }
   }
@@ -150,7 +155,9 @@ class CurrencyExchangeRateService {
     }
 
     try {
-      const exchangeRate = await ApiClient.get<CurrencyExchangeRate>(`/api/currencies/exchange-rates/${id}`);
+      const exchangeRate = await ApiClient.get<CurrencyExchangeRate>(
+        `/api/currencies/exchange-rates/${id}`
+      );
 
       // Update cache
       data.set(cacheKey, exchangeRate);
@@ -160,11 +167,11 @@ class CurrencyExchangeRateService {
     } catch (error) {
       // If we have stale data, return it rather than failing completely
       if (data.has(cacheKey)) {
-        console.warn(`Returning stale data for exchange rate ${id} due to API error`);
+        SafeLogger.warn(`Returning stale data for exchange rate ${id} due to API error`);
         return data.get(cacheKey) as CurrencyExchangeRate;
       }
 
-      console.error(`Error fetching exchange rate with ID ${id}:`, error);
+      SafeLogger.error(`Error fetching exchange rate with ID ${id}:`, error);
       throw error;
     }
   }
@@ -175,16 +182,21 @@ class CurrencyExchangeRateService {
    * @param command - The create command
    * @returns Promise with the created CurrencyExchangeRate
    */
-  async createExchangeRate(command: CreateCurrencyExchangeRateCommand): Promise<CurrencyExchangeRate> {
+  async createExchangeRate(
+    command: CreateCurrencyExchangeRateCommand
+  ): Promise<CurrencyExchangeRate> {
     try {
-      const response = await ApiClient.post<CurrencyExchangeRate>('/api/currencies/exchange-rates', command);
+      const response = await ApiClient.post<CurrencyExchangeRate>(
+        '/api/currencies/exchange-rates',
+        command
+      );
 
       // Invalidate relevant caches
       this.invalidateCache();
 
       return response;
     } catch (error) {
-      console.error('Error creating exchange rate:', error);
+      SafeLogger.error('Error creating exchange rate:', error);
       throw error;
     }
   }
@@ -195,16 +207,21 @@ class CurrencyExchangeRateService {
    * @param command - The update command
    * @returns Promise with the updated CurrencyExchangeRate
    */
-  async updateExchangeRate(command: UpdateCurrencyExchangeRateCommand): Promise<CurrencyExchangeRate> {
+  async updateExchangeRate(
+    command: UpdateCurrencyExchangeRateCommand
+  ): Promise<CurrencyExchangeRate> {
     try {
-      const response = await ApiClient.put<CurrencyExchangeRate>('/api/currencies/exchange-rates', command);
+      const response = await ApiClient.put<CurrencyExchangeRate>(
+        '/api/currencies/exchange-rates',
+        command
+      );
 
       // Invalidate relevant caches
       this.invalidateCache(command.id);
 
       return response;
     } catch (error) {
-      console.error('Error updating exchange rate:', error);
+      SafeLogger.error('Error updating exchange rate:', error);
       throw error;
     }
   }
@@ -224,7 +241,7 @@ class CurrencyExchangeRateService {
       // Invalidate relevant caches
       this.invalidateCache(id);
     } catch (error) {
-      console.error(`Error deleting exchange rate with ID ${id}:`, error);
+      SafeLogger.error(`Error deleting exchange rate with ID ${id}:`, error);
       throw error;
     }
   }
@@ -244,7 +261,7 @@ class CurrencyExchangeRateService {
       // Invalidate relevant caches
       this.invalidateCache(id);
     } catch (error) {
-      console.error(`Error activating exchange rate with ID ${id}:`, error);
+      SafeLogger.error(`Error activating exchange rate with ID ${id}:`, error);
       throw error;
     }
   }
@@ -264,7 +281,7 @@ class CurrencyExchangeRateService {
       // Invalidate relevant caches
       this.invalidateCache(id);
     } catch (error) {
-      console.error(`Error deactivating exchange rate with ID ${id}:`, error);
+      SafeLogger.error(`Error deactivating exchange rate with ID ${id}:`, error);
       throw error;
     }
   }

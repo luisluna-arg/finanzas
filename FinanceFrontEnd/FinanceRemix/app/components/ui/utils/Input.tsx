@@ -29,7 +29,7 @@ const DEFAULTS: Required<InputProps> = {
 };
 
 const setPropsDefaults = (originalProps: InputProps): Required<InputProps> => {
-    let fullProps = { ...DEFAULTS, ...originalProps };
+    const fullProps = { ...DEFAULTS, ...originalProps };
     fullProps.settings = { ...DEFAULTS.settings, ...originalProps.settings };
 
     if (typeof fullProps.value === "undefined") fullProps.value = "";

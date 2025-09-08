@@ -1,6 +1,6 @@
 import { loader } from "@/routes/dashboard";
-import { Outlet } from "@remix-run/react";
-import { useLoaderData } from "@remix-run/react";
+import { Outlet , useLoaderData } from "@remix-run/react";
+
 import urls from "@/utils/urls";
 import { Dictionary, toNumber } from "@/utils/common";
 import { FetchTableColumn } from "@/components/ui/utils/FetchTableColumn";
@@ -52,13 +52,13 @@ const DecimalColumn = (
     mapper?: Function,
     totalsReducer?: Function
 ) => {
-    let localMapper = mapper ?? getSafeValue;
+    const localMapper = mapper ?? getSafeValue;
 
-    let localTotalsReducer =
+    const localTotalsReducer =
         totalsReducer ??
         ((acc: number, r: ValueHolder | number) => acc + localMapper(r));
 
-    var result = {
+    const result = {
         id: id,
         label: label,
         class: ["text-end"],
@@ -76,8 +76,8 @@ const DecimalColumn = (
 };
 
 const PaymentPlanColumn = (
-    columnName: String,
-    label: String,
+    columnName: string,
+    label: string,
     mapper?: Function,
     totalsReducer?: Function
 ) => {

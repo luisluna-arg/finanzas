@@ -11,7 +11,7 @@ interface Auth0IdTokenPayload extends JWTPayload {
     picture?: string;
 }
 
-export let authenticator = new Authenticator<any>();
+export const authenticator = new Authenticator<any>();
 
 const JWKS = createRemoteJWKSet(
     new URL(`https://${AuthConstants.DOMAIN}/.well-known/jwks.json`)
@@ -40,7 +40,9 @@ async function getUser(tokens: OAuth2Tokens) {
     };
 }
 
-console.log("AuthConstants loaded for Auth0Strategy");
+import serverLogger from "@/utils/logger.server";
+
+serverLogger.info("AuthConstants loaded for Auth0Strategy");
 
 authenticator.use(
     new Auth0Strategy(
@@ -53,7 +55,7 @@ authenticator.use(
             audience: AuthConstants.AUDIENCE,
         },
         async ({ tokens }) => {
-            let user = await getUser(tokens);
+            const user = await getUser(tokens);
             return {
                 ...user,
                 accessToken: tokens.accessToken(),

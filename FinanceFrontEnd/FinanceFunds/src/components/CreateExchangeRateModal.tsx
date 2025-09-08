@@ -5,6 +5,7 @@ import { notifications } from '@mantine/notifications';
 import { IconCurrencyDollar, IconInfoCircle } from '@tabler/icons-react';
 import CurrencyExchangeRateService from '../services/CurrencyExchangeRateService';
 import CurrencyService from '../services/CurrencyService';
+import SafeLogger from '@/utils/SafeLogger';
 import type { CreateCurrencyExchangeRateCommand } from '../services/types/CurrencyExchangeRateTypes';
 import type { Currency } from '../services/types/CurrencyTypes';
 import { useEffect } from 'react';
@@ -53,13 +54,6 @@ const CreateExchangeRateModal = ({ opened, onClose, onSuccess }: CreateExchangeR
     },
   });
 
-  // Fetch currencies when modal opens
-  useEffect(() => {
-    if (opened) {
-      fetchCurrencies();
-    }
-  }, [opened]);
-
   const fetchCurrencies = useCallback(async () => {
     setLoadingCurrencies(true);
     try {
@@ -69,7 +63,7 @@ const CreateExchangeRateModal = ({ opened, onClose, onSuccess }: CreateExchangeR
         : [];
       setCurrencies(activeCurrencies);
     } catch (error) {
-      console.error('Error fetching currencies:', error);
+      SafeLogger.error('Error fetching currencies:', error);
       notifications.show({
         title: 'Error',
         message: 'Failed to load currencies. Please try again.',
@@ -79,6 +73,13 @@ const CreateExchangeRateModal = ({ opened, onClose, onSuccess }: CreateExchangeR
       setLoadingCurrencies(false);
     }
   }, []);
+
+  // Fetch currencies when modal opens
+  useEffect(() => {
+    if (opened) {
+      fetchCurrencies();
+    }
+  }, [opened, fetchCurrencies]);
 
   const handleSubmit = useCallback(
     async (values: FormValues) => {
@@ -111,7 +112,7 @@ const CreateExchangeRateModal = ({ opened, onClose, onSuccess }: CreateExchangeR
         onSuccess();
         onClose();
       } catch (error) {
-        console.error('Error creating exchange rate:', error);
+        SafeLogger.error('Error creating exchange rate:', error);
         notifications.show({
           title: 'Error',
           message: 'Failed to create exchange rate. Please try again.',

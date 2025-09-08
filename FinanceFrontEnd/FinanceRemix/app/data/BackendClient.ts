@@ -58,7 +58,8 @@ export class BackendClient {
 
             return response.data;
         } catch (error) {
-            console.error("Error:", error);
+                const { default: serverLogger } = await import("@/utils/logger.server");
+                serverLogger.error("Error:", error);
             throw error;
         }
     }

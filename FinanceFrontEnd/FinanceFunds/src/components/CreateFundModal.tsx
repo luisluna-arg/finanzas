@@ -16,6 +16,7 @@ import CurrencyService from '../services/CurrencyService';
 import FundService from '../services/FundService';
 import { notifications } from '@mantine/notifications';
 import Logger from '../utils/Logger';
+import SafeLogger from '@/utils/SafeLogger';
 import type { CreateFundRequest } from '../services/types/FundTypes';
 import type { Bank } from '../services/types/BankTypes';
 import type { Currency } from '../services/types/CurrencyTypes';
@@ -42,8 +43,8 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
   const [loadingBanks, setLoadingBanks] = useState(false);
   const [loadingCurrencies, setLoadingCurrencies] = useState(false);
 
-  Logger.debugLog('Banks length:', banks.length);
-  Logger.debugLog('Currencies length:', currencies.length);
+  Logger.info('Banks length:', banks.length);
+  Logger.info('Currencies length:', currencies.length);
 
   // Define form with validation
   const form = useForm<FormValues>({
@@ -70,19 +71,19 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
     setLoading(true);
     setLoadingBanks(true);
 
-    Logger.debugLog('Loading banks...');
+    Logger.info('Loading banks...');
 
     const loadBanks = async () => {
       try {
-        Logger.debugLog('Before BankService.getAllBanks() call');
+        Logger.info('Before BankService.getAllBanks() call');
         const banksData = await BankService.getAllBanks(true); // Force refresh
-        Logger.debugLog('Banks API response:', banksData);
+        Logger.info('Banks API response:', banksData);
 
         if (mounted) {
           // API now returns array directly
           const banksArray = Array.isArray(banksData) ? banksData : [];
           setBanks(banksArray);
-          Logger.debugLog('Banks state set to:', banksArray);
+          Logger.info('Banks state set to:', banksArray);
 
           // Auto-select the first bank
           if (banksArray.length > 0 && !form.values.bankId) {
@@ -90,7 +91,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
           }
         }
       } catch (error) {
-        Logger.debugError('Failed to load banks:', error);
+        Logger.error('Failed to load banks:', error);
       } finally {
         if (mounted) setLoadingBanks(false);
       }
@@ -101,7 +102,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
     return () => {
       mounted = false;
     };
-  }, [opened]);
+  }, [opened, form]);
 
   // 2. Second effect - load currencies
   useEffect(() => {
@@ -110,19 +111,19 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
     let mounted = true;
     setLoadingCurrencies(true);
 
-    Logger.debugLog('Loading currencies...');
+    Logger.info('Loading currencies...');
 
     const loadCurrencies = async () => {
       try {
-        Logger.debugLog('Before CurrencyService.getAllCurrencies() call');
+        Logger.info('Before CurrencyService.getAllCurrencies() call');
         const currenciesData = await CurrencyService.getAllCurrencies(true); // Force refresh
-        Logger.debugLog('Currencies API response:', currenciesData);
+        Logger.info('Currencies API response:', currenciesData);
 
         if (mounted) {
           // API now returns array directly
           const currenciesArray = Array.isArray(currenciesData) ? currenciesData : [];
           setCurrencies(currenciesArray);
-          Logger.debugLog('Currencies state set to:', currenciesArray);
+          Logger.info('Currencies state set to:', currenciesArray);
 
           // Auto-select the first currency (which will be Peso due to sorting)
           if (currenciesArray.length > 0 && !form.values.currencyId) {
@@ -134,7 +135,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
           }
         }
       } catch (error) {
-        Logger.debugError('Failed to load currencies:', error);
+        Logger.error('Failed to load currencies:', error);
 
         if (mounted) {
           notifications.show({
@@ -157,7 +158,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
     return () => {
       mounted = false;
     };
-  }, [opened]);
+  }, [opened, form]);
 
   // Clean up when modal closes
   useEffect(() => {
@@ -184,7 +185,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
         };
       }
     }
-  }, [opened]);
+  }, [opened, form]);
 
   // Handle form submission
   const handleSubmit = async (values: FormValues) => {
@@ -216,7 +217,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
         onClose();
       }, 0);
     } catch (error) {
-      console.error('Failed to create fund:', error);
+      SafeLogger.error('Failed to create fund:', error);
 
       setTimeout(() => {
         notifications.show({

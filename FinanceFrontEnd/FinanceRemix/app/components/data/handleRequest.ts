@@ -1,4 +1,5 @@
 import { fetchData } from "./fetchData";
+import SafeLogger from "@/utils/SafeLogger";
 
 export const handleRequest = async (url: string, method: string, record: any, reload: boolean = false) => {
     try {
@@ -21,7 +22,7 @@ export const handleRequest = async (url: string, method: string, record: any, re
             // Handle error response
         }
     } catch (error) {
-        console.error("Error:", error);
+        SafeLogger.error("Error:", error);
     } finally {
         if (url && reload) return fetchData(url);
     }

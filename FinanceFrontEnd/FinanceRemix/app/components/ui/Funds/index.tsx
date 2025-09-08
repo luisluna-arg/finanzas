@@ -7,8 +7,8 @@ import PaginatedTable, {
   Column,
 } from "@/components/ui/utils/PaginatedTable";
 import { InputType } from "@/components/ui/utils/InputType";
-import CommonUtils from "@/utils/common";
-import { toNumber } from "@/utils/common";
+import CommonUtils, { toNumber } from "@/utils/common";
+
 
 // Define types for the props and states
 interface PickerData {
@@ -48,24 +48,24 @@ const Funds: React.FC = () => {
   };
 
   const onBankPickerChange = (picker: { value: string }) => {
-    var newBankId =
+    const newBankId =
       selectedBankId !== picker.value ? picker.value : selectedBankId;
     setSelectedBankId(newBankId);
   };
 
   const onBankPickerFetch = ({ data }: { data: PickerData[] }) => {
-    let newBankId = data[0].id;
+    const newBankId = data[0].id;
     setSelectedBankId(newBankId);
   };
 
   const onCurrencyPickerChange = (picker: { value: string }) => {
-    var newCurrencyId =
+    const newCurrencyId =
       selectedCurrencyId !== picker.value ? picker.value : selectedCurrencyId;
     setSelectedCurrencyId(newCurrencyId);
   };
 
   const onCurrencyPickerFetch = ({ data }: { data: PickerData[] }) => {
-    let newCurrencyId = data[0].id;
+    const newCurrencyId = data[0].id;
     setSelectedCurrencyId(newCurrencyId);
   };
 
@@ -91,7 +91,7 @@ const Funds: React.FC = () => {
       type: InputType.DateTime,
       editable: {
         defaultValue: () => {
-          let rowSelector = document.querySelector(
+          const rowSelector = document.querySelector(
             ".bank-table-data-row > td > span"
           );
 

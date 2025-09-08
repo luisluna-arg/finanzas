@@ -1,3 +1,27 @@
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: './tsconfig.json',
+    sourceType: 'module',
+  },
+  plugins: ['@typescript-eslint'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+  ],
+  rules: {
+    // Disallow raw console methods except warn/error
+    'no-console': ['error', { allow: ['warn', 'error'] }],
+    // Allow any other project-level overrides here
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+};
 /**
  * This is intended to be a basic starting point for linting in your app.
  * It relies on recommended configs out of the box for simplicity, but you can

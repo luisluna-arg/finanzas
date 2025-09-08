@@ -11,7 +11,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const user = session.get(SessionContants.USER_KEY);
 
     if (!user) {
-        console.log("[dashboard loader] No user in session, redirecting to login");
+        // Only log in non-production to avoid exposing session details in logs
+        // Use server logger utility
+        const { default: serverLogger } = await import("@/utils/logger.server");
+        serverLogger.info("[dashboard loader] No user in session, redirecting to login");
         return redirect("/auth/login");
     }
 
@@ -26,7 +29,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         creditCards = await backendClient.GetCreditCardsQuery().get();
         latestCurrencyExchangeRates = await backendClient.GetCurrencyExchangeRatesQuery().get();
     } catch (e) {
-        console.error("[dashboard loader] Error fetching dashboard data", e);
+    const { default: serverLogger } = await import("@/utils/logger.server");
+    serverLogger.error("[dashboard loader] Error fetching dashboard data", e);
     }
 
     return { creditCards, latestCurrencyExchangeRates };

@@ -11,11 +11,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     if (!user) return redirect("/auth/login");
 
-    let client = await getBackendClient(user.accessToken);
+    const client = await getBackendClient(user.accessToken);
 
-    let banks = await client.GetBanksQuery().get();
+    const banks = await client.GetBanksQuery().get();
 
-    let currencies = await client.GetCurrenciesQuery().get();
+    const currencies = await client.GetCurrenciesQuery().get();
 
     return {
         banks,

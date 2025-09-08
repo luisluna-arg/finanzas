@@ -22,7 +22,7 @@ export class BaseQuery {
 
     async get<TFilter>(filters?: TFilter) {
         try {
-            let config = {
+            const config = {
                 params: filters ?? {},
                 httpsAgent: this.httpsAgent,
                 headers: {
@@ -33,8 +33,9 @@ export class BaseQuery {
 
             return response.data;
         } catch (error) {
-            console.error("this.getEndpoint:", this.getEndpoint);
-            console.error("Error:", error);
+                const { default: serverLogger } = await import("@/utils/logger.server");
+                serverLogger.error("this.getEndpoint:", this.getEndpoint);
+                serverLogger.error("Error:", error);
             throw error;
         }
     }

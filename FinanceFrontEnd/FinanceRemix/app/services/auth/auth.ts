@@ -1,5 +1,6 @@
 import { authenticator } from "@/services/auth/auth.server";
 import { AuthConstants } from "./auth.constants";
+import serverLogger from "@/utils/logger.server";
 
 export async function authenticate(request: Request) {
     try {
@@ -8,7 +9,7 @@ export async function authenticate(request: Request) {
             request
         );
     } catch (error) {
-        console.error("Authentication failed:", error);
+        serverLogger.error("Authentication failed:", error);
         throw new Error("Authentication failed. Please log in again.");
     }
 }

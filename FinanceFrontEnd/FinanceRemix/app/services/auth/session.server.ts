@@ -17,7 +17,7 @@ export const { getSession, commitSession, destroySession } = sessionStorage;
 
 // Helper function to get user from session
 export async function getUserFromSession(request: Request): Promise<User | null> {
-    let cookieHeader = request.headers.get(SessionContants.COOKIE_HEADER);
+    const cookieHeader = request.headers.get(SessionContants.COOKIE_HEADER);
     const session = await getSession(cookieHeader);
     return session.get(SessionContants.USER_KEY) || null;
 }

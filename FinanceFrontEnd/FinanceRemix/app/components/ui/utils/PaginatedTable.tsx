@@ -263,15 +263,15 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     let columnValue = record[columnId];
 
     if (columnSettings.datetime && columnValue) {
-      let dateFormat = columnSettings.datetime.dateFormat ?? "";
-      let timeFormat = columnSettings.datetime.timeFormat ?? "";
+      const dateFormat = columnSettings.datetime.dateFormat ?? "";
+      const timeFormat = columnSettings.datetime.timeFormat ?? "";
       columnValue = moment(columnValue).format(`${dateFormat} ${timeFormat}`);
     } else if (columnSettings.mapper) {
       const mapper = columnSettings.mapper;
       if (typeof mapper === "function") {
         columnValue = mapper(columnValue);
       } else if (mapper.hasOwnProperty("label")) {
-        let label = mapper["label"];
+        const label = mapper["label"];
 
         if (typeof label !== "function") {
           columnValue = columnValue[label!];
@@ -308,7 +308,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   const handleSelectAllChange = (e: CheckedState) => {
     const isSelected = e === true;
     setAllSelected(isSelected);
-    let updatedItems = tableData.items.map((item) => ({
+    const updatedItems = tableData.items.map((item) => ({
       ...item,
       isSelected: isSelected,
     }));

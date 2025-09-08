@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import SafeLogger from "../../../utils/SafeLogger";
 import { useFetcher } from "@remix-run/react";
 import {
   Toast,
@@ -33,7 +34,7 @@ const Uploader = ({ url, extensions, onSuccess, onError }: UploaderProps) => {
       const formData = new FormData();
       formData.append("file", file);
 
-      console.log("URL", url);
+  SafeLogger.log("URL", url);
 
       fetcher.submit(formData, {
         method: "post",

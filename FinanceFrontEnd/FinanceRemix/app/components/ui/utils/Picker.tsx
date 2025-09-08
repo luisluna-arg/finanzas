@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import React, { useState, useEffect, useCallback } from "react";
+import SafeLogger from '@/utils/SafeLogger';
 
 // Define types for the props
 type MapperObject = {
@@ -67,7 +68,7 @@ const Picker: React.FC<PickerProps> = ({
         setInternalData(responseData);
         onFetch && onFetch({ responseData });
       } catch (error) {
-        console.error("Error fetching data:", error);
+        SafeLogger.error("Error fetching data:", error);
       }
     }, [url, onFetch]);
 

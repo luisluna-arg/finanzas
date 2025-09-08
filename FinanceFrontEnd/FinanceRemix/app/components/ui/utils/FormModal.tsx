@@ -46,7 +46,7 @@ const isNullOrUndefined = (instance?: any) =>
   typeof instance === "undefined" || instance === null;
 
 const setPropsDefaults = (originalProps: FormModalProps) => {
-  let fullProps = Object.assign({}, DEFAULTS, originalProps);
+  const fullProps = Object.assign({}, DEFAULTS, originalProps);
 
   if (isNullOrUndefined(originalProps.editorSettings)) {
     fullProps.editorSettings = DEFAULTS.editorSettings;
@@ -74,7 +74,7 @@ const setPropsDefaults = (originalProps: FormModalProps) => {
 };
 
 const FormModal: React.FC<FormModalProps> = (props) => {
-  let { title, formId, editorSettings, form } = setPropsDefaults(props);
+  const { title, formId, editorSettings, form } = setPropsDefaults(props);
 
   return (
     <Modal show={props.show} onHide={props.handleCancel}>

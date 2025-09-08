@@ -24,9 +24,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const pesosModuleId = "4c1ee918-e8f9-4bed-8301-b4126b56cfc0";
     const dollarsModuleId = "03cc66c7-921c-4e05-810e-9764cd365c1d";
 
-    let client = await getBackendClient(user.accessToken);
+    const client = await getBackendClient(user.accessToken);
 
-    let pesoDebits =
+    const pesoDebits =
         await client.GetPaginatedDebitsQuery().getPaginated<PaginatedDebitFilters>({
             AppModuleId: pesosModuleId,
             Frequency: "monthly",
@@ -34,7 +34,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
             Page: 1,
         });
 
-    let dollarDebits =
+    const dollarDebits =
         await client.GetPaginatedDebitsQuery().getPaginated<PaginatedDebitFilters>({
             AppModuleId: dollarsModuleId,
             Frequency: "monthly",

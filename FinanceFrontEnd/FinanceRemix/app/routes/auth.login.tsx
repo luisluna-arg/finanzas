@@ -8,7 +8,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    console.log("🚀 Login loader called");
+    const { default: serverLogger } = await import("@/utils/logger.server");
+    serverLogger.info("Login loader called");
 
     // In remix-auth, redirects are "thrown" as Response objects
     // This is normal behavior, not an error
