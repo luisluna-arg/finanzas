@@ -32,7 +32,7 @@ jobs:
                   ALLOW_INSECURE_API: ${{ secrets.ALLOW_INSECURE_API }}
               run: |
                   # Run validator using secrets injected by the runner; avoid printing secrets in logs.
-                  node ./scripts/validate-config.js
+                  node ./.scripts/validate-config.js
 
     validate-staging:
         # Run this job only for staging/preview branches or manual dispatch
@@ -60,4 +60,4 @@ jobs:
                   VITE_API_URL: ${{ secrets.VITE_API_URL }}
                   ALLOW_INSECURE_API: ${{ secrets.ALLOW_INSECURE_API }}
               run: |
-                  node ./scripts/validate-config.js
+                  node ./.scripts/validate-config.js

@@ -2,6 +2,7 @@
 **/.env
 **/.env.*
 !/.github/
+!/.scripts/
 !/FinanceFrontEnd/
 !/FinanceBackEnd/
 !/Infra/
