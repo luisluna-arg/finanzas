@@ -8,6 +8,8 @@
 !/Infra/
 /Infra/Funds/dataprotection/**
 
+**/node_modules/
+
 /sql
 **/bin
 **/obj
