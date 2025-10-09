@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../auth";
-import { LoginButton, LogoutButton } from "./index";
-import { ThemeToggle } from "./ThemeToggle";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../auth';
+import { LoginButton, LogoutButton } from './index';
+import { ThemeToggle } from './ThemeToggle';
 import {
   Group,
   Title,
@@ -15,7 +15,7 @@ import {
   Burger,
   Drawer,
   Stack,
-} from "@mantine/core";
+} from '@mantine/core';
 
 export const Navigation = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -30,9 +30,9 @@ export const Navigation = () => {
       setIsMobile(window.innerWidth < 768);
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -65,11 +65,10 @@ export const Navigation = () => {
       styles={{
         header: {
           color: theme.colors[theme.primaryColor][colorScheme === 'dark' ? 4 : 6],
-          fontWeight: 600
+          fontWeight: 600,
         },
         body: {
-          backgroundColor:
-            colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+          backgroundColor: colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
         },
       }}
     >
@@ -87,13 +86,12 @@ export const Navigation = () => {
       py="md"
       px="xl"
       style={{
-        backgroundColor:
-          colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
-        borderBottom: `1px solid ${colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[2]}`,
+        backgroundColor: colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+        borderBottom: `1px solid ${colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]}`,
       }}
     >
       <Container size="xl" className="app-container">
-        <Flex justify="space-between" align="center" style={{ width: "100%" }}>
+        <Flex justify="space-between" align="center" style={{ width: '100%' }}>
           <Box className="nav-brand">
             <Title order={3} c={theme.primaryColor}>
               FinanceFunds

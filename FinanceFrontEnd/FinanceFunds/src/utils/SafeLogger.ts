@@ -3,6 +3,7 @@
  * It also redacts common sensitive keys when logging objects.
  */
 
+// Allow console usage here via ESLint override in .eslintrc.cjs
 const isDev: boolean = Boolean(import.meta.env.DEV);
 
 function redact(obj: unknown): unknown {
@@ -32,11 +33,13 @@ function redact(obj: unknown): unknown {
 const SafeLogger = {
   log: (message?: unknown, ...args: unknown[]) => {
     if (!isDev) return;
-    console.log(message, ...args.map(a => redact(a)));
+    // Use warn to satisfy project lint rules (allow only warn/error outside of tests)
+    console.warn(message, ...args.map(a => redact(a)));
   },
   info: (message?: unknown, ...args: unknown[]) => {
     if (!isDev) return;
-    console.info(message, ...args.map(a => redact(a)));
+    // Info mapped to warn to conform with no-console policy
+    console.warn(message, ...args.map(a => redact(a)));
   },
   warn: (message?: unknown, ...args: unknown[]) => {
     if (!isDev) return;

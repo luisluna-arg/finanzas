@@ -36,24 +36,33 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
-    'prettier'
+    'prettier',
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs', 'node_modules', 'build', 'public', 'vite.config.ts', '*.d.ts'],
+  ignorePatterns: [
+    'dist',
+    '.eslintrc.cjs',
+    'node_modules',
+    'build',
+    'public',
+    'vite.config.ts',
+    '*.d.ts',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
     ecmaFeatures: {
-      jsx: true
-    }
+      jsx: true,
+    },
   },
   plugins: ['react-refresh', 'react', '@typescript-eslint', 'prettier'],
   settings: {
     react: {
-      version: 'detect'
-    }
+      version: 'detect',
+    },
   },
-  rules: {    'react-refresh/only-export-components': [
+  rules: {
+    'react-refresh/only-export-components': [
       'warn', // Making this a warning instead of error since we're still reorganizing code
       { allowConstantExport: true },
     ],
@@ -64,6 +73,18 @@ module.exports = {
     'prettier/prettier': 'error',
     '@typescript-eslint/no-explicit-any': 'off', // TODO: Properly type these variables and re-enable this rule (either as warning or error)
     'prefer-const': 'error',
-    'no-console': ['warn', { allow: ['warn', 'error'] }]
+    'no-console': ['error', { allow: ['warn', 'error'] }],
   },
-}
+};
+
+// Allow console only inside the SafeLogger implementation
+module.exports = Object.assign(module.exports || {}, {
+  overrides: [
+    {
+      files: ['src/utils/SafeLogger.ts'],
+      rules: {
+        'no-console': 'off',
+      },
+    },
+  ],
+});
