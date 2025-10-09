@@ -1,12 +1,11 @@
 import { loader } from "@/routes/dashboard";
-import { Outlet , useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
 
 import urls from "@/utils/urls";
 import { Dictionary, toNumber } from "@/utils/common";
 import { FetchTableColumn } from "@/components/ui/utils/FetchTableColumn";
 import { InputType } from "@/components/ui/utils/InputType";
 import FetchTable from "@/components/ui/utils/FetchTable";
-import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 interface ValueHolder {
     value?: number;
@@ -130,10 +129,8 @@ export default function Dashboard() {
                 "Débito/Servicio",
                 (record: any) => record?.origin?.name ?? record?.name ?? "-"
             ),
-            DecimalColumn(
-                "amount",
-                "Monto",
-                (a: any) => toNumber(a?.amount ?? a)
+            DecimalColumn("amount", "Monto", (a: any) =>
+                toNumber(a?.amount ?? a)
             ),
         ],
     };
@@ -200,15 +197,11 @@ export default function Dashboard() {
                 id: "concept",
                 label: "Concepto",
             },
-            DecimalColumn(
-                "amount",
-                "Monto",
-                (v: any) => toNumber(v?.amount ?? v, 0)
+            DecimalColumn("amount", "Monto", (v: any) =>
+                toNumber(v?.amount ?? v, 0)
             ),
-            DecimalColumn(
-                "amountDollars",
-                "Dólares",
-                (v: any) => toNumber(v?.amountDollars ?? v, 0)
+            DecimalColumn("amountDollars", "Dólares", (v: any) =>
+                toNumber(v?.amountDollars ?? v, 0)
             ),
             DecimalColumn(
                 "totalAmount",
@@ -216,7 +209,10 @@ export default function Dashboard() {
                 (v: any) => {
                     if (v) {
                         const amount = toNumber(v?.amount ?? v, 0);
-                        const amountDollars = toNumber(v?.amountDollars ?? v, 0);
+                        const amountDollars = toNumber(
+                            v?.amountDollars ?? v,
+                            0
+                        );
                         return (
                             amount +
                             dollarCalculator(
@@ -231,7 +227,10 @@ export default function Dashboard() {
                 (acc: number, v: any) => {
                     if (v) {
                         const amount = toNumber(v?.amount ?? v, 0);
-                        const amountDollars = toNumber(v?.amountDollars ?? v, 0);
+                        const amountDollars = toNumber(
+                            v?.amountDollars ?? v,
+                            0
+                        );
                         return (
                             acc +
                             (amount +
@@ -249,7 +248,8 @@ export default function Dashboard() {
                 "paymentNumber",
                 "Nro. Cuota",
                 (v: any) => toNumber(v?.paymentNumber ?? v, 0),
-                (acc: number, v: any) => acc + toNumber(v?.paymentNumber ?? v, 0)
+                (acc: number, v: any) =>
+                    acc + toNumber(v?.paymentNumber ?? v, 0)
             ),
             PaymentPlanColumn(
                 "planSize",

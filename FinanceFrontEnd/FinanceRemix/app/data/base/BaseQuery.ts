@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Agent } from "https";
+import serverLogger from "@/utils/logger.server";
 
 export interface QueryEndpoints {
     get: string;
@@ -33,9 +34,8 @@ export class BaseQuery {
 
             return response.data;
         } catch (error) {
-                const { default: serverLogger } = await import("@/utils/logger.server");
-                serverLogger.error("this.getEndpoint:", this.getEndpoint);
-                serverLogger.error("Error:", error);
+            serverLogger.error("this.getEndpoint:", this.getEndpoint);
+            serverLogger.error("Error:", error);
             throw error;
         }
     }

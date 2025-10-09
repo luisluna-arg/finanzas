@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Agent } from "https";
+import serverLogger from "@/utils/logger.server";
 import { BanksQuery } from "./queries/BanksQuery";
 import { CreditCardQuery } from "./queries/CreditCardQuery";
 import { CurrenciesQuery } from "./queries/CurrenciesQuery";
@@ -30,8 +31,14 @@ export class BackendClient {
             httpsAgent,
             this.AccessToken
         );
-        this.CreditCardsQuery = new CreditCardQuery(httpsAgent, this.AccessToken);
-        this.CurrenciesQuery = new CurrenciesQuery(httpsAgent, this.AccessToken);
+        this.CreditCardsQuery = new CreditCardQuery(
+            httpsAgent,
+            this.AccessToken
+        );
+        this.CurrenciesQuery = new CurrenciesQuery(
+            httpsAgent,
+            this.AccessToken
+        );
         this.CurrencyExchangeRatesQuery = new CurrencyExchangeRatesQuery(
             httpsAgent,
             this.AccessToken
@@ -40,11 +47,12 @@ export class BackendClient {
 
     public GetBanksQuery = (): BanksQuery => this.BanksQuery;
     public GetDebitsQuery = (): DebitsQuery => this.DebitsQuery;
-    public GetPaginatedDebitsQuery = (): PaginatedDebitsQuery => this.PaginatedDebitsQuery;
+    public GetPaginatedDebitsQuery = (): PaginatedDebitsQuery =>
+        this.PaginatedDebitsQuery;
     public GetCreditCardsQuery = (): CreditCardQuery => this.CreditCardsQuery;
     public GetCurrenciesQuery = (): CurrenciesQuery => this.CurrenciesQuery;
-    public GetCurrencyExchangeRatesQuery = (): CurrencyExchangeRatesQuery => this.CurrencyExchangeRatesQuery;
-
+    public GetCurrencyExchangeRatesQuery = (): CurrencyExchangeRatesQuery =>
+        this.CurrencyExchangeRatesQuery;
 
     async get<TFilter>(endpoint: string, filters?: TFilter) {
         try {
@@ -58,8 +66,7 @@ export class BackendClient {
 
             return response.data;
         } catch (error) {
-                const { default: serverLogger } = await import("@/utils/logger.server");
-                serverLogger.error("Error:", error);
+            serverLogger.error("Error:", error);
             throw error;
         }
     }

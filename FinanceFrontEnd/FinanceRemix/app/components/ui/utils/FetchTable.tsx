@@ -37,8 +37,6 @@ const FetchTable: React.FC<FetchTableProps> = ({
     title,
     url,
     columns,
-    hideIfEmpty,
-    onFetch,
     showTotals = true,
 }: FetchTableProps) => {
     const [data, setData] = useState<any>(null); // Adjust type as needed
@@ -61,14 +59,21 @@ const FetchTable: React.FC<FetchTableProps> = ({
                     } catch (e) {
                         responseBody = "[Unable to read response body]";
                     }
-                    SafeLogger.error(errorText, { url, response: { status: response.status }, responseBody });
+                    SafeLogger.error(errorText, {
+                        url,
+                        response: { status: response.status },
+                        responseBody,
+                    });
                     throw new Error(`${errorText}\n${responseBody}`);
                 }
                 const result = await response.json();
 
                 setData(result.items ?? result);
             } catch (error: any) {
-                SafeLogger.error("FetchTable error", { error: error?.message ?? String(error), url });
+                SafeLogger.error("FetchTable error", {
+                    error: error?.message ?? String(error),
+                    url,
+                });
                 setError(error.message);
             } finally {
                 setLoading(false);
@@ -95,7 +100,7 @@ const FetchTable: React.FC<FetchTableProps> = ({
             if (typeof mapper === "function") {
                 return mapper(record);
             }
-            if (mapper.hasOwnProperty("label")) {
+            if (Object.hasOwn(mapper, "label")) {
                 return recordValue[mapper["label"]];
             }
         }

@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import { InputType } from "@/components/ui/utils/InputType";
-import InputControl, { Settings as InputControlSettings } from "@/components/ui/utils/InputControl";
-
-interface Settings {
-    id: string;
-    description: string;
-    label: string;
-    type: string;
-    placeholder: string;
-    visible: boolean;
-}
+import InputControl, {
+    Settings as InputControlSettings,
+} from "@/components/ui/utils/InputControl";
 
 interface InputProps {
     value?: string;
-    settings?: InputControlSettings
+    settings?: InputControlSettings;
 }
 
 const DEFAULTS: Required<InputProps> = {

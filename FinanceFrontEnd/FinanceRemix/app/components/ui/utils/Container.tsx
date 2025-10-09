@@ -1,7 +1,7 @@
 type ContainerProps = {
-  children?: any;
+    children?: any;
 };
 
 export const Container: React.FC<ContainerProps> = ({ children }) => {
-  return <>{children}</>;
+    return <>{children}</>;
 };

@@ -8,11 +8,6 @@ type ToastProps = {
 };
 
 export const Toast: React.FC<ToastProps> = ({
-  show,
-  onClose,
-  delay,
-  autohide,
-  bg,
   children,
 }) => {
   return <>{children}</>;
@@ -25,8 +20,6 @@ type ToastContainerProps = {
 };
 
 export const ToastContainer: React.FC<ToastContainerProps> = ({
-  position,
-  className,
   children,
 }) => {
   return <>{children}</>;

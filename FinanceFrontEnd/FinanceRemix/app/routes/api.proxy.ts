@@ -1,7 +1,8 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { sessionStorage } from "@/services/auth/session.server";
 import {
-    SessionContants,
+    getUserAndTokens,
+} from "@/services/auth/session.server";
+import {
     HttpStatusConstants,
 } from "@/services/auth/auth.constants";
 import { JsonErrorResponse } from "@/utils/JsonResponse";
@@ -56,11 +57,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         queryString ? `?${queryString}` : ""
     }`;
 
-    // Get access token from session
-    const cookie = request.headers.get(SessionContants.COOKIE_HEADER);
-    const session = await sessionStorage.getSession(cookie);
-    const user = session.get(SessionContants.USER_KEY);
-    const accessToken = user?.accessToken;
+    // Get access token from server-side session (Redis)
+    const result = await getUserAndTokens(request);
+    if (!result) {
+        throw JsonErrorResponse(
+            "Not authenticated",
+            HttpStatusConstants.UNAUTHORIZED
+        );
+    }
+
+    const { tokens } = result;
+    const accessToken = tokens.accessToken;
 
     if (!accessToken) {
         throw JsonErrorResponse(
