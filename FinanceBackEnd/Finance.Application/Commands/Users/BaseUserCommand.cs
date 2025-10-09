@@ -14,7 +14,7 @@ public abstract class BaseUserCommand : IContextAwareCommand<FinanceDispatchCont
     public string LastName { get; set; } = string.Empty;
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public IEnumerable<RoleEnum> Roles { get; set; } = [];
-    public FinanceDispatchContext Context { get; private set; } = new();
+    internal FinanceDispatchContext Context { get; private set; } = new();
 
     public void SetContext(FinanceDispatchContext context)
     {

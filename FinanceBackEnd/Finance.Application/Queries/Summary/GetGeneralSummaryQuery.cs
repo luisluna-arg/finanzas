@@ -27,20 +27,18 @@ public class GetGeneralSummaryQueryHandler : IQueryHandler<GetGeneralSummaryQuer
     {
         var pesosCurrencyId = Guid.Parse(CurrencyConstants.PesoId);
 
-        var currentIncomes = (await _dispatcher.DispatchQueryAsync<List<Income>>(new GetCurrentIncomesQuery())) as ICollection<IAmountHolder>;
+        var currentIncomesData = await _dispatcher.DispatchQueryAsync(new GetCurrentIncomesQuery());
 
-        currentIncomes = currentIncomes!.GroupBy(g => g.CurrencyId).Select(g =>
+        IAmountHolder[] currentIncomes = currentIncomesData!.Data.GroupBy(g => g.CurrencyId).Select(g =>
         {
             return new Income() { CurrencyId = g.First().CurrencyId, Amount = g.Sum(a => a.Amount) };
         }).ToArray();
 
         var convertedIncomes = (await _currencyConverterService.ConvertCollection(currentIncomes!, pesosCurrencyId)).Sum(m => m);
 
-        var investments = (await _dispatcher.DispatchQueryAsync<TotalInvestments>(new GetCurrentInvestmentsQuery())).Data.Items.Sum(e => e.Valued);
-
-        var dailyFunds = (await _dispatcher.DispatchQueryAsync<TotalFunds>(new GetCurrentFundsQuery() { DailyUse = true })).Data.Items.Sum(e => e.Value);
-
-        var notDailyFunds = (await _dispatcher.DispatchQueryAsync<TotalFunds>(new GetCurrentFundsQuery() { DailyUse = false })).Data.Items.Sum(e => e.Value);
+        var investments = (await _dispatcher.DispatchQueryAsync(new GetCurrentInvestmentsQuery())).Data.Items.Sum(e => e.Valued);
+        var dailyFunds = (await _dispatcher.DispatchQueryAsync(new GetCurrentFundsQuery() { DailyUse = true })).Data.Items.Sum(e => e.Value);
+        var notDailyFunds = (await _dispatcher.DispatchQueryAsync(new GetCurrentFundsQuery() { DailyUse = false })).Data.Items.Sum(e => e.Value);
 
         var totalFunds = dailyFunds + notDailyFunds + investments;
 

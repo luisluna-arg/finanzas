@@ -17,6 +17,7 @@ import {
 } from '@mantine/core';
 import { IconCurrencyDollar, IconPlus } from '@tabler/icons-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import SafeLogger from '@/utils/SafeLogger';
 import CurrencyExchangeRateService from '../services/CurrencyExchangeRateService';
 import type { CurrencyExchangeRate } from '../services/types/CurrencyExchangeRateTypes';
 import CreateExchangeRateModal from '../components/CreateExchangeRateModal';
@@ -82,13 +83,13 @@ const CurrencyExchangeDashboard = () => {
 
       // Update state in the next frame to avoid blocking the main thread
       setTimeout(() => {
-        console.log('Fetched exchange rates:', response);
+        SafeLogger.info('Fetched exchange rates:', response);
         setExchangeRates(response || []);
         setError(null);
         if (showLoading) setLoading(false);
       }, 0);
     } catch (err) {
-      console.error('Error fetching exchange rates:', err);
+      SafeLogger.error('Error fetching exchange rates:', err);
 
       setTimeout(() => {
         setError('Failed to load exchange rates data. Please try again later.');

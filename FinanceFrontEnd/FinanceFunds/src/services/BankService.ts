@@ -1,5 +1,6 @@
 import ApiClient from './ApiClient';
 import type { Bank, BanksResponse } from './types/BankTypes';
+import SafeLogger from '@/utils/SafeLogger';
 
 // Define a memory-efficient cache key
 const BANKS_CACHE_KEY = 'all_banks';
@@ -10,10 +11,10 @@ const BANKS_CACHE_KEY = 'all_banks';
 class BankService {
   // Static shared cache storage
   private static cache: {
-    data: Map<string, any>;
+    data: Map<string, unknown>;
     timestamps: Map<string, number>;
   } = {
-    data: new Map(),
+    data: new Map<string, unknown>(),
     timestamps: new Map(),
   };
 
@@ -59,11 +60,11 @@ class BankService {
     } catch (error) {
       // If we have stale data, return it rather than failing completely
       if (data.has(BANKS_CACHE_KEY)) {
-        console.warn('Returning stale bank data due to API error');
+        SafeLogger.warn('Returning stale bank data due to API error');
         return data.get(BANKS_CACHE_KEY) as BanksResponse;
       }
 
-      console.error('Error fetching banks:', error);
+      SafeLogger.error('Error fetching banks:', error);
       throw error;
     }
   }
@@ -117,11 +118,11 @@ class BankService {
     } catch (error) {
       // If we have stale data, return it rather than failing completely
       if (data.has(bankCacheKey)) {
-        console.warn(`Returning stale data for bank ${id} due to API error`);
+        SafeLogger.warn(`Returning stale data for bank ${id} due to API error`);
         return data.get(bankCacheKey) as Bank;
       }
 
-      console.error(`Error fetching bank with ID ${id}:`, error);
+      SafeLogger.error(`Error fetching bank with ID ${id}:`, error);
       throw error;
     }
   }

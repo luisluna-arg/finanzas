@@ -1,25 +1,34 @@
-import { getBackendClient } from '@/data/getBackendClient';
+import { getBackendClient } from "@/data/getBackendClient";
 import Funds from "@/components/ui/Funds";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { requireAuth } from "@/services/auth/session.server";
 
-export const loader = async () => {
-    
-    let client = await getBackendClient();
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+    const user = await requireAuth(request);
 
-    let banks = await client.BanksQuery.get()
+    if (!user.accessToken) {
+        throw new Error("No access token available");
+    }
 
-    let currencies = await client.CurrenciesQuery.get()
+    const client = await getBackendClient(user.accessToken!);
+
+    const banks = await client.GetBanksQuery().get();
+
+    const currencies = await client.GetCurrenciesQuery().get();
 
     return {
         banks,
-        currencies
-    }
+        currencies,
+    };
 };
 
 export const meta = () => {
-    return [{
-      title: "Fondos",
-      description: "",
-    }];
-  };
-  
+    return [
+        {
+            title: "Fondos",
+            description: "",
+        },
+    ];
+};
+
 export default Funds;

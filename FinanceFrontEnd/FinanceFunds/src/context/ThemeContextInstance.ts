@@ -1,7 +1,7 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 export interface ThemeContextType {
-  colorScheme: "light" | "dark";
+  colorScheme: 'light' | 'dark';
   toggleColorScheme: () => void;
 }
 

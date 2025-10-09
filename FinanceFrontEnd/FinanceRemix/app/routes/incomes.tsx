@@ -3,64 +3,75 @@ import { getBackendClient } from "@/data/getBackendClient";
 import urls from "@/utils/urls";
 import Incomes from "@/components/ui/Incomes/Index";
 import CommonUtils from "@/utils/common";
+import { requireAuth } from "@/services/auth/session.server";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 100;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const page = url.searchParams.get("page") ?? DEFAULT_PAGE;
-  const pageSize = url.searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE;
-  let selectedBankId = url.searchParams.get("bankId") ?? undefined;
-  let selectedCurrencyId = url.searchParams.get("currencyId") ?? undefined;
+    // Get the session cookie and user from session storage (same pattern as dashboard)
+    const user = await requireAuth(request);
 
-  urls.incomes.paginated;
+    if (!user.accessToken) {
+        throw new Error("No access token available");
+    }
 
-  let client = await getBackendClient();
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get("page") ?? DEFAULT_PAGE);
+    const pageSize = Number(
+        url.searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE
+    );
+    let selectedBankId = url.searchParams.get("bankId") ?? undefined;
+    let selectedCurrencyId = url.searchParams.get("currencyId") ?? undefined;
 
-  const getDataPromise = (bankId: string, currencyId: string) => {
-    const url = `${urls.incomes.paginated}?${CommonUtils.Params({
-      Page: page,
-      PageSize: pageSize,
-      BankId: bankId,
-      CurrencyId: currencyId,
-    })}`;
-    return client.get(url);
-  };
+    const client = await getBackendClient(user.accessToken!);
 
-  let queries = [
-    await client.BanksQuery.get(),
-    await client.CurrenciesQuery.get(),
-  ];
+    const getDataPromise = (bankId: string, currencyId: string) => {
+        const url = `${urls.incomes.paginated}?${CommonUtils.Params({
+            Page: page,
+            PageSize: pageSize,
+            BankId: bankId,
+            CurrencyId: currencyId,
+        })}`;
+        return client.get(url);
+    };
 
-  if (selectedBankId && selectedCurrencyId) {
-    queries.push(getDataPromise(selectedBankId, selectedCurrencyId));
-  }
+    const queries = [
+        await client.GetBanksQuery().get(),
+        await client.GetCurrenciesQuery().get(),
+    ];
 
-  let [banks, currencies, data] = await Promise.all(queries);
+    if (selectedBankId && selectedCurrencyId) {
+        queries.push(getDataPromise(selectedBankId, selectedCurrencyId));
+    }
 
-  if (!data && banks?.length > 0 && currencies?.length > 0) {
-    selectedBankId ??= banks[0].id;
-    selectedCurrencyId ??= currencies[0].id;
-    data = await getDataPromise(selectedBankId!, selectedCurrencyId!);
-  }
+    const results = await Promise.all(queries);
+    const banks = results[0];
+    const currencies = results[1];
+    let data = results[2] ?? null;
 
-  return {
-    banks,
-    currencies,
-    data: data ?? [],
-    bankId: selectedBankId,
-    currencyId: selectedCurrencyId,
-  };
+    if (!data && banks?.length > 0 && currencies?.length > 0) {
+        selectedBankId ??= banks[0].id;
+        selectedCurrencyId ??= currencies[0].id;
+        data = await getDataPromise(selectedBankId!, selectedCurrencyId!);
+    }
+
+    return {
+        banks,
+        currencies,
+        data: data ?? [],
+        bankId: selectedBankId,
+        currencyId: selectedCurrencyId,
+    };
 };
 
 export const meta = () => {
-  return [
-    {
-      title: "Ingresos",
-      description: "",
-    },
-  ];
+    return [
+        {
+            title: "Ingresos",
+            description: "",
+        },
+    ];
 };
 
 export default Incomes;

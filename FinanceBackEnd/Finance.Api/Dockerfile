@@ -10,14 +10,18 @@ ARG AdminUser__EnableSeeding
 ARG AdminUser__UserId
 ARG ASPNETCORE_ENVIRONMENT
 ARG Auth0__Application__ClientId
-ARG Auth0__Application__ClientSecret
 ARG Auth0__Audience
 ARG Auth0__Domain
 ARG Auth0__ManagementApi__ClientId
-ARG Auth0__ManagementApi__ClientSecret
 ARG Auth0__RedirectUri
-ARG ConnectionStrings__PostgresDb
 ARG Urls__Http
+
+# WARNING: Do NOT include secrets (client secrets, management API secrets, connection strings)
+# as build-time ARGs or bake them into image ENV. Secrets should be provided at runtime using
+# your deployment platform (Kubernetes Secrets, environment variables injected by the orchestrator,
+# or secure secret stores). The following sensitive values were intentionally removed from the
+# Dockerfile to avoid image history leakage: Auth0__Application__ClientSecret,
+# Auth0__ManagementApi__ClientSecret, ConnectionStrings__PostgresDb.
 
 ENV AdminUser__DefaultFirstName=$AdminUser__DefaultFirstName \
     AdminUser__DefaultLastName=$AdminUser__DefaultLastName \
@@ -26,13 +30,10 @@ ENV AdminUser__DefaultFirstName=$AdminUser__DefaultFirstName \
     AdminUser__UserId=$AdminUser__UserId \
     ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT \
     Auth0__Application__ClientId=$Auth0__Application__ClientId \
-    Auth0__Application__ClientSecret=$Auth0__Application__ClientSecret \
     Auth0__Audience=$Auth0__Audience \
     Auth0__Domain=$Auth0__Domain \
     Auth0__ManagementApi__ClientId=$Auth0__ManagementApi__ClientId \
-    Auth0__ManagementApi__ClientSecret=$Auth0__ManagementApi__ClientSecret \
     Auth0__RedirectUri=$Auth0__RedirectUri \
-    ConnectionStrings__PostgresDb=$ConnectionStrings__PostgresDb \
     Urls__Http=$Urls__Http
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build

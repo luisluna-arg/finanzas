@@ -1,5 +1,6 @@
 import ApiClient from './ApiClient';
 import type { CreateFundRequest, Fund, FundResponse, FundsResponse } from './types/FundTypes';
+import SafeLogger from '@/utils/SafeLogger';
 
 // Cache management
 const CACHE_TIMEOUT = 60000; // 1 minute
@@ -29,7 +30,7 @@ const FundService = {
 
       return response;
     } catch (error) {
-      console.error('Error fetching funds:', error);
+      SafeLogger.error('Error fetching funds:', error);
       throw error;
     }
   },
@@ -43,7 +44,7 @@ const FundService = {
     try {
       return await ApiClient.get<FundResponse>(`/api/funds/${id}`);
     } catch (error) {
-      console.error(`Error fetching fund ${id}:`, error);
+      SafeLogger.error(`Error fetching fund ${id}:`, error);
       throw error;
     }
   },
@@ -63,7 +64,7 @@ const FundService = {
 
       return response;
     } catch (error) {
-      console.error('Error creating fund:', error);
+      SafeLogger.error('Error creating fund:', error);
       throw error;
     }
   },
