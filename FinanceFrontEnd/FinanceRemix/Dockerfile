@@ -33,12 +33,12 @@ RUN echo "Starting build..." && \
 
 FROM node:20-alpine AS production
 WORKDIR /app
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/build ./build
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package*.json ./
 
 # Production runtime only needs NODE_ENV
 ENV NODE_ENV=production
 
-EXPOSE 3000
-CMD ["npm", "run", "preview", "--", "--port=3000", "--host"]
+EXPOSE 5300
+CMD ["npx", "remix-serve", "./build/server/index.js"]
