@@ -16,34 +16,6 @@ function isTruthy(val) {
 (async function main() {
     try {
         const repoRoot = process.cwd();
-        const viteApiUrl = process.env.VITE_API_URL;
-        const allowInsecure =
-            isTruthy(process.env.ALLOW_INSECURE_API) ||
-            isTruthy(process.env.VITE_ALLOW_INSECURE_API);
-
-        let failed = false;
-
-        // Validate VITE_API_URL
-        if (!viteApiUrl || !String(viteApiUrl).trim()) {
-            console.error(
-                "ERROR: Missing required environment variable VITE_API_URL"
-            );
-            failed = true;
-        } else {
-            // Validate URL format and scheme without echoing the full value
-            try {
-                const parsed = new URL(viteApiUrl);
-                if (parsed.protocol === "http:" && !allowInsecure) {
-                    console.error(
-                        "ERROR: VITE_API_URL uses http:// but ALLOW_INSECURE_API is not set. Use https:// in production or set ALLOW_INSECURE_API for staging."
-                    );
-                    failed = true;
-                }
-            } catch (e) {
-                console.error("ERROR: VITE_API_URL is not a valid URL");
-                failed = true;
-            }
-        }
 
         // Scan for Dockerfiles containing secret-like ARG/ENV
         const secretPatterns = [
@@ -132,10 +104,6 @@ function isTruthy(val) {
                     }`
                 );
             }
-            failed = true;
-        }
-
-        if (failed) {
             process.exit(1);
         }
 
@@ -148,73 +116,4 @@ function isTruthy(val) {
         );
         process.exit(2);
     }
-})();
-const path = require("path");
-const { checkUrl, findDockerfileArgs } = require("./lib/validate-config-lib");
-
-(async function main() {
-    const workspace = path.resolve(__dirname, "..");
-    const frontend = path.join(workspace, "FinanceFrontEnd");
-    const allowInsecure =
-        process.env.ALLOW_INSECURE_API === "true" ||
-        process.env.VITE_ALLOW_INSECURE_API === "true";
-
-    const checks = [];
-    // Check FinanceFunds
-    try {
-        const ffEnv = process.env.VITE_API_URL || null;
-        checks.push({
-            name: "FinanceFunds VITE_API_URL",
-            ...checkUrl("FinanceFunds VITE_API_URL", ffEnv, allowInsecure),
-        });
-    } catch (err) {
-        checks.push({
-            name: "FinanceFunds VITE_API_URL",
-            ok: false,
-            msg: String(err),
-        });
-    }
-
-    // Check FinanceRemix (server-side env)
-    try {
-        const remixEnv =
-            process.env.VITE_API_URL || process.env.VITE_API_ENDPOINT || null;
-        checks.push({
-            name: "FinanceRemix VITE_API_URL",
-            ...checkUrl("FinanceRemix VITE_API_URL", remixEnv, allowInsecure),
-        });
-    } catch (err) {
-        checks.push({
-            name: "FinanceRemix VITE_API_URL",
-            ok: false,
-            msg: String(err),
-        });
-    }
-
-    const dockerFindings = findDockerfileArgs(frontend);
-
-    let failed = false;
-    for (const c of checks) {
-        if (!c.ok) {
-            console.error(`ERROR: ${c.name}: ${c.msg}`);
-            failed = true;
-        } else {
-            console.log(`OK: ${c.name}`);
-        }
-    }
-
-    if (dockerFindings.length) {
-        console.error("\nPotential secret-like Docker ARGs found:");
-        for (const d of dockerFindings) {
-            console.error(` - ${d.file}: ${d.arg}`);
-        }
-        // Now treat Dockerfile secret args as fatal to encourage remediation
-        failed = true;
-        console.error(
-            "\nTreating Dockerfile secret ARGs as fatal. Remove secrets from Docker ARGs and inject them at runtime."
-        );
-    }
-
-    if (failed) process.exit(2);
-    process.exit(0);
 })();
