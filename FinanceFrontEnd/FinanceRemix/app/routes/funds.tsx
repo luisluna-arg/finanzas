@@ -1,17 +1,16 @@
 import { getBackendClient } from "@/data/getBackendClient";
 import Funds from "@/components/ui/Funds";
-import { LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { SessionContants } from "@/services/auth/auth.constants";
-import { sessionStorage } from "@/services/auth/session.server";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { requireAuth } from "@/services/auth/session.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-    const cookie = request.headers.get("Cookie");
-    const session = await sessionStorage.getSession(cookie);
-    const user = session.get(SessionContants.USER_KEY);
+    const user = await requireAuth(request);
 
-    if (!user) return redirect("/auth/login");
+    if (!user.accessToken) {
+        throw new Error("No access token available");
+    }
 
-    const client = await getBackendClient(user.accessToken);
+    const client = await getBackendClient(user.accessToken!);
 
     const banks = await client.GetBanksQuery().get();
 

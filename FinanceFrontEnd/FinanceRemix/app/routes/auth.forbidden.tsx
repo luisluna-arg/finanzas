@@ -1,5 +1,4 @@
 import type { LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { HttpStatusConstants } from "@/services/auth/auth.constants";
 
 export const loader: LoaderFunction = async () => {

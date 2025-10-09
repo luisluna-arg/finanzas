@@ -1,22 +1,19 @@
-import { LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { LoaderFunctionArgs } from "@remix-run/node";
 import { getBackendClient } from "@/data/getBackendClient";
 import urls from "@/utils/urls";
 import Incomes from "@/components/ui/Incomes/Index";
 import CommonUtils from "@/utils/common";
-import { SessionContants } from "@/services/auth/auth.constants";
-import { sessionStorage } from "@/services/auth/session.server";
+import { requireAuth } from "@/services/auth/session.server";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 100;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
     // Get the session cookie and user from session storage (same pattern as dashboard)
-    const cookie = request.headers.get("Cookie");
-    const session = await sessionStorage.getSession(cookie);
-    const user = session.get(SessionContants.USER_KEY);
+    const user = await requireAuth(request);
 
-    if (!user) {
-        return redirect("/auth/login");
+    if (!user.accessToken) {
+        throw new Error("No access token available");
     }
 
     const url = new URL(request.url);
@@ -25,7 +22,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     let selectedBankId = url.searchParams.get("bankId") ?? undefined;
     let selectedCurrencyId = url.searchParams.get("currencyId") ?? undefined;
 
-    const client = await getBackendClient(user.accessToken);
+    const client = await getBackendClient(user.accessToken!);
 
     const getDataPromise = (bankId: string, currencyId: string) => {
         const url = `${urls.incomes.paginated}?${CommonUtils.Params({

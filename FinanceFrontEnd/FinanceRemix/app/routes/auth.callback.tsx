@@ -1,42 +1,35 @@
-import { redirect, type LoaderFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { authenticator } from "@/services/auth/auth.server";
-import {
-    AuthConstants,
-    SessionContants,
-    HttpStatusConstants,
-} from "@/services/auth/auth.constants";
-import { sessionStorage, commitSession } from "@/services/auth/session.server";
+import { AuthConstants } from "@/services/auth/auth.constants";
+import { createUserSession } from "@/services/auth/session.server";
+import SafeLogger from "@/utils/SafeLogger";
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderFunctionArgs) {
+    SafeLogger.info("[auth.callback] Callback loader called");
+    SafeLogger.info("[auth.callback] Request URL:", request.url);
+
     try {
-        // Authenticate and get user
         const user = await authenticator.authenticate(
             AuthConstants.PROVIDER,
             request
         );
-
-        // Get session
-        const session = await sessionStorage.getSession(
-            request.headers.get(SessionContants.COOKIE_HEADER)
+        SafeLogger.info(
+            "[auth.callback] Authentication successful, user:",
+            user
         );
 
-        // Store user in session (server-side only)
-        session.set(SessionContants.USER_KEY, user);
+        // Create user session with Redis session ID
+        return createUserSession(user, "/dashboard");
+    } catch (error) {
+        SafeLogger.error("[auth.callback] Authentication failed:", error);
 
-        // Commit session and redirect
-        return redirect("/dashboard", {
-            headers: {
-                [SessionContants.SET_COOKIE_HEADER]: await commitSession(
-                    session
-                ),
-            },
-        });
-    } catch (error: any) {
-        // If authentication fails with 403, redirect to forbidden page
-        if (error?.status === HttpStatusConstants.FORBIDDEN) {
-            return redirect("/auth/forbidden");
+        // If it's a redirect Response, throw it
+        if (error instanceof Response) {
+            throw error;
         }
-        // Otherwise, redirect to login
-        return redirect("/auth/login");
+
+        // For other errors, redirect to login
+        const { redirect } = await import("@remix-run/node");
+        return redirect("/auth/login?error=callback_failed");
     }
-};
+}

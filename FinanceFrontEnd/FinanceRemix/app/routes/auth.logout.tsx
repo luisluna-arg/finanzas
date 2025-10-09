@@ -1,19 +1,11 @@
 // app/routes/auth/logout.ts
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { destroySession, getSession } from "@/services/auth/session.server";
-import { AuthConstants, SessionContants } from "@/services/auth/auth.constants";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { destroyUserSession } from "@/services/auth/session.server";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const session = await getSession(request.headers.get(SessionContants.SET_COOKIE_HEADER));
-  const logoutURL = new URL(AuthConstants.LOGOUT_URL);
+export async function action({ request }: ActionFunctionArgs) {
+    return destroyUserSession(request);
+}
 
-  logoutURL.searchParams.set("client_id", AuthConstants.CLIENT_ID);
-  logoutURL.searchParams.set("post_logout_redirect_uri", AuthConstants.RETURN_TO_URL);
-
-  return redirect(logoutURL.toString(), {
-    headers: {
-      [SessionContants.SET_COOKIE_HEADER]: await destroySession(session),
-    },
-  });
-};
+export async function loader({ request }: LoaderFunctionArgs) {
+    return destroyUserSession(request);
+}

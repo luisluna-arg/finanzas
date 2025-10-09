@@ -1,49 +1,66 @@
-import { AuthConstants } from "@/services/auth/auth.constants";
-import { OAuth2Tokens } from "arctic";
 import { Authenticator } from "remix-auth";
 import { Auth0Strategy } from "remix-auth-auth0";
-import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import { AuthConstants } from "./auth.constants";
+import redis from "./redis.server";
+import { randomUUID } from "crypto";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
-interface Auth0IdTokenPayload extends JWTPayload {
-    sub?: string;
-    name?: string;
-    email?: string;
-    picture?: string;
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    picture: string;
+    serverSessionId: string;
 }
 
-export const authenticator = new Authenticator<any>();
+// Create authenticator (no session storage parameter needed)
+export const authenticator = new Authenticator<User>();
 
+// JWT verification setup
 const JWKS = createRemoteJWKSet(
     new URL(`https://${AuthConstants.DOMAIN}/.well-known/jwks.json`)
 );
 
-async function verifyIdToken(idToken: string): Promise<Auth0IdTokenPayload> {
-    if (!idToken) throw new Error("No idToken found in tokens");
-
+export async function verifyIdToken(idToken: string) {
     const { payload } = await jwtVerify(idToken, JWKS, {
         issuer: `https://${AuthConstants.DOMAIN}/`,
         audience: AuthConstants.CLIENT_ID,
     });
-
-    return payload as Auth0IdTokenPayload;
+    return payload;
 }
 
-async function getUser(tokens: OAuth2Tokens) {
+async function getUser(tokens: any) {
     const idToken = tokens.idToken();
-    const payload = await verifyIdToken(idToken);
+    if (idToken) {
+        const payload = await verifyIdToken(idToken);
+        return {
+            id: payload.sub ?? "",
+            name: (payload.name as string) ?? "",
+            email: (payload.email as string) ?? "",
+            picture: (payload.picture as string) ?? "",
+        };
+    }
 
+    // Fallback to userinfo endpoint if no id_token
+    const accessToken = tokens.accessToken();
+    const response = await fetch(`https://${AuthConstants.DOMAIN}/userinfo`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch user info");
+    }
+
+    const data = await response.json();
     return {
-        id: payload.sub ?? "",
-        name: (payload.name as string) ?? "",
-        email: (payload.email as string) ?? "",
-        picture: (payload.picture as string) ?? "",
+        id: data.sub ?? "",
+        name: data.name ?? "",
+        email: data.email ?? "",
+        picture: data.picture ?? "",
     };
 }
 
-import serverLogger from "@/utils/logger.server";
-
-serverLogger.info("AuthConstants loaded for Auth0Strategy");
-
+// Configure Auth0 Strategy
 authenticator.use(
     new Auth0Strategy(
         {
@@ -55,13 +72,35 @@ authenticator.use(
             audience: AuthConstants.AUDIENCE,
         },
         async ({ tokens }) => {
+            // Get user info from tokens
             const user = await getUser(tokens);
-            return {
-                ...user,
+
+            // Create a session ID for Redis storage
+            const serverSessionId = randomUUID();
+
+            // Store tokens in Redis
+            const tokenPayload = {
                 accessToken: tokens.accessToken(),
                 refreshToken: tokens.hasRefreshToken()
                     ? tokens.refreshToken()
                     : null,
+                idToken: tokens.idToken(),
+            };
+
+            await redis.set(
+                `serverSession:${serverSessionId}`,
+                JSON.stringify(tokenPayload),
+                "EX",
+                60 * 60 * 24 * 7 // 7 days
+            );
+
+            // Return user with serverSessionId
+            return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                picture: user.picture,
+                serverSessionId,
             };
         }
     ),
