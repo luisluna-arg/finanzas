@@ -1,11 +1,10 @@
 import React from "react";
-import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import urls from "@/utils/urls";
 import dayjs from "dayjs";
-import CommonUtils, { toNumber } from "@/utils/common";
-
-import { InputType } from "@/components/ui/utils/InputType";
+import CommonUtils from "@/utils/common";
 import Picker from "@/components/ui/utils/Picker";
+import { useLoaderData, useLocation, useNavigate } from "@remix-run/react";
+import { InputType } from "@/components/ui/utils/InputType";
 import PaginatedTable, {
     Column,
     ConditionalClass,
@@ -21,7 +20,7 @@ interface PickerData {
 interface LoaderData {
     banks: PickerData[];
     currencies: PickerData[];
-    data: any[];
+    data: unknown[];
     bankId: string;
     currencyId: string;
 }
@@ -58,11 +57,11 @@ const Incomes: React.FC = () => {
 
     const valueConditionalClass: ConditionalClass = {
         class: "text-success fw-bold",
-        eval: (field: any) => field != null && toNumber(field) > 0,
+        eval: (field: unknown) => field != null && Number(String(field)) > 0,
     };
 
-    const valueMapper = (field: any) =>
-        field != null ? toNumber(field) : null;
+    const valueMapper = (field: unknown) =>
+        field != null ? Number(String(field)) : null;
 
     const numericHeader = {
         classes: "text-end",
@@ -101,7 +100,7 @@ const Incomes: React.FC = () => {
             endpoint: urls.banks.endpoint,
             mapper: {
                 id: "id",
-                label: (record: PickerData) => `${record.name}`,
+                label: (record: unknown) => `${(record as PickerData).name}`,
             },
         },
         {
@@ -113,7 +112,7 @@ const Incomes: React.FC = () => {
             endpoint: urls.currencies.endpoint,
             mapper: {
                 id: "id",
-                label: (record: PickerData) => `${record.name}`,
+                label: (record: unknown) => `${(record as PickerData).name}`,
             },
         },
         {
@@ -132,6 +131,17 @@ const Incomes: React.FC = () => {
         },
     ];
 
+    type LocalPaginatedData = {
+        items: Record<string, unknown>[];
+        totalPages: number;
+    } | null;
+    const paginatedData: LocalPaginatedData = Array.isArray(data)
+        ? {
+              items: data.map((d) => d as Record<string, unknown>),
+              totalPages: 1,
+          }
+        : (data as LocalPaginatedData);
+
     return (
         <div className={cn(["py-10", "px-40"])}>
             <div className="flex flex-row justify-center gap-10">
@@ -139,7 +149,11 @@ const Incomes: React.FC = () => {
                     id="bank-picker"
                     value={bankId}
                     data={banks}
-                    mapper={{ id: "id", label: (record) => `${record.name}` }}
+                    mapper={{
+                        id: "id",
+                        label: (record: unknown) =>
+                            `${(record as PickerData).name}`,
+                    }}
                     onChange={onBankPickerChange}
                     className={"w-60"}
                 />
@@ -147,7 +161,11 @@ const Incomes: React.FC = () => {
                     id="currency-picker"
                     value={currencyId}
                     data={currencies}
-                    mapper={{ id: "id", label: (record) => `${record.name}` }}
+                    mapper={{
+                        id: "id",
+                        label: (record: unknown) =>
+                            `${(record as PickerData).name}`,
+                    }}
                     onChange={onCurrencyPickerChange}
                     className={"w-60"}
                 />
@@ -156,7 +174,7 @@ const Incomes: React.FC = () => {
             <PaginatedTable
                 name="incomes-table"
                 columns={TableColumns}
-                data={data}
+                data={paginatedData}
                 onAdd={() => reload({})}
                 onDelete={() => reload({})}
                 admin={{

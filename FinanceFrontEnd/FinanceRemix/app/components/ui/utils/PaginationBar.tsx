@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ActionLink from "@/components/ui/utils/ActionLink";
 
 /* TODO Fix the ammount of page pickers displayed on screen */
@@ -7,12 +7,8 @@ const PaginationBar: React.FC<{
     totalPages: number;
     action: (page: number) => void;
 }> = ({ page, totalPages, action }) => {
-    const [previousPageEnabled, setPreviousPageEnabled] = useState<boolean>(
-        page > 1
-    );
-    const [nextPageEnabled, setNextPageEnabled] = useState<boolean>(
-        page < totalPages
-    );
+    const previousPageEnabled = page > 1;
+    const nextPageEnabled = page < totalPages;
 
     return (
         <ul className="pagination">
@@ -23,7 +19,7 @@ const PaginationBar: React.FC<{
             >
                 <ActionLink
                     text="Anterior"
-                    action={(e) => action(page - 1)}
+                    action={() => action(page - 1)}
                     isEnabled={previousPageEnabled}
                 />
             </li>
@@ -31,13 +27,13 @@ const PaginationBar: React.FC<{
                 const isActive = i === page - 1 ? " active" : "";
                 return (
                     <li key={i} className="page-item">
-                        <a
+                        <button
+                            type="button"
                             className={"page-link" + isActive}
-                            href="#"
                             onClick={() => action(i)}
                         >
                             {i + 1}
-                        </a>
+                        </button>
                     </li>
                 );
             })}

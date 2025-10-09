@@ -2,16 +2,10 @@ import { loader } from "@/routes/dashboard";
 import { Outlet, useLoaderData } from "@remix-run/react";
 
 import urls from "@/utils/urls";
-import { Dictionary, toNumber } from "@/utils/common";
+import { Dictionary, toNumber, ValueLike } from "@/utils/common";
 import { FetchTableColumn } from "@/components/ui/utils/FetchTableColumn";
 import { InputType } from "@/components/ui/utils/InputType";
 import FetchTable from "@/components/ui/utils/FetchTable";
-
-interface ValueHolder {
-    value?: number;
-}
-
-const backgroundIntensity = 500;
 
 const backgroundClasses = [
     "bg-amber-500",
@@ -43,19 +37,53 @@ const intFormatter = (r: number) => (r ? r : 0);
 const moneyFormatter = (r: number) =>
     (typeof r === "number" ? r : 0).toFixed(2);
 
-const getSafeValue = (v: ValueHolder) => toNumber(v);
+const getSafeValue = (v: unknown) => toNumber(v as ValueLike);
+
+const safeProp = (obj: unknown, prop: string): unknown => {
+    if (obj && typeof obj === "object") {
+        return (obj as Record<string, unknown>)[prop];
+    }
+    return undefined;
+};
+
+const getOriginOrName = (record: unknown): string => {
+    const origin = safeProp(record, "origin");
+    if (origin && typeof origin === "object") {
+        const name = safeProp(origin, "name");
+        if (typeof name === "string") return name;
+    }
+    const name = safeProp(record, "name");
+    return typeof name === "string" ? name : "-";
+};
+
+const getNestedName = (obj: unknown, path: string[]): string => {
+    let cur: unknown = obj;
+    for (const p of path) {
+        cur = safeProp(cur, p);
+        if (cur === undefined) return "-";
+    }
+    return typeof cur === "string" ? cur : "-";
+};
+
+const getSafeValueFrom = (v: unknown, prop?: string) => {
+    const value = prop ? safeProp(v, prop) : v;
+    return toNumber(value as ValueLike);
+};
+
+type Mapper = (v: unknown) => number;
+type Reducer = (acc: number, v: unknown) => number;
 
 const DecimalColumn = (
     id: string,
     label: string,
-    mapper?: Function,
-    totalsReducer?: Function
+    mapper?: Mapper,
+    totalsReducer?: Reducer
 ) => {
-    const localMapper = mapper ?? getSafeValue;
+    const localMapper: Mapper =
+        mapper ?? ((v: unknown) => toNumber(v as ValueLike));
 
-    const localTotalsReducer =
-        totalsReducer ??
-        ((acc: number, r: ValueHolder | number) => acc + localMapper(r));
+    const localTotalsReducer: Reducer =
+        totalsReducer ?? ((acc: number, r: unknown) => acc + localMapper(r));
 
     const result = {
         id: id,
@@ -63,7 +91,7 @@ const DecimalColumn = (
         class: ["text-end"],
         headerClass: ["text-end"],
         type: InputType.Decimal,
-        mapper,
+        mapper: localMapper,
         formatter: moneyFormatter,
         totals: {
             formatter: moneyFormatter,
@@ -77,8 +105,8 @@ const DecimalColumn = (
 const PaymentPlanColumn = (
     columnName: string,
     label: string,
-    mapper?: Function,
-    totalsReducer?: Function
+    mapper?: Mapper,
+    totalsReducer?: Reducer
 ) => {
     return {
         id: columnName,
@@ -86,7 +114,7 @@ const PaymentPlanColumn = (
         type: InputType.Integer,
         class: ["text-end"],
         headerClass: ["text-end"],
-        mapper: mapper ?? getSafeValue,
+        mapper: mapper ?? ((v: unknown) => toNumber(v as ValueLike)),
         formatter: intFormatter,
         totals: {
             formatter: intFormatter,
@@ -95,8 +123,12 @@ const PaymentPlanColumn = (
     };
 };
 
-const dollarCalculator = function (r: any, creditCardConversion: any) {
-    return toNumber(r) * toNumber(creditCardConversion.sellRate, 1);
+const dollarCalculator = function (
+    r: ValueLike,
+    creditCardConversion: unknown
+) {
+    const sellRate = safeProp(creditCardConversion, "sellRate") as ValueLike;
+    return toNumber(r) * toNumber(sellRate, 1);
 };
 
 export default function Dashboard() {
@@ -127,10 +159,10 @@ export default function Dashboard() {
             new FetchTableColumn(
                 "origin",
                 "Débito/Servicio",
-                (record: any) => record?.origin?.name ?? record?.name ?? "-"
+                (record: unknown) => getOriginOrName(record)
             ),
-            DecimalColumn("amount", "Monto", (a: any) =>
-                toNumber(a?.amount ?? a)
+            DecimalColumn("amount", "Monto", (a: unknown) =>
+                getSafeValueFrom(a, "amount")
             ),
         ],
     };
@@ -147,25 +179,27 @@ export default function Dashboard() {
             new FetchTableColumn(
                 "label",
                 "Origen",
-                (v: any) => v?.baseCurrency?.name ?? "-",
-                (v: any) => v?.baseCurrency?.name ?? "-"
+                (v: unknown) => getNestedName(v, ["baseCurrency", "name"]),
+                (v: unknown) => getNestedName(v, ["baseCurrency", "name"])
             ),
             new FetchTableColumn(
                 "label",
                 "Destino",
-                (v: any) => v?.quoteCurrency?.name ?? "-",
-                (v: any) => v?.quoteCurrency?.name ?? "-"
+                (v: unknown) => getNestedName(v, ["quoteCurrency", "name"]),
+                (v: unknown) => getNestedName(v, ["quoteCurrency", "name"])
             ),
-            DecimalColumn("value", "Compra", (v: any) =>
-                getSafeValue(v.buyRate)
+            DecimalColumn("value", "Compra", (v: unknown) =>
+                getSafeValueFrom(safeProp(v, "buyRate"))
             ),
-            DecimalColumn("value", "Venta", (v: any) =>
-                getSafeValue(v.sellRate)
+            DecimalColumn("value", "Venta", (v: unknown) =>
+                getSafeValueFrom(safeProp(v, "sellRate"))
             ),
         ],
     };
 
-    const SummaryTableSettings = {
+    const SummaryTableSettings: {
+        columns: unknown[];
+    } = {
         columns: [
             new FetchTableColumn("label", "Dato"),
             DecimalColumn("value", "Monto", getSafeValue),
@@ -182,12 +216,14 @@ export default function Dashboard() {
     const InvestmentsTableSettings = {
         columns: [
             new FetchTableColumn("symbol", "Activo"),
-            DecimalColumn(
-                "averageReturn",
-                "Rend. prom.",
-                (v: any) => v.averageReturn ?? v
-            ),
-            DecimalColumn("valued", "Valorado", (v: any) => v.valued ?? v),
+            DecimalColumn("averageReturn", "Rend. prom.", (v: unknown) => {
+                const val = safeProp(v, "averageReturn");
+                return typeof val === "number" ? val : getSafeValueFrom(v);
+            }),
+            DecimalColumn("valued", "Valorado", (v: unknown) => {
+                const val = safeProp(v, "valued");
+                return typeof val === "number" ? val : getSafeValueFrom(v);
+            }),
         ],
     };
 
@@ -197,20 +233,23 @@ export default function Dashboard() {
                 id: "concept",
                 label: "Concepto",
             },
-            DecimalColumn("amount", "Monto", (v: any) =>
-                toNumber(v?.amount ?? v, 0)
+            DecimalColumn("amount", "Monto", (v: unknown) =>
+                toNumber(safeProp(v, "amount") as ValueLike, 0)
             ),
-            DecimalColumn("amountDollars", "Dólares", (v: any) =>
-                toNumber(v?.amountDollars ?? v, 0)
+            DecimalColumn("amountDollars", "Dólares", (v: unknown) =>
+                toNumber(safeProp(v, "amountDollars") as ValueLike, 0)
             ),
             DecimalColumn(
                 "totalAmount",
                 "Total",
-                (v: any) => {
+                (v: unknown) => {
                     if (v) {
-                        const amount = toNumber(v?.amount ?? v, 0);
+                        const amount = toNumber(
+                            safeProp(v, "amount") as ValueLike,
+                            0
+                        );
                         const amountDollars = toNumber(
-                            v?.amountDollars ?? v,
+                            safeProp(v, "amountDollars") as ValueLike,
                             0
                         );
                         return (
@@ -224,11 +263,14 @@ export default function Dashboard() {
 
                     return 0;
                 },
-                (acc: number, v: any) => {
+                (acc: number, v: unknown) => {
                     if (v) {
-                        const amount = toNumber(v?.amount ?? v, 0);
+                        const amount = toNumber(
+                            safeProp(v, "amount") as ValueLike,
+                            0
+                        );
                         const amountDollars = toNumber(
-                            v?.amountDollars ?? v,
+                            safeProp(v, "amountDollars") as ValueLike,
                             0
                         );
                         return (
@@ -247,15 +289,18 @@ export default function Dashboard() {
             PaymentPlanColumn(
                 "paymentNumber",
                 "Nro. Cuota",
-                (v: any) => toNumber(v?.paymentNumber ?? v, 0),
-                (acc: number, v: any) =>
-                    acc + toNumber(v?.paymentNumber ?? v, 0)
+                (v: unknown) =>
+                    toNumber(safeProp(v, "paymentNumber") as ValueLike, 0),
+                (acc: number, v: unknown) =>
+                    acc + toNumber(safeProp(v, "paymentNumber") as ValueLike, 0)
             ),
             PaymentPlanColumn(
                 "planSize",
                 "Cuotas",
-                (v: any) => toNumber(v?.planSize ?? v, 0),
-                (acc: number, v: any) => acc + toNumber(v?.planSize ?? v, 0)
+                (v: unknown) =>
+                    toNumber(safeProp(v, "planSize") as ValueLike, 0),
+                (acc: number, v: unknown) =>
+                    acc + toNumber(safeProp(v, "planSize") as ValueLike, 0)
             ),
         ],
     };
@@ -363,88 +408,88 @@ export default function Dashboard() {
                                 {debitModules && (
                                     <div className="w-auto me-2 overflow-hidden">
                                         {urls.debits.monthly.latest &&
-                                            debitModules.map(
-                                                (appModuleId, index) => {
-                                                    const url = urls.proxy(
-                                                        urls.debits.monthly
-                                                            .latest,
-                                                        {
-                                                            AppModuleId:
-                                                                appModuleId,
-                                                            IncludeDeactivated:
-                                                                false,
-                                                        }
-                                                    );
-                                                    const bgClass =
-                                                        debitBackgroundClasses[
-                                                            appModuleId
-                                                        ];
-                                                    const tableName =
-                                                        debitTableNames[
-                                                            appModuleId
-                                                        ];
-                                                    const title =
-                                                        debitTableTitles[
-                                                            appModuleId
-                                                        ];
+                                            debitModules.map((appModuleId) => {
+                                                const url = urls.proxy(
+                                                    urls.debits.monthly.latest,
+                                                    {
+                                                        AppModuleId:
+                                                            appModuleId,
+                                                        IncludeDeactivated:
+                                                            false,
+                                                    }
+                                                );
+                                                const bgClass =
+                                                    debitBackgroundClasses[
+                                                        appModuleId
+                                                    ];
+                                                const tableName =
+                                                    debitTableNames[
+                                                        appModuleId
+                                                    ];
+                                                const title =
+                                                    debitTableTitles[
+                                                        appModuleId
+                                                    ];
 
-                                                    return (
-                                                        <FetchTable
-                                                            key={appModuleId}
-                                                            name={`${tableName}`}
-                                                            title={{
-                                                                text: title,
-                                                                class: `text-center ${bgClass}`,
-                                                            }}
-                                                            url={url}
-                                                            columns={
-                                                                DebitTableSettings.columns
-                                                            }
-                                                            classes={
-                                                                tableClasses
-                                                            }
-                                                            hideIfEmpty={true}
-                                                            wrapper={{
-                                                                classes: [
-                                                                    "w-auto",
-                                                                    "overflow-hidden",
-                                                                ],
-                                                            }}
-                                                        />
-                                                    );
-                                                }
-                                            )}
+                                                return (
+                                                    <FetchTable
+                                                        key={appModuleId}
+                                                        name={`${tableName}`}
+                                                        title={{
+                                                            text: title,
+                                                            class: `text-center ${bgClass}`,
+                                                        }}
+                                                        url={url}
+                                                        columns={
+                                                            DebitTableSettings.columns as unknown as unknown[]
+                                                        }
+                                                        classes={tableClasses}
+                                                        hideIfEmpty={true}
+                                                        wrapper={{
+                                                            classes: [
+                                                                "w-auto",
+                                                                "overflow-hidden",
+                                                            ],
+                                                        }}
+                                                    />
+                                                );
+                                            })}
                                     </div>
                                 )}
                             </div>
                             <div className="col-span-2 justify-content-center">
                                 {creditCards &&
                                     creditCards.map(
-                                        (data: any, index: number) => {
+                                        (c: unknown, _index: number) => {
+                                            const data = c as {
+                                                id?: string;
+                                                name?: string;
+                                                bank?: { name?: string };
+                                            };
                                             const url = urls.proxy(
                                                 urls.creditCardMovements.latest,
                                                 { CreditCardId: data.id }
                                             );
+                                            const idx =
+                                                _index <
+                                                backgroundClasses.length
+                                                    ? _index
+                                                    : backgroundClasses.length -
+                                                      _index -
+                                                      1;
                                             const bgClass =
-                                                backgroundClasses[
-                                                    index <
-                                                    backgroundClasses.length
-                                                        ? index
-                                                        : backgroundClasses.length -
-                                                          index -
-                                                          1
-                                                ];
+                                                backgroundClasses[idx];
                                             return (
                                                 <FetchTable
-                                                    name={`${data.name}-${data.bank.name}-table`}
-                                                    key={index}
+                                                    name={`${data.name}-${data.bank?.name}-table`}
+                                                    key={_index}
                                                     title={{
-                                                        text: `${data.name} ${data.bank.name}`,
+                                                        text: `${data.name} ${data.bank?.name}`,
                                                         class: `text-center ${bgClass} text-white`,
                                                     }}
                                                     url={url}
                                                     columns={
-                                                        CreditCardTableSettings.columns
+                                                        CreditCardTableSettings.columns as unknown as unknown[]
                                                     }
                                                     classes={tableClasses}
                                                     hideIfEmpty={true}
@@ -471,7 +516,7 @@ export default function Dashboard() {
                                             urls.summary.currentInvestments
                                         )}
                                         columns={
-                                            InvestmentsTableSettings.columns
+                                            InvestmentsTableSettings.columns as unknown as unknown[]
                                         }
                                         classes={tableClasses}
                                     />

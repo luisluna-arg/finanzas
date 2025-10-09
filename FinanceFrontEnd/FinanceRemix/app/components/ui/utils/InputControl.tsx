@@ -25,11 +25,11 @@ interface InputControlProps {
 
 const classesToString = (classes: string[]): string => classes.join(" ");
 
-const nullablePropertyResolver = (name: string, property: any) => {
+const nullablePropertyResolver = (name: string, property: unknown) => {
     if (property !== undefined && property !== null) {
-        return { [name]: property };
+        return { [name]: property } as Record<string, unknown>;
     }
-    return {};
+    return {} as Record<string, unknown>;
 };
 
 // Input Components

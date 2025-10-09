@@ -29,12 +29,22 @@ export async function verifyIdToken(idToken: string) {
     return payload;
 }
 
-async function getUser(tokens: any) {
-    const idToken = tokens.idToken();
+type TokenSet = {
+    idToken?: () => string | undefined;
+    accessToken?: () => string | undefined;
+    refreshToken?: () => string | undefined;
+    hasRefreshToken?: () => boolean;
+};
+
+async function getUser(tokens: TokenSet) {
+    const idToken = tokens.idToken?.();
     if (idToken) {
-        const payload = await verifyIdToken(idToken);
+        const payload = (await verifyIdToken(idToken)) as Record<
+            string,
+            unknown
+        >;
         return {
-            id: payload.sub ?? "",
+            id: (payload.sub as string) ?? "",
             name: (payload.name as string) ?? "",
             email: (payload.email as string) ?? "",
             picture: (payload.picture as string) ?? "",
@@ -42,7 +52,7 @@ async function getUser(tokens: any) {
     }
 
     // Fallback to userinfo endpoint if no id_token
-    const accessToken = tokens.accessToken();
+    const accessToken = tokens.accessToken?.();
     const response = await fetch(`https://${AuthConstants.DOMAIN}/userinfo`, {
         headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -51,12 +61,12 @@ async function getUser(tokens: any) {
         throw new Error("Failed to fetch user info");
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as Record<string, unknown>;
     return {
-        id: data.sub ?? "",
-        name: data.name ?? "",
-        email: data.email ?? "",
-        picture: data.picture ?? "",
+        id: (data.sub as string) ?? "",
+        name: (data.name as string) ?? "",
+        email: (data.email as string) ?? "",
+        picture: (data.picture as string) ?? "",
     };
 }
 

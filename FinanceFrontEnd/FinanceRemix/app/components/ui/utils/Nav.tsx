@@ -1,6 +1,8 @@
+/* eslint-disable react/prop-types */
+
 type NavProps = {
     className?: string | string[];
-    children?: any;
+    children?: React.ReactNode;
 };
 
 export const Nav: React.FC<NavProps> = ({ children }) => {
@@ -8,7 +10,7 @@ export const Nav: React.FC<NavProps> = ({ children }) => {
 };
 
 type NavlinkProps = {
-    children?: any;
+    children?: React.ReactNode;
 };
 
 export const Navlink: React.FC<NavlinkProps> = ({ children }) => {
@@ -17,7 +19,7 @@ export const Navlink: React.FC<NavlinkProps> = ({ children }) => {
 
 type NavbarProps = {
     className?: string | string[];
-    children?: any;
+    children?: React.ReactNode;
 };
 
 export const Navbar: React.FC<NavbarProps> = ({ children }) => {
@@ -27,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({ children }) => {
 type NavbarCollapseProps = {
     id?: string;
     className?: string | string[];
-    children?: any;
+    children?: React.ReactNode;
 };
 
 export const NavbarCollapse: React.FC<NavbarCollapseProps> = ({ children }) => {
@@ -36,7 +38,7 @@ export const NavbarCollapse: React.FC<NavbarCollapseProps> = ({ children }) => {
 
 type NavbarToggleProps = {
     ariaControls?: string;
-    children?: any;
+    children?: React.ReactNode;
 };
 
 export const NavbarToggle: React.FC<NavbarToggleProps> = ({ children }) => {
@@ -44,7 +46,7 @@ export const NavbarToggle: React.FC<NavbarToggleProps> = ({ children }) => {
 };
 
 type NavbarBrandProps = {
-    children?: any;
+    children?: React.ReactNode;
 };
 
 export const NavbarBrand: React.FC<NavbarBrandProps> = ({ children }) => {

@@ -7,11 +7,13 @@ export type SessionUser = {
 };
 
 // Convert full User to compact SessionUser
-export function encodeUserForSession(user: any): SessionUser {
+export function encodeUserForSession(
+    user: Record<string, unknown>
+): SessionUser {
     return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        tokenExpiry: user.exp ? user.exp * 1000 : undefined, // Convert to milliseconds if exists
+        id: (user.id as string) ?? "",
+        email: (user.email as string) ?? "",
+        name: (user.name as string) ?? "",
+        tokenExpiry: user.exp ? (user.exp as number) * 1000 : undefined, // Convert to milliseconds if exists
     };
 }

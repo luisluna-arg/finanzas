@@ -82,7 +82,7 @@ const urls = {
     /**
      * Accepts a full backend URL or a path, but always extracts just the path for the proxy.
      */
-    proxy: (urlOrPath: string, params?: Record<string, any>) => {
+    proxy: (urlOrPath: string, params?: Record<string, unknown>) => {
         // If urlOrPath is a full URL, extract the path and search
         let path = urlOrPath;
         try {
@@ -90,14 +90,18 @@ const urls = {
                 const u = new URL(urlOrPath);
                 path = u.pathname + (u.search || "");
             }
-        } catch {}
+        } catch {
+            // ignore invalid URL and treat input as a path
+        }
 
         const search = params
             ? "&" +
               Object.entries(params)
                   .map(
                       ([k, v]) =>
-                          `${encodeURIComponent(k)}=${encodeURIComponent(v)}`
+                          `${encodeURIComponent(k)}=${encodeURIComponent(
+                              String(v)
+                          )}`
                   )
                   .join("&")
             : "";

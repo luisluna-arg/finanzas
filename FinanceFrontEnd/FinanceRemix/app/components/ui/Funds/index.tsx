@@ -40,18 +40,11 @@ const Funds: React.FC = () => {
     );
     const [reloadTable, setReloadTable] = useState<boolean>(true);
 
-    const updateFundsEndpoint = (bankId: string, currencyId: string) => {
-        setFundsEndpoint(buildFundsEndpoint(bankId, currencyId));
-    };
+    // Removed updateFundsEndpoint helper to keep effect dependencies stable.
 
     const onBankPickerChange = (picker: { value: string }) => {
         const newBankId =
             selectedBankId !== picker.value ? picker.value : selectedBankId;
-        setSelectedBankId(newBankId);
-    };
-
-    const onBankPickerFetch = ({ data }: { data: PickerData[] }) => {
-        const newBankId = data[0].id;
         setSelectedBankId(newBankId);
     };
 
@@ -63,17 +56,12 @@ const Funds: React.FC = () => {
         setSelectedCurrencyId(newCurrencyId);
     };
 
-    const onCurrencyPickerFetch = ({ data }: { data: PickerData[] }) => {
-        const newCurrencyId = data[0].id;
-        setSelectedCurrencyId(newCurrencyId);
-    };
-
     const valueConditionalClass = {
         class: "text-success fw-bold",
-        eval: (field: any) => field != null && toNumber(field) > 0,
+        eval: (field: unknown) => field != null && toNumber(field) > 0,
     };
 
-    const valueMapper = (field: any) =>
+    const valueMapper = (field: unknown) =>
         field != null ? toNumber(field) : null;
 
     const numericHeader = {
@@ -175,10 +163,12 @@ const Funds: React.FC = () => {
     // Update the endpoint whenever selectedBankId or selectedCurrencyId changes
     React.useEffect(() => {
         if (selectedBankId && selectedCurrencyId) {
-            updateFundsEndpoint(selectedBankId, selectedCurrencyId);
+            setFundsEndpoint(
+                buildFundsEndpoint(selectedBankId, selectedCurrencyId)
+            );
             setReloadTable(true);
         }
-    }, [selectedBankId, selectedCurrencyId, updateFundsEndpoint]);
+    }, [selectedBankId, selectedCurrencyId]);
 
     return (
         <>
@@ -190,10 +180,23 @@ const Funds: React.FC = () => {
                             data={banks}
                             mapper={{
                                 id: "id",
-                                label: (record) => `${record.name}`,
+                                label: (record: unknown) =>
+                                    `${(record as PickerData).name}`,
                             }}
                             onChange={onBankPickerChange}
-                            onFetch={onBankPickerFetch}
+                            onFetch={({
+                                responseData,
+                            }: {
+                                responseData: unknown;
+                            }) => {
+                                if (
+                                    Array.isArray(responseData) &&
+                                    responseData.length > 0
+                                ) {
+                                    const first = responseData[0] as PickerData;
+                                    setSelectedBankId(first.id);
+                                }
+                            }}
                         />
                     </div>
                     <div className="col-6">
@@ -202,10 +205,23 @@ const Funds: React.FC = () => {
                             data={currencies}
                             mapper={{
                                 id: "id",
-                                label: (record) => `${record.name}`,
+                                label: (record: unknown) =>
+                                    `${(record as PickerData).name}`,
                             }}
                             onChange={onCurrencyPickerChange}
-                            onFetch={onCurrencyPickerFetch}
+                            onFetch={({
+                                responseData,
+                            }: {
+                                responseData: unknown;
+                            }) => {
+                                if (
+                                    Array.isArray(responseData) &&
+                                    responseData.length > 0
+                                ) {
+                                    const first = responseData[0] as PickerData;
+                                    setSelectedCurrencyId(first.id);
+                                }
+                            }}
                         />
                     </div>
                 </div>

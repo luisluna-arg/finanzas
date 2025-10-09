@@ -1,6 +1,7 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import redis from "./redis.server";
 import { verifyIdToken } from "./auth.server";
+import type { SessionUser } from "./types/SessionUser";
 
 // User session storage (different from auth flow)
 const userSessionStorage = createCookieSessionStorage({
@@ -72,7 +73,10 @@ export async function getUserFromSession(request: Request) {
     return null;
 }
 
-export async function createUserSession(user: any, redirectTo: string) {
+export async function createUserSession(
+    user: { serverSessionId: string },
+    redirectTo: string
+) {
     const session = await userSessionStorage.getSession();
     session.set("serverSessionId", user.serverSessionId);
 
@@ -106,21 +110,31 @@ export async function requireAuth(request: Request) {
     if (!result) {
         throw redirect("/auth/login");
     }
+    type Tokens = {
+        accessToken?: string;
+        refreshToken?: string;
+        idToken?: string;
+        [key: string]: unknown;
+    };
 
-    const { user, tokens } = result;
+    const { user, tokens } = result as {
+        user: SessionUser;
+        tokens: Tokens;
+    };
 
     // Avoid printing full tokens to logs. Use a safe logger and only print a short preview.
     try {
         const { default: SafeLogger } = await import("@/utils/SafeLogger");
+        const tokenInfo = tokens as { accessToken?: string };
         SafeLogger.info(
             "[requireAuth] Access token preview:",
-            tokens.accessToken
-                ? `${tokens.accessToken.substring(0, 10)}...`
+            tokenInfo.accessToken
+                ? `${tokenInfo.accessToken.substring(0, 10)}...`
                 : null
         );
         SafeLogger.info(
             "[requireAuth] Access token length:",
-            tokens.accessToken?.length
+            tokenInfo.accessToken?.length
         );
     } catch (e) {
         // If logger import fails for any reason, don't block authentication flow.
@@ -128,8 +142,8 @@ export async function requireAuth(request: Request) {
 
     return {
         ...user,
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
+        accessToken: tokens.accessToken as unknown as string | undefined,
+        refreshToken: tokens.refreshToken as unknown as string | undefined,
     };
 }
 
@@ -140,6 +154,6 @@ export async function getUserAndTokens(request: Request) {
     const tokenData = await redis.get(`serverSession:${user.serverSessionId}`);
     if (!tokenData) return null;
 
-    const tokens = JSON.parse(tokenData);
+    const tokens = JSON.parse(tokenData) as Record<string, unknown>;
     return { user, tokens };
 }

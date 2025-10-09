@@ -1,4 +1,7 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
+import type { Settings as InputControlSettings } from "@/components/ui/utils/InputControl";
 import { Form } from "@/components/ui/utils/Form";
 import dates from "@/utils/dates";
 import ActionButton, {
@@ -36,7 +39,7 @@ interface Admin {
         | string[]
         | {
               id: string;
-              value: any;
+              value: unknown;
           }[];
     addEnabled?: boolean;
     deleteEnabled?: boolean;
@@ -57,17 +60,16 @@ export interface Column {
     };
     editable?:
         | {
-              defaultValue?: any;
+              defaultValue?: unknown;
           }
         | boolean;
     conditionalClass?: ConditionalClass[] | ConditionalClass;
     mapper?:
         | {
               id: string;
-              label?: string | ((record: any) => string);
+              label?: string | ((record: Row) => string);
           }
-        | Function
-        | any;
+        | ((record: Row) => React.ReactNode);
     datetime?: {
         timeFormat: "HH:mm";
         timeIntervals: number;
@@ -77,25 +79,31 @@ export interface Column {
 }
 
 export interface ConditionalClass {
-    eval: (value: any) => boolean;
+    eval: (value: unknown) => boolean;
     class: string;
 }
 
 export interface PaginatedTableProps {
     name: string;
-    data?: any;
+    data?: Data | null;
     url?: string;
     admin?: Admin;
     rowCount?: number;
     columns: Column[];
-    onFetch?: (data: any) => void;
-    onAdd?: (data: any) => void;
-    onDelete?: (data: any) => void;
+    onFetch?: (data: unknown) => void;
+    onAdd?: (data: unknown) => void;
+    onDelete?: (data: unknown) => void;
     reloadData?: boolean;
 }
 
+interface Row {
+    id?: string | number;
+    isSelected?: boolean;
+    [key: string]: unknown;
+}
+
 interface Data {
-    items: any[];
+    items: Row[];
     totalPages: number;
 }
 
@@ -106,10 +114,9 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     admin,
     rowCount,
     columns,
-    onFetch,
     onAdd,
     onDelete,
-    reloadData,
+    // onFetch and reloadData intentionally unused in this component
 }) => {
     const [tableData, setTableData] = useState<Data>({
         items: [],
@@ -134,13 +141,11 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         if (url) {
             setLoading(true);
 
-            fetchPaginatedData<any>(url, page, 10).then((result) => {
-                const extendedItems = result.items.map(
-                    (item: Omit<any, "isSelected">) => ({
-                        ...item,
-                        isSelected: false,
-                    })
-                );
+            fetchPaginatedData<Data>(url, page, 10).then((result) => {
+                const extendedItems = result.items.map((item) => ({
+                    ...item,
+                    isSelected: false,
+                }));
 
                 setTableData({
                     ...result,
@@ -159,11 +164,11 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         return [
             ...Array.from(row?.getElementsByTagName("input") ?? []),
             ...Array.from(row?.getElementsByTagName("select") ?? []),
-        ];
+        ] as Array<HTMLInputElement | HTMLSelectElement>;
     };
 
     const getEditRowValues = () => {
-        return getEditRowInputs().reduce<Record<string, any>>((o, i) => {
+        return getEditRowInputs().reduce<Record<string, unknown>>((o, i) => {
             const column = columns.find((c) => c.id === i.id);
             let columnValue = null;
             if (i && i.type === "checkbox") {
@@ -184,8 +189,9 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         }
 
         const baseSelector = `Table#${name} TableRow.${name}-data-row TableCell:first-child input[type=checkbox]`;
-        const checkboxes: any[] = Array.from(
-            document.querySelectorAll(baseSelector)
+        const nodeList = document.querySelectorAll(baseSelector);
+        const checkboxes = Array.from(nodeList).filter(
+            (n): n is HTMLInputElement => n instanceof HTMLInputElement
         );
         return typeof isSelected === "undefined"
             ? checkboxes
@@ -195,9 +201,12 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     const getSelectIds = (isSelected?: boolean) =>
         getSelectCheckboxes(isSelected).map((i) => i.id);
 
-    const validateForm = (inputs?: any[]) => {
-        inputs = inputs ?? getEditRowInputs();
-        for (const input of inputs) {
+    const validateForm = (
+        inputs?: Array<HTMLInputElement | HTMLSelectElement>
+    ) => {
+        const resolved = inputs ?? getEditRowInputs();
+        if (!resolved) return;
+        for (const input of resolved) {
             if (
                 !input.classList.contains("invisible") &&
                 input.type !== "checkbox" &&
@@ -208,7 +217,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         }
     };
 
-    const handleCreate = async (inputs: Record<string, any>) => {
+    const handleCreate = async (inputs: Record<string, unknown>) => {
         await handleRequest(admin?.endpoint ?? "", "POST", inputs, false);
         setReloadFlag(true);
         if (onAdd) {
@@ -242,11 +251,11 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         const values = getEditRowValues();
         validateForm();
         if (admin?.key) {
-            const keys: any[] = Array.isArray(admin.key)
-                ? admin.key
-                : [admin.key];
+            const keys = Array.isArray(admin.key)
+                ? (admin.key as { id: string; value: unknown }[])
+                : [{ id: String(admin.key), value: undefined }];
             keys.forEach((key) => {
-                values[key.id] = key.value;
+                (values as Record<string, unknown>)[key.id] = key.value;
             });
         }
         await handleCreate(values);
@@ -257,24 +266,30 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         record,
     }: {
         columnSettings: Column;
-        record: any;
+        record: Row;
     }) => {
-        const columnId: any = columnSettings.id ?? columnSettings.key ?? "";
-        let columnValue = record[columnId];
+        const columnId = String(columnSettings.id ?? columnSettings.key ?? "");
+        let columnValue: unknown = (record as Record<string, unknown>)[
+            columnId
+        ];
 
         if (columnSettings.datetime && columnValue) {
-            columnValue = dates.toDisplay(columnValue);
+            columnValue = dates.toDisplay(String(columnValue));
         } else if (columnSettings.mapper) {
             const mapper = columnSettings.mapper;
             if (typeof mapper === "function") {
-                columnValue = mapper(columnValue);
-            } else if (Object.hasOwn(mapper, "label")) {
-                const label = mapper["label"];
+                columnValue = mapper(record);
+            } else if (mapper && Object.hasOwn(mapper, "label")) {
+                const label = (
+                    mapper as { label?: string | ((r: Row) => string) }
+                ).label;
 
                 if (typeof label !== "function") {
-                    columnValue = columnValue[label!];
+                    columnValue = (record as Record<string, unknown>)[
+                        String(label)
+                    ];
                 } else {
-                    columnValue = label(columnValue);
+                    columnValue = label(record);
                 }
             }
         }
@@ -282,8 +297,8 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         if (columnSettings.type === InputType.Boolean) {
             return (
                 <Checkbox
-                    id={`${columnSettings.id}-${record.id}`}
-                    checked={columnValue}
+                    id={String(record.id)}
+                    checked={Boolean(columnValue)}
                 />
             );
         }
@@ -292,7 +307,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     };
 
     const getEditRowDefaultValue = (columnEditable?: {
-        defaultValue?: any;
+        defaultValue?: unknown;
     }) => {
         if (
             columnEditable?.defaultValue === undefined ||
@@ -300,7 +315,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         )
             return "";
         if (typeof columnEditable.defaultValue === "function") {
-            return columnEditable.defaultValue();
+            return (columnEditable.defaultValue as () => unknown)();
         }
         return columnEditable.defaultValue;
     };
@@ -319,7 +334,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         setAnySelected(updatedItems.some((item) => item.isSelected));
     };
 
-    const handleRowCheckChange = (id: number) => {
+    const handleRowCheckChange = (id: string | number) => {
         const updatedItems = tableData.items.map((item) =>
             item.id === id ? { ...item, isSelected: !item.isSelected } : item
         );
@@ -383,7 +398,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             <TableRow id={adminRowId} className={cn(`${name}-edit-row`)}>
                 <TableCell></TableCell>
                 {columns &&
-                    columns.map((column: any, index: number) => {
+                    columns.map((column: Column, index: number) => {
                         const columnId = column.key ?? column.id;
                         if (column.editable) {
                             return (
@@ -392,10 +407,20 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                                     key={`${name}-${columnId}-${index}`}
                                 >
                                     <Input
-                                        value={getEditRowDefaultValue(
-                                            column.editable
+                                        value={String(
+                                            getEditRowDefaultValue(
+                                                typeof column.editable ===
+                                                    "object"
+                                                    ? column.editable
+                                                    : {
+                                                          defaultValue:
+                                                              undefined,
+                                                      }
+                                            ) ?? ""
                                         )}
-                                        settings={column}
+                                        settings={
+                                            column as unknown as InputControlSettings
+                                        }
                                     />
                                 </TableCell>
                             );
@@ -451,14 +476,14 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         admin,
         adminAddEnabled,
     }: {
-        tableData: any;
-        admin: any;
+        tableData: Data;
+        admin: Admin | undefined;
         adminAddEnabled: boolean;
     }) => {
         return (
             <TableBody>
                 {admin && adminAddEnabled && <EditRow />}
-                {tableData.items.map((record: any, index: number) => {
+                {tableData.items.map((record: Row, index: number) => {
                     const rowId = `${name}-data-row-${index}`;
                     return (
                         <TableRow
@@ -469,10 +494,12 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                             {adminEnabled && (
                                 <TableCell>
                                     <Checkbox
-                                        id={record.id}
-                                        checked={record.isSelected}
+                                        id={String(record.id)}
+                                        checked={Boolean(record.isSelected)}
                                         onChange={() =>
-                                            handleRowCheckChange(record.id)
+                                            handleRowCheckChange(
+                                                record.id ?? index
+                                            )
                                         }
                                     />
                                 </TableCell>
@@ -496,7 +523,9 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                                         type={ACTION_BUTTON_KIND.delete}
                                         variant={VARIANTS.secondary}
                                         onClick={() =>
-                                            handleDelete({ ids: [record.id] })
+                                            handleDelete({
+                                                ids: [String(record.id)],
+                                            })
                                         }
                                     />
                                 </TableCell>

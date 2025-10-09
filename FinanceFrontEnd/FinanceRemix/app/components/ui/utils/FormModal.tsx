@@ -26,10 +26,10 @@ type FormModalProps = {
     formId: string;
     error?: string;
     editorSettings?: EditorSettings[];
-    form: any;
+    form: Record<string, unknown>;
     show: boolean;
-    handleCancel?: any;
-    handleAccept?: any;
+    handleCancel?: () => void;
+    handleAccept?: () => void;
 };
 
 const DEFAULTS: FormModalProps = {
@@ -40,11 +40,15 @@ const DEFAULTS: FormModalProps = {
     show: true,
 };
 
-const isNullOrUndefined = (instance?: any) =>
+const isNullOrUndefined = (instance?: unknown) =>
     typeof instance === "undefined" || instance === null;
 
 const setPropsDefaults = (originalProps: FormModalProps) => {
-    const fullProps = Object.assign({}, DEFAULTS, originalProps);
+    const fullProps = Object.assign(
+        {},
+        DEFAULTS,
+        originalProps
+    ) as FormModalProps;
 
     if (isNullOrUndefined(originalProps.editorSettings)) {
         fullProps.editorSettings = DEFAULTS.editorSettings;
@@ -58,13 +62,13 @@ const setPropsDefaults = (originalProps: FormModalProps) => {
         fullProps.title = DEFAULTS.title;
     }
 
-    for (let i = 0; i < fullProps.editorSettings!.length; i++) {
+    for (let i = 0; i < (fullProps.editorSettings ?? []).length; i++) {
         const fieldSettings = fullProps.editorSettings![i];
         if (
-            !(fieldSettings.id in fullProps.form) ||
-            isNullOrUndefined(fullProps.form[fieldSettings.id])
+            !(fieldSettings.id in (fullProps.form ?? {})) ||
+            isNullOrUndefined((fullProps.form ?? {})[fieldSettings.id])
         ) {
-            fullProps.form[fieldSettings.id] = "";
+            (fullProps.form ?? {})[fieldSettings.id] = "";
         }
     }
 
@@ -94,7 +98,9 @@ const FormModal: React.FC<FormModalProps> = (props) => {
                         editorSettings.map((fieldSettings, index) => (
                             <Input
                                 settings={fieldSettings}
-                                value={form[fieldSettings.id]}
+                                value={String(
+                                    (form ?? {})[fieldSettings.id] ?? ""
+                                )}
                                 key={fieldSettings.id + "-" + index}
                             />
                         ))}
@@ -103,13 +109,13 @@ const FormModal: React.FC<FormModalProps> = (props) => {
             <ModalFooter>
                 <ActionButton
                     text={"Aceptar"}
-                    variant={VARIANT.SUCCESS}
+                    // variant={VARIANT.SUCCESS}
                     type={ButtonType.None}
                     action={props.handleAccept}
                 />
                 <ActionButton
                     text="Cancelar"
-                    variant={VARIANT.SECONDARY}
+                    // variant={VARIANT.SECONDARY}
                     type={ButtonType.None}
                     action={props.handleCancel}
                 />

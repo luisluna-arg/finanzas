@@ -17,8 +17,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }
 
     const url = new URL(request.url);
-    const page = url.searchParams.get("page") ?? DEFAULT_PAGE;
-    const pageSize = url.searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE;
+    const page = Number(url.searchParams.get("page") ?? DEFAULT_PAGE);
+    const pageSize = Number(
+        url.searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE
+    );
     let selectedBankId = url.searchParams.get("bankId") ?? undefined;
     let selectedCurrencyId = url.searchParams.get("currencyId") ?? undefined;
 
@@ -43,7 +45,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         queries.push(getDataPromise(selectedBankId, selectedCurrencyId));
     }
 
-    let [banks, currencies, data] = await Promise.all(queries);
+    const results = await Promise.all(queries);
+    const banks = results[0];
+    const currencies = results[1];
+    let data = results[2] ?? null;
 
     if (!data && banks?.length > 0 && currencies?.length > 0) {
         selectedBankId ??= banks[0].id;
