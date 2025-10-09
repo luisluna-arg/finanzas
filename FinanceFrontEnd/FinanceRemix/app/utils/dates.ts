@@ -1,58 +1,63 @@
-import moment from "moment";
-import "moment-timezone";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
 
 const Format = {
-  Date: "DD/MM/yyyy",
-  DateTime: "DD/MM/yyyy HH:mm",
+    Date: "DD/MM/YYYY",
+    DateTime: "DD/MM/YYYY HH:mm",
 };
 
 const fromInputToRequest = (value: string): string =>
-  moment(value.replaceAll(" / ", "/"), "DD/MM/YYYY hh:mm A").format();
+    dayjs(value.replaceAll(" / ", "/"), "DD/MM/YYYY hh:mm A").format();
 
-const toDisplay = (timeStamp: string): string => moment(timeStamp).format(Format.DateTime);
+const toDisplay = (timeStamp: string): string =>
+    dayjs(timeStamp).format(Format.DateTime);
 
-const toUtcDisplay = (timeStamp: string): string => moment.utc(timeStamp).format(Format.Date);
+const toUtcDisplay = (timeStamp: string): string =>
+    dayjs.utc(timeStamp).format(Format.Date);
 
 const toRequest = (timeStamp?: string): string =>
-  (timeStamp ? moment(timeStamp) : moment()).format();
+    (timeStamp ? dayjs(timeStamp) : dayjs()).format();
 
-const tryGet = (dateToCheck: string): moment.Moment | null => {
-  const formatsToCheck = [
-    'YYYY-MM-DD', 
-    'YYYY/MM/DD',
-    'DD-MM-YYYY',
-    'DD/MM/YYYY',
-    'YYYY-MM-DDTHH:mm', 
-    'YYYY-MM-DDTHH:mm:ss', 
-    'YYYY-MM-DD HH:mm', 
-    'YYYY-MM-DD HH:mm:ss', 
-    'YYYY/MM/DD HH:mm',
-    'YYYY/MM/DD HH:mm:ss',
-    'DD-MM-YYYY HH:mm',
-    'DD-MM-YYYY HH:mm:ss',
-    'DD/MM/YYYY HH:mm',
-    'DD/MM/YYYY HH:mm:ss',
-  ];
+const tryGet = (dateToCheck: string): dayjs.Dayjs | null => {
+    const formatsToCheck = [
+        "YYYY-MM-DD",
+        "YYYY/MM/DD",
+        "DD-MM-YYYY",
+        "DD/MM/YYYY",
+        "YYYY-MM-DDTHH:mm",
+        "YYYY-MM-DDTHH:mm:ss",
+        "YYYY-MM-DD HH:mm",
+        "YYYY-MM-DD HH:mm:ss",
+        "YYYY/MM/DD HH:mm",
+        "YYYY/MM/DD HH:mm:ss",
+        "DD-MM-YYYY HH:mm",
+        "DD-MM-YYYY HH:mm:ss",
+        "DD/MM/YYYY HH:mm",
+        "DD/MM/YYYY HH:mm:ss",
+    ];
 
-  let result: moment.Moment | null = null;
-
-  formatsToCheck.forEach((format) => {
-    const localResult = moment(dateToCheck, format, true);
-    if (localResult.isValid()) {
-      result = localResult;
-      return false; // exit the loop if a valid format is found
+    for (const format of formatsToCheck) {
+        const parsed = dayjs(dateToCheck, format, true);
+        if (parsed.isValid()) {
+            return parsed;
+        }
     }
-  });
 
-  return result;
-}
+    return null;
+};
 
 const dateFormat = {
-  fromInputToRequest,
-  toDisplay,
-  toUtcDisplay,
-  toRequest,
-  tryGet
+    fromInputToRequest,
+    toDisplay,
+    toUtcDisplay,
+    toRequest,
+    tryGet,
 };
 
 export default dateFormat;
