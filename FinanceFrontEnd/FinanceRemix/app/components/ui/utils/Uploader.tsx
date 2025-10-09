@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import SafeLogger from "../../../utils/SafeLogger";
 import { useFetcher } from "@remix-run/react";
 import {
     Toast,
@@ -7,8 +6,8 @@ import {
     ToastHeader,
     ToastBody,
 } from "@/components/ui/utils/Toast";
-import { OUTLINE_VARIANT } from "@/components/ui/utils/Bootstrap/ColorVariant";
 import ActionButton, { ButtonType } from "@/components/ui/utils/ActionButton";
+import SafeLogger from "../../../utils/SafeLogger";
 
 interface UploaderProps {
     url: string;

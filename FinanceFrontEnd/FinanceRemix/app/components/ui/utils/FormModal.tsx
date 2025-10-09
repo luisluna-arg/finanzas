@@ -11,7 +11,6 @@ import ActionButton, { ButtonType } from "@/components/ui/utils/ActionButton";
 import CustomToast from "@/components/ui/utils/CustomToast";
 import Input from "@/components/ui/utils/Input";
 import { InputType } from "@/components/ui/utils/InputType";
-import { VARIANT } from "@/components/ui/utils/Bootstrap/ColorVariant";
 
 type EditorSettings = {
     id: string;
