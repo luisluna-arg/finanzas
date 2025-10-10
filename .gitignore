@@ -10,6 +10,10 @@
 
 **/node_modules/
 
+!.editorconfig
+!.prettierignore
+!.prettierrc
+
 /sql
 **/bin
 **/obj

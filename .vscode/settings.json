@@ -1,9 +1,12 @@
 {
-    "mcpServers": {
-        "finance-context": {
-            "command": "node",
-            "args": ["C:\\_dev\\finanzas\\_mcp\\backend\\build\\index.js"],
-            "env": {}
-        }
+    "[json]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[jsonc]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.defaultFormatter": "vscode.json-language-features"
     }
 }

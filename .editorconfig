@@ -1,0 +1,32 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = crlf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.json]
+indent_style = space
+indent_size = 2
+
+[*.jsonc]
+indent_style = space
+indent_size = 2
+
+[*.cs]
+# Disable StyleCop spacing rules for collection initializers
+dotnet_diagnostic.SA1000.severity = none
+dotnet_diagnostic.SA1009.severity = none
+dotnet_diagnostic.SA1010.severity = none
+dotnet_diagnostic.SA1011.severity = none
+dotnet_diagnostic.SA1025.severity = none
+dotnet_diagnostic.SA1026.severity = none
+
+# Allow modern C# collection expression
+csharp_style_prefer_collection_expression = true:suggestion
