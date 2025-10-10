@@ -1,0 +1,4 @@
+# Ignore JSON files so Prettier doesn't collapse arrays into single-line
+**/*.json
+**/*.jsonc
+.vscode/launch.json
