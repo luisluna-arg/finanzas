@@ -5,7 +5,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Domain.Enums;
 using Finance.Application.Repositories;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Commands.AppModules;
 

@@ -1,4 +1,4 @@
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
-using Finance.Persistance;
+using Finance.Persistence;
 using FluentValidation;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;

@@ -4,7 +4,7 @@ using Finance.Domain.DataConverters;
 using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
-using Finance.Persistance;
+using Finance.Persistence;
 using CQRSDispatch;
 using Finance.Application.Auth;
 

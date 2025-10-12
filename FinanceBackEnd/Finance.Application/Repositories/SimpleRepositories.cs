@@ -1,7 +1,7 @@
 using Finance.Domain.Models;
 using Finance.Application.Repositories.Base;
 using Finance.Domain.Enums;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Repositories;
 

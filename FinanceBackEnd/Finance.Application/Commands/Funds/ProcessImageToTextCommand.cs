@@ -1,7 +1,7 @@
 using System.Runtime.Versioning;
 using Finance.Application.Base.Handlers;
 using Finance.Helpers;
-using Finance.Persistance;
+using Finance.Persistence;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Microsoft.AspNetCore.Http;

@@ -35,7 +35,10 @@ ENV AdminUser__DefaultFirstName=$AdminUser__DefaultFirstName \
     Auth0__Domain=$Auth0__Domain \
     Auth0__ManagementApi__ClientId=$Auth0__ManagementApi__ClientId \
     Auth0__RedirectUri=$Auth0__RedirectUri \
-    Urls__Http=$Urls__Http
+    Urls__Http=$Urls__Http \
+    Auth0__Application__ClientSecret="" \
+    Auth0__ManagementApi__ClientSecret="" \
+    ConnectionStrings__PostgresDb=""
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src

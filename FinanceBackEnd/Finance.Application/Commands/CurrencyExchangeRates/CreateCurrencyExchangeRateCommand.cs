@@ -2,7 +2,7 @@ using Finance.Application.Base.Handlers;
 using CQRSDispatch;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
-using Finance.Persistance;
+using Finance.Persistence;
 using Finance.Application.Commands.Users;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;

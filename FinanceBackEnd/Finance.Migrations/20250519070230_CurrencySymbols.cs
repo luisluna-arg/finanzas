@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Finance.Persistance.Constants;
+using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable

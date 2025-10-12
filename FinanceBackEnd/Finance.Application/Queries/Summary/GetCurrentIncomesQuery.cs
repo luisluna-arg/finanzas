@@ -4,7 +4,7 @@ using Finance.Application.Extensions;
 using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;

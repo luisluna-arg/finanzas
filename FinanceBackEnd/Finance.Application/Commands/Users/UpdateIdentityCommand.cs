@@ -1,5 +1,5 @@
 using Finance.Domain.Models;
-using Finance.Persistance;
+using Finance.Persistence;
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Microsoft.EntityFrameworkCore;

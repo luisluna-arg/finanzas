@@ -1,5 +1,5 @@
 using CQRSDispatch.Interfaces;
-using Finance.Persistance;
+using Finance.Persistence;
 using Finance.Domain.Models;
 using Finance.Application.Commands;
 using Finance.Application.Queries.Users;

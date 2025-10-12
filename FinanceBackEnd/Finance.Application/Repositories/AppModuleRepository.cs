@@ -1,7 +1,7 @@
 using Finance.Domain.Models;
 using Finance.Application.Repositories.Base;
-using Finance.Persistance;
-using Finance.Persistance.Constants;
+using Finance.Persistence;
+using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Repositories;

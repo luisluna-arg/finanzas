@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Finance.Authentication.Authorization;
 using Finance.Authentication.Options;
 using Finance.Authentication.Services;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

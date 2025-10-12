@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
-using Finance.Persistance;
+using Finance.Persistence;
 using FluentValidation;
 
 namespace Finance.Application.Commands.CreditCards;

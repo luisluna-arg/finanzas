@@ -4,8 +4,8 @@ using Finance.Application.Base.Handlers;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
-using Finance.Persistance;
-using Finance.Persistance.Constants;
+using Finance.Persistence;
+using Finance.Persistence.Constants;
 
 namespace Finance.Application.Commands.IOLInvestments;
 

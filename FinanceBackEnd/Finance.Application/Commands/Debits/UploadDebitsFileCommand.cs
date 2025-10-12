@@ -6,7 +6,7 @@ using Finance.Domain.Models;
 using Finance.Helpers.ExcelHelper;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 

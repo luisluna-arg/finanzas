@@ -3,7 +3,7 @@ using Finance.Domain.Models;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Services.Requests.Funds;
 using Finance.Application.Auth;
-using Finance.Persistance;
+using Finance.Persistence;
 using CQRSDispatch;
 using Finance.Application.Commands.Funds.Owners;
 using Finance.Application.Services.Orchestrators;

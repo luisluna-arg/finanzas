@@ -1,6 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Base.Handlers;
 

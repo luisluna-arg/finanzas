@@ -4,10 +4,10 @@ using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
 using Finance.Domain.Enums;
 using Finance.Application.Repositories;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
-using Finance.Persistance.Constants;
+using Finance.Persistence.Constants;
 
 namespace Finance.Application.Commands.IOLInvestments;
 

@@ -1,6 +1,6 @@
 using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
-using Finance.Persistance;
+using Finance.Persistence;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Microsoft.AspNetCore.Http;

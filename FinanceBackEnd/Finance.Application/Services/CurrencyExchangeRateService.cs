@@ -6,7 +6,7 @@ using Finance.Application.Commands.CurrencyExchangeRates;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.AspNetCore.Http;
 using Finance.Application.Auth;
-using Finance.Persistance;
+using Finance.Persistence;
 using Finance.Application.Extensions;
 using CQRSDispatch;
 using Finance.Application.Commands.CurrencyExchangeRates.Owners;

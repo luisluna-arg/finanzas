@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Finance.Domain\Finance.Domain.csproj" />
-    <ProjectReference Include="..\Finance.Persistance\Finance.Persistance.csproj" />
+    <ProjectReference Include="..\Finance.Persistence\Finance.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

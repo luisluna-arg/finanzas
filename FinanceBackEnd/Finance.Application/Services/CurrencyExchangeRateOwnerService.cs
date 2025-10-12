@@ -5,7 +5,7 @@ using Finance.Application.Commands.CurrencyExchangeRates.Owners;
 using Finance.Application.Services.Base;
 using Finance.Application.Services.Orchestrators;
 using Finance.Domain.Models;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Services;
 

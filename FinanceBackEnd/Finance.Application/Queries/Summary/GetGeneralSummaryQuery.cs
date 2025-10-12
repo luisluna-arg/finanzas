@@ -5,7 +5,7 @@ using Finance.Application.Dtos.Summary;
 using Finance.Application.Services;
 using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
-using Finance.Persistance.Constants;
+using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Summary;

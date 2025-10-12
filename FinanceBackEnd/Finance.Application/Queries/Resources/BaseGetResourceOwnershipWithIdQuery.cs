@@ -1,6 +1,6 @@
 using Finance.Domain.Enums;
 using Finance.Domain.Models.Base;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Queries.Resources;
 

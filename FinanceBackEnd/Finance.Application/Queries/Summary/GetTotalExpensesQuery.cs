@@ -2,7 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using Finance.Application.Dtos.Summary;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Queries.Summary;
 

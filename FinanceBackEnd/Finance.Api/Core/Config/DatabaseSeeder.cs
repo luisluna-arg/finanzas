@@ -3,7 +3,7 @@ using Finance.Authentication.Options;
 using Finance.Authentication.Services;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
