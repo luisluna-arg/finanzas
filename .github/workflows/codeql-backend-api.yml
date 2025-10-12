@@ -34,7 +34,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
         # If you wish to specify a CodeQL bundle version you can do so here
@@ -62,7 +62,7 @@ jobs:
         dotnet build FinanceBackEnd/FinanceBackEnd.sln --configuration Release --no-restore
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         # upload database to CodeQL; can add 'category' or 'sarif_file' options here if needed
         category: 'security'
