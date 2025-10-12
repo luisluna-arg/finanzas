@@ -7,7 +7,7 @@ const allowInsecure = Boolean(import.meta.env.VITE_ALLOW_INSECURE_API === 'true'
 let API_BASE_URL: string | undefined = rawApiUrl;
 
 // Debug logging
-console.log('Environment Debug:', {
+SafeLogger.log('Environment Debug:', {
   VITE_API_URL: import.meta.env.VITE_API_URL,
   VITE_ALLOW_INSECURE_API: import.meta.env.VITE_ALLOW_INSECURE_API,
   DEV: import.meta.env.DEV,
