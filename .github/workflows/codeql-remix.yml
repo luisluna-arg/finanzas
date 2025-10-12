@@ -15,8 +15,27 @@ jobs:
       security-events: write
 
     steps:
-    - name: Checkout
+    - name: Checkout (PR from same repo)
+      if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
       uses: actions/checkout@v4
+      with:
+        repository: ${{ github.event.pull_request.head.repo.full_name }}
+        ref: ${{ github.event.pull_request.head.ref }}
+        fetch-depth: 0
+
+    - name: Checkout (PR from fork)
+      if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+      uses: actions/checkout@v4
+      with:
+        ref: refs/pull/${{ github.event.pull_request.number }}/merge
+        fetch-depth: 0
+
+    - name: Checkout (non-PR)
+      if: ${{ github.event_name != 'pull_request' }}
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
+        fetch-depth: 0
 
     - name: Initialize CodeQL (JS)
       uses: github/codeql-action/init@v2
