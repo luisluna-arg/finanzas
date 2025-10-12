@@ -1,0 +1,71 @@
+name: "CodeQL - Backend API / C#"
+
+on:
+  push:
+    paths:
+      - FinanceBackEnd/**
+  pull_request:
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp' ]
+
+    steps:
+    - name: Debug repository info
+      run: |
+        echo "Repository: ${{ github.repository }}"
+        echo "Event: ${{ github.event_name }}"
+        echo "Ref: ${{ github.ref }}"
+        echo "SHA: ${{ github.sha }}"
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        # If you wish to specify a CodeQL bundle version you can do so here
+        # codeql-version: '2.12.0'
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          nuget-${{ runner.os }}-
+
+    - name: Restore NuGet packages
+      run: |
+        dotnet restore FinanceBackEnd/FinanceBackEnd.sln
+
+    - name: Build solution
+      run: |
+        dotnet build FinanceBackEnd/FinanceBackEnd.sln --configuration Release --no-restore
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: 'security'
+        # Disable upload because GitHub Advanced Security is required for private repos
+        # Analysis still runs and results are available in Actions logs
+        # Set upload: true if you upgrade to GitHub Pro/Team or make repo public
+        upload: false
