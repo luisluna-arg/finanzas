@@ -1,0 +1,54 @@
+name: "CodeQL - FinanceFunds"
+
+on:
+  push:
+    paths:
+      - 'FinanceFrontEnd/FinanceFunds/**'
+  pull_request:
+    paths:
+      - 'FinanceFrontEnd/FinanceFunds/**'
+
+jobs:
+  analyze-funds:
+    name: Analyze Funds (JS/TS)
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      security-events: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL (JS)
+      uses: github/codeql-action/init@v2
+      with:
+        languages: javascript
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Cache npm
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: npm-${{ runner.os }}-funds-${{ hashFiles('FinanceFrontEnd/FinanceFunds/**/package-lock.json') }}
+        restore-keys: |
+          npm-${{ runner.os }}-funds-
+
+    - name: Install dependencies
+      working-directory: FinanceFrontEnd/FinanceFunds
+      run: npm ci
+
+    - name: Build (Funds)
+      working-directory: FinanceFrontEnd/FinanceFunds
+      run: npm run build --if-present
+
+    - name: Run CodeQL analysis (JS)
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: 'security'
