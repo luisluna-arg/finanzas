@@ -9,7 +9,7 @@ installGlobals();
 export default defineConfig({
   plugins: [remix(), tsconfigPaths()],
   server: {
-    port: 5300,
+    port: parseInt(process.env.PORT || '5100'),
   },
   resolve: {
     alias: {

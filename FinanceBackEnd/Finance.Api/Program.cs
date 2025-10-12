@@ -17,8 +17,17 @@ if (string.IsNullOrWhiteSpace(httpUrl))
     throw new InvalidOperationException("HTTP URL is required. Please configure 'Urls:Http' in appsettings.json or set the 'Urls__Http' environment variable.");
 }
 
-// builder.WebHost.UseUrls(httpUrl, httpsUrl);
-builder.WebHost.UseUrls(httpUrl);
+var httpsUrl = Environment.GetEnvironmentVariable("Urls__Https");
+if (!string.IsNullOrWhiteSpace(httpsUrl))
+{
+    // Configure both HTTP and HTTPS if HTTPS URL is provided
+    builder.WebHost.UseUrls(httpUrl, httpsUrl);
+}
+else
+{
+    // Configure only HTTP if HTTPS URL is not provided
+    builder.WebHost.UseUrls(httpUrl);
+}
 
 builder.Services.ConfigureDataBase(builder);
 

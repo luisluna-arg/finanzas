@@ -331,7 +331,7 @@ AUTH0_AUDIENCE=urn:finances:api
 USER_SESSION_SECRET=your-user-session-secret
 
 # App URL
-BASE_URL=http://localhost:5300
+BASE_URL=http://localhost:5100
 
 # Redis (example)
 REDIS_URL=redis://localhost:6379
@@ -341,9 +341,9 @@ REDIS_URL=redis://localhost:6379
 
 In the Auth0 dashboard configure the application settings:
 
--   Allowed Callback URLs: `http://localhost:5300/auth/callback`
--   Allowed Logout URLs: `http://localhost:5300`
--   Allowed Web Origins: `http://localhost:5300`
+-   Allowed Callback URLs: `http://localhost:5100/auth/callback`
+-   Allowed Logout URLs: `http://localhost:5100`
+-   Allowed Web Origins: `http://localhost:5100`
 
 ## Testing the flow
 

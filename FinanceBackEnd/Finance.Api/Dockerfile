@@ -1,7 +1,8 @@
 # See https://docs.docker.com/engine/reference/builder/
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
-EXPOSE 80
+ARG PORT=5000
+EXPOSE $PORT
 
 ARG AdminUser__DefaultFirstName
 ARG AdminUser__DefaultLastName
@@ -46,7 +47,8 @@ FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS=http://+:80
+# ASP.NET Core will automatically use PORT environment variable if ASPNETCORE_URLS is not set
+ENV PORT=${PORT:-5000}
 ENV HTTP_PORTS=
 ENV HTTPS_PORTS=
 

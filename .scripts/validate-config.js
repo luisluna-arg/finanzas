@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // CI config validator
-// - Fails if VITE_API_URL is missing or invalid
-// - Fails if VITE_API_URL uses http:// and ALLOW_INSECURE_API (or VITE_ALLOW_INSECURE_API) is not set
+// - Fails if API_URL is missing or invalid
+// - Fails if API_URL uses http:// and ALLOW_INSECURE_API is not set
 // - Fails if Dockerfiles contain ARG or ENV with secret-like variable names
 // IMPORTANT: Do not print secret values to logs
 

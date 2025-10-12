@@ -1,4 +1,7 @@
-const baseUrl = import.meta.env.VITE_API_ENDPOINT;
+// Simple runtime configuration - no build-time complexity needed
+const baseUrl = process.env.API_URL || (process.env.NODE_ENV === 'production' 
+    ? 'http://backend:5000'  // Docker internal network - updated to port 5000
+    : 'http://localhost:5000'); // Local development
 const apiBaseUrl = `${baseUrl}/api`;
 const debitsBaseUrl = `${apiBaseUrl}/debits`;
 

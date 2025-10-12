@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build:
+      context: ../../../FinanceFrontEnd/FinanceRemix
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - PORT=5100
+    ports:
+      - "5100:5100"
+    restart: unless-stopped
+
+# No volumes needed for frontend-only services
+
+networks:
+  default:
+    name: shared_network
+    external: true

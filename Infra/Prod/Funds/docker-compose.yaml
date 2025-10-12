@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: ../../../FinanceBackEnd
+      context: ../../FinanceBackEnd
       dockerfile: Finance.Api/Dockerfile
       args:
         AdminUser__DefaultFirstName: ${AdminUser__DefaultFirstName}
@@ -27,14 +27,14 @@ services:
 
   frontend:
     build:
-      context: ../../../FinanceFrontEnd/FinanceFunds
+      context: ../../FinanceFrontEnd/FinanceFunds
       dockerfile: Dockerfile
       args:
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
         VITE_AUTH0_REDIRECT_URI: ${VITE_AUTH0_REDIRECT_URI}
-        VITE_API_URL: ${VITE_API_URL}
+        API_URL: ${API_URL}
         VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
     ports:
-      - "3000:3000"
+      - "5200:3000"
     restart: unless-stopped

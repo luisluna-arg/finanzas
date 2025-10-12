@@ -1,0 +1,26 @@
+services:
+  frontend:
+    build:
+      context: ../../../FinanceFrontEnd/FinanceFunds
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=${NODE_ENV}
+        - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
+        - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID}
+        - VITE_AUTH0_REDIRECT_URI=${VITE_AUTH0_REDIRECT_URI}
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_ALLOW_INSECURE_API=${VITE_ALLOW_INSECURE_API}
+        - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE}
+    env_file:
+      - .env
+    environment:
+      - PORT=5200
+    ports:
+      - "5200:5200"
+    command: ["sh", "-c", "npm run preview -- --port=5200 --host=0.0.0.0"]
+    restart: unless-stopped
+
+networks:
+  default:
+    name: shared_network
+    external: true

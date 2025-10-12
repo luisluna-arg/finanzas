@@ -122,6 +122,36 @@ export async function requireAuth(request: Request) {
         tokens: Tokens;
     };
 
+    // Validate that access token exists and is not expired
+    const accessToken = tokens.accessToken as string;
+    if (!accessToken) {
+        // No access token, clear session and redirect to login
+        await destroyUserSession(request);
+        throw redirect("/auth/login");
+    }
+
+    // Check if token is expired by decoding the JWT payload
+    try {
+        const tokenParts = accessToken.split('.');
+        if (tokenParts.length !== 3) {
+            throw new Error("Invalid JWT format");
+        }
+        
+        const payload = JSON.parse(atob(tokenParts[1]));
+        const now = Math.floor(Date.now() / 1000); // Current time in seconds
+        
+        if (payload.exp && payload.exp < now) {
+            // Token is expired, clear session and redirect to login
+            console.log(`[requireAuth] Token expired at ${new Date(payload.exp * 1000)}, current time: ${new Date()}`);
+            await destroyUserSession(request);
+            throw redirect("/auth/login");
+        }
+    } catch (tokenError) {
+        console.error("[requireAuth] Token validation failed:", tokenError);
+        await destroyUserSession(request);
+        throw redirect("/auth/login");
+    }
+
     // Avoid printing full tokens to logs. Use a safe logger and only print a short preview.
     try {
         const { default: SafeLogger } = await import("@/utils/SafeLogger");
