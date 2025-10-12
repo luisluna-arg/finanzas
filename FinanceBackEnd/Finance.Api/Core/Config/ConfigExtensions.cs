@@ -7,7 +7,7 @@ using Finance.Application.Extensions;
 using Finance.Application.Mapping;
 using Finance.Application.Repositories;
 using Finance.Domain.DataConverters;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

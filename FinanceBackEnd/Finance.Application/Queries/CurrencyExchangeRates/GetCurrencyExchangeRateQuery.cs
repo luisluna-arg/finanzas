@@ -1,7 +1,7 @@
 using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Queries.CurrencyExchangeRates;
 

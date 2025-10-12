@@ -1,5 +1,5 @@
 using CQRSDispatch.Strategies;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

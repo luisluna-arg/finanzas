@@ -4,7 +4,7 @@ using Finance.Domain.Enums;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Debits;

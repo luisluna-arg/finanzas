@@ -1,4 +1,4 @@
-using Finance.Persistance.Services;
+using Finance.Persistence.Services;
 
 namespace Finance.Authentication.Services;
 

@@ -5,7 +5,7 @@ using Finance.Application.Services.Interfaces;
 using Finance.Application.Services.RequestBuilders;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.Interfaces;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage;
 

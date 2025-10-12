@@ -1,4 +1,4 @@
-using Finance.Persistance;
+using Finance.Persistence;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 

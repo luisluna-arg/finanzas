@@ -10,6 +10,9 @@ if (isDevelopment)
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Ensure environment variables are available to configuration
+builder.Configuration.AddEnvironmentVariables();
+
 // Configure URLs from appsettings or environment variables
 var httpUrl = Environment.GetEnvironmentVariable("Urls__Http");
 if (string.IsNullOrWhiteSpace(httpUrl))

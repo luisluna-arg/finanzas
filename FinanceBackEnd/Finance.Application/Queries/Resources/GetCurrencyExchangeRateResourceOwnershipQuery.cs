@@ -1,5 +1,5 @@
 using Finance.Domain.Models;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Queries.Resources;
 

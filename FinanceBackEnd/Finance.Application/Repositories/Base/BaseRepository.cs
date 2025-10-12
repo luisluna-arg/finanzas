@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Finance.Domain.Models.Base;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Repositories.Base;

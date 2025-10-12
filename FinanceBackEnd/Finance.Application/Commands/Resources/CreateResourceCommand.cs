@@ -2,7 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Commands;
 

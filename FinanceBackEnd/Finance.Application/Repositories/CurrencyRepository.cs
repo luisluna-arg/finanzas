@@ -1,6 +1,6 @@
 using Finance.Domain.Models;
 using Finance.Application.Repositories.Base;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Repositories;

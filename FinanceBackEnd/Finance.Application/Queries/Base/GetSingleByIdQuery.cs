@@ -4,7 +4,7 @@ using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.Interfaces;
-using Finance.Persistance;
+using Finance.Persistence;
 
 namespace Finance.Application.Queries.Base;
 

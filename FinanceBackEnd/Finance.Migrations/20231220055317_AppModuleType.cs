@@ -1,5 +1,5 @@
 ﻿using Finance.Domain.Enums;
-using Finance.Persistance.Constants;
+using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 

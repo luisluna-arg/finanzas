@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Summary;
-using Finance.Persistance;
-using Finance.Persistance.Constants;
+using Finance.Persistence;
+using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 using FundDto = Finance.Application.Dtos.Summary.Fund;
 using CQRSDispatch;

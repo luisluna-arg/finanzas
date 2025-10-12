@@ -1,5 +1,5 @@
 using Finance.Domain.Models;
-using Finance.Persistance;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Commands;
