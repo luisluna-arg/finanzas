@@ -27,7 +27,7 @@ jobs:
             - name: Validate config
               env:
                   # Provide required production API URL from secrets (do not echo this value)
-                  VITE_API_URL: ${{ secrets.VITE_API_URL }}
+                  API_URL: ${{ secrets.API_URL }}
                   # Optional: set ALLOW_INSECURE_API to 'true' for staging if needed via repo secret
                   ALLOW_INSECURE_API: ${{ secrets.ALLOW_INSECURE_API }}
               run: |
@@ -57,7 +57,7 @@ jobs:
             - name: Validate config (staging/preview)
               # This job is pinned to the 'staging' environment so secrets must be granted there.
               env:
-                  VITE_API_URL: ${{ secrets.VITE_API_URL }}
+                  API_URL: ${{ secrets.API_URL }}
                   ALLOW_INSECURE_API: ${{ secrets.ALLOW_INSECURE_API }}
               run: |
                   node ./.scripts/validate-config.js

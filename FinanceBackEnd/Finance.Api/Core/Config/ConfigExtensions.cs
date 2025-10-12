@@ -88,7 +88,12 @@ public static class ConfigExtensions
 
     public static void MainConfiguration(this WebApplication app)
     {
-        app.UseHttpsRedirection();
+        // Only use HTTPS redirection if running in a production environment with HTTPS configured
+        if (app.Environment.IsProduction() && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("Urls__Https")))
+        {
+            app.UseHttpsRedirection();
+        }
+
         app.UseRouting();
 
         // Important: Add CORS before authentication middleware

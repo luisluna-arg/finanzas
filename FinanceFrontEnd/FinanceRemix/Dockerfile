@@ -2,6 +2,11 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
+
+RUN echo "Starting install..." && \
+    npm install && \
+    echo "Install done."
+
 COPY . .
 
 ARG AUTH0_AUDIENCE
@@ -9,6 +14,7 @@ ARG AUTH0_CLIENT_ID
 ARG AUTH0_DOMAIN
 ARG AUTH0_SCOPES
 ARG BASE_URL
+ARG API_URL
 
 # NOTE: Do NOT bake secrets into the image using ARG/ENV (for example AUTH0_CLIENT_SECRET).
 # Secrets must be injected at runtime by your deployment platform (CI secrets, Docker secrets,
@@ -21,11 +27,8 @@ ENV AUTH0_AUDIENCE=$AUTH0_AUDIENCE \
     AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID \
     AUTH0_DOMAIN=$AUTH0_DOMAIN \
     AUTH0_SCOPES=$AUTH0_SCOPES \
-    BASE_URL=$BASE_URL
-
-RUN echo "Starting install..." && \
-    npm install && \
-    echo "Install done."
+    BASE_URL=$BASE_URL \
+    API_URL=$API_URL
 
 RUN echo "Starting build..." && \
     npm run build && \
@@ -40,5 +43,7 @@ COPY --from=build /app/package*.json ./
 # Production runtime only needs NODE_ENV
 ENV NODE_ENV=production
 
-EXPOSE 5300
+# Use PORT environment variable with fallback to 5100
+ENV PORT=${PORT:-5100}
+EXPOSE $PORT
 CMD ["npx", "remix-serve", "./build/server/index.js"]

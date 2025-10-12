@@ -6,6 +6,14 @@ const rawApiUrl = import.meta.env.VITE_API_URL;
 const allowInsecure = Boolean(import.meta.env.VITE_ALLOW_INSECURE_API === 'true');
 let API_BASE_URL: string | undefined = rawApiUrl;
 
+// Debug logging
+SafeLogger.log('Environment Debug:', {
+  VITE_API_URL: import.meta.env.VITE_API_URL,
+  VITE_ALLOW_INSECURE_API: import.meta.env.VITE_ALLOW_INSECURE_API,
+  DEV: import.meta.env.DEV,
+  allowInsecure: allowInsecure,
+});
+
 if (!API_BASE_URL) {
   if (import.meta.env.DEV) {
     // In dev only, allow explicit localhost so dev servers work without env vars
@@ -19,7 +27,11 @@ if (!API_BASE_URL) {
 }
 
 // Ensure HTTPS is used in non-development environments unless explicitly allowed
-if (!import.meta.env.DEV && !allowInsecure) {
+// Allow localhost URLs in any environment for local development
+const isLocalhost = API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1');
+const shouldEnforceHttps = !import.meta.env.DEV && !allowInsecure && !isLocalhost;
+
+if (shouldEnforceHttps) {
   try {
     const parsed = new URL(API_BASE_URL);
     if (parsed.protocol !== 'https:') {

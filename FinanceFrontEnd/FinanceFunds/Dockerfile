@@ -4,16 +4,20 @@ WORKDIR /app
 COPY package*.json ./
 COPY . .
 
+ARG NODE_ENV
 ARG VITE_AUTH0_DOMAIN
 ARG VITE_AUTH0_CLIENT_ID
 ARG VITE_AUTH0_REDIRECT_URI
 ARG VITE_API_URL
+ARG VITE_ALLOW_INSECURE_API
 ARG VITE_AUTH0_AUDIENCE
 
-ENV VITE_AUTH0_DOMAIN=$VITE_AUTH0_DOMAIN \
+ENV NODE_ENV=$NODE_ENV \
+    VITE_AUTH0_DOMAIN=$VITE_AUTH0_DOMAIN \
     VITE_AUTH0_CLIENT_ID=$VITE_AUTH0_CLIENT_ID \
     VITE_AUTH0_REDIRECT_URI=$VITE_AUTH0_REDIRECT_URI \
     VITE_API_URL=$VITE_API_URL \
+    VITE_ALLOW_INSECURE_API=$VITE_ALLOW_INSECURE_API \
     VITE_AUTH0_AUDIENCE=$VITE_AUTH0_AUDIENCE
 
 RUN echo "Starting install..." && \
@@ -33,5 +37,7 @@ COPY --from=build /app/package*.json ./
 # Production runtime only needs NODE_ENV
 ENV NODE_ENV=production
 
-EXPOSE 3000
-CMD ["npm", "run", "preview", "--", "--port=3000", "--host"]
+# Use PORT environment variable with fallback to 5200
+ENV PORT=${PORT:-5200}
+EXPOSE $PORT
+CMD ["sh", "-c", "npm run preview -- --port=$PORT --host"]
