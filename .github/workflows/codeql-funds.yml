@@ -51,3 +51,7 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: 'security'
+        # Disable upload because GitHub Advanced Security is required for private repos
+        # Analysis still runs and results are available in Actions logs
+        # Set upload: true if you upgrade to GitHub Pro/Team or make repo public
+        upload: false
