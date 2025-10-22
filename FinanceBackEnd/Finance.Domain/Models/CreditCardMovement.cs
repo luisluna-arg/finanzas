@@ -6,7 +6,7 @@ namespace Finance.Domain.Models;
 public class CreditCardMovement : Entity<Guid>
 {
     public Guid CreditCardId { get; set; }
-    public virtual CreditCard CreditCard { get; set; } = default!;
+    public virtual CreditCard CreditCard { get; set; } = null!;
     public DateTime TimeStamp { get; set; }
     public DateTime PlanStart { get; set; }
     public string Concept { get; set; } = string.Empty;
@@ -15,5 +15,5 @@ public class CreditCardMovement : Entity<Guid>
     public Money Amount { get; set; } = 0;
     public Money AmountDollars { get; set; } = 0;
 
-    public CreditCardMovement() : base() { }
+    public CreditCardMovement() { }
 }
