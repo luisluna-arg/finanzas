@@ -13,5 +13,9 @@ public class CreditCardStatementConfiguration : IEntityTypeConfiguration<CreditC
             .WithOne(o => o.CreditCardStatement)
             .HasForeignKey<CreditCardStatement>(c => c.CreditCardId)
             .IsRequired();
+
+        builder
+            .Property(s => s.MinimumDue)
+            .HasColumnType("numeric(18,4)");
     }
 }

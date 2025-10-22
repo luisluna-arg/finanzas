@@ -36,4 +36,8 @@ public class CreditCardStatementResourceConfiguration : EntityResourceConfigurat
 public class CurrencyExchangeRateResourceConfiguration : EntityResourceConfiguration<CurrencyExchangeRateResource, CurrencyExchangeRate, Guid>;
 public class DebitResourceConfiguration : EntityResourceConfiguration<DebitResource, Debit, Guid>;
 public class FundResourceConfiguration : EntityResourceConfiguration<FundResource, Fund, Guid>;
+public class CreditCardInstallmentResourceConfiguration : EntityResourceConfiguration<CreditCardInstallmentResource, CreditCardInstallment, Guid>;
+public class CreditCardPaymentResourceConfiguration : EntityResourceConfiguration<CreditCardPaymentResource, CreditCardPayment, Guid>;
+public class CreditCardPaymentAllocationResourceConfiguration : EntityResourceConfiguration<CreditCardPaymentAllocationResource, CreditCardPaymentAllocation, Guid>;
+public class CreditCardPaymentPlanResourceConfiguration : EntityResourceConfiguration<CreditCardPaymentPlanResource, CreditCardPaymentPlan, Guid>;
 public class ResourceConfiguration : AuditedEntityConfiguration<Resource, Guid>;

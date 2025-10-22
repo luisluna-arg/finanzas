@@ -17,5 +17,21 @@ public class CreditCardConfiguration : IEntityTypeConfiguration<CreditCard>
             .HasOne(o => o.CreditCardStatement)
             .WithOne(o => o.CreditCard)
             .HasForeignKey<CreditCard>(c => c.CreditCardStatementId);
+
+        builder
+            .HasMany(c => c.PaymentPlans)
+            .WithOne(p => p.CreditCard)
+            .HasForeignKey(p => p.CreditCardId)
+            .IsRequired();
+
+        builder
+            .HasMany(c => c.Payments)
+            .WithOne(p => p.CreditCard)
+            .HasForeignKey(p => p.CreditCardId)
+            .IsRequired();
+
+        builder
+            .Property(c => c.UnappliedCredit)
+            .HasColumnType("numeric(18,4)");
     }
 }
