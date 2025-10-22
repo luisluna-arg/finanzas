@@ -3,6 +3,7 @@ using System;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Finance.Domain.Migrations
 {
     [DbContext(typeof(FinanceDbContext))]
-    partial class FinanceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251022071330_CreditCardModelUpdate")]
+    partial class CreditCardModelUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2248,9 +2251,9 @@ namespace Finance.Domain.Migrations
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentPlan", b =>
-                {
-                    b.Navigation("Installments");
-                });
+            {
+                b.Navigation("Installments");
+            });
 
             modelBuilder.Entity("Finance.Domain.Models.User", b =>
                 {
