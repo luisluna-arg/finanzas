@@ -53,7 +53,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("AppModule");
+                    b.ToTable("AppModule", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.AppModuleType", b =>
@@ -76,7 +76,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppModuleType");
+                    b.ToTable("AppModuleType", (string)null);
 
                     b.HasData(
                         new
@@ -119,7 +119,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bank");
+                    b.ToTable("Bank", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCard", b =>
@@ -141,14 +141,11 @@ namespace Finance.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("UnappliedCredit")
-                        .HasColumnType("numeric(18,4)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BankId");
 
-                    b.ToTable("CreditCard");
+                    b.ToTable("CreditCard", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardMovement", b =>
@@ -189,7 +186,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("CreditCardId");
 
-                    b.ToTable("CreditCardMovement");
+                    b.ToTable("CreditCardMovement", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardMovementResource", b =>
@@ -220,7 +217,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("ResourceId", "ResourceSourceId")
                         .IsUnique();
 
-                    b.ToTable("CreditCardMovementResource");
+                    b.ToTable("CreditCardMovementResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardResource", b =>
@@ -251,7 +248,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("ResourceId", "ResourceSourceId")
                         .IsUnique();
 
-                    b.ToTable("CreditCardResource");
+                    b.ToTable("CreditCardResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardStatement", b =>
@@ -272,15 +269,12 @@ namespace Finance.Domain.Migrations
                     b.Property<DateTime>("ExpiringDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("MinimumDue")
-                        .HasColumnType("numeric(18,4)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreditCardId")
                         .IsUnique();
 
-                    b.ToTable("CreditCardStatement");
+                    b.ToTable("CreditCardStatement", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementResource", b =>
@@ -311,7 +305,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("ResourceId", "ResourceSourceId")
                         .IsUnique();
 
-                    b.ToTable("CreditCardStatementResource");
+                    b.ToTable("CreditCardStatementResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Currency", b =>
@@ -342,7 +336,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("Name", "ShortName")
                         .IsUnique();
 
-                    b.ToTable("Currency");
+                    b.ToTable("Currency", (string)null);
 
                     b.HasData(
                         new
@@ -385,7 +379,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("MovementId");
 
-                    b.ToTable("CurrencyConversion");
+                    b.ToTable("CurrencyConversion", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CurrencyExchangeRate", b =>
@@ -425,7 +419,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("BaseCurrencyId", "QuoteCurrencyId", "TimeStamp")
                         .IsUnique();
 
-                    b.ToTable("CurrencyExchangeRate");
+                    b.ToTable("CurrencyExchangeRate", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CurrencyExchangeRateResource", b =>
@@ -456,7 +450,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("ResourceId", "ResourceSourceId")
                         .IsUnique();
 
-                    b.ToTable("CurrencyExchangeRateResource");
+                    b.ToTable("CurrencyExchangeRateResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CurrencySymbol", b =>
@@ -483,7 +477,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("Symbol", "CurrencyId")
                         .IsUnique();
 
-                    b.ToTable("CurrencySymbols");
+                    b.ToTable("CurrencySymbols", (string)null);
 
                     b.HasData(
                         new
@@ -545,7 +539,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("OriginId");
 
-                    b.ToTable("Debit");
+                    b.ToTable("Debit", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.DebitOrigin", b =>
@@ -571,7 +565,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("Name", "AppModuleId")
                         .IsUnique();
 
-                    b.ToTable("DebitOrigin");
+                    b.ToTable("DebitOrigin", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.DebitOriginResource", b =>
@@ -601,7 +595,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("DebitOriginResource");
+                    b.ToTable("DebitOriginResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.DebitResource", b =>
@@ -632,7 +626,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("ResourceId", "ResourceSourceId")
                         .IsUnique();
 
-                    b.ToTable("DebitResource");
+                    b.ToTable("DebitResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Frequency", b =>
@@ -655,7 +649,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Frequency");
+                    b.ToTable("Frequency", (string)null);
 
                     b.HasData(
                         new
@@ -712,7 +706,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Fund");
+                    b.ToTable("Fund", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.FundResource", b =>
@@ -743,7 +737,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("ResourceId", "ResourceSourceId")
                         .IsUnique();
 
-                    b.ToTable("FundResource");
+                    b.ToTable("FundResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestment", b =>
@@ -798,7 +792,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("AssetId");
 
-                    b.ToTable("IOLInvestment");
+                    b.ToTable("IOLInvestment", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAsset", b =>
@@ -830,7 +824,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("IOLInvestmentAsset");
+                    b.ToTable("IOLInvestmentAsset", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAssetResource", b =>
@@ -860,7 +854,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("IOLInvestmentAssetResource");
+                    b.ToTable("IOLInvestmentAssetResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAssetType", b =>
@@ -883,7 +877,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IOLInvestmentAssetType");
+                    b.ToTable("IOLInvestmentAssetType", (string)null);
 
                     b.HasData(
                         new
@@ -947,7 +941,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("IOLInvestmentResource");
+                    b.ToTable("IOLInvestmentResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Identity", b =>
@@ -983,7 +977,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Identity");
+                    b.ToTable("Identity", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IdentityProvider", b =>
@@ -1006,7 +1000,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("IdentityProvider");
+                    b.ToTable("IdentityProvider", (string)null);
 
                     b.HasData(
                         new
@@ -1060,7 +1054,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Income");
+                    b.ToTable("Income", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.IncomeResource", b =>
@@ -1090,77 +1084,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("IncomeResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardInstallment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Number")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("PaidAmount")
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<Guid?>("PaymentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PaymentPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PaymentId");
-
-                    b.HasIndex("PaymentPlanId");
-
-                    b.ToTable("CreditCardInstallment");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardInstallmentResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("CreditCardInstallmentResource");
+                    b.ToTable("IncomeResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Movement", b =>
@@ -1211,7 +1135,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Movement");
+                    b.ToTable("Movement", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.MovementResource", b =>
@@ -1241,211 +1165,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("ResourceSourceId");
 
-                    b.ToTable("MovementResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPayment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<Guid>("CreditCardId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("InstallmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Method")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("PaymentPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("StatementId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreditCardId");
-
-                    b.HasIndex("InstallmentId");
-
-                    b.HasIndex("PaymentPlanId");
-
-                    b.HasIndex("StatementId");
-
-                    b.ToTable("CreditCardPayment");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentAllocation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AllocationType")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("InstallmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PaymentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("PaymentPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("StatementId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PaymentId");
-
-                    b.ToTable("CreditCardPaymentAllocation");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentAllocationResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("CreditCardPaymentAllocationResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentPlan", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("CreditCardId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<int>("TotalInstallments")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreditCardId");
-
-                    b.ToTable("CreditCardPaymentPlan");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentPlanResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("CreditCardPaymentPlanResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("CreditCardPaymentResource");
+                    b.ToTable("MovementResource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Resource", b =>
@@ -1465,7 +1185,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Resource");
+                    b.ToTable("Resource", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.ResourceOwner", b =>
@@ -1496,7 +1216,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("UserId", "ResourceId")
                         .IsUnique();
 
-                    b.ToTable("ResourceOwner");
+                    b.ToTable("ResourceOwner", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Role", b =>
@@ -1519,7 +1239,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Role");
+                    b.ToTable("Role", (string)null);
 
                     b.HasData(
                         new
@@ -1575,7 +1295,7 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("UserRole", b =>
@@ -1590,7 +1310,7 @@ namespace Finance.Domain.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRole", (string)null);
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.AppModule", b =>
@@ -1989,43 +1709,6 @@ namespace Finance.Domain.Migrations
                     b.Navigation("ResourceSource");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardInstallment", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.CreditCardPayment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Finance.Domain.Models.CreditCardPaymentPlan", "PaymentPlan")
-                        .WithMany("Installments")
-                        .HasForeignKey("PaymentPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Payment");
-
-                    b.Navigation("PaymentPlan");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardInstallmentResource", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.CreditCardInstallment", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
             modelBuilder.Entity("Finance.Domain.Models.Movement", b =>
                 {
                     b.HasOne("Finance.Domain.Models.AppModule", "AppModule")
@@ -2060,117 +1743,6 @@ namespace Finance.Domain.Migrations
                         .IsRequired();
 
                     b.HasOne("Finance.Domain.Models.Movement", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPayment", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.CreditCard", "CreditCard")
-                        .WithMany("Payments")
-                        .HasForeignKey("CreditCardId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.CreditCardInstallment", "Installment")
-                        .WithMany()
-                        .HasForeignKey("InstallmentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Finance.Domain.Models.CreditCardPaymentPlan", "PaymentPlan")
-                        .WithMany()
-                        .HasForeignKey("PaymentPlanId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "Statement")
-                        .WithMany()
-                        .HasForeignKey("StatementId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CreditCard");
-
-                    b.Navigation("Installment");
-
-                    b.Navigation("PaymentPlan");
-
-                    b.Navigation("Statement");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentAllocation", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.CreditCardPayment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Payment");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentAllocationResource", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.CreditCardPaymentAllocation", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentPlan", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.CreditCard", "CreditCard")
-                        .WithMany("PaymentPlans")
-                        .HasForeignKey("CreditCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreditCard");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentPlanResource", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.CreditCardPaymentPlan", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentResource", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.CreditCardPayment", "ResourceSource")
                         .WithMany()
                         .HasForeignKey("ResourceSourceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2225,10 +1797,6 @@ namespace Finance.Domain.Migrations
                     b.Navigation("CreditCardStatement");
 
                     b.Navigation("Movements");
-
-                    b.Navigation("PaymentPlans");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Currency", b =>
@@ -2245,11 +1813,6 @@ namespace Finance.Domain.Migrations
             modelBuilder.Entity("Finance.Domain.Models.DebitOrigin", b =>
                 {
                     b.Navigation("Debits");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPaymentPlan", b =>
-                {
-                    b.Navigation("Installments");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.User", b =>
