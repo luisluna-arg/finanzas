@@ -2,11 +2,9 @@ using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
 
-public class Bank : Entity<Guid>
+public class CreditCardIssuer : Entity<Guid>
 {
-    // Bank name (required)
+    public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-
-    // Navigation
     public virtual ICollection<CreditCard> CreditCards { get; set; } = new List<CreditCard>();
 }

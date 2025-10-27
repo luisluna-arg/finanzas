@@ -1,4 +1,5 @@
 using Finance.Domain.Models.Base;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.Models;
 
@@ -8,5 +9,5 @@ public class CreditCardStatement : Entity<Guid>
     public virtual CreditCard CreditCard { get; set; } = default!;
     public DateTime ClosureDate { get; set; }
     public DateTime ExpiringDate { get; set; }
-    public decimal MinimumDue { get; set; }
+    public Money MinimumDue { get; set; }
 }
