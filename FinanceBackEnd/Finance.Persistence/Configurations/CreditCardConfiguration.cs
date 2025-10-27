@@ -8,30 +8,27 @@ public class CreditCardConfiguration : IEntityTypeConfiguration<CreditCard>
 {
     public void Configure(EntityTypeBuilder<CreditCard> builder)
     {
-        builder
-            .HasMany(o => o.Movements)
-            .WithOne(o => o.CreditCard)
-            .IsRequired();
+        builder.HasKey(c => c.Id);
 
         builder
-            .HasOne(o => o.CreditCardStatement)
-            .WithOne(o => o.CreditCard)
-            .HasForeignKey<CreditCard>(c => c.CreditCardStatementId);
+            .Property(c => c.Name)
+            .IsRequired()
+            .HasMaxLength(200);
 
         builder
-            .HasMany(c => c.PaymentPlans)
-            .WithOne(p => p.CreditCard)
-            .HasForeignKey(p => p.CreditCardId)
-            .IsRequired();
+            .HasOne(c => c.Bank)
+            .WithMany()
+            .HasForeignKey(c => c.BankId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .HasMany(c => c.Payments)
-            .WithOne(p => p.CreditCard)
-            .HasForeignKey(p => p.CreditCardId)
-            .IsRequired();
+            .HasOne(c => c.CreditCardIssuer)
+            .WithMany()
+            .HasForeignKey(c => c.CreditCardIssuerId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .Property(c => c.UnappliedCredit)
-            .HasColumnType("numeric(18,4)");
+            .HasIndex(c => new { c.BankId, c.Name });
     }
 }

@@ -12,13 +12,13 @@ public class FinanceDbContext : DbContext
     public DbSet<AppModule> AppModule => Set<AppModule>();
     public DbSet<AppModuleType> AppModuleType => Set<AppModuleType>();
     public DbSet<Bank> Bank => Set<Bank>();
+    public DbSet<CreditCardIssuer> CreditCardIssuer => Set<CreditCardIssuer>();
     public DbSet<CreditCard> CreditCard => Set<CreditCard>();
-    public DbSet<CreditCardMovement> CreditCardMovement => Set<CreditCardMovement>();
     public DbSet<CreditCardStatement> CreditCardStatement => Set<CreditCardStatement>();
-    public DbSet<CreditCardPaymentPlan> CreditCardPaymentPlan => Set<CreditCardPaymentPlan>();
-    public DbSet<CreditCardInstallment> CreditCardInstallment => Set<CreditCardInstallment>();
+    public DbSet<CreditCardStatementTransaction> CreditCardStatementTransaction => Set<CreditCardStatementTransaction>();
+    public DbSet<CreditCardTransaction> CreditCardTransaction => Set<CreditCardTransaction>();
     public DbSet<CreditCardPayment> CreditCardPayment => Set<CreditCardPayment>();
-    public DbSet<CreditCardPaymentAllocation> CreditCardPaymentAllocation => Set<CreditCardPaymentAllocation>();
+    public DbSet<CreditCardStatementAdjustment> CreditCardStatementAdjustment => Set<CreditCardStatementAdjustment>();
     public DbSet<Currency> Currency => Set<Currency>();
     public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
     public DbSet<CurrencyExchangeRate> CurrencyExchangeRate => Set<CurrencyExchangeRate>();
@@ -38,21 +38,15 @@ public class FinanceDbContext : DbContext
     public DbSet<Role> Role => Set<Role>();
     public DbSet<Resource> Resource => Set<Resource>();
     public DbSet<ResourceOwner> ResourceOwner => Set<ResourceOwner>();
-    public DbSet<CreditCardMovementResource> CreditCardMovementResource => Set<CreditCardMovementResource>();
     public DbSet<CreditCardResource> CreditCardResource => Set<CreditCardResource>();
-    public DbSet<CreditCardStatementResource> CreditCardStatementResource => Set<CreditCardStatementResource>();
     public DbSet<CurrencyExchangeRateResource> CurrencyExchangeRateResource => Set<CurrencyExchangeRateResource>();
     public DbSet<DebitOriginResource> DebitOriginResource => Set<DebitOriginResource>();
     public DbSet<DebitResource> DebitResource => Set<DebitResource>();
     public DbSet<FundResource> FundResource => Set<FundResource>();
     public DbSet<IncomeResource> IncomeResource => Set<IncomeResource>();
-    public DbSet<CreditCardInstallmentResource> CreditCardInstallmentResource => Set<CreditCardInstallmentResource>();
     public DbSet<IOLInvestmentAssetResource> IOLInvestmentAssetResource => Set<IOLInvestmentAssetResource>();
     public DbSet<IOLInvestmentResource> IOLInvestmentResource => Set<IOLInvestmentResource>();
     public DbSet<MovementResource> MovementResource => Set<MovementResource>();
-    public DbSet<CreditCardPaymentResource> CreditCardPaymentResource => Set<CreditCardPaymentResource>();
-    public DbSet<CreditCardPaymentAllocationResource> CreditCardPaymentAllocationResource => Set<CreditCardPaymentAllocationResource>();
-    public DbSet<CreditCardPaymentPlanResource> CreditCardPaymentPlanResource => Set<CreditCardPaymentPlanResource>();
 
     private IHttpContextAccessor? HttpContextAccessor { get; }
 

@@ -12,7 +12,27 @@ public class PaymentConfiguration : IEntityTypeConfiguration<CreditCardPayment>
 
         builder
             .Property(p => p.Amount)
+            .IsRequired()
             .HasColumnType("numeric(18,4)");
+
+        builder
+            .Property(p => p.Timestamp)
+            .IsRequired()
+            .HasConversion(d => d.ToUniversalTime(), d => d);
+
+        builder
+            .Property(p => p.Method)
+            .IsRequired();
+
+        builder
+            .Property(p => p.Status)
+            .IsRequired();
+
+        builder
+            .HasOne(p => p.Statement)
+            .WithMany()
+            .HasForeignKey(p => p.StatementId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasOne(p => p.CreditCard)
@@ -21,23 +41,7 @@ public class PaymentConfiguration : IEntityTypeConfiguration<CreditCardPayment>
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Optional relations - enforce FK constraints but restrict deletes
         builder
-            .HasOne(p => p.Statement)
-            .WithMany()
-            .HasForeignKey(p => p.StatementId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder
-            .HasOne(p => p.PaymentPlan)
-            .WithMany()
-            .HasForeignKey(p => p.PaymentPlanId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder
-            .HasOne(p => p.Installment)
-            .WithMany()
-            .HasForeignKey(p => p.InstallmentId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasIndex(p => new { p.CreditCardId, p.Timestamp });
     }
 }

@@ -12,12 +12,6 @@ public static class ModelBuilderExtensions
     /// </summary>
     public static void AddQueryFilters(this ModelBuilder modelBuilder, FinanceDbContext context)
     {
-        SetOwnershipFilter<CreditCardMovement, Guid, CreditCardMovementResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<CreditCardMovement, Guid, CreditCardMovementResource>(modelBuilder, context);
-        SetOwnershipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
-        SetOwnershipFilter<CreditCardStatement, Guid, CreditCardStatementResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<CreditCardStatement, Guid, CreditCardStatementResource>(modelBuilder, context);
         SetOwnershipFilter<CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>(modelBuilder, context);
         SetResourceOwnershipFilter<CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>(modelBuilder, context);
         SetOwnershipFilter<DebitOrigin, Guid, DebitOriginResource>(modelBuilder, context);
@@ -35,6 +29,10 @@ public static class ModelBuilderExtensions
         SetOwnershipFilter<Movement, Guid, MovementResource>(modelBuilder, context);
         SetResourceOwnershipFilter<Movement, Guid, MovementResource>(modelBuilder, context);
         SetCurrencyConversionOwnershipFilter(modelBuilder, context);
+        // Credit card related entities filtered through CreditCard ownership
+        SetOwnershipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
+        SetResourceOwnershipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
+        SetCreditCardRelatedOwnershipFilter(modelBuilder, context);
     }
 
     /// <summary>
@@ -219,5 +217,68 @@ public static class ModelBuilderExtensions
     private static Expression<Func<CurrencyConversion, bool>> BuildCurrencyConversionOwnershipFilter(FinanceDbContext context)
     {
         return cc => cc.Movement != null && cc.Currency != null;
+    }
+
+    /// <summary>
+    /// Sets ownership filters for credit card related entities through their navigation properties to CreditCard.
+    /// This ensures users can only see statements, transactions, and payments for credit cards they own.
+    /// </summary>
+    private static void SetCreditCardRelatedOwnershipFilter(ModelBuilder modelBuilder, FinanceDbContext context)
+    {
+        modelBuilder.Entity<CreditCardStatement>().HasQueryFilter(
+            s => context.Set<CreditCardResource>().Any(r =>
+                r.ResourceSourceId == s.CreditCardId &&
+                context.Set<ResourceOwner>().Any(ro =>
+                    ro.ResourceId == r.ResourceId &&
+                    ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
+                )
+            )
+        );
+
+        modelBuilder.Entity<CreditCardTransaction>().HasQueryFilter(
+            t => context.Set<CreditCardResource>().Any(r =>
+                r.ResourceSourceId == t.CreditCardId &&
+                context.Set<ResourceOwner>().Any(ro =>
+                    ro.ResourceId == r.ResourceId &&
+                    ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
+                )
+            )
+        );
+
+        modelBuilder.Entity<CreditCardStatementTransaction>().HasQueryFilter(
+            st => context.Set<CreditCardStatement>().Any(s =>
+                s.Id == st.CreditCardStatementId &&
+                context.Set<CreditCardResource>().Any(r =>
+                    r.ResourceSourceId == s.CreditCardId &&
+                    context.Set<ResourceOwner>().Any(ro =>
+                        ro.ResourceId == r.ResourceId &&
+                        ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
+                    )
+                )
+            )
+        );
+
+        modelBuilder.Entity<CreditCardPayment>().HasQueryFilter(
+            p => context.Set<CreditCardResource>().Any(r =>
+                r.ResourceSourceId == p.CreditCardId &&
+                context.Set<ResourceOwner>().Any(ro =>
+                    ro.ResourceId == r.ResourceId &&
+                    ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
+                )
+            )
+        );
+
+        modelBuilder.Entity<CreditCardStatementAdjustment>().HasQueryFilter(
+            a => context.Set<CreditCardStatement>().Any(s =>
+                s.Id == a.CreditCardStatementId &&
+                context.Set<CreditCardResource>().Any(r =>
+                    r.ResourceSourceId == s.CreditCardId &&
+                    context.Set<ResourceOwner>().Any(ro =>
+                        ro.ResourceId == r.ResourceId &&
+                        ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
+                    )
+                )
+            )
+        );
     }
 }
