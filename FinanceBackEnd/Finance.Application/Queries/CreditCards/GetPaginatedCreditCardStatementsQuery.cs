@@ -67,6 +67,5 @@ public class GetPaginatedCreditCardStatementsQueryHandler
 public class GetPaginatedCreditCardStatementsQuery : GetPaginatedQuery<CreditCardStatement>
 {
     public string? CreditCardId { get; set; }
-
     public string? BankId { get; set; }
 }

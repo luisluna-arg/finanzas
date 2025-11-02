@@ -5,17 +5,11 @@ namespace Finance.Application.Dtos;
 
 public record CurrencyExchangeRateDto : Dto<Guid>
 {
+    public CurrencyExchangeRateDto() { }
+
     public CurrencyDto BaseCurrency { get; set; } = default!;
-
     public CurrencyDto QuoteCurrency { get; set; } = default!;
-
     public decimal BuyRate { get; set; } = 0M;
-
     public decimal SellRate { get; set; } = 0M;
-
     public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
-
-    public CurrencyExchangeRateDto()
-    {
-    }
 }

@@ -8,6 +8,7 @@ using Finance.Application.Repositories;
 using Finance.Persistence;
 using Finance.Domain.Enums;
 using Finance.Application.Auth;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Commands.Debits;
 
@@ -70,16 +71,12 @@ public class CreateDebitCommandHandler : BaseCommandHandler<CreateDebitCommand, 
 public class CreateDebitCommand : ICommand
 {
     public Guid AppModuleId { get; set; }
-
     [Required]
     public string Origin { get; set; } = string.Empty;
-
     [Required]
-    public decimal Amount { get; set; } = 0m;
-
+    public Money Amount { get; set; } = 0m;
     [Required]
     public bool Deactivated { get; set; }
-
     [Required]
     public FrequencyEnum Frequency { get; set; }
 }

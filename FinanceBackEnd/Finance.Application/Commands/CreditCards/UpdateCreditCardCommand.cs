@@ -46,12 +46,9 @@ public class UpdateCreditCardCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }
-
     [Required]
     public Guid BankId { get; set; }
-
     [Required]
     public string Name { get; set; } = string.Empty;
-
     public bool Deactivated { get; set; }
 }

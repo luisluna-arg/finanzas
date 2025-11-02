@@ -58,12 +58,8 @@ public class GetAllCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<Get
 public class GetAllCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate>
 {
     public Guid? BaseCurrencyId { get; set; }
-
     public Guid? QuoteCurrencyId { get; set; }
-
     public DateTimeKind? DateTimeKind { get; set; }
-
     public DateTime? TimeStampStart { get; set; }
-
     public DateTime? TimeStampEnd { get; set; }
 }

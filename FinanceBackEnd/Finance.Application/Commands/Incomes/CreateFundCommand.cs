@@ -4,6 +4,7 @@ using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistence;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Commands.Incomes;
 
@@ -51,10 +52,7 @@ public class CreateIncomeCommandHandler : BaseCommandHandler<CreateIncomeCommand
 public class CreateIncomeCommand : ICommand
 {
     public virtual Guid BankId { get; set; }
-
     public virtual Guid CurrencyId { get; set; }
-
     required public DateTime TimeStamp { get; set; }
-
-    required public decimal Amount { get; set; }
+    required public Money Amount { get; set; }
 }

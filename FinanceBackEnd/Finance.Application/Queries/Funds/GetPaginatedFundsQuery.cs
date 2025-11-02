@@ -71,6 +71,5 @@ public class GetPaginatedFundsQueryHandler : IQueryHandler<GetPaginatedFundsQuer
 public class GetPaginatedFundsQuery : GetPaginatedQuery<Fund>
 {
     public Guid? CurrencyId { get; set; }
-
     public Guid? BankId { get; set; }
 }

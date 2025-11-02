@@ -4,6 +4,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistence;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Commands.CurrencyConvertions;
 
@@ -50,5 +51,5 @@ public class UpdateCurrencyConversionCommand : ICommand
     required public Guid Id { get; set; }
     required public Guid MovementId { get; set; }
     public Guid? CurrencyId { get; set; }
-    public decimal Amount { get; set; }
+    public Money Amount { get; set; }
 }

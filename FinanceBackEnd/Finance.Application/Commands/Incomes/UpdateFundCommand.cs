@@ -51,12 +51,8 @@ public class UpdateIncomeCommandHandler : BaseCommandHandler<UpdateIncomeCommand
 public class UpdateIncomeCommand : ICommand
 {
     required public Guid Id { get; set; }
-
     public virtual Guid BankId { get; set; }
-
     public virtual Guid CurrencyId { get; set; }
-
     required public DateTime TimeStamp { get; set; }
-
     required public Money Amount { get; set; }
 }

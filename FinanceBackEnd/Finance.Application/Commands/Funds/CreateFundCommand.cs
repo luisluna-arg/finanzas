@@ -4,6 +4,7 @@ using Finance.Application.Base.Handlers;
 using Finance.Domain.Models;
 using Finance.Application.Repositories;
 using Finance.Persistence;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Commands.Funds;
 
@@ -52,12 +53,8 @@ public class CreateFundCommandHandler : BaseCommandHandler<CreateFundCommand, Fu
 public class CreateFundCommand : ICommand<DataResult<Fund>>
 {
     public virtual Guid BankId { get; set; }
-
     public virtual Guid CurrencyId { get; set; }
-
     required public DateTime TimeStamp { get; set; }
-
-    required public decimal Amount { get; set; }
-
+    required public Money Amount { get; set; }
     public bool? DailyUse { get; set; }
 }

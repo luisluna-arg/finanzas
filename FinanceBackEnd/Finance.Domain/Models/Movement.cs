@@ -6,6 +6,8 @@ namespace Finance.Domain.Models;
 
 public class Movement : AuditedEntity<Guid>
 {
+    public Movement() : base() { }
+
     [ForeignKey("AppModuleId")]
     public Guid AppModuleId { get; set; }
     [ForeignKey("BankId")]
@@ -19,8 +21,4 @@ public class Movement : AuditedEntity<Guid>
     public string? Concept2 { get; set; }
     public Money Amount { get; set; }
     public Money? Total { get; set; }
-
-    public Movement() : base()
-    {
-    }
 }

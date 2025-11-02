@@ -38,7 +38,6 @@ public class UpdateCurrencyExchangeRateCommand : ICommand<DataResult<CurrencyExc
 {
     [Required]
     public Guid Id { get; set; }
-
     [Required]
     public decimal BuyRate { get; set; } = 0m;
 

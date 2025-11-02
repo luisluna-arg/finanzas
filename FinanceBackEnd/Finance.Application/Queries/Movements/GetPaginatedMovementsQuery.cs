@@ -69,6 +69,5 @@ public class GetPaginatedMovementsQueryHandler : IQueryHandler<GetPaginatedMovem
 public class GetPaginatedMovementsQuery : GetPaginatedQuery<Movement?>
 {
     public string? AppModuleId { get; set; }
-
     public string? BankId { get; set; }
 }

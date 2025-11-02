@@ -78,10 +78,7 @@ public class GetPaginatedDebitsQueryHandler : IQueryHandler<GetPaginatedDebitsQu
 public class GetPaginatedDebitsQuery : GetPaginatedQuery<Debit>
 {
     public Guid? AppModuleId { get; set; }
-
     public Guid? OriginId { get; set; }
-
     public AppModuleTypeEnum? AppModuleType { get; set; }
-
     public FrequencyEnum Frequency { get; set; }
 }

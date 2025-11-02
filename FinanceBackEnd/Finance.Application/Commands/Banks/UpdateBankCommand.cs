@@ -37,7 +37,6 @@ public class UpdateBankCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }
-
     [Required]
     public string Name { get; set; } = string.Empty;
 }

@@ -36,13 +36,10 @@ public class CreateCreditCardStatementCommand : BaseCreateCommand<CreditCardStat
 {
     [Required]
     public Guid CreditCardId { get; set; }
-
     [Required]
     public DateTime ClosureDate { get; set; }
-
     [Required]
     public DateTime ExpiringDate { get; set; }
-
     public bool? Deactivated { get; set; }
 }
 

@@ -72,6 +72,5 @@ public class GetPaginatedIncomesQueryHandler : IQueryHandler<GetPaginatedIncomes
 public class GetPaginatedIncomesQuery : GetPaginatedQuery<Income>
 {
     public Guid? CurrencyId { get; set; }
-
     public Guid? BankId { get; set; }
 }

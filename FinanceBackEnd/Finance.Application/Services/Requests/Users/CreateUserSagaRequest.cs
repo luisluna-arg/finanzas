@@ -7,7 +7,6 @@ namespace Finance.Application.Commands.Users;
 public class CreateUserSagaRequest : CreateUserCommand, ISagaRequest
 {
     public IEnumerable<IdentityDto> Identities { get; set; }
-
     public CreateUserSagaRequest(string username, string firstName, string lastName, IEnumerable<RoleEnum> roles, IEnumerable<IdentityDto> identities)
         : base()
     {

@@ -1,4 +1,5 @@
 using Finance.Domain.Models.Base;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.Models;
 
@@ -8,5 +9,5 @@ public class CurrencyConversion() : Entity<Guid>()
     public Guid? CurrencyId { get; set; }
     public virtual Movement Movement { get; set; } = default!;
     public virtual Currency? Currency { get; set; } = default;
-    public decimal Amount { get; set; }
+    public Money Amount { get; set; }
 }

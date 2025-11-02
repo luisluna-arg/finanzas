@@ -48,6 +48,5 @@ public class GetLatestDebitsQueryHandler : BaseCollectionHandler<GetLatestDebits
 public class GetLatestDebitsQuery : GetAllQuery<Debit>
 {
     public Guid? AppModuleId { get; set; }
-
     public FrequencyEnum Frequency { get; set; }
 }

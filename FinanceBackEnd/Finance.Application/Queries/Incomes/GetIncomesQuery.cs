@@ -62,13 +62,10 @@ public class GetIncomesQuery : GetAllQuery<Income>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
     /// </summary>
     public DateTime? From { get; set; }
-
     /// <summary>
     /// Gets or sets date to filter to. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
     /// </summary>
     public DateTime? To { get; set; }
-
     public Guid? CurrencyId { get; set; }
-
     public Guid? BankId { get; set; }
 }

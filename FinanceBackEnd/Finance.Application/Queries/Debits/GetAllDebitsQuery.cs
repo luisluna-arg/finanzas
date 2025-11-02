@@ -38,6 +38,5 @@ public class GetAllDebitsQueryHandler : BaseCollectionHandler<GetAllDebitsQuery,
 public class GetAllDebitsQuery : GetAllQuery<Debit>
 {
     public Guid? AppModuleId { get; set; }
-
     public FrequencyEnum Frequency { get; set; }
 }

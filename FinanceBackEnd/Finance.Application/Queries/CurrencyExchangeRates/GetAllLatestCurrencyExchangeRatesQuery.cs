@@ -64,6 +64,5 @@ public class GetAllLatestCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchan
     }
 
     public Guid? BaseCurrencyId { get; set; }
-
     public Guid? QuoteCurrencyId { get; set; }
 }

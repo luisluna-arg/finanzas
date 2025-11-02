@@ -45,7 +45,6 @@ public class CreateDebitOriginCommand : ICommand<DataResult<DebitOrigin>>
 {
     [Required]
     public Guid AppModuleId { get; set; }
-
     [Required]
     public string Name { get; set; } = string.Empty;
 

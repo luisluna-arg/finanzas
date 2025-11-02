@@ -4,9 +4,6 @@ namespace Finance.Domain.Models;
 
 public class Bank : Entity<Guid>
 {
-    // Bank name (required)
     public string Name { get; set; } = string.Empty;
-
-    // Navigation
-    public virtual ICollection<CreditCard> CreditCards { get; set; } = new List<CreditCard>();
+    public virtual ICollection<CreditCard> CreditCards { get; set; } = [];
 }
