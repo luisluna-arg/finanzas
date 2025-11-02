@@ -12,13 +12,11 @@ public class PaymentConfiguration : IEntityTypeConfiguration<CreditCardPayment>
 
         builder
             .Property(p => p.Amount)
-            .IsRequired()
-            .HasColumnType("numeric(18,4)");
+            .IsRequired();
 
         builder
             .Property(p => p.Timestamp)
-            .IsRequired()
-            .HasConversion(d => d.ToUniversalTime(), d => d);
+            .IsRequired();
 
         builder
             .Property(p => p.Method)

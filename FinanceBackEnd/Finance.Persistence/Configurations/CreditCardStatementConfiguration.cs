@@ -12,18 +12,15 @@ public class CreditCardStatementConfiguration : IEntityTypeConfiguration<CreditC
 
         builder
             .Property(s => s.ClosureDate)
-            .IsRequired()
-            .HasConversion(d => d.ToUniversalTime(), d => d);
+            .IsRequired();
 
         builder
             .Property(s => s.ExpiringDate)
-            .IsRequired()
-            .HasConversion(d => d.ToUniversalTime(), d => d);
+            .IsRequired();
 
         builder
             .Property(s => s.MinimumDue)
-            .IsRequired()
-            .HasColumnType("numeric(18,4)");
+            .IsRequired();
 
         builder
             .HasOne(s => s.CreditCard)

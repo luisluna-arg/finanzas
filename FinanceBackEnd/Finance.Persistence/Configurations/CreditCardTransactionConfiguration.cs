@@ -1,5 +1,4 @@
 using Finance.Domain.Models;
-using Finance.Persistence.TypeConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,8 +12,7 @@ public class CreditCardTransactionConfiguration : IEntityTypeConfiguration<Credi
 
         builder
             .Property(t => t.Timestamp)
-            .IsRequired()
-            .HasConversion(t => t.ToUniversalTime(), t => t);
+            .IsRequired();
 
         builder
             .Property(t => t.TransactionType)
@@ -28,8 +26,7 @@ public class CreditCardTransactionConfiguration : IEntityTypeConfiguration<Credi
 
         builder
             .Property(t => t.Amount)
-            .IsRequired()
-            .HasConversion(new MoneyConverter());
+            .IsRequired();
 
         builder
             .Property(t => t.Reference)

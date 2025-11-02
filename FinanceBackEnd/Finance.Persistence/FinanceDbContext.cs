@@ -1,7 +1,9 @@
 using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
+using Finance.Domain.SpecialTypes;
 using Finance.Persistence.Configurations;
 using Finance.Persistence.Extensions;
+using Finance.Persistence.TypeConverters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -93,5 +95,24 @@ public class FinanceDbContext : DbContext
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
             }
         }
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<Money>()
+            .HaveConversion<MoneyValueConverter>();
+
+        configurationBuilder
+            .Properties<Money?>()
+            .HaveConversion<NullableMoneyValueConverter>();
+
+        configurationBuilder
+            .Properties<DateTime>()
+            .HaveConversion<DateTimeUtcConverter>();
+
+        configurationBuilder
+            .Properties<DateTime?>()
+            .HaveConversion<NullableDateTimeUtcConverter>();
     }
 }

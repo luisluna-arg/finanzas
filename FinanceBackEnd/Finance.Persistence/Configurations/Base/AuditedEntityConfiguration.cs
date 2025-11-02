@@ -10,15 +10,5 @@ public abstract class AuditedEntityConfiguration<T, TId> : IEntityTypeConfigurat
 {
     public virtual void Configure(EntityTypeBuilder<T> builder)
     {
-        builder
-            .Property(o => o.CreatedAt)
-            .HasConversion(o => o.ToUniversalTime(), o => o);
-
-        builder
-            .Property(o => o.UpdatedAt)
-            .HasConversion(
-                v => v.HasValue ? v.Value.ToUniversalTime() : (DateTime?)null,
-                v => v
-            );
     }
 }

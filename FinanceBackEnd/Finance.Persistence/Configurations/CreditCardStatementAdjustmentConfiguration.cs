@@ -12,8 +12,7 @@ public class CreditCardStatementAdjustmentConfiguration : IEntityTypeConfigurati
 
         builder
             .Property(a => a.Amount)
-            .IsRequired()
-            .HasColumnType("numeric(18,4)");
+            .IsRequired();
 
         builder
             .Property(a => a.Reason)
@@ -22,8 +21,7 @@ public class CreditCardStatementAdjustmentConfiguration : IEntityTypeConfigurati
 
         builder
             .Property(a => a.CreatedAt)
-            .IsRequired()
-            .HasConversion(d => d.ToUniversalTime(), d => d);
+            .IsRequired();
 
         builder
             .HasOne(a => a.CreditCardStatement)

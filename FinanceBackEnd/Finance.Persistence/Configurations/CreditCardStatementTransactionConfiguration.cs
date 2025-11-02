@@ -1,5 +1,4 @@
 using Finance.Domain.Models;
-using Finance.Persistence.TypeConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,13 +12,11 @@ public class CreditCardStatementTransactionConfiguration : IEntityTypeConfigurat
 
         builder
             .Property(st => st.PostedDate)
-            .IsRequired()
-            .HasConversion(d => d.ToUniversalTime(), d => d);
+            .IsRequired();
 
         builder
             .Property(st => st.Amount)
-            .IsRequired()
-            .HasConversion(new MoneyConverter());
+            .IsRequired();
 
         builder
             .Property(st => st.Description)
