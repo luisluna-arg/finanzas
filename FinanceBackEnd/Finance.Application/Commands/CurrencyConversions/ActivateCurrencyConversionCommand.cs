@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Domain.Models;
 using Finance.Application.Services;
+using Finance.Domain.Models;
 
 namespace Finance.Application.Commands.CurrencyConversions;
 

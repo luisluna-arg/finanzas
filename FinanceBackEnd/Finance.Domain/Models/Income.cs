@@ -1,6 +1,6 @@
-using Finance.Domain.SpecialTypes;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.Interfaces;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.Models;
 

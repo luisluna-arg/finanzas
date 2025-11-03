@@ -1,10 +1,10 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
-using Finance.Domain.Models.Base;
 using Finance.Application.Repositories;
+using Finance.Domain.Models.Base;
 using Finance.Persistence;
 using FluentValidation;
-using CQRSDispatch.Interfaces;
-using CQRSDispatch;
 
 namespace Finance.Application.Commands.CreditCards;
 

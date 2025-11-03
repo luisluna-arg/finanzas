@@ -1,7 +1,7 @@
-using Finance.Domain.Models;
-using Finance.Persistence;
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
+using Finance.Domain.Models;
+using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Commands;

@@ -1,6 +1,6 @@
 using Finance.Application.Commons;
-using Finance.Domain.Models.Interfaces;
 using Finance.Application.Dtos.Base;
+using Finance.Domain.Models.Interfaces;
 
 namespace Finance.Application.Mapping.Base;
 

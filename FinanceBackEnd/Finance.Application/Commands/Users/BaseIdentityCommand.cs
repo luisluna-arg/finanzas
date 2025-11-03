@@ -1,8 +1,8 @@
-using Finance.Domain.Models;
+using System.Text.Json.Serialization;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Domain.Enums;
-using System.Text.Json.Serialization;
+using Finance.Domain.Models;
 
 namespace Finance.Application.Commands;
 

@@ -1,12 +1,12 @@
-using Finance.Application.Queries.CurrencyExchangeRates;
-using Finance.Domain.SpecialTypes;
-using Finance.Domain.DataConverters;
+using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
+using Finance.Application.Queries.CurrencyExchangeRates;
+using Finance.Domain.DataConverters;
 using Finance.Domain.Models;
 using Finance.Domain.Models.Interfaces;
+using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
-using CQRSDispatch;
-using Finance.Application.Auth;
 
 namespace Finance.Application.Services;
 

@@ -1,5 +1,5 @@
-using Finance.Domain.Models;
 using Finance.Application.Repositories.Base;
+using Finance.Domain.Models;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

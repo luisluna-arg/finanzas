@@ -1,9 +1,9 @@
 using System.Runtime.Versioning;
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Helpers;
 using Finance.Persistence;
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Commands.Funds;

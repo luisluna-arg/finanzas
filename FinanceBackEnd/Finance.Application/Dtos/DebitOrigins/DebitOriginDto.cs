@@ -1,5 +1,5 @@
-using Finance.Application.Dtos.Base;
 using Finance.Application.Dtos.AppModules;
+using Finance.Application.Dtos.Base;
 
 namespace Finance.Application.Dtos.DebitOrigins;
 

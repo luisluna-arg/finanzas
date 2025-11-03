@@ -1,5 +1,5 @@
-using Finance.Domain.SpecialTypes;
 using Finance.Domain.Models;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.DataConverters;
 

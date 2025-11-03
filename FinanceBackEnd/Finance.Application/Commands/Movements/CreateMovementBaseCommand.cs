@@ -1,5 +1,5 @@
-using Finance.Domain.SpecialTypes;
 using CQRSDispatch.Interfaces;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Commands.Movements;
 
