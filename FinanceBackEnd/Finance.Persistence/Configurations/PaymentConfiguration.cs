@@ -30,16 +30,10 @@ public class PaymentConfiguration : IEntityTypeConfiguration<CreditCardPayment>
             .HasOne(p => p.Statement)
             .WithMany()
             .HasForeignKey(p => p.StatementId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder
-            .HasOne(p => p.CreditCard)
-            .WithMany(c => c.Payments)
-            .HasForeignKey(p => p.CreditCardId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .HasIndex(p => new { p.CreditCardId, p.Timestamp });
+            .HasIndex(p => new { p.StatementId, p.Timestamp });
     }
 }

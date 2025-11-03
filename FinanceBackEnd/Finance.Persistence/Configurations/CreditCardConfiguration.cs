@@ -24,8 +24,14 @@ public class CreditCardConfiguration : IEntityTypeConfiguration<CreditCard>
 
         builder
             .HasOne(c => c.CreditCardIssuer)
-            .WithMany()
+            .WithMany(i => i.CreditCards)
             .HasForeignKey(c => c.CreditCardIssuerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne(c => c.CurrentStatement)
+            .WithMany()
+            .HasForeignKey(c => c.CurrentStatementId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder

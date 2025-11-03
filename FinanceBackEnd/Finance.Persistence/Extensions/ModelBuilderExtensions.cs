@@ -259,11 +259,14 @@ public static class ModelBuilderExtensions
         );
 
         modelBuilder.Entity<CreditCardPayment>().HasQueryFilter(
-            p => context.Set<CreditCardResource>().Any(r =>
-                r.ResourceSourceId == p.CreditCardId &&
-                context.Set<ResourceOwner>().Any(ro =>
-                    ro.ResourceId == r.ResourceId &&
-                    ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
+            p => context.Set<CreditCardStatement>().Any(s =>
+                s.Id == p.StatementId &&
+                context.Set<CreditCardResource>().Any(r =>
+                    r.ResourceSourceId == s.CreditCardId &&
+                    context.Set<ResourceOwner>().Any(ro =>
+                        ro.ResourceId == r.ResourceId &&
+                        ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
+                    )
                 )
             )
         );

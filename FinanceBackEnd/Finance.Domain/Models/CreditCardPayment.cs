@@ -5,9 +5,7 @@ namespace Finance.Domain.Models;
 
 public class CreditCardPayment : Entity<Guid>
 {
-    public Guid CreditCardId { get; set; }
-    public virtual CreditCard CreditCard { get; set; } = null!;
-    public Guid? StatementId { get; set; }
+    public Guid StatementId { get; set; }
     public virtual CreditCardStatement Statement { get; set; } = null!;
     public DateTime Timestamp { get; set; }
     public Money Amount { get; set; }

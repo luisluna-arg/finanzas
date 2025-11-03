@@ -34,10 +34,16 @@ public class CreditCardTransactionConfiguration : IEntityTypeConfiguration<Credi
 
         builder
             .HasOne(t => t.CreditCard)
-            .WithMany()
+            .WithMany(c => c.Transactions)
             .HasForeignKey(t => t.CreditCardId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne(t => t.StatementTransaction)
+            .WithMany()
+            .HasForeignKey(t => t.StatementTransactionId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder
             .HasIndex(t => new { t.CreditCardId, t.Timestamp });
