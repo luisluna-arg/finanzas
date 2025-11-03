@@ -18,7 +18,7 @@ public class GetCreditCardQueryHandler : BaseCollectionHandler<GetCreditCardsQue
     {
         var query = DbContext.CreditCard
             .Include(o => o.Bank)
-            .Include(o => o.Movements)
+            .Include(o => o.Transactions)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.BankId))

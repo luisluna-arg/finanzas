@@ -11,23 +11,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
-[Route("api/credit-card-movements")]
-public class CreditCardMovementCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
-    : ApiBaseCommandController<CreditCardMovement, Guid, CreditCardMovementDto>(mapper, dispatcher)
+[Route("api/credit-card-transactions")]
+public class CreditCardTransactionCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
+    : ApiBaseCommandController<CreditCardTransaction, Guid, CreditCardTransactionDto>(mapper, dispatcher)
 {
     [HttpPost]
-    public async Task<IActionResult> Create(CreateCreditCardMovementCommand request)
+    public async Task<IActionResult> Create(CreateCreditCardTransactionCommand request)
         => await ExecuteAsync(request);
 
     [HttpDelete]
-    public async Task<IActionResult> Delete(DeleteCreditCardMovementCommand request)
+    public async Task<IActionResult> Delete(DeleteCreditCardTransactionCommand request)
         => await ExecuteAsync(request);
 
     [HttpPost]
     [Route("upload")]
     public async Task<IActionResult> Upload(IFormFile file, string creditCardId, [DefaultValue("Local")] string dateKind)
     {
-        await ExecuteAsync(new UploadCreditCardFileCommand(file, creditCardId, EnumHelper.Parse<DateTimeKind>(dateKind)));
+        await ExecuteAsync(new UploadCreditCardTransactionFileCommand(file, creditCardId, EnumHelper.Parse<DateTimeKind>(dateKind)));
         return Ok();
     }
 }
