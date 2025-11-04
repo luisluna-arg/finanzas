@@ -1,6 +1,6 @@
+using Finance.Application.Dtos.Banks;
 using Finance.Application.Mapping.Base;
 using Finance.Domain.Models;
-using Finance.Application.Dtos.Banks;
 
 namespace Finance.Application.Mapping.Mappers;
 

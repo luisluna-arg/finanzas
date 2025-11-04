@@ -1,6 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
-using CQRSDispatch.Interfaces;
 using System.Reflection;
+using CQRSDispatch.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CQRSDispatch.Extensions;
 

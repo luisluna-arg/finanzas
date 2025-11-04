@@ -1,7 +1,7 @@
-using Finance.Application.Queries.Base;
-using Finance.Application.Commons;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Commons;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -69,6 +69,5 @@ public class GetPaginatedMovementsQueryHandler : IQueryHandler<GetPaginatedMovem
 public class GetPaginatedMovementsQuery : GetPaginatedQuery<Movement?>
 {
     public string? AppModuleId { get; set; }
-
     public string? BankId { get; set; }
 }

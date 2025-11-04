@@ -1,16 +1,16 @@
+using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Persistence;
-using Finance.Domain.Models;
+using Finance.Api.Controllers.Requests.Identities;
+using Finance.Application.Auth;
 using Finance.Application.Commands;
+using Finance.Application.Commands.Users;
+using Finance.Application.Extensions;
 using Finance.Application.Queries.Users;
 using Finance.Application.Services.Interfaces;
-using Microsoft.EntityFrameworkCore.Storage;
-using Finance.Application.Extensions;
-using Finance.Application.Commands.Users;
-using Finance.Api.Controllers.Requests.Identities;
+using Finance.Domain.Models;
+using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
-using Finance.Application.Auth;
-using CQRSDispatch;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Finance.Application.Services;
 

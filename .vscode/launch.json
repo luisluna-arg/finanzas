@@ -31,7 +31,7 @@
       }
     },
     {
-      "name": "Attach to .NET Core (Docker)",
+      "name": "Attach to .NET Core (Docker) - Select 'dotnet' process",
       "type": "coreclr",
       "request": "attach",
       "preLaunchTask": "",
@@ -41,7 +41,7 @@
         "pipeArgs": [
           "exec",
           "-i",
-          "${input:containerName}",
+          "${input:containerList}",
           "sh",
           "-c"
         ],
@@ -49,7 +49,7 @@
         "quoteArgs": false
       },
       "sourceFileMap": {
-        "/app": "${workspaceFolder}/FinanceBackEnd/Finance.Api"
+        "/src": "${workspaceFolder}/FinanceBackEnd"
       }
     },
     {
@@ -121,10 +121,10 @@
   ],
   "inputs": [
     {
-      "id": "containerName",
+      "id": "containerList",
       "type": "promptString",
-      "description": "Enter the Docker container name or id running the API (e.g. finances_api_1)",
-      "default": ""
+      "description": "Enter the Docker container name or id",
+      "default": "finances-shared-backend-1"
     }
   ]
 }

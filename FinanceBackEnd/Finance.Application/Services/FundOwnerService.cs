@@ -1,11 +1,11 @@
-using CQRSDispatch.Interfaces;
-using Finance.Persistence;
-using Finance.Domain.Models;
-using Finance.Application.Auth;
-using Finance.Application.Services.Orchestrators;
 using CQRSDispatch;
-using Finance.Application.Services.Base;
+using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Commands.Funds.Owners;
+using Finance.Application.Services.Base;
+using Finance.Application.Services.Orchestrators;
+using Finance.Domain.Models;
+using Finance.Persistence;
 
 namespace Finance.Application.Services;
 

@@ -1,8 +1,8 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
 using Finance.Persistence;
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Commands.Funds;
@@ -29,8 +29,6 @@ public class UploadImageCommandHandler : BaseResponselessHandler<UploadImageComm
 public class UploadImageCommand : ICommand
 {
     required public IFormFileCollection Files { get; set; }
-
     public DateTimeKind? DateKind { get; set; }
-
     public DateTime? DateReference { get; internal set; }
 }

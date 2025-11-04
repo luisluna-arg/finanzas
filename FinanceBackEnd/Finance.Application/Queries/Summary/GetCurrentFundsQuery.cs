@@ -1,11 +1,11 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Summary;
+using Finance.Domain.Models;
 using Finance.Persistence;
 using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 using FundDto = Finance.Application.Dtos.Summary.Fund;
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
-using Finance.Domain.Models;
 
 namespace Finance.Application.Queries.Summary;
 

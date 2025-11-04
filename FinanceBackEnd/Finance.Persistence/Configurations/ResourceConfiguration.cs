@@ -30,9 +30,7 @@ public class EntityResourceConfiguration<TEntityResource, TEntity, TId> : Audite
     }
 }
 
-public class CreditCardMovementResourceConfiguration : EntityResourceConfiguration<CreditCardMovementResource, CreditCardMovement, Guid>;
 public class CreditCardResourceConfiguration : EntityResourceConfiguration<CreditCardResource, CreditCard, Guid>;
-public class CreditCardStatementResourceConfiguration : EntityResourceConfiguration<CreditCardStatementResource, CreditCardStatement, Guid>;
 public class CurrencyExchangeRateResourceConfiguration : EntityResourceConfiguration<CurrencyExchangeRateResource, CurrencyExchangeRate, Guid>;
 public class DebitResourceConfiguration : EntityResourceConfiguration<DebitResource, Debit, Guid>;
 public class FundResourceConfiguration : EntityResourceConfiguration<FundResource, Fund, Guid>;

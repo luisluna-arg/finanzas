@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore.Migrations;
 

@@ -1,6 +1,6 @@
+using Finance.Application.Dtos.Frequencies;
 using Finance.Application.Mapping.Base;
 using Finance.Domain.Models;
-using Finance.Application.Dtos.Frequencies;
 
 namespace Finance.Application.Mapping.Mappers;
 

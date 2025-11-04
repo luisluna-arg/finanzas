@@ -1,11 +1,11 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
+using Finance.Application.Repositories;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Helpers.ExcelHelper;
-using Finance.Application.Repositories;
-using Finance.Application.Repositories.Base;
 using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

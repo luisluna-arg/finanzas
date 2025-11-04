@@ -18,12 +18,12 @@ public class GetCreditCardExpensesQueryHandler(FinanceDbContext db) : IQueryHand
         var creditCards = _db.CreditCard.Include(o => o.Bank).Where(o => !o.Deactivated).ToArray();
         foreach (var creditCard in creditCards)
         {
-            var baseQuery = _db.CreditCardMovement.Where(o => o.CreditCardId == creditCard.Id);
-            var count = await baseQuery.CountAsync();
+            var baseQuery = _db.CreditCardTransaction.Where(o => o.CreditCardId == creditCard.Id);
+            var count = await baseQuery.CountAsync(cancellationToken);
             if (count > 0)
             {
-                var timeStamp = await baseQuery.MaxAsync(o => o.TimeStamp);
-                total += await baseQuery.Where(o => o.TimeStamp == timeStamp).SumAsync(o => o.Amount);
+                var timeStamp = await baseQuery.MaxAsync(o => o.Timestamp, cancellationToken);
+                total += await baseQuery.Where(o => o.Timestamp == timeStamp).SumAsync(o => o.Amount, cancellationToken);
             }
         }
 

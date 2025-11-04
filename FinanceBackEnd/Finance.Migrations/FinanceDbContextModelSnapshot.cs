@@ -115,9 +115,14 @@ namespace Finance.Domain.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Bank");
                 });
@@ -131,7 +136,13 @@ namespace Finance.Domain.Migrations
                     b.Property<Guid>("BankId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CreditCardStatementId")
+                    b.Property<Guid?>("BankId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CreditCardIssuerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CurrentStatementId")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("Deactivated")
@@ -139,16 +150,53 @@ namespace Finance.Domain.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("UnappliedCredit")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BankId");
+                    b.HasIndex("BankId1");
+
+                    b.HasIndex("CreditCardIssuerId");
+
+                    b.HasIndex("CurrentStatementId");
+
+                    b.HasIndex("BankId", "Name");
 
                     b.ToTable("CreditCard");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardMovement", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardIssuer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("CreditCardIssuer");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardPayment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -157,67 +205,26 @@ namespace Finance.Domain.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("AmountDollars")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Concept")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("CreditCardId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("Deactivated")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("PaymentNumber")
+                    b.Property<int>("Method")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PlanSize")
+                    b.Property<Guid>("StatementId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("PlanStart")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("TimeStamp")
+                    b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreditCardId");
+                    b.HasIndex("StatementId", "Timestamp");
 
-                    b.ToTable("CreditCardMovement");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardMovementResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("CreditCardMovementResource");
+                    b.ToTable("CreditCardPayment");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardResource", b =>
@@ -269,43 +276,122 @@ namespace Finance.Domain.Migrations
                     b.Property<DateTime>("ExpiringDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<decimal>("MinimumDue")
+                        .HasColumnType("numeric");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CreditCardId")
-                        .IsUnique();
+                    b.HasIndex("CreditCardId", "ClosureDate");
 
                     b.ToTable("CreditCardStatement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementResource", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementAdjustment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreditCardStatementId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("Deactivated")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("ResourceId")
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreditCardStatementId", "CreatedAt");
+
+                    b.ToTable("CreditCardStatementAdjustment");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ResourceSourceId")
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("CreditCardStatementId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<Guid?>("CreditCardTransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("PostedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ResourceSourceId");
+                    b.HasIndex("CreditCardTransactionId");
 
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
+                    b.HasIndex("CreditCardStatementId", "PostedDate");
 
-                    b.ToTable("CreditCardStatementResource");
+                    b.ToTable("CreditCardStatementTransaction");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Concept")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("CreditCardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid?>("StatementTransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TransactionType")
+                        .HasMaxLength(50)
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StatementTransactionId");
+
+                    b.HasIndex("CreditCardId", "Timestamp");
+
+                    b.ToTable("CreditCardTransaction");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Currency", b =>
@@ -1337,40 +1423,39 @@ namespace Finance.Domain.Migrations
                     b.HasOne("Finance.Domain.Models.Bank", "Bank")
                         .WithMany()
                         .HasForeignKey("BankId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Bank", null)
+                        .WithMany("CreditCards")
+                        .HasForeignKey("BankId1");
+
+                    b.HasOne("Finance.Domain.Models.CreditCardIssuer", "CreditCardIssuer")
+                        .WithMany("CreditCards")
+                        .HasForeignKey("CreditCardIssuerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "CurrentStatement")
+                        .WithMany()
+                        .HasForeignKey("CurrentStatementId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Bank");
+
+                    b.Navigation("CreditCardIssuer");
+
+                    b.Navigation("CurrentStatement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardMovement", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardPayment", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.CreditCard", "CreditCard")
-                        .WithMany("Movements")
-                        .HasForeignKey("CreditCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreditCard");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardMovementResource", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
+                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "Statement")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("StatementId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.CreditCardMovement", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
+                    b.Navigation("Statement");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCardResource", b =>
@@ -1395,31 +1480,59 @@ namespace Finance.Domain.Migrations
             modelBuilder.Entity("Finance.Domain.Models.CreditCardStatement", b =>
                 {
                     b.HasOne("Finance.Domain.Models.CreditCard", "CreditCard")
-                        .WithOne("CreditCardStatement")
-                        .HasForeignKey("Finance.Domain.Models.CreditCardStatement", "CreditCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("Statements")
+                        .HasForeignKey("CreditCardId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CreditCard");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementResource", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementAdjustment", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
+                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "CreditCardStatement")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("CreditCardStatementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "ResourceSource")
+                    b.Navigation("CreditCardStatement");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementTransaction", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "CreditCardStatement")
                         .WithMany()
-                        .HasForeignKey("ResourceSourceId")
+                        .HasForeignKey("CreditCardStatementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Resource");
+                    b.HasOne("Finance.Domain.Models.CreditCardTransaction", "CreditCardTransaction")
+                        .WithMany()
+                        .HasForeignKey("CreditCardTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("ResourceSource");
+                    b.Navigation("CreditCardStatement");
+
+                    b.Navigation("CreditCardTransaction");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardTransaction", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.CreditCard", "CreditCard")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CreditCardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.CreditCardStatementTransaction", "StatementTransaction")
+                        .WithMany()
+                        .HasForeignKey("StatementTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CreditCard");
+
+                    b.Navigation("StatementTransaction");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CurrencyConversion", b =>
@@ -1792,11 +1905,21 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Movements");
                 });
 
+            modelBuilder.Entity("Finance.Domain.Models.Bank", b =>
+                {
+                    b.Navigation("CreditCards");
+                });
+
             modelBuilder.Entity("Finance.Domain.Models.CreditCard", b =>
                 {
-                    b.Navigation("CreditCardStatement");
+                    b.Navigation("Statements");
 
-                    b.Navigation("Movements");
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCardIssuer", b =>
+                {
+                    b.Navigation("CreditCards");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.Currency", b =>

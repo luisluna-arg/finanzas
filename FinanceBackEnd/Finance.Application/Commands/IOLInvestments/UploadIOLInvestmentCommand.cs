@@ -1,13 +1,13 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
-using Finance.Domain.Models;
-using Finance.Domain.Enums;
 using Finance.Application.Repositories;
+using Finance.Domain.Enums;
+using Finance.Domain.Models;
 using Finance.Persistence;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
 using Finance.Persistence.Constants;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Commands.IOLInvestments;
 

@@ -230,14 +230,14 @@ public class DatabaseSeeder : IHostedService
     private async Task SeedAdminUser(FinanceDbContext dbContext)
     {
         // Check if admin user seeding is enabled
-        if (!adminUserOptions.EnableSeeding)
+        if (!this.adminUserOptions.EnableSeeding)
         {
             logger.LogInformation("Admin user seeding is disabled");
             return;
         }
 
         // Only seed admin user if UserId is configured
-        if (string.IsNullOrWhiteSpace(adminUserOptions.UserId))
+        if (string.IsNullOrWhiteSpace(this.adminUserOptions.UserId))
         {
             logger.LogInformation("No admin UserId configured, skipping admin user seeding");
             return;
@@ -247,24 +247,24 @@ public class DatabaseSeeder : IHostedService
         using var validationScope = provider.CreateScope();
         var auth0ValidationService = validationScope.ServiceProvider.GetRequiredService<IAuth0UserValidationService>();
 
-        var userExistsInAuth0 = await auth0ValidationService.ValidateUserExistsAsync(adminUserOptions.UserId);
+        var userExistsInAuth0 = await auth0ValidationService.ValidateUserExistsAsync(this.adminUserOptions.UserId);
         if (!userExistsInAuth0)
         {
-            logger.LogWarning("Admin user {AdminUserId} does not exist in Auth0. Skipping admin user seeding for security", adminUserOptions.UserId);
+            logger.LogWarning("Admin user {AdminUserId} does not exist in Auth0. Skipping admin user seeding for security", this.adminUserOptions.UserId);
             return;
         }
 
         // Get user info from Auth0 for better seeding
-        var auth0UserInfo = await auth0ValidationService.GetUserInfoAsync(adminUserOptions.UserId);
+        var auth0UserInfo = await auth0ValidationService.GetUserInfoAsync(this.adminUserOptions.UserId);
         if (auth0UserInfo != null)
         {
-            logger.LogInformation("Validated admin user {AdminUserId} exists in Auth0. Email: {Email}", adminUserOptions.UserId, auth0UserInfo.Email);
+            logger.LogInformation("Validated admin user {AdminUserId} exists in Auth0. Email: {Email}", this.adminUserOptions.UserId, auth0UserInfo.Email);
         }
 
         var now = DateTime.UtcNow;
-        string firstName = adminUserOptions.DefaultFirstName;
-        string lastName = adminUserOptions.DefaultLastName;
-        string username = adminUserOptions.DefaultUsername;
+        string firstName = this.adminUserOptions.DefaultFirstName;
+        string lastName = this.adminUserOptions.DefaultLastName;
+        string username = this.adminUserOptions.DefaultUsername;
         if (auth0UserInfo != null)
         {
             firstName = auth0UserInfo.GivenName ?? firstName;
@@ -291,34 +291,34 @@ public class DatabaseSeeder : IHostedService
             };
             await dbContext.User.AddAsync(user);
             await dbContext.SaveChangesAsync();
-            logger.LogInformation("Created admin user {AdminUserId}", adminUserOptions.UserId);
+            logger.LogInformation("Created admin user {AdminUserId}", this.adminUserOptions.UserId);
         }
 
         // 2. Ensure identity exists and is linked to user
         var identity = await dbContext.Identity
             .Include(i => i.User)
-            .FirstOrDefaultAsync(i => i.Provider == IdentityProviderEnum.Auth && i.SourceId == adminUserOptions.UserId);
+            .FirstOrDefaultAsync(i => i.Provider == IdentityProviderEnum.Auth && i.SourceId == this.adminUserOptions.UserId);
         if (identity == null)
         {
             identity = new Identity
             {
                 Id = Guid.NewGuid(),
                 Provider = IdentityProviderEnum.Auth,
-                SourceId = adminUserOptions.UserId,
+                SourceId = this.adminUserOptions.UserId,
                 User = user,
                 CreatedAt = now,
                 UpdatedAt = now
             };
             await dbContext.Identity.AddAsync(identity);
             await dbContext.SaveChangesAsync();
-            logger.LogInformation("Created identity for admin user {AdminUserId}", adminUserOptions.UserId);
+            logger.LogInformation("Created identity for admin user {AdminUserId}", this.adminUserOptions.UserId);
         }
         else if (identity.User == null || identity.User.Id != user.Id)
         {
             // Fix orphaned or mismatched identity
             identity.User = user;
             await dbContext.SaveChangesAsync();
-            logger.LogInformation("Re-linked identity to correct user for admin {AdminUserId}", adminUserOptions.UserId);
+            logger.LogInformation("Re-linked identity to correct user for admin {AdminUserId}", this.adminUserOptions.UserId);
         }
 
         // 3. Ensure admin role is assigned
@@ -326,11 +326,11 @@ public class DatabaseSeeder : IHostedService
         {
             user.Roles.Add(adminRoleEntity);
             await dbContext.SaveChangesAsync();
-            logger.LogInformation("Admin role assigned to user {AdminUserId}", adminUserOptions.UserId);
+            logger.LogInformation("Admin role assigned to user {AdminUserId}", this.adminUserOptions.UserId);
         }
         else if (adminRoleEntity != null)
         {
-            logger.LogInformation("Admin user {AdminUserId} already has admin role", adminUserOptions.UserId);
+            logger.LogInformation("Admin user {AdminUserId} already has admin role", this.adminUserOptions.UserId);
         }
     }
 

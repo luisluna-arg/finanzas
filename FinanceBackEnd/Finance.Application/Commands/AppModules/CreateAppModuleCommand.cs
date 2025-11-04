@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Application.Base.Handlers;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Domain.Models;
-using Finance.Domain.Enums;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
+using Finance.Domain.Enums;
+using Finance.Domain.Models;
 using Finance.Persistence;
 
 namespace Finance.Application.Commands.AppModules;

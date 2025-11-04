@@ -41,14 +41,23 @@ ENV AdminUser__DefaultFirstName=$AdminUser__DefaultFirstName \
     ConnectionStrings__PostgresDb=""
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY . .
 RUN dotnet restore "FinanceBackEnd.sln"
-RUN dotnet publish "Finance.Api/Finance.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish "Finance.Api/Finance.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+
+# Install debugger for remote debugging
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Visual Studio Debugger
+RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
 
 # ASP.NET Core will automatically use PORT environment variable if ASPNETCORE_URLS is not set
 ENV PORT=${PORT:-5000}

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Domain.Models;
 using Finance.Application.Repositories;
+using Finance.Domain.Models;
 using Finance.Persistence;
 using FluentValidation;
 
@@ -36,13 +36,10 @@ public class CreateCreditCardStatementCommand : BaseCreateCommand<CreditCardStat
 {
     [Required]
     public Guid CreditCardId { get; set; }
-
     [Required]
     public DateTime ClosureDate { get; set; }
-
     [Required]
     public DateTime ExpiringDate { get; set; }
-
     public bool? Deactivated { get; set; }
 }
 

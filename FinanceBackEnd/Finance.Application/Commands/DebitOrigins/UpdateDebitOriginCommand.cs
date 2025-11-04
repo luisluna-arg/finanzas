@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Application.Base.Handlers;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Domain.Models;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
+using Finance.Domain.Models;
 using Finance.Persistence;
 
 namespace Finance.Application.Commands.DebitOrigins;
@@ -45,13 +45,10 @@ public class UpdateDebitOriginCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }
-
     [Required]
     public Guid AppModuleId { get; set; }
-
     [Required]
     public string Name { get; set; } = string.Empty;
-
     [Required]
     public bool Deactivated { get; set; }
 }

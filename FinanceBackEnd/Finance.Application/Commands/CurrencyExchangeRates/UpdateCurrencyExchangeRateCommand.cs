@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Application.Base.Handlers;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
-using Finance.Persistence;
 using Finance.Domain.Models;
+using Finance.Persistence;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
@@ -38,7 +38,6 @@ public class UpdateCurrencyExchangeRateCommand : ICommand<DataResult<CurrencyExc
 {
     [Required]
     public Guid Id { get; set; }
-
     [Required]
     public decimal BuyRate { get; set; } = 0m;
 

@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Application.Base.Handlers;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Domain.Models;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
+using Finance.Domain.Models;
 using Finance.Persistence;
 
 namespace Finance.Application.Commands.Banks;
@@ -37,7 +37,6 @@ public class UpdateBankCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }
-
     [Required]
     public string Name { get; set; } = string.Empty;
 }

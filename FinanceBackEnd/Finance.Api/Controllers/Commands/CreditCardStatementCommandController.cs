@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/credit-card-statements")]
-public class CreditCardStatementStatementController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
+public class CreditCardStatementCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCUDCommandController<
     CreditCardStatement?,
     Guid,

@@ -4,12 +4,16 @@ namespace Finance.Domain.Models;
 
 public class CreditCard : Entity<Guid>
 {
-    public Guid BankId { get; set; } = default!;
-    public virtual Bank Bank { get; set; } = default!;
-    public Guid? CreditCardStatementId { get; set; }
-    public virtual CreditCardStatement? CreditCardStatement { get; set; } = default!;
     public string Name { get; set; } = string.Empty;
-    public virtual ICollection<CreditCardMovement> Movements { get; set; } = [];
+    public decimal UnappliedCredit { get; set; }
+    public Guid BankId { get; set; }
+    public virtual Bank Bank { get; set; } = default!;
+    public Guid? CurrentStatementId { get; set; }
+    public virtual CreditCardStatement? CurrentStatement { get; set; }
+    public Guid? CreditCardIssuerId { get; set; }
+    public virtual CreditCardIssuer? CreditCardIssuer { get; set; }
+    public virtual ICollection<CreditCardTransaction> Transactions { get; set; } = [];
+    public virtual ICollection<CreditCardStatement> Statements { get; set; } = [];
 
     public CreditCard()
     {

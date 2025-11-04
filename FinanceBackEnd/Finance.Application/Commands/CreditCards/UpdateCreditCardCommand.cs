@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Application.Base.Handlers;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Domain.Models;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
+using Finance.Domain.Models;
 using Finance.Persistence;
 
 namespace Finance.Application.Commands.CreditCards;
@@ -46,12 +46,9 @@ public class UpdateCreditCardCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }
-
     [Required]
     public Guid BankId { get; set; }
-
     [Required]
     public string Name { get; set; } = string.Empty;
-
     public bool Deactivated { get; set; }
 }

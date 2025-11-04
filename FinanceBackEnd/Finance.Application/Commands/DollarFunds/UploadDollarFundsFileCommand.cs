@@ -1,10 +1,10 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
-using Finance.Domain.Models;
-using Finance.Helpers;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
+using Finance.Domain.Models;
+using Finance.Helpers;
 using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 

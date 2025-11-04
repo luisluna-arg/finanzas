@@ -1,11 +1,11 @@
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
-using Finance.Domain.Models;
 using Finance.Application.Repositories;
+using Finance.Application.Repositories.Base;
+using Finance.Domain.Models;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Finance.Application.Repositories.Base;
 
 namespace Finance.Application.Queries.Funds;
 
@@ -68,15 +68,11 @@ public class GetFundsQuery : GetAllQuery<Fund>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
     /// </summary>
     public DateTime? From { get; set; }
-
     /// <summary>
     /// Gets or sets date to filter to. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
     /// </summary>
     public DateTime? To { get; set; }
-
     public Guid? CurrencyId { get; set; }
-
     public Guid? BankId { get; set; }
-
     public bool? DailyUse { get; set; }
 }

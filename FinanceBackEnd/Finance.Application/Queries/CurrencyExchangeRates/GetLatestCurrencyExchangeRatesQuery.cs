@@ -55,6 +55,5 @@ public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<
 public class GetLatestCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate>
 {
     public Guid? BaseCurrencyId { get; set; }
-
     public Guid? QuoteCurrencyId { get; set; }
 }

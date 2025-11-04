@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Application.Base.Handlers;
-using Finance.Domain.Models.Base;
-using Finance.Application.Repositories;
-using Finance.Persistence;
-using FluentValidation;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Repositories;
+using Finance.Domain.Models.Base;
+using Finance.Persistence;
+using FluentValidation;
 
 namespace Finance.Application.Commands.CreditCards;
 

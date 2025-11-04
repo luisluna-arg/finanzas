@@ -1,7 +1,7 @@
-using Finance.Application.Queries.Base;
-using Finance.Application.Commons;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Commons;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -67,6 +67,5 @@ public class GetPaginatedCreditCardStatementsQueryHandler
 public class GetPaginatedCreditCardStatementsQuery : GetPaginatedQuery<CreditCardStatement>
 {
     public string? CreditCardId { get; set; }
-
     public string? BankId { get; set; }
 }

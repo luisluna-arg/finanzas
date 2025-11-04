@@ -8,10 +8,28 @@ public class CreditCardStatementConfiguration : IEntityTypeConfiguration<CreditC
 {
     public void Configure(EntityTypeBuilder<CreditCardStatement> builder)
     {
+        builder.HasKey(s => s.Id);
+
         builder
-            .HasOne(o => o.CreditCard)
-            .WithOne(o => o.CreditCardStatement)
-            .HasForeignKey<CreditCardStatement>(c => c.CreditCardId)
+            .Property(s => s.ClosureDate)
             .IsRequired();
+
+        builder
+            .Property(s => s.ExpiringDate)
+            .IsRequired();
+
+        builder
+            .Property(s => s.MinimumDue)
+            .IsRequired();
+
+        builder
+            .HasOne(s => s.CreditCard)
+            .WithMany(c => c.Statements)
+            .HasForeignKey(s => s.CreditCardId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasIndex(s => new { s.CreditCardId, s.ClosureDate });
     }
 }

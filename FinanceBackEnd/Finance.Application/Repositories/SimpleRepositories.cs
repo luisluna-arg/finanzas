@@ -1,6 +1,6 @@
-using Finance.Domain.Models;
 using Finance.Application.Repositories.Base;
 using Finance.Domain.Enums;
+using Finance.Domain.Models;
 using Finance.Persistence;
 
 namespace Finance.Application.Repositories;
@@ -15,8 +15,6 @@ public class AppModuleTypeRepository(FinanceDbContext dbContext) : BaseRepositor
 public class BankRepository(FinanceDbContext dbContext) : BaseRepository<Bank, Guid>(dbContext);
 
 // Credit Card related repositories
-public class CreditCardMovementRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardMovement, Guid>(dbContext);
-public class CreditCardMovementResourceRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardMovement, Guid>(dbContext);
 public class CreditCardRepository(FinanceDbContext dbContext) : BaseRepository<CreditCard, Guid>(dbContext);
 public class CreditCardResourceRepository(FinanceDbContext dbContext) : BaseRepository<CreditCard, Guid>(dbContext);
 public class CreditCardStatementRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardStatement, Guid>(dbContext);

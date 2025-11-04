@@ -2,7 +2,8 @@ using Finance.Domain.Models.Base;
 
 namespace Finance.Domain.Models;
 
-public class Bank() : Entity<Guid>()
+public class Bank : Entity<Guid>
 {
-    required public string? Name { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public virtual ICollection<CreditCard> CreditCards { get; set; } = [];
 }

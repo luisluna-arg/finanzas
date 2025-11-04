@@ -1,8 +1,8 @@
-using Finance.Application.Queries.Base;
-using Finance.Application.Commons;
-using Finance.Domain.Enums;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Commons;
+using Finance.Application.Queries.Base;
+using Finance.Domain.Enums;
 using Finance.Domain.Models;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -78,10 +78,7 @@ public class GetPaginatedDebitsQueryHandler : IQueryHandler<GetPaginatedDebitsQu
 public class GetPaginatedDebitsQuery : GetPaginatedQuery<Debit>
 {
     public Guid? AppModuleId { get; set; }
-
     public Guid? OriginId { get; set; }
-
     public AppModuleTypeEnum? AppModuleType { get; set; }
-
     public FrequencyEnum Frequency { get; set; }
 }

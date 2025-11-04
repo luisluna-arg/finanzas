@@ -1,8 +1,9 @@
-using Finance.Application.Base.Handlers;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Domain.Models;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
+using Finance.Domain.Models;
+using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
 
 namespace Finance.Application.Commands.CurrencyConvertions;
@@ -46,8 +47,6 @@ public class CreateCurrencyConversionCommandHandler : BaseCommandHandler<CreateC
 public class CreateCurrencyConversionCommand : ICommand
 {
     required public Guid MovementId { get; set; }
-
     public Guid? CurrencyId { get; set; }
-
-    public decimal Amount { get; set; }
+    public Money Amount { get; set; }
 }
