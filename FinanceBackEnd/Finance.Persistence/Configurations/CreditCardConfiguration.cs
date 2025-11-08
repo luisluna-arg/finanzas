@@ -19,6 +19,7 @@ public class CreditCardConfiguration : IEntityTypeConfiguration<CreditCard>
             .HasOne(c => c.Bank)
             .WithMany(b => b.CreditCards)
             .HasForeignKey(c => c.BankId)
+            .HasPrincipalKey(b => b.Id)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
@@ -26,6 +27,7 @@ public class CreditCardConfiguration : IEntityTypeConfiguration<CreditCard>
             .HasOne(c => c.CreditCardIssuer)
             .WithMany(i => i.CreditCards)
             .HasForeignKey(c => c.CreditCardIssuerId)
+            .HasPrincipalKey(i => i.Id)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
