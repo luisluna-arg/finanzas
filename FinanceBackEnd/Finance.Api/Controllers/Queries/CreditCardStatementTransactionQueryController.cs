@@ -10,16 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;
 
-[Route("api/credit-card-transactions")]
+[Route("api/credit-card-statement-transactions")]
 [Authorize(Policy = "AdminOrOwnerPolicy")]
-public class CreditCardTransactionQueryController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
+public class CreditCardStatementTransactionQueryController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseQueryController<CreditCardTransaction, Guid, CreditCardTransactionDto>(mapper, dispatcher)
 {
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetPaginatedCreditCardTransactionsQuery query)
-        => await ExecuteAsync(query);
-
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll([FromQuery] GetCreditCardTransactionsQuery query)
+    [HttpGet("latest")]
+    public async Task<IActionResult> GetLatest([FromQuery] GetLatestCreditCardTransactionsFromStatementsQuery query)
         => await ExecuteAsync(query);
 }

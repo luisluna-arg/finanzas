@@ -27,6 +27,7 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
             .Include(o => o.Bank)
             .Include(o => o.Currency)
                 .ThenInclude(o => o != null ? o.Symbols : null)
+            .AsSplitQuery() // Split query to avoid Cartesian explosion with multiple includes
             .Where(o => !o.Deactivated);
 
         if (request.DailyUse.HasValue)
@@ -59,6 +60,7 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
         var currencyExchangeRates = _db.CurrencyExchangeRate
             .Include(o => o.BaseCurrency)
             .Include(o => o.QuoteCurrency)
+            .AsSplitQuery() // Split query to avoid Cartesian explosion with multiple includes
             .Where(o => !o.Deactivated);
 
         var baseCurrencyIds = await currencyExchangeRates
