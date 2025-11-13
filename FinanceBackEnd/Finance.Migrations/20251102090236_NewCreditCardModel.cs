@@ -413,8 +413,31 @@ namespace Finance.Domain.Migrations
                     ""Deactivated""
                 FROM temp_credit_card_movements;
 
+                -- Create proper monthly statements based on actual transaction data
+                DELETE FROM ""CreditCardStatement"";
+                
+                INSERT INTO ""CreditCardStatement"" (
+                    ""Id"",
+                    ""CreditCardId"", 
+                    ""ClosureDate"",
+                    ""ExpiringDate"",
+                    ""MinimumDue"",
+                    ""Deactivated""
+                )
+                SELECT DISTINCT
+                    gen_random_uuid() as ""Id"",
+                    tcm.""CreditCardId"",
+                    -- Closure date is last day of the month
+                    (DATE_TRUNC('month', tcm.""TimeStamp"") + INTERVAL '1 month' - INTERVAL '1 day')::timestamp with time zone as ""ClosureDate"",
+                    -- Expiring date is 15 days after closure
+                    (DATE_TRUNC('month', tcm.""TimeStamp"") + INTERVAL '1 month' + INTERVAL '14 days')::timestamp with time zone as ""ExpiringDate"",
+                    0 as ""MinimumDue"", 
+                    false as ""Deactivated""
+                FROM temp_credit_card_movements tcm
+                ORDER BY tcm.""CreditCardId"", DATE_TRUNC('month', tcm.""TimeStamp"");
+
                 -- Create corresponding CreditCardStatementTransaction entries
-                -- This assumes each transaction should appear on a statement
+                -- Assign each transaction to its corresponding monthly statement
                 INSERT INTO ""CreditCardStatementTransaction"" (
                     ""Id"",
                     ""CreditCardStatementId"",
@@ -434,74 +457,45 @@ namespace Finance.Domain.Migrations
                     false as ""Deactivated""
                 FROM temp_credit_card_movements tcm
                 INNER JOIN ""CreditCardStatement"" cs ON cs.""CreditCardId"" = tcm.""CreditCardId""
-                WHERE tcm.""TimeStamp"" >= cs.""ClosureDate"" - INTERVAL '30 days'
-                  AND tcm.""TimeStamp"" <= cs.""ClosureDate"";
+                WHERE DATE_TRUNC('month', tcm.""TimeStamp"") = DATE_TRUNC('month', cs.""ClosureDate"")
+                ORDER BY tcm.""TimeStamp"";
 
-                -- Create default statements for credit cards that don't have any
-                INSERT INTO ""CreditCardStatement"" (
-                    ""Id"",
-                    ""CreditCardId"",
-                    ""ClosureDate"",
-                    ""ExpiringDate"",
-                    ""MinimumDue"",
-                    ""Deactivated""
-                )
-                SELECT 
-                    gen_random_uuid() as ""Id"",
-                    tcm.""CreditCardId"",
-                    DATE_TRUNC('month', MAX(tcm.""TimeStamp"")) + INTERVAL '1 month' - INTERVAL '1 day' as ""ClosureDate"",
-                    DATE_TRUNC('month', MAX(tcm.""TimeStamp"")) + INTERVAL '2 months' - INTERVAL '1 day' as ""ExpiringDate"",
-                    0 as ""MinimumDue"",
-                    false as ""Deactivated""
-                FROM temp_credit_card_movements tcm
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM ""CreditCardStatement"" cs 
-                    WHERE cs.""CreditCardId"" = tcm.""CreditCardId""
-                )
-                GROUP BY tcm.""CreditCardId"";
-
-                -- For movements without a matching statement, create them with the latest statement
-                INSERT INTO ""CreditCardStatementTransaction"" (
-                    ""Id"",
-                    ""CreditCardStatementId"",
-                    ""CreditCardTransactionId"",
-                    ""PostedDate"",
-                    ""Amount"",
-                    ""Description"",
-                    ""Deactivated""
-                )
-                SELECT 
-                    gen_random_uuid() as ""Id"",
-                    (SELECT ""Id"" FROM ""CreditCardStatement"" WHERE ""CreditCardId"" = tcm.""CreditCardId"" ORDER BY ""ClosureDate"" DESC LIMIT 1) as ""CreditCardStatementId"",
-                    tcm.""Id"" as ""CreditCardTransactionId"",
-                    tcm.""TimeStamp"" as ""PostedDate"",
-                    tcm.""Amount"",
-                    tcm.""Concept"" as ""Description"",
-                    false as ""Deactivated""
-                FROM temp_credit_card_movements tcm
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM ""CreditCardStatementTransaction"" cst 
-                    WHERE cst.""CreditCardTransactionId"" = tcm.""Id""
+                -- Update each credit card to point to its latest statement
+                UPDATE ""CreditCard"" 
+                SET ""CurrentStatementId"" = (
+                    SELECT cs.""Id""
+                    FROM ""CreditCardStatement"" cs
+                    WHERE cs.""CreditCardId"" = ""CreditCard"".""Id""
+                    ORDER BY cs.""ClosureDate"" DESC
+                    LIMIT 1
                 );
             ");
 
             // Step 3: Data validation and cleanup
             migrationBuilder.Sql(@"
-                -- Validate migration: Check if all movements were migrated
+                -- Validate migration: Check if all movements were migrated properly
                 DO $$ 
                 DECLARE
                     original_count INTEGER;
                     migrated_count INTEGER;
+                    statement_count INTEGER;
+                    assignment_count INTEGER;
                 BEGIN
                     SELECT COUNT(*) INTO original_count FROM temp_credit_card_movements;
                     SELECT COUNT(*) INTO migrated_count FROM ""CreditCardTransaction"" 
                     WHERE ""Id"" IN (SELECT ""Id"" FROM temp_credit_card_movements);
+                    SELECT COUNT(*) INTO statement_count FROM ""CreditCardStatement"";
+                    SELECT COUNT(*) INTO assignment_count FROM ""CreditCardStatementTransaction"";
                     
                     IF original_count != migrated_count THEN
-                        RAISE EXCEPTION 'Data migration failed: Original movements: %, Migrated: %', original_count, migrated_count;
+                        RAISE EXCEPTION 'Transaction migration failed: Original movements: %, Migrated: %', original_count, migrated_count;
                     END IF;
                     
-                    RAISE NOTICE 'Successfully migrated % credit card movements to new structure', original_count;
+                    IF original_count != assignment_count THEN
+                        RAISE EXCEPTION 'Statement assignment failed: Original movements: %, Assignments: %', original_count, assignment_count;
+                    END IF;
+                    
+                    RAISE NOTICE 'Successfully migrated % movements to % statements with % proper assignments', original_count, statement_count, assignment_count;
                 END $$;
                 
                 -- Clean up temporary tables
