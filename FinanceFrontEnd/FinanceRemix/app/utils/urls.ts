@@ -26,11 +26,27 @@ const urls = {
   creditCards: {
     get: `${apiBaseUrl}/credit-cards/`,
   },
+  creditCardTransactions: {
+    endpoint: `${apiBaseUrl}/credit-card-transactions`,
+    latest: `${apiBaseUrl}/credit-card-transactions/latest`,
+    paginated: `${apiBaseUrl}/credit-card-transactions/paginated`,
+  },
+  creditCardStatements: {
+    endpoint: `${apiBaseUrl}/credit-card-statements`,
+    latest: `${apiBaseUrl}/credit-card-statements/latest`,
+    paginated: `${apiBaseUrl}/credit-card-statements/paginated`,
+  },
+  creditCardPayments: {
+    endpoint: `${apiBaseUrl}/credit-card-payments`,
+    latest: `${apiBaseUrl}/credit-card-payments/latest`,
+    paginated: `${apiBaseUrl}/credit-card-payments/paginated`,
+  },
+  // Keep old creditCardMovements for backward compatibility, but point to statement transactions for dashboard
   creditCardMovements: {
-    endpoint: `${apiBaseUrl}/credit-card-movements`,
-    latest: `${apiBaseUrl}/credit-card-movements/latest`,
-    paginated: `${apiBaseUrl}/credit-card-movements/paginated`,
-    upload: `${apiBaseUrl}/credit-card-movements/upload`,
+    endpoint: `${apiBaseUrl}/credit-card-statement-transactions`,
+    latest: `${apiBaseUrl}/credit-card-statement-transactions/latest`,
+    paginated: `${apiBaseUrl}/credit-card-statement-transactions/paginated`,
+    upload: `${apiBaseUrl}/credit-card-transactions/upload`,
   },
   debits: {
     monthly: {
