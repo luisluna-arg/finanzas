@@ -17,8 +17,11 @@ public class BankRepository(FinanceDbContext dbContext) : BaseRepository<Bank, G
 // Credit Card related repositories
 public class CreditCardRepository(FinanceDbContext dbContext) : BaseRepository<CreditCard, Guid>(dbContext);
 public class CreditCardResourceRepository(FinanceDbContext dbContext) : BaseRepository<CreditCard, Guid>(dbContext);
+public class CreditCardPaymentRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardPayment, Guid>(dbContext);
 public class CreditCardStatementRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardStatement, Guid>(dbContext);
 public class CreditCardStatementResourceRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardStatement, Guid>(dbContext);
+public class CreditCardStatementTransactionRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardStatementTransaction, Guid>(dbContext);
+public class CreditCardTransactionRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardTransaction, Guid>(dbContext);
 
 // Currency related repositories
 public class CurrencyConversionRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyConversion, Guid>(dbContext);
