@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Movements;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Movements;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class PaginatedMovementMapper : PaginatedResultMapper<Movement, MovementD
     }
 }
 
-public interface IPaginatedMovementMapper : IPaginatedResultMapper<Movement, MovementDto>
-{
-}
+public interface IPaginatedMovementMapper : IPaginatedResultMapper<Movement, MovementDto>;

@@ -3,7 +3,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 
 namespace Finance.Application.Commands.Users;
 

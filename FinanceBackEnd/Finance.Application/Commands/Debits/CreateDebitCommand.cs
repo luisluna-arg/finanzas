@@ -6,7 +6,7 @@ using Finance.Application.Base.Handlers;
 using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Repositories;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Debits;
 using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
 

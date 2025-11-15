@@ -6,7 +6,7 @@ using Finance.Application.Auth;
 using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping;
 using Finance.Application.Services;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Identities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

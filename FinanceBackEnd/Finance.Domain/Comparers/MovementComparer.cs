@@ -1,4 +1,4 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.Movements;
 
 namespace Finance.Domain.Comparers;
 

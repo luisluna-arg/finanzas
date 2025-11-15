@@ -1,4 +1,4 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.IOLInvestments;
 using Finance.Persistence.Configurations.Base;
 
 namespace Finance.Persistence.Configurations;

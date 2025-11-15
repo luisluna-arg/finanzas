@@ -286,22 +286,14 @@ export default function Dashboard() {
                     return acc;
                 }
             ),
-            PaymentPlanColumn(
-                "paymentNumber",
-                "Nro. Cuota",
-                (v: unknown) =>
-                    toNumber(safeProp(v, "paymentNumber") as ValueLike, 0),
-                (acc: number, v: unknown) =>
-                    acc + toNumber(safeProp(v, "paymentNumber") as ValueLike, 0)
-            ),
-            PaymentPlanColumn(
-                "planSize",
-                "Cuotas",
-                (v: unknown) =>
-                    toNumber(safeProp(v, "planSize") as ValueLike, 0),
-                (acc: number, v: unknown) =>
-                    acc + toNumber(safeProp(v, "planSize") as ValueLike, 0)
-            ),
+            {
+                id: "timestamp", 
+                label: "Fecha",
+                mapper: (v: unknown) => {
+                    const date = safeProp(v, "timestamp") as string;
+                    return date ? new Date(date).toLocaleDateString() : "";
+                }
+            },
         ],
     };
 
@@ -468,7 +460,11 @@ export default function Dashboard() {
                                             };
                                             const url = urls.proxy(
                                                 urls.creditCardMovements.latest,
-                                                { CreditCardId: data.id }
+                                                { 
+                                                    CreditCardId: data.id,
+                                                    Page: 1,
+                                                    PageSize: 10
+                                                }
                                             );
                                             const idx =
                                                 _index <

@@ -4,7 +4,7 @@ using Finance.Application.Auth;
 using Finance.Application.Commands.Incomes;
 using Finance.Application.Dtos.Incomes;
 using Finance.Application.Mapping;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Incomes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

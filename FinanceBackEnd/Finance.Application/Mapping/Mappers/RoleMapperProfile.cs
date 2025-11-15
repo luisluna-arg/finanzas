@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class RoleMapper : BaseMapper<Role, RoleDto>, IRoleMapper
     }
 }
 
-public interface IRoleMapper : IMapper<Role, RoleDto>
-{
-}
+public interface IRoleMapper : IMapper<Role, RoleDto>;

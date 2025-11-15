@@ -1,7 +1,9 @@
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
-using Finance.Domain.Models;
+using Finance.Domain.Models.AppModules;
+using Finance.Domain.Models.Currencies;
+using Finance.Domain.Models.Movements;
 using Finance.Persistence;
 
 namespace Finance.Application.Commands.Movements;

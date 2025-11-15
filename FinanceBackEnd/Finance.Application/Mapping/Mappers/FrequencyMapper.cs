@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Frequencies;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Frequencies;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class FrequencyMapper : BaseMapper<Frequency, FrequencyDto>, IFrequencyMa
     }
 }
 
-public interface IFrequencyMapper : IMapper<Frequency, FrequencyDto>
-{
-}
+public interface IFrequencyMapper : IMapper<Frequency, FrequencyDto>;

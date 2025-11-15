@@ -7,7 +7,7 @@ using Finance.Application.Commands.Users;
 using Finance.Application.Extensions;
 using Finance.Application.Queries.Users;
 using Finance.Application.Services.Interfaces;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage;

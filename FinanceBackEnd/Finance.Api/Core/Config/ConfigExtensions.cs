@@ -63,7 +63,12 @@ public static class ConfigExtensions
         services.AddDbContext<FinanceDbContext>(opt =>
         {
             opt.UseLazyLoadingProxies(false);
-            opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDb"));
+            opt.UseNpgsql(
+                builder.Configuration.GetConnectionString("PostgresDb"),
+                npgsqlOptions =>
+                {
+                    npgsqlOptions.CommandTimeout(120);
+                });
         });
         services.AddDatabaseDeveloperPageExceptionFilter();
 

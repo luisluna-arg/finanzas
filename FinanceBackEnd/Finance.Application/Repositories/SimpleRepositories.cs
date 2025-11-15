@@ -1,6 +1,17 @@
 using Finance.Application.Repositories.Base;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.AppModules;
+using Finance.Domain.Models.Auth;
+using Finance.Domain.Models.Banks;
+using Finance.Domain.Models.CreditCards;
+using Finance.Domain.Models.Currencies;
+using Finance.Domain.Models.Debits;
+using Finance.Domain.Models.Frequencies;
+using Finance.Domain.Models.Funds;
+using Finance.Domain.Models.Identities;
+using Finance.Domain.Models.Incomes;
+using Finance.Domain.Models.IOLInvestments;
+using Finance.Domain.Models.Movements;
 using Finance.Persistence;
 
 namespace Finance.Application.Repositories;
@@ -17,17 +28,17 @@ public class BankRepository(FinanceDbContext dbContext) : BaseRepository<Bank, G
 // Credit Card related repositories
 public class CreditCardRepository(FinanceDbContext dbContext) : BaseRepository<CreditCard, Guid>(dbContext);
 public class CreditCardResourceRepository(FinanceDbContext dbContext) : BaseRepository<CreditCard, Guid>(dbContext);
+public class CreditCardPaymentRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardPayment, Guid>(dbContext);
 public class CreditCardStatementRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardStatement, Guid>(dbContext);
 public class CreditCardStatementResourceRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardStatement, Guid>(dbContext);
+public class CreditCardStatementTransactionRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardStatementTransaction, Guid>(dbContext);
+public class CreditCardTransactionRepository(FinanceDbContext dbContext) : BaseRepository<CreditCardTransaction, Guid>(dbContext);
 
 // Currency related repositories
 public class CurrencyConversionRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyConversion, Guid>(dbContext);
 public class CurrencyExchangeRateRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyExchangeRate, Guid>(dbContext);
 public class CurrencyExchangeRateResourceRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyExchangeRate, Guid>(dbContext);
 public class CurrencySymbolRepository(FinanceDbContext dbContext) : BaseRepository<CurrencySymbol, Guid>(dbContext);
-
-// Debit related repositories
-public class DebitOriginRepository(FinanceDbContext dbContext) : BaseRepository<DebitOrigin, Guid>(dbContext);
 public class DebitOriginResourceRepository(FinanceDbContext dbContext) : BaseRepository<DebitOrigin, Guid>(dbContext);
 public class DebitRepository(FinanceDbContext dbContext) : BaseRepository<Debit, Guid>(dbContext);
 public class DebitResourceRepository(FinanceDbContext dbContext) : BaseRepository<Debit, Guid>(dbContext);

@@ -4,7 +4,7 @@ using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Debits;
 using Finance.Helpers.ExcelHelper;
 using Finance.Persistence;
 using Microsoft.AspNetCore.Http;

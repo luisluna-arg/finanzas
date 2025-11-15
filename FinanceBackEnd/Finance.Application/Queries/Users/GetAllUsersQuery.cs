@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +16,7 @@ public class GetAllUsersQueryHandler(FinanceDbContext db) : BaseCollectionHandle
         var query = DbContext.User
             .Include(u => u.Roles)
             .Include(u => u.Identities)
+            .AsSplitQuery() // Split query to avoid Cartesian explosion with multiple includes
             .AsQueryable();
 
         if (!request.IncludeDeactivated)

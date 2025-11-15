@@ -4,7 +4,7 @@ using Finance.Application.Auth;
 using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.CreditCards;
-using Finance.Domain.Models;
+using Finance.Domain.Models.CreditCards;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

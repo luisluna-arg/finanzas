@@ -1,5 +1,5 @@
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.IOLInvestments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

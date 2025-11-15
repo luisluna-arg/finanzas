@@ -1,6 +1,6 @@
 using Finance.Application.Dtos;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class PaginatedCurrencyExchangeRateMapper : PaginatedResultMapper<Currenc
     }
 }
 
-public interface IPaginatedCurrencyExchangeRateMapper : IPaginatedResultMapper<CurrencyExchangeRate, CurrencyExchangeRateDto>
-{
-}
+public interface IPaginatedCurrencyExchangeRateMapper : IPaginatedResultMapper<CurrencyExchangeRate, CurrencyExchangeRateDto>;

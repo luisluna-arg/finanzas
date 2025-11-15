@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Incomes;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Incomes;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class IncomeMapper : BaseMapper<Income, IncomeDto>, IIncomeMapper
     }
 }
 
-public interface IIncomeMapper : IMapper<Income, IncomeDto>
-{
-}
+public interface IIncomeMapper : IMapper<Income, IncomeDto>;

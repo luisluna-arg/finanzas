@@ -1,4 +1,5 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
+using Finance.Domain.Models.Funds;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,5 +1,7 @@
 using ExcelDataReader;
-using Finance.Domain.Models;
+using Finance.Domain.Models.AppModules;
+using Finance.Domain.Models.Banks;
+using Finance.Domain.Models.Movements;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Helpers;

@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.AppModules;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.AppModules;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class AppModuleTypeMapper : BaseMapper<AppModuleType, AppModuleTypeDto>, 
     }
 }
 
-public interface IAppModuleTypeMapper : IMapper<AppModuleType, AppModuleTypeDto>
-{
-}
+public interface IAppModuleTypeMapper : IMapper<AppModuleType, AppModuleTypeDto>;

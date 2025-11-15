@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,13 +40,13 @@ public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<
             orderby o.BaseCurrency.Name, o.QuoteCurrency.Name
             select o;
 
-        var result = await Task.Run(() => query
+        var result = await query
             .Include(o => o.BaseCurrency)
                 .ThenInclude(c => c.Symbols)
             .Include(o => o.QuoteCurrency)
                 .ThenInclude(c => c.Symbols)
-            .ToList()
-        );
+            .AsSplitQuery() // Split query to avoid Cartesian explosion with multiple includes
+            .ToListAsync(cancellationToken);
 
         return DataResult<List<CurrencyExchangeRate>>.Success(result);
     }

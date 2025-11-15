@@ -8,7 +8,9 @@ using Finance.Application.Services.Orchestrators;
 using Finance.Application.Services.RequestBuilders;
 using Finance.Application.Services.Requests.CurrencyExchangeRates;
 using Finance.Application.Services.Requests.Funds;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
+using Finance.Domain.Models.Currencies;
+using Finance.Domain.Models.Funds;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Finance.Application.Extensions;

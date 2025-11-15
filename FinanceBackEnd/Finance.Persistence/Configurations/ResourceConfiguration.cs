@@ -1,5 +1,9 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Base;
+using Finance.Domain.Models.CreditCards;
+using Finance.Domain.Models.Currencies;
+using Finance.Domain.Models.Debits;
+using Finance.Domain.Models.Funds;
 using Finance.Persistence.Configurations.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

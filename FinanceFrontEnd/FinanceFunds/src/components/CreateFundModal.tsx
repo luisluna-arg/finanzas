@@ -42,6 +42,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
   const [submitting, setSubmitting] = useState(false);
   const [loadingBanks, setLoadingBanks] = useState(false);
   const [loadingCurrencies, setLoadingCurrencies] = useState(false);
+  const [initialValuesSet, setInitialValuesSet] = useState(false);
 
   Logger.info('Banks length:', banks.length);
   Logger.info('Currencies length:', currencies.length);
@@ -85,8 +86,8 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
           setBanks(banksArray);
           Logger.info('Banks state set to:', banksArray);
 
-          // Auto-select the first bank
-          if (banksArray.length > 0 && !form.values.bankId) {
+          // Auto-select the first bank only if no initial values have been set yet
+          if (banksArray.length > 0 && !initialValuesSet) {
             form.setFieldValue('bankId', banksArray[0].id);
           }
         }
@@ -102,7 +103,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
     return () => {
       mounted = false;
     };
-  }, [opened, form]);
+  }, [opened, initialValuesSet]);
 
   // 2. Second effect - load currencies
   useEffect(() => {
@@ -125,13 +126,14 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
           setCurrencies(currenciesArray);
           Logger.info('Currencies state set to:', currenciesArray);
 
-          // Auto-select the first currency (which will be Peso due to sorting)
-          if (currenciesArray.length > 0 && !form.values.currencyId) {
+          // Auto-select the first currency (which will be Peso due to sorting) only if no initial values have been set
+          if (currenciesArray.length > 0 && !initialValuesSet) {
             // Find Peso first, otherwise use first available
             const pesoId = '6d189135-7040-45a1-b713-b1aa6cad1720';
             const pesoCurrency = currenciesArray.find(c => c.id === pesoId);
             const selectedCurrencyId = pesoCurrency ? pesoId : currenciesArray[0].id;
             form.setFieldValue('currencyId', selectedCurrencyId);
+            setInitialValuesSet(true);
           }
         }
       } catch (error) {
@@ -158,7 +160,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
     return () => {
       mounted = false;
     };
-  }, [opened, form]);
+  }, [opened, initialValuesSet]);
 
   // Clean up when modal closes
   useEffect(() => {
@@ -168,6 +170,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
       const cleanup = () => {
         if (isMounted) {
           form.reset();
+          setInitialValuesSet(false);
         }
       };
 
@@ -185,7 +188,7 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
         };
       }
     }
-  }, [opened, form]);
+  }, [opened]);
 
   // Handle form submission
   const handleSubmit = async (values: FormValues) => {

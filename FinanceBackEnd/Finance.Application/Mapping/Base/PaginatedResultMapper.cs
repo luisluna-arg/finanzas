@@ -23,6 +23,4 @@ public abstract class PaginatedResultMapper<TEntity, TDto>
     }
 }
 
-public interface IPaginatedResultMapper<TEntity, TDto> : IMapper<PaginatedResult<TEntity>, PaginatedResult<TDto>>
-{
-}
+public interface IPaginatedResultMapper<TEntity, TDto> : IMapper<PaginatedResult<TEntity>, PaginatedResult<TDto>>;

@@ -3,7 +3,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Commons;
 using Finance.Application.Queries.Base;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Debits;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

@@ -31,7 +31,7 @@ public class GetCurrentInvestmentsQueryHandler(FinanceDbContext db) : IQueryHand
         {
             Id = $"{o.Id}",
             Label = o.Asset.Symbol,
-            Value = o.Valued,
+            Valued = o.Valued,
             AverageReturn = o.AverageReturn
         }));
 

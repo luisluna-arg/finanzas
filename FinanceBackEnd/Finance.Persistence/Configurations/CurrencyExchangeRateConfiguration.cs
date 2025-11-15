@@ -1,4 +1,4 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
 using Finance.Persistence.Configurations.Base;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

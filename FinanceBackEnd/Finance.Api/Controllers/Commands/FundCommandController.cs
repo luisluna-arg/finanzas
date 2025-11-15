@@ -10,7 +10,8 @@ using Finance.Application.Mapping;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Services.Orchestrators;
 using Finance.Application.Services.Requests.Funds;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
+using Finance.Domain.Models.Funds;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

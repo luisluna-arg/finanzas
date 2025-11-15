@@ -5,7 +5,7 @@ using Finance.Application.Dtos.Users;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.Roles;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;

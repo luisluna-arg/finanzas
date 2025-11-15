@@ -3,7 +3,8 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Banks;
+using Finance.Domain.Models.CreditCards;
 using Finance.Persistence;
 
 namespace Finance.Application.Commands.CreditCards;

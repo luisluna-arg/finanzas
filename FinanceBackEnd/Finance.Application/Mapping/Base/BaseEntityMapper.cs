@@ -14,6 +14,4 @@ public abstract class BaseEntityMapper<TEntity, TDto> : BaseMapper<TEntity, TDto
     }
 }
 
-public interface IAppModuleTypeMapper<TEntity, TDto> : IMapper<TEntity, TDto>
-{
-}
+public interface IAppModuleTypeMapper<TEntity, TDto> : IMapper<TEntity, TDto>;

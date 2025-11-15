@@ -1,6 +1,6 @@
 using Finance.Application.Repositories;
 using Finance.Application.Services;
-using Finance.Domain.Models;
+using Finance.Domain.Models.AppModules;
 using Finance.Domain.Models.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -5,7 +5,7 @@ using Finance.Application.Commands.CurrencyConversions;
 using Finance.Application.Commands.CurrencyConvertions;
 using Finance.Application.Dtos.CurrencyConversions;
 using Finance.Application.Mapping;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

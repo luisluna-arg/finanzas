@@ -4,7 +4,7 @@ using Finance.Application.Auth;
 using Finance.Application.Dtos.Banks;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.Banks;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Banks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;

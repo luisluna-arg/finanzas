@@ -6,7 +6,7 @@ using Finance.Application.Dtos;
 using Finance.Application.Mapping;
 using Finance.Application.Services;
 using Finance.Application.Services.Requests.CurrencyExchangeRates;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

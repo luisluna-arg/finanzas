@@ -5,7 +5,7 @@ using Finance.Application.Commands.IOLInvestments;
 using Finance.Application.Dtos.IOLInvestmentAssetTypes;
 using Finance.Application.Mapping;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.IOLInvestments;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

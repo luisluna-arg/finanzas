@@ -4,7 +4,7 @@ using Finance.Application.Auth;
 using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Dtos.DebitOrigins;
 using Finance.Application.Mapping;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Debits;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

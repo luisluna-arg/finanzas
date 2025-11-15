@@ -1,4 +1,5 @@
-using Finance.Domain.Models;
+
+using Finance.Domain.Models.AppModules;
 
 namespace Finance.Application.Repositories;
 

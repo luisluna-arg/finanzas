@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Frequencies;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

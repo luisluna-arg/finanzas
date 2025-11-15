@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.IOLInvestmentAssets;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.IOLInvestments;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class IOLInvestmentAssetMapper : BaseMapper<IOLInvestmentAsset, IOLInvest
     }
 }
 
-public interface IIOLInvestmentAssetMapper : IMapper<IOLInvestmentAsset, IOLInvestmentAssetDto>
-{
-}
+public interface IIOLInvestmentAssetMapper : IMapper<IOLInvestmentAsset, IOLInvestmentAssetDto>;

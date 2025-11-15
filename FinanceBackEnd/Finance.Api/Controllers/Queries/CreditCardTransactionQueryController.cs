@@ -4,7 +4,7 @@ using Finance.Application.Auth;
 using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.CreditCards;
-using Finance.Domain.Models;
+using Finance.Domain.Models.CreditCards;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +16,10 @@ public class CreditCardTransactionQueryController(IMappingService mapper, IDispa
     : ApiBaseQueryController<CreditCardTransaction, Guid, CreditCardTransactionDto>(mapper, dispatcher)
 {
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] GetCreditCardTransactionsQuery query)
+    public async Task<IActionResult> Get([FromQuery] GetPaginatedCreditCardTransactionsQuery query)
+        => await ExecuteAsync(query);
+
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAll([FromQuery] GetCreditCardTransactionsQuery query)
         => await ExecuteAsync(query);
 }

@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.CreditCards;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -8,10 +8,9 @@ public class CreditCardMapper : BaseMapper<CreditCard, CreditCardDto>, ICreditCa
 {
     public CreditCardMapper(IMappingService mappingService) : base(mappingService)
     {
+        // TODO Fix this mapping
         // this.Map.ForMember(o => o.RecordCount, o => o.MapFrom(x => x.Movements.Count));
     }
 }
 
-public interface ICreditCardMapper : IMapper<CreditCard, CreditCardDto>
-{
-}
+public interface ICreditCardMapper : IMapper<CreditCard, CreditCardDto>;

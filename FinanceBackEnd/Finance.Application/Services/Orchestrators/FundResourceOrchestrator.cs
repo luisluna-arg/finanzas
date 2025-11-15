@@ -2,7 +2,7 @@ using CQRSDispatch;
 using Finance.Application.Commands;
 using Finance.Application.Commands.Funds.Owners;
 using Finance.Application.Queries.Resources;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Services.Orchestrators;

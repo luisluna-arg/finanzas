@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Funds;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Funds;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class PaginatedFundMapper : PaginatedResultMapper<Fund, FundDto>, IPagina
     }
 }
 
-public interface IPaginatedFundMapper : IPaginatedResultMapper<Fund, FundDto>
-{
-}
+public interface IPaginatedFundMapper : IPaginatedResultMapper<Fund, FundDto>;

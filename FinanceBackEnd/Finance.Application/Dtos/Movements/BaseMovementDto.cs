@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Finance.Application.Dtos.Base;
+using Finance.Domain.Models.Movements;
 using Finance.Domain.SpecialTypes;
-using MovementEntity = Finance.Domain.Models.Movement;
 
 namespace Finance.Application.Dtos.Movements;
 
@@ -25,9 +25,9 @@ public abstract record BaseMovementDto : Dto<Guid>
     [DefaultValue(100000)]
     public Money? Total { get; set; }
 
-    public MovementEntity BuildEntity()
+    public Movement BuildEntity()
     {
-        return new MovementEntity()
+        return new Movement()
         {
             TimeStamp = TimeStamp,
             Concept1 = Concept1,

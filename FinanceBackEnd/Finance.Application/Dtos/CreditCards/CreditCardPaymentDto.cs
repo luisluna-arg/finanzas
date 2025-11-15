@@ -1,5 +1,5 @@
 using Finance.Application.Dtos.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.CreditCards;
 using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Dtos.CreditCards;
