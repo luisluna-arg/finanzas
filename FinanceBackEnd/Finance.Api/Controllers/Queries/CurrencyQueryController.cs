@@ -4,7 +4,7 @@ using Finance.Application.Auth;
 using Finance.Application.Dtos.Currencies;
 using Finance.Application.Mapping;
 using Finance.Application.Queries.Currencies;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;

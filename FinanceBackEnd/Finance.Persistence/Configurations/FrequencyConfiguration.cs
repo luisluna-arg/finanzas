@@ -1,5 +1,5 @@
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Frequencies;
 using Finance.Persistence.Configurations.Base;
 
 namespace Finance.Persistence.Configurations;

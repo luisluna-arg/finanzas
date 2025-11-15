@@ -1,4 +1,4 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.Debits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -6,7 +6,7 @@ using Finance.Application.Commands.CreditCards;
 using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Helpers;
 using Finance.Application.Mapping;
-using Finance.Domain.Models;
+using Finance.Domain.Models.CreditCards;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

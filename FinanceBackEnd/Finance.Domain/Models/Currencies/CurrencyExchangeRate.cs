@@ -1,0 +1,19 @@
+using Finance.Domain.Models.Base;
+using Finance.Domain.SpecialTypes;
+
+namespace Finance.Domain.Models.Currencies;
+
+public class CurrencyExchangeRate : AuditedEntity<Guid>
+{
+    public CurrencyExchangeRate() : base()
+    {
+    }
+
+    public Guid BaseCurrencyId { get; set; }
+    public Guid QuoteCurrencyId { get; set; }
+    public Money BuyRate { get; set; } = 0m;
+    public Money SellRate { get; set; } = 0m;
+    public DateTime TimeStamp { get; set; }
+    public Currency BaseCurrency { get; set; } = default!;
+    public Currency QuoteCurrency { get; set; } = default!;
+}

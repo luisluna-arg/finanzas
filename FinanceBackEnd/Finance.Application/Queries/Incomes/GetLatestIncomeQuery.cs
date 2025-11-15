@@ -2,7 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Incomes;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

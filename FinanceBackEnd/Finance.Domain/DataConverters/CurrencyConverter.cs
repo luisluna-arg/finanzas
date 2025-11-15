@@ -1,4 +1,4 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
 using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.DataConverters;

@@ -1,5 +1,3 @@
 namespace Finance.Application.Services.Interfaces;
 
-public interface ISagaRequest
-{
-}
+public interface ISagaRequest;

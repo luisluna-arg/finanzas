@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Services;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Movements;
 
 namespace Finance.Application.Commands.Movements;
 

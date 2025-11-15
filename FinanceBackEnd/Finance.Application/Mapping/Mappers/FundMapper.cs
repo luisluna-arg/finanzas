@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Funds;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Funds;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class FundMapper : BaseMapper<Fund, FundDto>, IFundMapper
     }
 }
 
-public interface IFundMapper : IMapper<Fund, FundDto>
-{
-}
+public interface IFundMapper : IMapper<Fund, FundDto>;

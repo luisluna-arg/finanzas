@@ -1,5 +1,6 @@
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Debits;
+using Finance.Domain.Models.Frequencies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -6,7 +6,7 @@ using Finance.Application.Commands.Movements;
 using Finance.Application.Dtos.Movements;
 using Finance.Application.Helpers;
 using Finance.Application.Mapping;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Movements;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Currencies;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class CurrencyMapper : BaseMapper<Currency, CurrencyDto>, ICurrencyMapper
     }
 }
 
-public interface ICurrencyMapper : IMapper<Currency, CurrencyDto>
-{
-}
+public interface ICurrencyMapper : IMapper<Currency, CurrencyDto>;

@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Debits;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Debits;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class PaginatedDebitMapper : PaginatedResultMapper<Debit, DebitDto>, IPag
     }
 }
 
-public interface IPaginatedDebitMapper : IPaginatedResultMapper<Debit, DebitDto>
-{
-}
+public interface IPaginatedDebitMapper : IPaginatedResultMapper<Debit, DebitDto>;

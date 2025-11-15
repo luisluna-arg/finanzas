@@ -1,11 +1,12 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Summary;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Currencies;
+using Finance.Domain.Models.Funds;
 using Finance.Persistence;
 using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
-using FundDto = Finance.Application.Dtos.Summary.Fund;
+using FundDto = Finance.Application.Dtos.Summary.FundDto;
 
 namespace Finance.Application.Queries.Summary;
 
@@ -45,7 +46,7 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
 
         var bankIds = await fundsQuery.Select(o => o.BankId).Distinct().ToArrayAsync(cancellationToken);
 
-        var funds = new List<Domain.Models.Fund>();
+        var funds = new List<Fund>();
 
         foreach (var bankId in bankIds)
         {
@@ -79,7 +80,7 @@ public class GetCurrentFundsQueryHandler : IQueryHandler<GetCurrentFundsQuery, T
             currencyRates.AddRange(latestRates);
         }
 
-        Func<Domain.Models.Fund, string> nameFormater = (o) => $"{o.Bank!.Name} {o.Currency!.Name}";
+        Func<Fund, string> nameFormater = (o) => $"{o.Bank!.Name} {o.Currency!.Name}";
 
         result.Items.AddRange(funds
             .Where(o => o.CurrencyId == request.CurrencyId)

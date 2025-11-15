@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Banks;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Banks;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class BankMapper : BaseMapper<Bank, BankDto>, IBankMapper
     }
 }
 
-public interface IBankMapper : IMapper<Bank, BankDto>
-{
-}
+public interface IBankMapper : IMapper<Bank, BankDto>;

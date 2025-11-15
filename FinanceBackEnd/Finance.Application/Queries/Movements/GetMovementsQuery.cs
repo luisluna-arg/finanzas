@@ -3,7 +3,7 @@ using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Movements;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

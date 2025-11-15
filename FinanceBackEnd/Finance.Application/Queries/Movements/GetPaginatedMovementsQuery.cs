@@ -2,7 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Commons;
 using Finance.Application.Queries.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Movements;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

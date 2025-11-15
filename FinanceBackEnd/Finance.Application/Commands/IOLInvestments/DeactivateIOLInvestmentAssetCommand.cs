@@ -2,7 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Services;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.IOLInvestments;
 
 namespace Finance.Application.Commands.IOLInvestments;
 

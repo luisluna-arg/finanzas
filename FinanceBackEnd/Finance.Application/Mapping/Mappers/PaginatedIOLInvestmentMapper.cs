@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.IOLInvestments;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.IOLInvestments;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class PaginatedIOLInvestmentMapper : PaginatedResultMapper<IOLInvestment,
     }
 }
 
-public interface IPaginatedIOLInvestmentMapper : IPaginatedResultMapper<IOLInvestment, IOLInvestmentDto>
-{
-}
+public interface IPaginatedIOLInvestmentMapper : IPaginatedResultMapper<IOLInvestment, IOLInvestmentDto>;

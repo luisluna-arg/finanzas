@@ -3,7 +3,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using Finance.Application.Dtos.Summary;
 using Finance.Application.Services;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.Interfaces;
 using Finance.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;

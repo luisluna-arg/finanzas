@@ -1,7 +1,9 @@
 using System.Text.RegularExpressions;
 using ExcelDataReader;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Base;
+using Finance.Domain.Models.Currencies;
+using Finance.Domain.Models.IOLInvestments;
 using Finance.Helpers;
 using Microsoft.AspNetCore.Http;
 

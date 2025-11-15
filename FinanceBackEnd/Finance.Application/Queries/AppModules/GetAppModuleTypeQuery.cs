@@ -3,7 +3,7 @@ using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
 using Finance.Application.Repositories;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.AppModules;
 using Finance.Persistence;
 
 namespace Finance.Application.Queries.AppModules;

@@ -1,6 +1,6 @@
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Identities;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

@@ -7,7 +7,7 @@ using Finance.Application.Dtos.Debits;
 using Finance.Application.Helpers;
 using Finance.Application.Mapping;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Debits;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;

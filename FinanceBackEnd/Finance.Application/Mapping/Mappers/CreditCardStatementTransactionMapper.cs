@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.CreditCards;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -11,6 +11,4 @@ public class CreditCardStatementTransactionMapper : BaseMapper<CreditCardStateme
     }
 }
 
-public interface ICreditCardStatementTransactionMapper : IMapper<CreditCardStatementTransaction, CreditCardStatementTransactionDto>
-{
-}
+public interface ICreditCardStatementTransactionMapper : IMapper<CreditCardStatementTransaction, CreditCardStatementTransactionDto>;

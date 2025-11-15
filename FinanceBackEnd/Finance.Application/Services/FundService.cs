@@ -6,7 +6,8 @@ using Finance.Application.Services.Base;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Services.Orchestrators;
 using Finance.Application.Services.Requests.Funds;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
+using Finance.Domain.Models.Funds;
 using Finance.Persistence;
 
 namespace Finance.Application.Services;

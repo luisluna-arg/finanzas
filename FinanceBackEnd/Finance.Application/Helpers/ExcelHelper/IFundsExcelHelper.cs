@@ -1,4 +1,5 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.AppModules;
+using Finance.Domain.Models.Banks;
 using Microsoft.AspNetCore.Http;
 
 public interface IFundsExcelHelper<TResult>

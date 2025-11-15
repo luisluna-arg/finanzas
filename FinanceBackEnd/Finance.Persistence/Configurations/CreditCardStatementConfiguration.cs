@@ -1,4 +1,4 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.CreditCards;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

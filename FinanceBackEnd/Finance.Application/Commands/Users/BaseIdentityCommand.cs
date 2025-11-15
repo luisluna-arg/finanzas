@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Domain.Enums;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Identities;
 
 namespace Finance.Application.Commands;
 

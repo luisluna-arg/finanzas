@@ -1,6 +1,6 @@
 using Finance.Application.Dtos.Movements;
 using Finance.Application.Mapping.Base;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Movements;
 
 namespace Finance.Application.Mapping.Mappers;
 
@@ -28,6 +28,4 @@ public class MovementMapper : BaseMapper<Movement, MovementDto>, IMovementMapper
     }
 }
 
-public interface IMovementMapper : IMapper<Movement, MovementDto>
-{
-}
+public interface IMovementMapper : IMapper<Movement, MovementDto>;

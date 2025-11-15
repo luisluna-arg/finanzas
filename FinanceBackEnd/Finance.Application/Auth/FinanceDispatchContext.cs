@@ -1,4 +1,4 @@
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 using DispatchContext = CQRSDispatch.DispatchContext;
 
 namespace Finance.Application.Auth;

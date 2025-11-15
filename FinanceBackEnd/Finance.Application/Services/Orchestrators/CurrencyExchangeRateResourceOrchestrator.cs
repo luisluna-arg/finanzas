@@ -4,7 +4,7 @@ using Finance.Application.Commands.CurrencyExchangeRates;
 using Finance.Application.Commands.CurrencyExchangeRates.Owners;
 using Finance.Application.Queries.CurrencyExchangeRates;
 using Finance.Application.Queries.Resources;
-using Finance.Domain.Models;
+using Finance.Domain.Models.Auth;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Services.Orchestrators;
