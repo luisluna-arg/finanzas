@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Services.Orchestrators;
 
-public abstract class BaseResourceOwnerOrchestrator<SetRequest, SetResult, DeleteRequest, DeleteResult>
-    : IResourceOwnerOrchestrator<SetRequest, SetResult, DeleteRequest, DeleteResult>
+public abstract class BaseResourcePermissionsOrchestrator<SetRequest, SetResult, DeleteRequest, DeleteResult>
+    : IResourcePermissionsOrchestrator<SetRequest, SetResult, DeleteRequest, DeleteResult>
     where SetRequest : ISagaRequest
     where SetResult : RequestResult, new()
     where DeleteRequest : ISagaRequest
@@ -17,7 +17,7 @@ public abstract class BaseResourceOwnerOrchestrator<SetRequest, SetResult, Delet
 {
     protected IDispatcher<FinanceDispatchContext>? _dispatcher;
 
-    protected BaseResourceOwnerOrchestrator()
+    protected BaseResourcePermissionsOrchestrator()
     {
     }
 

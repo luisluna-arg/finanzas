@@ -8,7 +8,7 @@ using Finance.Application.Commands.Funds.Owners;
 using Finance.Application.Dtos.Funds;
 using Finance.Application.Mapping;
 using Finance.Application.Services.Interfaces;
-using Finance.Application.Services.Orchestrators;
+using Finance.Application.Services.Orchestrators.FundPermissionsOrchestrations;
 using Finance.Application.Services.Requests.Funds;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Funds;
@@ -21,17 +21,14 @@ namespace Finance.Api.Controllers.Commands;
 public class FundCommandController(
     IMappingService mapper,
     IDispatcher<FinanceDispatchContext> dispatcher,
-    IResourceOwnerSagaService<FundResource, FundResourceOrchestrator, SetFundOwnerSagaRequest, DataResult<FundResource>, DeleteFundOwnerSagaRequest, CommandResult> fundResourceOwnerService,
+    IResourcePermissionsSagaService<FundPermissions, FundPermissionsOrchestrator, SetFundOwnerSagaRequest, DataResult<FundPermissions>, DeleteFundOwnerSagaRequest, CommandResult> fundPermissionsOwnerService,
     ISagaService<CreateFundSagaRequest, UpdateFundSagaRequest, DeleteFundSagaRequest, Fund> fundService)
     : ApiBaseCommandController<Fund?, Guid, FundDto>(mapper, dispatcher)
 {
-    private ISagaService<CreateFundSagaRequest, UpdateFundSagaRequest, DeleteFundSagaRequest, Fund> FundService { get => fundService; }
-    private IResourceOwnerSagaService<FundResource, FundResourceOrchestrator, SetFundOwnerSagaRequest, DataResult<FundResource>, DeleteFundOwnerSagaRequest, CommandResult> FundResourceOwnerService { get => fundResourceOwnerService; }
-
     [HttpPost]
     public async Task<IActionResult> Create(CreateFundSagaRequest command)
     {
-        var result = await FundService.Create(command, httpRequest: Request);
+        var result = await fundService.Create(command, httpRequest: Request);
         if (!result.IsSuccess)
         {
             return BadRequest(result.ErrorMessage);
@@ -50,9 +47,9 @@ public class FundCommandController(
 
     [Authorize(Roles = "Admin")]
     [HttpPost("{bankId}/owner/{userId}")]
-    public async Task<IActionResult> SetResourceOwner(SetFundOwnerRequest request)
+    public async Task<IActionResult> SetResourcePermissions(SetFundOwnerRequest request)
     {
-        var result = await FundResourceOwnerService.Set(
+        var result = await fundPermissionsOwnerService.Set(
             new SetFundOwnerSagaRequest(request.FundId),
             httpRequest: Request);
 
@@ -66,9 +63,9 @@ public class FundCommandController(
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{bankId}/owner/{userId}")]
-    public async Task<IActionResult> DeleteResourceOwner(DeleteFundOwnerRequest request)
+    public async Task<IActionResult> DeleteResourcePermissions(DeleteFundOwnerRequest request)
     {
-        var result = await FundResourceOwnerService.Delete(
+        var result = await fundPermissionsOwnerService.Delete(
             new DeleteFundOwnerSagaRequest(request.FundId));
 
         if (!result.IsSuccess)

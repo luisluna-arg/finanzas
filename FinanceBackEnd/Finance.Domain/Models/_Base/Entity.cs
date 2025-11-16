@@ -18,7 +18,6 @@ public abstract class Entity : IEntity
     }
 }
 
-
 public abstract class Entity<TId> : Entity
 {
     protected Entity()

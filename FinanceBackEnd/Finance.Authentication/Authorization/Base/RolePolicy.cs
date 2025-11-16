@@ -20,7 +20,6 @@ public abstract class RolePolicy : BasicPolicy
         _serviceProvider = serviceProvider;
     }
 
-
     protected override bool AssertionAction(AuthorizationHandlerContext context, string userIdClaim)
     {
         using var service = new AuthDbContextService(_serviceProvider);

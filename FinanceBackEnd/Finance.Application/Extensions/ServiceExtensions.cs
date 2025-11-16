@@ -4,7 +4,8 @@ using Finance.Application.Commands.Funds.Owners;
 using Finance.Application.Commands.Users;
 using Finance.Application.Services;
 using Finance.Application.Services.Interfaces;
-using Finance.Application.Services.Orchestrators;
+using Finance.Application.Services.Orchestrators.CurrencyExchangeRatePermissionsOrchestrations;
+using Finance.Application.Services.Orchestrators.FundPermissionsOrchestrations;
 using Finance.Application.Services.RequestBuilders;
 using Finance.Application.Services.Requests.CurrencyExchangeRates;
 using Finance.Application.Services.Requests.Funds;
@@ -20,28 +21,28 @@ public static class SagaServiceExtensions
     public static void AddSagaServices(this IServiceCollection services)
     {
         // TODO Copy RepositoryExtensions 
-        services.AddScoped<FundResourceOrchestrator>();
-        services.AddScoped<IResourceOwnerOrchestrator<
+        services.AddScoped<FundPermissionsOrchestrator>();
+        services.AddScoped<IResourcePermissionsOrchestrator<
             SetFundOwnerSagaRequest,
-            DataResult<FundResource>,
+            DataResult<FundPermissions>,
             DeleteFundOwnerSagaRequest,
-            CommandResult>, FundResourceOrchestrator>();
+            CommandResult>, FundPermissionsOrchestrator>();
 
-        services.AddScoped<CurrencyExchangeRateResourceOrchestrator>();
-        services.AddScoped<IResourceOwnerOrchestrator<
+        services.AddScoped<CurrencyExchangeRatePermissionsOrchestrator>();
+        services.AddScoped<IResourcePermissionsOrchestrator<
             SetCurrencyExchangeRateOwnerSagaRequest,
-            DataResult<CurrencyExchangeRateResource>,
+            DataResult<CurrencyExchangeRatePermissions>,
             DeleteCurrencyExchangeRateOwnerSagaRequest,
-            CommandResult>, CurrencyExchangeRateResourceOrchestrator>();
+            CommandResult>, CurrencyExchangeRatePermissionsOrchestrator>();
 
         services.AddScoped<CurrencyConversionService>();
 
         services.AddScoped<CurrencyExchangeRateOwnerService>();
-        services.AddScoped<IResourceOwnerSagaService<
-            CurrencyExchangeRateResource,
-            CurrencyExchangeRateResourceOrchestrator,
+        services.AddScoped<IResourcePermissionsSagaService<
+            CurrencyExchangeRatePermissions,
+            CurrencyExchangeRatePermissionsOrchestrator,
             SetCurrencyExchangeRateOwnerSagaRequest,
-            DataResult<CurrencyExchangeRateResource>,
+            DataResult<CurrencyExchangeRatePermissions>,
             DeleteCurrencyExchangeRateOwnerSagaRequest,
             CommandResult>, CurrencyExchangeRateOwnerService>();
 
@@ -53,11 +54,11 @@ public static class SagaServiceExtensions
             CurrencyExchangeRate>, CurrencyExchangeRateService>();
 
         services.AddScoped<FundOwnerService>();
-        services.AddScoped<IResourceOwnerSagaService<
-            FundResource,
-            FundResourceOrchestrator,
+        services.AddScoped<IResourcePermissionsSagaService<
+            FundPermissions,
+            FundPermissionsOrchestrator,
             SetFundOwnerSagaRequest,
-            DataResult<FundResource>,
+            DataResult<FundPermissions>,
             DeleteFundOwnerSagaRequest,
             CommandResult>, FundOwnerService>();
 

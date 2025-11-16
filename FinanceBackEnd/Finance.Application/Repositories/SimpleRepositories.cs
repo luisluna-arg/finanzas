@@ -37,7 +37,7 @@ public class CreditCardTransactionRepository(FinanceDbContext dbContext) : BaseR
 // Currency related repositories
 public class CurrencyConversionRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyConversion, Guid>(dbContext);
 public class CurrencyExchangeRateRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyExchangeRate, Guid>(dbContext);
-public class CurrencyExchangeRateResourceRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyExchangeRate, Guid>(dbContext);
+public class CurrencyExchangeRatePermissionsRepository(FinanceDbContext dbContext) : BaseRepository<CurrencyExchangeRate, Guid>(dbContext);
 public class CurrencySymbolRepository(FinanceDbContext dbContext) : BaseRepository<CurrencySymbol, Guid>(dbContext);
 public class DebitOriginResourceRepository(FinanceDbContext dbContext) : BaseRepository<DebitOrigin, Guid>(dbContext);
 public class DebitRepository(FinanceDbContext dbContext) : BaseRepository<Debit, Guid>(dbContext);
@@ -46,7 +46,7 @@ public class DebitResourceRepository(FinanceDbContext dbContext) : BaseRepositor
 // Other entity repositories
 public class FrequencyRepository(FinanceDbContext dbContext) : BaseRepository<Frequency, FrequencyEnum>(dbContext);
 public class FundRepository(FinanceDbContext dbContext) : BaseRepository<Fund, Guid>(dbContext);
-public class FundResourceRepository(FinanceDbContext dbContext) : BaseRepository<Fund, Guid>(dbContext);
+public class FundPermissionsRepository(FinanceDbContext dbContext) : BaseRepository<Fund, Guid>(dbContext);
 public class IdentityProviderRepository(FinanceDbContext dbContext) : BaseRepository<IdentityProvider, IdentityProviderEnum>(dbContext);
 public class IdentityRepository(FinanceDbContext dbContext) : BaseRepository<Identity, Guid>(dbContext);
 public class IncomeRepository(FinanceDbContext dbContext) : BaseRepository<Income, Guid>(dbContext);
@@ -63,10 +63,6 @@ public class IOLInvestmentResourceRepository(FinanceDbContext dbContext) : BaseR
 // Movement related repositories
 public class MovementRepository(FinanceDbContext dbContext) : BaseRepository<Movement, Guid>(dbContext);
 public class MovementResourceRepository(FinanceDbContext dbContext) : BaseRepository<Movement, Guid>(dbContext);
-
-// Resource related repositories
-public class ResourceOwnerRepository(FinanceDbContext dbContext) : BaseRepository<ResourceOwner, Guid>(dbContext);
-public class ResourceRepository(FinanceDbContext dbContext) : BaseRepository<Resource, Guid>(dbContext);
 
 // User related repositories
 public class RoleRepository(FinanceDbContext dbContext) : BaseRepository<Role, RoleEnum>(dbContext);

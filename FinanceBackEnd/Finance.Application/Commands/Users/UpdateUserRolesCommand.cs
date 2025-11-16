@@ -21,7 +21,6 @@ public class UpdateUserRolesCommand : ICommand
     public ICollection<RoleEnum> Roles { get; set; }
 }
 
-
 public class UpdateUserRolesCommandHandler : ICommandHandler<UpdateUserRolesCommand, CommandResult>
 {
     public UpdateUserRolesCommandHandler(FinanceDbContext dbContext)
