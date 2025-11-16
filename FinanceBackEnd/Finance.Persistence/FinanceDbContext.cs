@@ -49,17 +49,15 @@ public class FinanceDbContext : DbContext
     public DbSet<Movement> Movement => Set<Movement>();
     public DbSet<User> User => Set<User>();
     public DbSet<Role> Role => Set<Role>();
-    public DbSet<Resource> Resource => Set<Resource>();
-    public DbSet<ResourceOwner> ResourceOwner => Set<ResourceOwner>();
-    public DbSet<CreditCardResource> CreditCardResource => Set<CreditCardResource>();
-    public DbSet<CurrencyExchangeRateResource> CurrencyExchangeRateResource => Set<CurrencyExchangeRateResource>();
-    public DbSet<DebitOriginResource> DebitOriginResource => Set<DebitOriginResource>();
-    public DbSet<DebitResource> DebitResource => Set<DebitResource>();
-    public DbSet<FundResource> FundResource => Set<FundResource>();
-    public DbSet<IncomeResource> IncomeResource => Set<IncomeResource>();
-    public DbSet<IOLInvestmentAssetResource> IOLInvestmentAssetResource => Set<IOLInvestmentAssetResource>();
-    public DbSet<IOLInvestmentResource> IOLInvestmentResource => Set<IOLInvestmentResource>();
-    public DbSet<MovementResource> MovementResource => Set<MovementResource>();
+    public DbSet<CreditCardPermissions> CreditCardPermissions => Set<CreditCardPermissions>();
+    public DbSet<CurrencyExchangeRatePermissions> CurrencyExchangeRatePermissions => Set<CurrencyExchangeRatePermissions>();
+    public DbSet<DebitOriginPermissions> DebitOriginPermissions => Set<DebitOriginPermissions>();
+    public DbSet<DebitPermissions> DebitPermissions => Set<DebitPermissions>();
+    public DbSet<FundPermissions> FundPermissions => Set<FundPermissions>();
+    public DbSet<IncomePermissions> IncomePermissions => Set<IncomePermissions>();
+    public DbSet<IOLInvestmentAssetPermissions> IOLInvestmentAssetPermissions => Set<IOLInvestmentAssetPermissions>();
+    public DbSet<IOLInvestmentPermissions> IOLInvestmentPermissions => Set<IOLInvestmentPermissions>();
+    public DbSet<MovementPermissions> MovementPermissions => Set<MovementPermissions>();
 
     private IHttpContextAccessor? HttpContextAccessor { get; }
 

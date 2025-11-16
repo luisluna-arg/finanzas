@@ -1,33 +1,34 @@
 using Finance.Domain.Enums;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Base;
 using Finance.Persistence;
 
 namespace Finance.Application.Queries.Resources;
 
-public class BaseGetResourceOwnershipWithIdQuery<TSource, TId, TEntityResource> : BaseGetResourceOwnershipQuery<TSource, TId, TEntityResource>
+public class BaseGetResourcePermissionsWithIdQuery<TSource, TId, TResourcePermissions> : BaseGetResourcePermissionsQuery<TSource, TId, TResourcePermissions>
     where TSource : Entity<TId>, new()
-    where TEntityResource : EntityResource<TSource, TId>
+    where TResourcePermissions : ResourcePermissions<TSource, TId>
     where TId : struct
 {
     public TId Id { get; }
 
-    protected BaseGetResourceOwnershipWithIdQuery(TId id) : base()
+    protected BaseGetResourcePermissionsWithIdQuery(TId id) : base()
     {
         Id = id;
     }
 }
 
-public class BaseGetResourceOwnershipWithIdQueryHandler<TSource, TId, TEntityResource>
-    : BaseGetResourceOwnershipQueryHandler<BaseGetResourceOwnershipWithIdQuery<TSource, TId, TEntityResource>, TSource, TId, TEntityResource>
+public class BaseGetResourcePermissionsWithIdQueryHandler<TSource, TId, TResourcePermissions>
+    : BaseGetResourcePermissionsQueryHandler<BaseGetResourcePermissionsWithIdQuery<TSource, TId, TResourcePermissions>, TSource, TId, TResourcePermissions>
     where TSource : Entity<TId>, new()
-    where TEntityResource : EntityResource<TSource, TId>
+    where TResourcePermissions : ResourcePermissions<TSource, TId>
     where TId : struct
 {
-    public BaseGetResourceOwnershipWithIdQueryHandler(FinanceDbContext dbContext) : base(dbContext)
+    public BaseGetResourcePermissionsWithIdQueryHandler(FinanceDbContext dbContext) : base(dbContext)
     {
     }
 
-    protected override IQueryable<TSource> SourceQuery(BaseGetResourceOwnershipWithIdQuery<TSource, TId, TEntityResource> request)
+    protected override IQueryable<TSource> SourceQuery(BaseGetResourcePermissionsWithIdQuery<TSource, TId, TResourcePermissions> request)
     {
         var id = request.Id;
         var query = DbContext.Set<TSource>();

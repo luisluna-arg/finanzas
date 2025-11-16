@@ -4,6 +4,7 @@ using Finance.Application.Auth;
 using Finance.Application.Extensions;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Services.RequestBuilders;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +14,7 @@ namespace Finance.Application.Services.Base;
 
 public abstract class BaseResourceOrchestrator<
     TEntity,
-    TEntityResource,
+    TResourcePermissions,
     TCreateRequest,
     TUpdateRequest,
     TDeleteRequest,
@@ -24,7 +25,7 @@ public abstract class BaseResourceOrchestrator<
     TOwnerOrchestrator>
     : IResourceOrchestrator<
         TEntity,
-        TEntityResource,
+        TResourcePermissions,
         TCreateRequest,
         TUpdateRequest,
         TDeleteRequest,
@@ -34,7 +35,7 @@ public abstract class BaseResourceOrchestrator<
         TDeleteResult,
         TOwnerOrchestrator>
     where TEntity : Entity<Guid>, IEntity, new()
-    where TEntityResource : EntityResource<TEntity, Guid>, new()
+    where TResourcePermissions : ResourcePermissions<TEntity, Guid>, new()
     where TCreateRequest : ISagaRequest
     where TUpdateRequest : ISagaRequest
     where TDeleteRequest : ISagaRequest
@@ -42,7 +43,7 @@ public abstract class BaseResourceOrchestrator<
     where TSetOwnerResult : RequestResult, new()
     where TDeleteOwnerRequest : ISagaRequest
     where TDeleteResult : RequestResult, new()
-    where TOwnerOrchestrator : IResourceOwnerOrchestrator<
+    where TOwnerOrchestrator : IResourcePermissionsOrchestrator<
         TSetOwnerRequest,
         TSetOwnerResult,
         TDeleteOwnerRequest,
@@ -50,8 +51,8 @@ public abstract class BaseResourceOrchestrator<
 {
     protected IDispatcher<FinanceDispatchContext>? _dispatcher;
 
-    protected IResourceOwnerSagaService<
-        TEntityResource,
+    protected IResourcePermissionsSagaService<
+        TResourcePermissions,
         TOwnerOrchestrator,
         TSetOwnerRequest,
         TSetOwnerResult,
@@ -69,17 +70,16 @@ public abstract class BaseResourceOrchestrator<
         _dispatcher = dispatcher;
     }
 
-
-    protected IResourceOwnerSagaService<
-        TEntityResource,
+    protected IResourcePermissionsSagaService<
+        TResourcePermissions,
         TOwnerOrchestrator,
         TSetOwnerRequest,
         TSetOwnerResult,
         TDeleteOwnerRequest,
         TDeleteResult> OwnerService
-    { get => _ownerService ?? throw new InvalidOperationException("Dispatcher is not set."); }
+    { get => _ownerService ?? throw new InvalidOperationException("OwnerService is not set."); }
 
-    public virtual void SetOwnerService(IResourceOwnerSagaService<TEntityResource, TOwnerOrchestrator, TSetOwnerRequest, TSetOwnerResult, TDeleteOwnerRequest, TDeleteResult> ownerService)
+    public virtual void SetOwnerService(IResourcePermissionsSagaService<TResourcePermissions, TOwnerOrchestrator, TSetOwnerRequest, TSetOwnerResult, TDeleteOwnerRequest, TDeleteResult> ownerService)
     {
         _ownerService = ownerService;
     }

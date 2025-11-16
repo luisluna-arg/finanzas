@@ -4,7 +4,7 @@ using Finance.Domain.Models.Auth;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates.Owners;
 
-public class SetCurrencyExchangeRateOwnerSagaRequest : BaseCurrencyExchangeRateOwnerSagaRequest<DataResult<CurrencyExchangeRateResource>>, ISagaRequest
+public class SetCurrencyExchangeRateOwnerSagaRequest : BaseCurrencyExchangeRateOwnerSagaRequest<DataResult<CurrencyExchangeRatePermissions>>, ISagaRequest
 {
     public SetCurrencyExchangeRateOwnerSagaRequest(Guid id)
         : base(id)

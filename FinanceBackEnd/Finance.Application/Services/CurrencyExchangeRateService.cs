@@ -5,7 +5,7 @@ using Finance.Application.Commands.CurrencyExchangeRates;
 using Finance.Application.Commands.CurrencyExchangeRates.Owners;
 using Finance.Application.Extensions;
 using Finance.Application.Services.Interfaces;
-using Finance.Application.Services.Orchestrators;
+using Finance.Application.Services.Orchestrators.CurrencyExchangeRatePermissionsOrchestrations;
 using Finance.Application.Services.Requests.CurrencyExchangeRates;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
@@ -18,13 +18,13 @@ namespace Finance.Application.Services;
 public class CurrencyExchangeRateService(
     IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext,
-    IResourceOwnerSagaService<
-        CurrencyExchangeRateResource,
-        CurrencyExchangeRateResourceOrchestrator,
+    IResourcePermissionsSagaService<
+        CurrencyExchangeRatePermissions,
+        CurrencyExchangeRatePermissionsOrchestrator,
         SetCurrencyExchangeRateOwnerSagaRequest,
-        DataResult<CurrencyExchangeRateResource>,
+        DataResult<CurrencyExchangeRatePermissions>,
         DeleteCurrencyExchangeRateOwnerSagaRequest,
-        CommandResult> fundResourceOwnerService)
+        CommandResult> FundPermissionsOwnerService)
     : ISagaService<
         CreateCurrencyExchangeRateSagaRequest,
         UpdateCurrencyExchangeRateSagaRequest,
@@ -33,13 +33,13 @@ public class CurrencyExchangeRateService(
 {
     public FinanceDbContext _dbContext = dbContext;
     private IDispatcher<FinanceDispatchContext> _dispatcher = dispatcher;
-    private IResourceOwnerSagaService<
-        CurrencyExchangeRateResource,
-        CurrencyExchangeRateResourceOrchestrator,
+    private IResourcePermissionsSagaService<
+        CurrencyExchangeRatePermissions,
+        CurrencyExchangeRatePermissionsOrchestrator,
         SetCurrencyExchangeRateOwnerSagaRequest,
-        DataResult<CurrencyExchangeRateResource>,
+        DataResult<CurrencyExchangeRatePermissions>,
         DeleteCurrencyExchangeRateOwnerSagaRequest,
-        CommandResult> _fundResourceOwnerService = fundResourceOwnerService;
+        CommandResult> _FundPermissionsOwnerService = FundPermissionsOwnerService;
 
     public async Task<DataResult<CurrencyExchangeRate>> Create(CreateCurrencyExchangeRateSagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
     {
@@ -61,14 +61,14 @@ public class CurrencyExchangeRateService(
                 throw new Exception(createCurrencyExchangeRateResult.ErrorMessage);
             }
 
-            var fundResourceOwnerResult = await _fundResourceOwnerService.Set(
+            var FundPermissionsOwnerResult = await _FundPermissionsOwnerService.Set(
                 new SetCurrencyExchangeRateOwnerSagaRequest(createCurrencyExchangeRateResult.Data.Id),
                 transaction: localTransaction,
                 httpRequest: httpRequest);
 
-            if (!fundResourceOwnerResult.IsSuccess)
+            if (!FundPermissionsOwnerResult.IsSuccess)
             {
-                throw new Exception(fundResourceOwnerResult.ErrorMessage);
+                throw new Exception(FundPermissionsOwnerResult.ErrorMessage);
             }
 
             if (shouldCommit) await localTransaction.CommitAsync();

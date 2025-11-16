@@ -3,6 +3,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Services.RequestBuilders;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.Interfaces;
 using Finance.Persistence;
@@ -13,7 +14,7 @@ namespace Finance.Application.Services.Base;
 
 public abstract class BaseResourceSagaService<
     TEntity,
-    TEntityResource,
+    TResourcePermissions,
     TOrchestrator,
     TOwnerOrchestrator,
     TCreateRequest,
@@ -25,7 +26,7 @@ public abstract class BaseResourceSagaService<
     TDeleteResult>
     : ISagaService<TCreateRequest, TUpdateRequest, TDeleteRequest, TEntity>
     where TEntity : Entity<Guid>, IEntity, new()
-    where TEntityResource : EntityResource<TEntity, Guid>, new()
+    where TResourcePermissions : ResourcePermissions<TEntity, Guid>, new()
     where TCreateRequest : ISagaRequest
     where TUpdateRequest : ISagaRequest
     where TDeleteRequest : ISagaRequest
@@ -33,14 +34,14 @@ public abstract class BaseResourceSagaService<
     where TSetOwnerResult : RequestResult, new()
     where TDeleteOwnerRequest : ISagaRequest
     where TDeleteResult : RequestResult, new()
-    where TOwnerOrchestrator : IResourceOwnerOrchestrator<
+    where TOwnerOrchestrator : IResourcePermissionsOrchestrator<
         TSetOwnerRequest,
         TSetOwnerResult,
         TDeleteOwnerRequest,
         TDeleteResult>, new()
     where TOrchestrator : IResourceOrchestrator<
         TEntity,
-        TEntityResource,
+        TResourcePermissions,
         TCreateRequest,
         TUpdateRequest,
         TDeleteRequest,
@@ -54,7 +55,7 @@ public abstract class BaseResourceSagaService<
     protected IDispatcher<FinanceDispatchContext> _dispatcher { get; }
     protected IResourceOrchestrator<
         TEntity,
-        TEntityResource,
+        TResourcePermissions,
         TCreateRequest,
         TUpdateRequest,
         TDeleteRequest,
@@ -69,19 +70,19 @@ public abstract class BaseResourceSagaService<
     protected BaseResourceSagaService(
         IDispatcher<FinanceDispatchContext> dispatcher,
         FinanceDbContext dbContext,
-        IResourceOwnerSagaService<
-            TEntityResource,
+        IResourcePermissionsSagaService<
+            TResourcePermissions,
             TOwnerOrchestrator,
             TSetOwnerRequest,
             TSetOwnerResult,
             TDeleteOwnerRequest,
-            TDeleteResult> resourceOwnerService)
+            TDeleteResult> ResourcePermissionsService)
     {
         _dispatcher = dispatcher;
         _dbContext = dbContext;
         _requestOrchestrator = new TOrchestrator();
         _requestOrchestrator.SetDispatcher(_dispatcher);
-        _requestOrchestrator.SetOwnerService(resourceOwnerService);
+        _requestOrchestrator.SetOwnerService(ResourcePermissionsService);
     }
 
     public async Task<DataResult<TEntity>> Create(TCreateRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)

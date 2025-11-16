@@ -10,20 +10,20 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Finance.Application.Services.Base;
 
-public abstract class BaseResourceOwnerSagaService<TEntity, TOrchestrator, TSetRequest, TSetResult, TDeleteRequest, TDeleteResult>
-    : IResourceOwnerSagaService<TEntity, TOrchestrator, TSetRequest, TSetResult, TDeleteRequest, TDeleteResult>
+public abstract class BaseResourcePermissionsSagaService<TEntity, TOrchestrator, TSetRequest, TSetResult, TDeleteRequest, TDeleteResult>
+    : IResourcePermissionsSagaService<TEntity, TOrchestrator, TSetRequest, TSetResult, TDeleteRequest, TDeleteResult>
     where TSetRequest : ISagaRequest
     where TSetResult : RequestResult, new()
     where TDeleteRequest : ISagaRequest
     where TDeleteResult : RequestResult, new()
     where TEntity : IEntity?
-    where TOrchestrator : IResourceOwnerOrchestrator<TSetRequest, TSetResult, TDeleteRequest, TDeleteResult>, new()
+    where TOrchestrator : IResourcePermissionsOrchestrator<TSetRequest, TSetResult, TDeleteRequest, TDeleteResult>, new()
 {
     protected FinanceDbContext _dbContext { get; }
     protected IDispatcher<FinanceDispatchContext> _dispatcher { get; }
-    protected IResourceOwnerOrchestrator<TSetRequest, TSetResult, TDeleteRequest, TDeleteResult> _requestOrchestrator { get; }
+    protected IResourcePermissionsOrchestrator<TSetRequest, TSetResult, TDeleteRequest, TDeleteResult> _requestOrchestrator { get; }
 
-    protected BaseResourceOwnerSagaService(IDispatcher<FinanceDispatchContext> dispatcher, FinanceDbContext dbContext)
+    protected BaseResourcePermissionsSagaService(IDispatcher<FinanceDispatchContext> dispatcher, FinanceDbContext dbContext)
     {
         _dispatcher = dispatcher;
         _dbContext = dbContext;
