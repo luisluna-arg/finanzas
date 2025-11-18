@@ -34,7 +34,7 @@ public class MappingService : IMappingService
             return (TResult)mapper.Map(source);
         }
 
-        throw new InvalidOperationException($"No mapper found for \"{source.GetType().Name}\" to \"{typeof(TResult).Name}\".");
+        throw new InvalidOperationException($"No mapper found for \"{source.GetType().FullName}\" to \"{typeof(TResult).FullName}\".");
     }
 
     public ICollection<TResult> Map<TResult>(IEnumerable<object> source)
