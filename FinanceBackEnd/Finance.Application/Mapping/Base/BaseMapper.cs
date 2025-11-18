@@ -14,7 +14,20 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
 
     public bool IsMappingEnabled(Type sourceType, Type destinationType)
     {
-        return sourceType == typeof(TSource) && destinationType == typeof(TTarget);
+        // Direct type match
+        if (sourceType == typeof(TSource) && destinationType == typeof(TTarget))
+            return true;
+
+        // Check if source is a collection of TSource and destination is a collection of TTarget
+        if (IsCollectionType(sourceType) && IsCollectionType(destinationType))
+        {
+            var sourceElementType = GetCollectionElementType(sourceType);
+            var destElementType = GetCollectionElementType(destinationType);
+
+            return sourceElementType == typeof(TSource) && destElementType == typeof(TTarget);
+        }
+
+        return false;
     }
 
     public object Map(object source)
@@ -22,9 +35,15 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
         if (source is TSource typedSource)
             return Map(typedSource)!;
 
-        // If the source is a collection of TSource, map each item to TTarget
+        // If the source is a collection of TSource, map each item to TTarget and return the appropriate collection type
         if (source is IEnumerable<TSource> typedSourceCollection)
-            return Map(typedSourceCollection).ToList();
+        {
+            var mappedItems = Map(typedSourceCollection).Cast<object>().ToList();
+            // Use existing CreateCollectionOfType method to handle various collection types
+            var result = CreateCollectionOfType(source.GetType(), typeof(TTarget), mappedItems);
+            if (result != null)
+                return result;
+        }
 
         throw new InvalidCastException($"Expected type {typeof(TSource).Name} or IEnumerable<{typeof(TSource).Name}>, but got {source.GetType().Name}.");
     }
