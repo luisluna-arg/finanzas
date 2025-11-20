@@ -3,10 +3,8 @@ using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.Models.CreditCards;
 
-public class CreditCardPayment : Entity<Guid>
+public class CreditCardPayment : CreditCardStatementEntity
 {
-    public Guid StatementId { get; set; }
-    public virtual CreditCardStatement Statement { get; set; } = null!;
     public DateTime Timestamp { get; set; }
     public Money Amount { get; set; }
     public PaymentMethod Method { get; set; } = PaymentMethod.Other;

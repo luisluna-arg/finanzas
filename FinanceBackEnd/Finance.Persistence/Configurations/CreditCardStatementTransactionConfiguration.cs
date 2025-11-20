@@ -24,9 +24,9 @@ public class CreditCardStatementTransactionConfiguration : IEntityTypeConfigurat
             .HasMaxLength(500);
 
         builder
-            .HasOne(st => st.CreditCardStatement)
+            .HasOne(st => st.Statement)
             .WithMany()
-            .HasForeignKey(st => st.CreditCardStatementId)
+            .HasForeignKey(st => st.StatementId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -37,6 +37,6 @@ public class CreditCardStatementTransactionConfiguration : IEntityTypeConfigurat
             .OnDelete(DeleteBehavior.SetNull);
 
         builder
-            .HasIndex(st => new { st.CreditCardStatementId, st.PostedDate });
+            .HasIndex(st => new { st.StatementId, st.PostedDate });
     }
 }
