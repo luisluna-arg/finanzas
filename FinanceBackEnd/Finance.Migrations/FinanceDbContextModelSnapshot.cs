@@ -132,6 +132,8 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
 
@@ -164,6 +166,8 @@ namespace Finance.Domain.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
@@ -198,6 +202,8 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
 
@@ -230,6 +236,8 @@ namespace Finance.Domain.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
@@ -264,6 +272,8 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
 
@@ -296,6 +306,8 @@ namespace Finance.Domain.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
@@ -330,6 +342,8 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
 
@@ -363,6 +377,8 @@ namespace Finance.Domain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
 
@@ -395,6 +411,8 @@ namespace Finance.Domain.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
@@ -1444,15 +1462,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.CreditCardPermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCard", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCard", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1463,15 +1481,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.CurrencyExchangeRatePermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.Currencies.CurrencyExchangeRate", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Currencies.CurrencyExchangeRate", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1482,15 +1500,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.DebitOriginPermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.Debits.DebitOrigin", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Debits.DebitOrigin", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1501,15 +1519,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.DebitPermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.Debits.Debit", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Debits.Debit", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1520,15 +1538,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.FundPermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.Funds.Fund", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Funds.Fund", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1539,15 +1557,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.IOLInvestmentAssetPermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.IOLInvestments.IOLInvestmentAsset", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.IOLInvestments.IOLInvestmentAsset", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1558,15 +1576,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.IOLInvestmentPermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.IOLInvestments.IOLInvestment", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.IOLInvestments.IOLInvestment", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1577,15 +1595,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.IncomePermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.Incomes.Income", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Incomes.Income", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1596,15 +1614,15 @@ namespace Finance.Domain.Migrations
 
             modelBuilder.Entity("Finance.Domain.Models.Auth.MovementPermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                    b.HasOne("Finance.Domain.Models.Movements.Movement", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Movements.Movement", "Resource")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

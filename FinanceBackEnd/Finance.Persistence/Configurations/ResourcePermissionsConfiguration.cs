@@ -29,7 +29,7 @@ public class ResourcePermissionsConfiguration<TPermissions, TResource, TId> : Au
 
         builder.HasOne(b => b.User)
             .WithMany()
-            .HasForeignKey(b => b.ResourceId)
+            .HasForeignKey(b => b.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
