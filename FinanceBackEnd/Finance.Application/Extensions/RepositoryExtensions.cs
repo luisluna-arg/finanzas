@@ -102,7 +102,7 @@ public static class RepositoryExtensions
             .ToList();
 
         return assemblyTypes
-            .Where(t => t.Namespace == "Finance.Domain.Models")
+            .Where(t => t.Namespace != null && t.Namespace.StartsWith("Finance.Domain.Models"))
             .Where(t => t.IsClass && !t.IsAbstract)
             .Select(entityType =>
             {

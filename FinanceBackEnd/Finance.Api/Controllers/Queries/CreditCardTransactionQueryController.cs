@@ -21,5 +21,17 @@ public class CreditCardTransactionQueryController(IMappingService mapper, IDispa
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll([FromQuery] GetCreditCardTransactionsQuery query)
-        => await ExecuteAsync(query);
+    {
+        try
+        {
+            var dataResult = await Dispatcher.DispatchQueryAsync(query, Request);
+            var result = dataResult.Data.Select(MappingService.Map<CreditCardTransactionDto>).ToArray();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in MapAndSend: {ex.Message}");
+            throw;
+        }
+    }
 }

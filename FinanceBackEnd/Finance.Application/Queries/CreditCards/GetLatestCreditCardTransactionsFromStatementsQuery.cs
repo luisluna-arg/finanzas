@@ -36,7 +36,7 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandler : BaseCol
             {
                 // Get transaction IDs that belong to those latest statements
                 var latestTransactionIds = await DbContext.CreditCardStatementTransaction
-                    .Where(st => latestStatementIds.Contains(st.CreditCardStatementId))
+                    .Where(st => latestStatementIds.Contains(st.StatementId))
                     .Where(st => st.CreditCardTransactionId != null)
                     .Select(st => st.CreditCardTransactionId!.Value)
                     .ToListAsync(cancellationToken);
