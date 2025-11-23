@@ -3,18 +3,23 @@ name: Frontend CI
 on:
   push:
     branches: [ main ]
-  # Run on pull requests that target `main` only.
+    paths:
+      - 'FinanceFrontEnd/**'
+  # Run on pull requests that target `main` only and only when frontend files change.
   pull_request:
     branches: [ main ]
+    paths:
+      - 'FinanceFrontEnd/**'
 
 jobs:
   lint-typecheck-secrets:
+    name: Lint, Typecheck & Secrets Scan
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'

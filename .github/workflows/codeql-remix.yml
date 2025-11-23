@@ -5,6 +5,8 @@ on:
     paths:
       - 'FinanceFrontEnd/FinanceRemix/**'
   pull_request:
+    paths:
+      - 'FinanceFrontEnd/FinanceRemix/**'
 
 jobs:
   analyze-remix:
