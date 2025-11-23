@@ -3,8 +3,10 @@ name: "CodeQL - Backend API / C#"
 on:
   push:
     paths:
-      - FinanceBackEnd/**
+      - 'FinanceBackEnd/**'
   pull_request:
+    paths:
+      - 'FinanceBackEnd/**'
 
 jobs:
   analyze:
