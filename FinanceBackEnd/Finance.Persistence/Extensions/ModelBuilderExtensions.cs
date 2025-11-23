@@ -16,280 +16,194 @@ namespace Finance.Persistence.Extensions;
 public static class ModelBuilderExtensions
 {
     /// <summary>
-    /// Adds global query filters to the model, such as user-ownership filters for entities like Fund.
+    /// Configures global query filters for all entities, including ownership filters that restrict access to user-owned resources
+    /// and related entities through their permission associations.
     /// </summary>
     public static void AddQueryFilters(this ModelBuilder modelBuilder, FinanceDbContext context)
     {
-        SetOwnershipFilter<CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>(modelBuilder, context);
-        SetOwnershipFilter<DebitOrigin, Guid, DebitOriginResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<DebitOrigin, Guid, DebitOriginResource>(modelBuilder, context);
-        SetOwnershipFilter<Debit, Guid, DebitResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<Debit, Guid, DebitResource>(modelBuilder, context);
-        SetOwnershipFilter<Fund, Guid, FundResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<Fund, Guid, FundResource>(modelBuilder, context);
-        SetOwnershipFilter<Income, Guid, IncomeResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<Income, Guid, IncomeResource>(modelBuilder, context);
-        SetOwnershipFilter<IOLInvestmentAsset, Guid, IOLInvestmentAssetResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<IOLInvestmentAsset, Guid, IOLInvestmentAssetResource>(modelBuilder, context);
-        SetOwnershipFilter<IOLInvestment, Guid, IOLInvestmentResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<IOLInvestment, Guid, IOLInvestmentResource>(modelBuilder, context);
-        SetOwnershipFilter<Movement, Guid, MovementResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<Movement, Guid, MovementResource>(modelBuilder, context);
-        SetCurrencyConversionOwnershipFilter(modelBuilder, context);
-        // Credit card related entities filtered through CreditCard ownership
-        SetOwnershipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
-        SetResourceOwnershipFilter<CreditCard, Guid, CreditCardResource>(modelBuilder, context);
-        SetCreditCardRelatedOwnershipFilter(modelBuilder, context);
+        ApplyEntityOwnershipFilter<CurrencyExchangeRate, Guid, CurrencyExchangeRatePermissions>(modelBuilder, context);
+        ApplyEntityOwnershipFilter<DebitOrigin, Guid, DebitOriginPermissions>(modelBuilder, context);
+        ApplyEntityOwnershipFilter<Debit, Guid, DebitPermissions>(modelBuilder, context);
+        ApplyEntityOwnershipFilter<Fund, Guid, FundPermissions>(modelBuilder, context);
+        ApplyEntityOwnershipFilter<Income, Guid, IncomePermissions>(modelBuilder, context);
+        ApplyEntityOwnershipFilter<IOLInvestmentAsset, Guid, IOLInvestmentAssetPermissions>(modelBuilder, context);
+        ApplyEntityOwnershipFilter<IOLInvestment, Guid, IOLInvestmentPermissions>(modelBuilder, context);
+        ApplyEntityOwnershipFilter<Movement, Guid, MovementPermissions>(modelBuilder, context);
+        ApplyCurrencyConversionFilter(modelBuilder, context);
+        ApplyCreditCardRelatedEntitiesFilter(modelBuilder, context);
     }
 
     /// <summary>
     /// Registers a global ownership query filter for the given entity type, restricting access to entities owned by the current user.
     /// </summary>
-    private static void SetOwnershipFilter<TEntity, TId, TEntityResource>(ModelBuilder modelBuilder, FinanceDbContext context)
+    private static void ApplyEntityOwnershipFilter<TEntity, TId, TResourcePermissions>(ModelBuilder modelBuilder, FinanceDbContext context)
         where TEntity : Entity<TId>, new()
-        where TEntityResource : EntityResource<TEntity, TId>
+        where TResourcePermissions : ResourcePermissions<TEntity, TId>
     {
-        modelBuilder.Entity<TEntity>().HasQueryFilter(BuildOwnerShipFilter<TEntity, TId, TEntityResource>(context));
+        modelBuilder.Entity<TEntity>().HasQueryFilter(e => context.Set<TResourcePermissions>()
+            .Any(p => p.ResourceId!.Equals(e.Id) && p.User.Identities.Any(i => i.SourceId == context.CurrentUserId)));
+        // Also restrict the permissions set to the current user to keep filters consistent
+        ApplyPermissionFilter<TEntity, TId, TResourcePermissions>(modelBuilder, context);
     }
 
     /// <summary>
-    /// Builds a query filter expression for an entity, restricting access to entities joined to resources owned by the current user.
+    /// Registers a query filter for CurrencyConversion entities to exclude records with null Movement or Currency references.
     /// </summary>
-    private static LambdaExpression BuildOwnerShipFilter<TEntity, TId, TEntityResource>(FinanceDbContext dbContext)
-        where TEntity : Entity<TId>, new()
-        where TEntityResource : EntityResource<TEntity, TId>
+    private static void ApplyCurrencyConversionFilter(ModelBuilder modelBuilder, FinanceDbContext context)
     {
-        // 1) e =>
-        var entityParam = Expression.Parameter(typeof(TEntity), "e");
-        // 2) j =>
-        var joinParam = Expression.Parameter(typeof(TEntityResource), "j");
-
-        // j.ResourceSourceId
-        var joinKeyProp = Expression.Property(joinParam, nameof(EntityResource<TEntity, TId>.ResourceSourceId));
-        // e.Id
-        var entityKeyProp = Expression.Property(entityParam, nameof(Entity<TId>.Id));
-        // build: (j.ResourceSourceId == e.Id)
-        var keyEqualsExpr = Expression.Equal(joinKeyProp, entityKeyProp);
-
-        // build: j.Resource.User.Identities.Any(i => i.SourceId == ctx.CurrentUserId)
-        var identityAnyExpr = BuildIdentityAnyExpr<TEntity, TId, TEntityResource>(joinParam, dbContext);
-
-        // combine: j => identityAny && keyEquals
-        var combinedBody = Expression.AndAlso(identityAnyExpr, keyEqualsExpr);
-        var joinPredicate = Expression.Lambda(combinedBody, joinParam);
-
-        // call: ctx.Set<TJoin>().Any(j => …)
-        var setCall = Expression.Call(
-            Expression.Constant(dbContext),
-            nameof(DbContext.Set),
-            [typeof(TEntityResource)]
-        );
-
-        var anyMethod = typeof(Queryable)
-            .GetMethods()
-            .Single(m =>
-                m.Name == nameof(Queryable.Any) &&
-                m.GetParameters().Length == 2
-            )
-            .MakeGenericMethod(typeof(TEntityResource));
-
-        var anyCall = Expression.Call(anyMethod, setCall, joinPredicate);
-
-        // final lambda: e => ctx.Set<TJoin>().Any(j => …)
-        return Expression.Lambda(anyCall, entityParam);
-    }
-
-    /// <summary>
-    /// Builds an expression that checks if any ResourceOwner for the given join entity's resource 
-    /// is linked to the current user (by identity).
-    /// </summary>
-    private static Expression BuildIdentityAnyExpr<TEntity, TKey, TJoin>(
-        ParameterExpression joinParam,
-        FinanceDbContext ctx)
-        where TEntity : Entity<TKey>, new()
-        where TJoin : EntityResource<TEntity, TKey>
-    {
-        // j.ResourceId
-        var resourceIdProp = Expression.Property(joinParam, nameof(EntityResource<TEntity, TKey>.ResourceId));
-
-        // ResourceOwner ro where ro.ResourceId == j.ResourceId
-        var resourceOwnerParam = Expression.Parameter(typeof(ResourceOwner), "ro");
-        var roResourceIdProp = Expression.Property(resourceOwnerParam, nameof(ResourceOwner.ResourceId));
-        var roUserProp = Expression.Property(resourceOwnerParam, nameof(ResourceOwner.User));
-        var roUserIdentitiesProp = Expression.Property(roUserProp, nameof(User.Identities));
-
-        // i => i.SourceId == ctx.CurrentUserId
-        var identParam = Expression.Parameter(typeof(Identity), "i");
-        var sourceIdProp = Expression.Property(identParam, nameof(Identity.SourceId));
-        var currentUserId = Expression.Property(Expression.Constant(ctx), nameof(FinanceDbContext.CurrentUserId));
-        var idEquals = Expression.Equal(sourceIdProp, currentUserId);
-        var identLambda = Expression.Lambda(idEquals, identParam);
-
-        // ro.User.Identities.AsQueryable().Any(i => ...)
-        var asQueryableMethod = typeof(Queryable)
-            .GetMethods()
-            .Single(m => m.Name == nameof(Queryable.AsQueryable) && m.IsGenericMethodDefinition)
-            .MakeGenericMethod(typeof(Identity));
-        var identitiesQueryable = Expression.Call(asQueryableMethod, roUserIdentitiesProp);
-        var anyIdentityMethod = typeof(Queryable)
-            .GetMethods()
-            .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
-            .MakeGenericMethod(typeof(Identity));
-        var anyIdentityCall = Expression.Call(anyIdentityMethod, identitiesQueryable, identLambda);
-
-        // ro => ro.ResourceId == j.ResourceId && ro.User.Identities.Any(...)
-        var roIdEquals = Expression.Equal(roResourceIdProp, resourceIdProp);
-        var roBody = Expression.AndAlso(roIdEquals, anyIdentityCall);
-        var roLambda = Expression.Lambda(roBody, resourceOwnerParam);
-
-        // ctx.Set<ResourceOwner>().Any(ro => ...)
-        var setCall = Expression.Call(
-            Expression.Constant(ctx),
-            nameof(DbContext.Set),
-            [typeof(ResourceOwner)]
-        );
-        var anyResourceOwnerMethod = typeof(Queryable)
-            .GetMethods()
-            .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
-            .MakeGenericMethod(typeof(ResourceOwner));
-        return Expression.Call(anyResourceOwnerMethod, setCall, roLambda);
-    }
-
-    /// <summary>
-    /// Registers a global ownership query filter for the resource entity, restricting access to resources owned by the current user.
-    /// </summary>
-    private static void SetResourceOwnershipFilter<TEntity, TId, TEntityResource>(ModelBuilder modelBuilder, FinanceDbContext context)
-        where TEntity : Entity<TId>, new()
-        where TEntityResource : EntityResource<TEntity, TId>
-    {
-        modelBuilder.Entity<TEntityResource>().HasQueryFilter(BuildResourceOwnershipFilter<TEntity, TId, TEntityResource>(context));
-    }
-
-    /// <summary>
-    /// Builds a query filter expression for a resource entity, restricting access to resources owned by the current user.
-    /// </summary>
-    private static LambdaExpression BuildResourceOwnershipFilter<TEntity, TId, TEntityResource>(FinanceDbContext dbContext)
-        where TEntity : Entity<TId>, new()
-        where TEntityResource : EntityResource<TEntity, TId>
-    {
-        // r => ctx.Set<ResourceOwner>().Any(ro => ro.ResourceId == r.ResourceId && ro.User.Identities.Any(i => i.SourceId == ctx.CurrentUserId))
-        var resourceParam = Expression.Parameter(typeof(TEntityResource), "r");
-        var resourceIdProp = Expression.Property(resourceParam, nameof(EntityResource<TEntity, TId>.ResourceId));
-
-        var resourceOwnerParam = Expression.Parameter(typeof(ResourceOwner), "ro");
-        var roResourceIdProp = Expression.Property(resourceOwnerParam, nameof(ResourceOwner.ResourceId));
-        var roUserProp = Expression.Property(resourceOwnerParam, nameof(ResourceOwner.User));
-        var roUserIdentitiesProp = Expression.Property(roUserProp, nameof(User.Identities));
-
-        var identParam = Expression.Parameter(typeof(Identity), "i");
-        var sourceIdProp = Expression.Property(identParam, nameof(Identity.SourceId));
-        var currentUserId = Expression.Property(Expression.Constant(dbContext), nameof(FinanceDbContext.CurrentUserId));
-        var idEquals = Expression.Equal(sourceIdProp, currentUserId);
-        var identLambda = Expression.Lambda(idEquals, identParam);
-
-        var asQueryableMethod = typeof(Queryable)
-            .GetMethods()
-            .Single(m => m.Name == nameof(Queryable.AsQueryable) && m.IsGenericMethodDefinition)
-            .MakeGenericMethod(typeof(Identity));
-        var identitiesQueryable = Expression.Call(asQueryableMethod, roUserIdentitiesProp);
-        var anyIdentityMethod = typeof(Queryable)
-            .GetMethods()
-            .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
-            .MakeGenericMethod(typeof(Identity));
-        var anyIdentityCall = Expression.Call(anyIdentityMethod, identitiesQueryable, identLambda);
-
-        var roIdEquals = Expression.Equal(roResourceIdProp, resourceIdProp);
-        var roBody = Expression.AndAlso(roIdEquals, anyIdentityCall);
-        var roLambda = Expression.Lambda(roBody, resourceOwnerParam);
-
-        var setCall = Expression.Call(
-            Expression.Constant(dbContext),
-            nameof(DbContext.Set),
-            [typeof(ResourceOwner)]
-        );
-        var anyResourceOwnerMethod = typeof(Queryable)
-            .GetMethods()
-            .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
-            .MakeGenericMethod(typeof(ResourceOwner));
-        var anyResourceOwnerCall = Expression.Call(anyResourceOwnerMethod, setCall, roLambda);
-
-        return Expression.Lambda(anyResourceOwnerCall, resourceParam);
-    }
-
-    private static void SetCurrencyConversionOwnershipFilter(ModelBuilder modelBuilder, FinanceDbContext context)
-    {
-        modelBuilder.Entity<CurrencyConversion>().HasQueryFilter(BuildCurrencyConversionOwnershipFilter(context));
-    }
-
-    private static Expression<Func<CurrencyConversion, bool>> BuildCurrencyConversionOwnershipFilter(FinanceDbContext context)
-    {
-        return cc => cc.Movement != null && cc.Currency != null;
+        modelBuilder.Entity<CurrencyConversion>().HasQueryFilter(cc => cc.Movement != null && cc.Currency != null);
     }
 
     /// <summary>
     /// Sets ownership filters for credit card related entities through their navigation properties to CreditCard.
     /// This ensures users can only see statements, transactions, and payments for credit cards they own.
     /// </summary>
-    private static void SetCreditCardRelatedOwnershipFilter(ModelBuilder modelBuilder, FinanceDbContext context)
+    private static void ApplyCreditCardRelatedEntitiesFilter(ModelBuilder modelBuilder, FinanceDbContext context)
     {
-        modelBuilder.Entity<CreditCardStatement>().HasQueryFilter(
-            s => context.Set<CreditCardResource>().Any(r =>
-                r.ResourceSourceId == s.CreditCardId &&
-                context.Set<ResourceOwner>().Any(ro =>
-                    ro.ResourceId == r.ResourceId &&
-                    ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
-                )
-            )
-        );
+        ApplyEntityOwnershipFilter<CreditCard, Guid, CreditCardPermissions>(modelBuilder, context);
 
-        modelBuilder.Entity<CreditCardTransaction>().HasQueryFilter(
-            t => context.Set<CreditCardResource>().Any(r =>
-                r.ResourceSourceId == t.CreditCardId &&
-                context.Set<ResourceOwner>().Any(ro =>
-                    ro.ResourceId == r.ResourceId &&
-                    ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
-                )
-            )
-        );
+        ApplyCreditCardEntityFilter<CreditCardStatement>(context, modelBuilder);
+        ApplyCreditCardEntityFilter<CreditCardTransaction>(context, modelBuilder);
 
-        modelBuilder.Entity<CreditCardStatementTransaction>().HasQueryFilter(
-            st => context.Set<CreditCardStatement>().Any(s =>
-                s.Id == st.CreditCardStatementId &&
-                context.Set<CreditCardResource>().Any(r =>
-                    r.ResourceSourceId == s.CreditCardId &&
-                    context.Set<ResourceOwner>().Any(ro =>
-                        ro.ResourceId == r.ResourceId &&
-                        ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
-                    )
-                )
-            )
-        );
-
-        modelBuilder.Entity<CreditCardPayment>().HasQueryFilter(
-            p => context.Set<CreditCardStatement>().Any(s =>
-                s.Id == p.StatementId &&
-                context.Set<CreditCardResource>().Any(r =>
-                    r.ResourceSourceId == s.CreditCardId &&
-                    context.Set<ResourceOwner>().Any(ro =>
-                        ro.ResourceId == r.ResourceId &&
-                        ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
-                    )
-                )
-            )
-        );
-
-        modelBuilder.Entity<CreditCardStatementAdjustment>().HasQueryFilter(
-            a => context.Set<CreditCardStatement>().Any(s =>
-                s.Id == a.CreditCardStatementId &&
-                context.Set<CreditCardResource>().Any(r =>
-                    r.ResourceSourceId == s.CreditCardId &&
-                    context.Set<ResourceOwner>().Any(ro =>
-                        ro.ResourceId == r.ResourceId &&
-                        ro.User.Identities.AsQueryable().Any(i => i.SourceId == context.CurrentUserId)
-                    )
-                )
-            )
-        );
+        ApplyCreditCardStatementEntityFilter<CreditCardStatementTransaction>(context, modelBuilder);
+        ApplyCreditCardStatementEntityFilter<CreditCardPayment>(context, modelBuilder);
+        ApplyCreditCardStatementEntityFilter<CreditCardStatementAdjustment>(context, modelBuilder);
     }
+
+    /// <summary>
+    /// Restricts entities to those whose <c>CreditCard</c> is owned by the current user.
+    /// </summary>
+    /// <typeparam name="T">Credit-card-related entity type.</typeparam>
+    /// <param name="context">Current <see cref="FinanceDbContext"/>.</param>
+    /// <param name="modelBuilder">The <see cref="ModelBuilder"/> to configure.</param>
+    private static void ApplyCreditCardEntityFilter<T>(FinanceDbContext context, ModelBuilder modelBuilder)
+        where T : CreditCardEntity
+    {
+        modelBuilder.Entity<T>().HasQueryFilter(
+            s => context.Set<CreditCardPermissions>()
+                .Join(context.Set<User>(),
+                    permission => permission.UserId,
+                    user => user.Id,
+                    (permission, user) => new { permission, user })
+                .Where(x => x.permission.ResourceId == s.CreditCardId)
+                .SelectMany(x => x.user.Identities)
+                .Any(i => i.SourceId == context.CurrentUserId));
+    }
+
+    /// <summary>
+    /// Restricts statement-related entities to those whose statement's credit card
+    /// is owned by the current user.
+    /// </summary>
+    /// <typeparam name="T">Statement-related entity type.</typeparam>
+    /// <param name="context">Current <see cref="FinanceDbContext"/>.</param>
+    /// <param name="modelBuilder">The <see cref="ModelBuilder"/> to configure.</param>
+    private static void ApplyCreditCardStatementEntityFilter<T>(FinanceDbContext context, ModelBuilder modelBuilder)
+        where T : CreditCardStatementEntity
+    {
+        modelBuilder.Entity<T>().HasQueryFilter(
+            st => context.Set<CreditCardStatement>()
+                .Where(s => s.Id == st.StatementId)
+                .Join(context.Set<CreditCardPermissions>(),
+                    s => s.CreditCardId,
+                    p => p.ResourceId,
+                    (s, p) => p)
+                .Any(p => p.User.Identities.Any(i => i.SourceId == context.CurrentUserId)));
+    }
+
+    /// <summary>
+    /// Builds and applies an ownership filter for <typeparamref name="TSource"/> using
+    /// <typeparamref name="TSourcePermissions"/> to match resource ids and user identities.
+    /// </summary>
+    /// <typeparam name="TSource">Target entity type.</typeparam>
+    /// <typeparam name="TId">Entity id type.</typeparam>
+    /// <typeparam name="TSourcePermissions">Permissions/join type used for ownership checks.</typeparam>
+    /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to register the filter.</param>
+    /// <param name="dbContext">The <see cref="FinanceDbContext"/> providing the current user id.</param>
+    private static void ApplyOwnerShipFilter<TSource, TId, TSourcePermissions>(ModelBuilder modelBuilder, FinanceDbContext dbContext)
+        where TSource : Entity<TId>, new()
+        where TSourcePermissions : ResourcePermissions<TSource, TId>
+    {
+        var entityParam = Expression.Parameter(typeof(TSource), "e");
+        var joinParam = Expression.Parameter(typeof(TSourcePermissions), "j");
+
+        var joinKeyProp = Expression.Property(joinParam, "ResourceId");
+        var entityKeyProp = Expression.Property(entityParam, nameof(Entity<TId>.Id));
+        var keyEqualsExpr = Expression.Equal(joinKeyProp, entityKeyProp);
+
+        var identityAnyExpr = BuildIdentityAnyExpr<TSource, TId, TSourcePermissions>(joinParam, dbContext);
+
+        var combinedBody = Expression.AndAlso(identityAnyExpr, keyEqualsExpr);
+        var joinPredicate = Expression.Lambda(combinedBody, joinParam);
+
+        var setCall = Expression.Call(Expression.Constant(dbContext), nameof(DbContext.Set), [typeof(TSourcePermissions)]);
+
+        var anyMethod = typeof(Queryable)
+            .GetMethods()
+            .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(TSourcePermissions));
+
+        var anyCall = Expression.Call(anyMethod, setCall, joinPredicate);
+
+        var lambda = Expression.Lambda<Func<TSource, bool>>(anyCall, entityParam);
+        modelBuilder.Entity<TSource>().HasQueryFilter(lambda);
+    }
+
+    /// <summary>
+    /// Restricts permission records to those belonging to the current user.
+    /// </summary>
+    /// <typeparam name="TEntity">Referenced entity type.</typeparam>
+    /// <typeparam name="TId">Referenced entity id type.</typeparam>
+    /// <typeparam name="TPermissions">Permission entity type.</typeparam>
+    /// <param name="modelBuilder">The <see cref="ModelBuilder"/> to configure.</param>
+    /// <param name="dbContext">The <see cref="FinanceDbContext"/> providing the current user id.</param>
+    private static void ApplyPermissionFilter<TEntity, TId, TPermissions>(ModelBuilder modelBuilder, FinanceDbContext dbContext)
+        where TEntity : Entity<TId>, new()
+        where TPermissions : ResourcePermissions<TEntity, TId>
+    {
+        var permissionParam = Expression.Parameter(typeof(TPermissions), "p");
+        var identityAnyExpr = BuildIdentityAnyExpr<TEntity, TId, TPermissions>(permissionParam, dbContext);
+        var lambda = Expression.Lambda<Func<TPermissions, bool>>(identityAnyExpr, permissionParam);
+        modelBuilder.Entity<TPermissions>().HasQueryFilter(lambda);
+    }
+
+    /// <summary>
+    /// Builds an expression that checks if <c>j.User.Identities</c> contains the current user identity.
+    /// </summary>
+    /// <typeparam name="TEntity">Referenced entity type.</typeparam>
+    /// <typeparam name="TKey">Entity id type.</typeparam>
+    /// <typeparam name="TJoin">Permission/join type.</typeparam>
+    /// <param name="joinParam">Parameter expression for the join instance.</param>
+    /// <param name="ctx">The <see cref="FinanceDbContext"/> providing the current user id.</param>
+    /// <returns>An <see cref="Expression"/> for the identity-any check.</returns>
+    private static Expression BuildIdentityAnyExpr<TEntity, TKey, TJoin>(
+        ParameterExpression joinParam,
+        FinanceDbContext ctx)
+        where TEntity : Entity<TKey>, new()
+        where TJoin : ResourcePermissions<TEntity, TKey>
+    {
+        var userProp = Expression.Property(joinParam, nameof(ResourcePermissions<TEntity, TKey>.User));
+        var userIdentitiesProp = Expression.Property(userProp, nameof(User.Identities));
+
+        var identParam = Expression.Parameter(typeof(Identity), "i");
+        var sourceIdProp = Expression.Property(identParam, nameof(Identity.SourceId));
+        var currentUserId = Expression.Property(Expression.Constant(ctx), nameof(FinanceDbContext.CurrentUserId));
+        var idEquals = Expression.Equal(sourceIdProp, currentUserId);
+        var identLambda = Expression.Lambda(idEquals, identParam);
+
+        var anyIdentityMethod = typeof(Queryable)
+            .GetMethods()
+            .Single(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(Identity));
+
+        var asQueryableMethod = typeof(Queryable)
+            .GetMethods()
+            .Single(m => m.Name == nameof(Queryable.AsQueryable) && m.IsGenericMethodDefinition)
+            .MakeGenericMethod(typeof(Identity));
+        var identitiesQueryable = Expression.Call(asQueryableMethod, userIdentitiesProp);
+
+        var anyIdentityCall = Expression.Call(anyIdentityMethod, identitiesQueryable, identLambda);
+
+        return anyIdentityCall;
+    }
+
 }

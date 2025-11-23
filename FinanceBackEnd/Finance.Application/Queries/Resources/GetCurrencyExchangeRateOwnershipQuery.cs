@@ -5,12 +5,12 @@ using Finance.Persistence;
 namespace Finance.Application.Queries.Resources;
 
 public class GetCurrencyExchangeRateOwnershipQuery(Guid id) :
-    BaseGetResourceOwnershipQuery<CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>()
+    BaseGetResourcePermissionsQuery<CurrencyExchangeRate, Guid, CurrencyExchangeRatePermissions>()
 {
     public Guid Id { get; } = id;
 }
 
-public class GetCurrencyExchangeRateOwnershipQueryHandler : BaseGetResourceOwnershipQueryHandler<GetCurrencyExchangeRateOwnershipQuery, CurrencyExchangeRate, Guid, CurrencyExchangeRateResource>
+public class GetCurrencyExchangeRateOwnershipQueryHandler : BaseGetResourcePermissionsQueryHandler<GetCurrencyExchangeRateOwnershipQuery, CurrencyExchangeRate, Guid, CurrencyExchangeRatePermissions>
 {
     public GetCurrencyExchangeRateOwnershipQueryHandler(FinanceDbContext dbContext) : base(dbContext)
     {

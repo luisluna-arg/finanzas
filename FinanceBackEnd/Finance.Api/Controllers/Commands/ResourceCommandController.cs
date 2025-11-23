@@ -11,15 +11,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/resources")]
-public class ResourceCommandController(IMappingService mapper, FundOwnerService fundResourceOwnerService, IDispatcher<FinanceDispatchContext> dispatcher)
+public class ResourceCommandController(IMappingService mapper, FundOwnerService fundOwnerService, IDispatcher<FinanceDispatchContext> dispatcher)
     : ApiBaseCommandController<User?, Guid, UserDto>(mapper, dispatcher)
 {
-    private FundOwnerService ResourceService { get => fundResourceOwnerService; }
-
     [HttpPost("fund/{fundId}/owner/{userId}")]
     public async Task<IActionResult> SetFundOwner(Guid fundId, Guid userId)
     {
-        var result = await ResourceService.Set(new SetFundOwnerSagaRequest(fundId));
+        var result = await fundOwnerService.Set(new SetFundOwnerSagaRequest(fundId, userId));
         if (!result.IsSuccess)
         {
             return BadRequest(result.ErrorMessage);
@@ -31,7 +29,7 @@ public class ResourceCommandController(IMappingService mapper, FundOwnerService 
     [HttpDelete("fund/{fundId}/owner/{userId}")]
     public async Task<IActionResult> DeleteFundOwner(Guid fundId, Guid userId)
     {
-        var result = await ResourceService.Delete(new DeleteFundOwnerSagaRequest(fundId));
+        var result = await fundOwnerService.Delete(new DeleteFundOwnerSagaRequest(fundId));
         if (!result.IsSuccess)
         {
             return BadRequest(result.ErrorMessage);

@@ -200,14 +200,20 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
         if (collectionType.IsArray)
         {
             var array = Array.CreateInstance(elementType, items.Count);
-            items.Select((item, i) => { array.SetValue(item, i); return item; }).ToList();
+            for (int i = 0; i < items.Count; i++)
+            {
+                array.SetValue(items[i], i);
+            }
             return array;
         }
         if (typeof(IList).IsAssignableFrom(collectionType))
         {
             var constructedListType = typeof(List<>).MakeGenericType(elementType);
-
-            var list = (IList)Activator.CreateInstance(constructedListType, items.ToArray())!;
+            var list = (IList)Activator.CreateInstance(constructedListType)!;
+            foreach (var item in items)
+            {
+                list.Add(item);
+            }
             if (collectionType.IsAssignableFrom(constructedListType))
                 return list;
 
@@ -226,12 +232,10 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
         {
             var constructedListType = typeof(List<>).MakeGenericType(elementType);
             var list = (IList)Activator.CreateInstance(constructedListType)!;
-
             foreach (var item in items)
             {
                 list.Add(item);
             }
-
             return list;
         }
         return null;

@@ -49,10 +49,10 @@ public class GetLatestCreditCardStatementTransactionsQueryHandler : BaseCollecti
 
             // Now get the transactions from those latest statements
             var transactionsQuery = DbContext.CreditCardStatementTransaction
-                .Include(o => o.CreditCardStatement)
+                .Include(o => o.Statement)
                 .ThenInclude(o => o.CreditCard)
                 .ThenInclude(o => o.Bank)
-                .Where(o => latestStatementIds.Contains(o.CreditCardStatementId))
+                .Where(o => latestStatementIds.Contains(o.StatementId))
                 .AsQueryable();
 
             if (!request.IncludeDeactivated)
@@ -68,7 +68,7 @@ public class GetLatestCreditCardStatementTransactionsQueryHandler : BaseCollecti
 
                 transactionsQuery = transactionsQuery
                     .OrderByDescending(o => o.PostedDate)
-                    .ThenBy(o => o.CreditCardStatement.CreditCard.Name)
+                    .ThenBy(o => o.Statement.CreditCard.Name)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize);
             }
@@ -76,7 +76,7 @@ public class GetLatestCreditCardStatementTransactionsQueryHandler : BaseCollecti
             {
                 transactionsQuery = transactionsQuery
                     .OrderByDescending(o => o.PostedDate)
-                    .ThenBy(o => o.CreditCardStatement.CreditCard.Name);
+                    .ThenBy(o => o.Statement.CreditCard.Name);
             }
 
             result = await transactionsQuery.ToListAsync(cancellationToken);

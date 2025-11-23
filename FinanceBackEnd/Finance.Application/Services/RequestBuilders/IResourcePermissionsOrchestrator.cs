@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Services.RequestBuilders;
 
-public interface IResourceOwnerOrchestrator<SetRequest, SetResult, DeleteRequest, DeleteResult>
+public interface IResourcePermissionsOrchestrator<SetRequest, SetResult, DeleteRequest, DeleteResult>
     where SetRequest : ISagaRequest
     where SetResult : RequestResult, new()
     where DeleteRequest : ISagaRequest

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
@@ -18,7 +19,7 @@ public class GetCreditCardTransactionsQueryHandler : BaseCollectionHandler<GetCr
     {
         var query = DbContext.CreditCardTransaction
             .Include(o => o.CreditCard)
-            .ThenInclude(o => o.Bank)
+                .ThenInclude(o => o.Bank)
             .AsQueryable();
 
         if (request.CreditCardId.HasValue)
@@ -41,6 +42,8 @@ public class GetCreditCardTransactionsQueryHandler : BaseCollectionHandler<GetCr
             query = query.Where(o => !o.Deactivated);
         }
 
+        var data = await query.ToListAsync();
+
         return DataResult<List<CreditCardTransaction>>.Success(
             await query
                 .OrderByDescending(o => o.Timestamp)
@@ -58,10 +61,12 @@ public class GetCreditCardTransactionsQuery : GetAllQuery<CreditCardTransaction>
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
     /// </summary>
+    [DefaultValue(typeof(DateTime), "2025-10-18T00:00:00Z")]
     public DateTime? From { get; set; }
 
     /// <summary>
     /// Gets or sets date to filter to. Format: YYYY-MM-DDTHH:mm:ss.sssZ.
     /// </summary>
+    [DefaultValue(typeof(DateTime), "2025-11-18T00:00:00Z")]
     public DateTime? To { get; set; }
 }

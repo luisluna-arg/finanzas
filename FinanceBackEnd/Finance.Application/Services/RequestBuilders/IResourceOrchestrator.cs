@@ -2,6 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using Finance.Application.Services.Interfaces;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,7 @@ namespace Finance.Application.Services.RequestBuilders;
 
 public interface IResourceOrchestrator<
     TEntity,
-    TEntityResource,
+    TResourcePermissions,
     TCreateRequest,
     TUpdateRequest,
     TDeleteRequest,
@@ -21,7 +22,7 @@ public interface IResourceOrchestrator<
     TDeleteResult,
     TOwnerOrchestrator>
     where TEntity : Entity<Guid>, IEntity, new()
-    where TEntityResource : EntityResource<TEntity, Guid>, new()
+    where TResourcePermissions : ResourcePermissions<TEntity, Guid>, new()
     where TCreateRequest : ISagaRequest
     where TUpdateRequest : ISagaRequest
     where TDeleteRequest : ISagaRequest
@@ -29,7 +30,7 @@ public interface IResourceOrchestrator<
     where TSetOwnerResult : RequestResult, new()
     where TDeleteOwnerRequest : ISagaRequest
     where TDeleteResult : RequestResult, new()
-    where TOwnerOrchestrator : IResourceOwnerOrchestrator<
+    where TOwnerOrchestrator : IResourcePermissionsOrchestrator<
         TSetOwnerRequest,
         TSetOwnerResult,
         TDeleteOwnerRequest,
@@ -37,8 +38,8 @@ public interface IResourceOrchestrator<
 {
     void SetDispatcher(IDispatcher<FinanceDispatchContext> dispatcher);
     void SetOwnerService(
-        IResourceOwnerSagaService<
-        TEntityResource,
+        IResourcePermissionsSagaService<
+        TResourcePermissions,
         TOwnerOrchestrator,
         TSetOwnerRequest,
         TSetOwnerResult,

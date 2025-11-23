@@ -52,6 +52,8 @@ public class GetPaginatedCreditCardTransactionsQueryHandler
             query = query.Where(o => o.CreditCard.BankId == Guid.Parse(request.BankId));
         }
 
+        var data = await query.ToListAsync();
+
         // Pagination
         int page = request.Page;
         int pageSize = request.PageSize;

@@ -22,7 +22,7 @@ namespace Finance.Domain.Migrations
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
 
-            modelBuilder.Entity("Finance.Domain.Models.AppModule", b =>
+            modelBuilder.Entity("Finance.Domain.Models.AppModules.AppModule", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -56,7 +56,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("AppModule");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.AppModuleType", b =>
+            modelBuilder.Entity("Finance.Domain.Models.AppModules.AppModuleType", b =>
                 {
                     b.Property<short>("Id")
                         .HasColumnType("smallint");
@@ -105,7 +105,401 @@ namespace Finance.Domain.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Bank", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Auth.CreditCardPermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("CreditCardPermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.CurrencyExchangeRatePermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("CurrencyExchangeRatePermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.DebitOriginPermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("DebitOriginPermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.DebitPermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("DebitPermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.FundPermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("FundPermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.IOLInvestmentAssetPermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("IOLInvestmentAssetPermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.IOLInvestmentPermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("IOLInvestmentPermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.IncomePermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("IncomePermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.MovementPermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("MovementPermissions");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.Role", b =>
+                {
+                    b.Property<short>("Id")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Role");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = (short)1,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "Admin",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = (short)2,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "Owner",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Banks.Bank", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +521,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("Bank");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCard", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCard", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -164,7 +558,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("CreditCard");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardIssuer", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardIssuer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +585,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("CreditCardIssuer");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPayment", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardPayment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -222,38 +616,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("CreditCardPayment");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("CreditCardResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatement", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -281,7 +644,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("CreditCardStatement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementAdjustment", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementAdjustment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -293,9 +656,6 @@ namespace Finance.Domain.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("CreditCardStatementId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("Deactivated")
                         .HasColumnType("boolean");
 
@@ -304,14 +664,17 @@ namespace Finance.Domain.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<Guid>("StatementId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CreditCardStatementId", "CreatedAt");
+                    b.HasIndex("StatementId", "CreatedAt");
 
                     b.ToTable("CreditCardStatementAdjustment");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementTransaction", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementTransaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -319,9 +682,6 @@ namespace Finance.Domain.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
-
-                    b.Property<Guid>("CreditCardStatementId")
-                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("CreditCardTransactionId")
                         .HasColumnType("uuid");
@@ -337,16 +697,19 @@ namespace Finance.Domain.Migrations
                     b.Property<DateTime>("PostedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("StatementId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreditCardTransactionId");
 
-                    b.HasIndex("CreditCardStatementId", "PostedDate");
+                    b.HasIndex("StatementId", "PostedDate");
 
                     b.ToTable("CreditCardStatementTransaction");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardTransaction", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardTransaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -389,7 +752,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("CreditCardTransaction");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Currency", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Currencies.Currency", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -436,7 +799,7 @@ namespace Finance.Domain.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CurrencyConversion", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Currencies.CurrencyConversion", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -463,7 +826,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("CurrencyConversion");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CurrencyExchangeRate", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Currencies.CurrencyExchangeRate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -503,38 +866,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("CurrencyExchangeRate");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CurrencyExchangeRateResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("CurrencyExchangeRateResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CurrencySymbol", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Currencies.CurrencySymbol", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -591,7 +923,7 @@ namespace Finance.Domain.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Debit", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Debits.Debit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -623,7 +955,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("Debit");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.DebitOrigin", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Debits.DebitOrigin", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -649,68 +981,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("DebitOrigin");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.DebitOriginResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.ToTable("DebitOriginResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.DebitResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("DebitResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.Frequency", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Frequencies.Frequency", b =>
                 {
                     b.Property<short>("Id")
                         .HasColumnType("smallint");
@@ -751,7 +1022,64 @@ namespace Finance.Domain.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Fund", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Frequencies.PermissionLevel", b =>
+                {
+                    b.Property<short>("Id")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PermissionLevel");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = (short)0,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "None",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = (short)1,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "Read",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = (short)2,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "Write",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = (short)3,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "Owner",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Funds.Fund", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -790,38 +1118,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("Fund");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.FundResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.HasIndex("ResourceId", "ResourceSourceId")
-                        .IsUnique();
-
-                    b.ToTable("FundResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestment", b =>
+            modelBuilder.Entity("Finance.Domain.Models.IOLInvestments.IOLInvestment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -876,7 +1173,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("IOLInvestment");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAsset", b =>
+            modelBuilder.Entity("Finance.Domain.Models.IOLInvestments.IOLInvestmentAsset", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -908,37 +1205,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("IOLInvestmentAsset");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAssetResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.ToTable("IOLInvestmentAssetResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAssetType", b =>
+            modelBuilder.Entity("Finance.Domain.Models.IOLInvestments.IOLInvestmentAssetType", b =>
                 {
                     b.Property<short>("Id")
                         .HasColumnType("smallint");
@@ -995,37 +1262,7 @@ namespace Finance.Domain.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.ToTable("IOLInvestmentResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.Identity", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Identities.Identity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1061,7 +1298,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("Identity");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.IdentityProvider", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Identities.IdentityProvider", b =>
                 {
                     b.Property<short>("Id")
                         .HasColumnType("smallint");
@@ -1102,7 +1339,7 @@ namespace Finance.Domain.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Income", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Incomes.Income", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1138,37 +1375,7 @@ namespace Finance.Domain.Migrations
                     b.ToTable("Income");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.IncomeResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.ToTable("IncomeResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.Movement", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Movements.Movement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1219,166 +1426,6 @@ namespace Finance.Domain.Migrations
                     b.ToTable("Movement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.MovementResource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ResourceSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("ResourceSourceId");
-
-                    b.ToTable("MovementResource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.Resource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Resource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.ResourceOwner", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("UserId", "ResourceId")
-                        .IsUnique();
-
-                    b.ToTable("ResourceOwner");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.Role", b =>
-                {
-                    b.Property<short>("Id")
-                        .HasColumnType("smallint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Role");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = (short)1,
-                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Deactivated = false,
-                            Name = "Admin",
-                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = (short)2,
-                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Deactivated = false,
-                            Name = "Owner",
-                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Username")
-                        .IsUnique();
-
-                    b.ToTable("User");
-                });
-
             modelBuilder.Entity("UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -1394,15 +1441,15 @@ namespace Finance.Domain.Migrations
                     b.ToTable("UserRole");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.AppModule", b =>
+            modelBuilder.Entity("Finance.Domain.Models.AppModules.AppModule", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Currency", "Currency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.AppModuleType", "Type")
+                    b.HasOne("Finance.Domain.Models.AppModules.AppModuleType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1413,20 +1460,191 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCard", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Auth.CreditCardPermissions", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Bank", "Bank")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCard", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.CurrencyExchangeRatePermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Currencies.CurrencyExchangeRate", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.DebitOriginPermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Debits.DebitOrigin", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.DebitPermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Debits.Debit", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.FundPermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Funds.Fund", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.IOLInvestmentAssetPermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.IOLInvestments.IOLInvestmentAsset", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.IOLInvestmentPermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.IOLInvestments.IOLInvestment", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.IncomePermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Incomes.Income", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.MovementPermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Movements.Movement", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCard", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Banks.Bank", "Bank")
                         .WithMany("CreditCards")
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.CreditCardIssuer", "CreditCardIssuer")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardIssuer", "CreditCardIssuer")
                         .WithMany("CreditCards")
                         .HasForeignKey("CreditCardIssuerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "CurrentStatement")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardStatement", "CurrentStatement")
                         .WithMany()
                         .HasForeignKey("CurrentStatementId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -1438,9 +1656,9 @@ namespace Finance.Domain.Migrations
                     b.Navigation("CurrentStatement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardPayment", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardPayment", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "Statement")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardStatement", "Statement")
                         .WithMany()
                         .HasForeignKey("StatementId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1449,28 +1667,9 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Statement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardResource", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatement", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.CreditCard", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatement", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.CreditCard", "CreditCard")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCard", "CreditCard")
                         .WithMany("Statements")
                         .HasForeignKey("CreditCardId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1479,44 +1678,44 @@ namespace Finance.Domain.Migrations
                     b.Navigation("CreditCard");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementAdjustment", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementAdjustment", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "CreditCardStatement")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardStatement", "Statement")
                         .WithMany()
-                        .HasForeignKey("CreditCardStatementId")
+                        .HasForeignKey("StatementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreditCardStatement");
+                    b.Navigation("Statement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardStatementTransaction", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementTransaction", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.CreditCardStatement", "CreditCardStatement")
-                        .WithMany()
-                        .HasForeignKey("CreditCardStatementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.CreditCardTransaction", "CreditCardTransaction")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardTransaction", "CreditCardTransaction")
                         .WithMany()
                         .HasForeignKey("CreditCardTransactionId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("CreditCardStatement");
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardStatement", "Statement")
+                        .WithMany()
+                        .HasForeignKey("StatementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CreditCardTransaction");
+
+                    b.Navigation("Statement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardTransaction", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardTransaction", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.CreditCard", "CreditCard")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCard", "CreditCard")
                         .WithMany("Transactions")
                         .HasForeignKey("CreditCardId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.CreditCardStatementTransaction", "StatementTransaction")
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardStatementTransaction", "StatementTransaction")
                         .WithMany()
                         .HasForeignKey("StatementTransactionId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -1526,13 +1725,13 @@ namespace Finance.Domain.Migrations
                     b.Navigation("StatementTransaction");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CurrencyConversion", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Currencies.CurrencyConversion", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Currency", "Currency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId");
 
-                    b.HasOne("Finance.Domain.Models.Movement", "Movement")
+                    b.HasOne("Finance.Domain.Models.Movements.Movement", "Movement")
                         .WithMany()
                         .HasForeignKey("MovementId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1543,15 +1742,15 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Movement");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CurrencyExchangeRate", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Currencies.CurrencyExchangeRate", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Currency", "BaseCurrency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "BaseCurrency")
                         .WithMany("BaseExchangeRates")
                         .HasForeignKey("BaseCurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Currency", "QuoteCurrency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "QuoteCurrency")
                         .WithMany("QuoteExchangeRates")
                         .HasForeignKey("QuoteCurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1562,28 +1761,9 @@ namespace Finance.Domain.Migrations
                     b.Navigation("QuoteCurrency");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CurrencyExchangeRateResource", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Currencies.CurrencySymbol", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.CurrencyExchangeRate", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CurrencySymbol", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Currency", "Currency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
                         .WithMany("Symbols")
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1592,15 +1772,15 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Debit", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Debits.Debit", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Frequency", null)
+                    b.HasOne("Finance.Domain.Models.Frequencies.Frequency", null)
                         .WithMany()
                         .HasForeignKey("Frequency")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.DebitOrigin", "Origin")
+                    b.HasOne("Finance.Domain.Models.Debits.DebitOrigin", "Origin")
                         .WithMany("Debits")
                         .HasForeignKey("OriginId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1609,9 +1789,9 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Origin");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.DebitOrigin", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Debits.DebitOrigin", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.AppModule", "AppModule")
+                    b.HasOne("Finance.Domain.Models.AppModules.AppModule", "AppModule")
                         .WithMany()
                         .HasForeignKey("AppModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1620,53 +1800,15 @@ namespace Finance.Domain.Migrations
                     b.Navigation("AppModule");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.DebitOriginResource", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Funds.Fund", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.DebitOrigin", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.DebitResource", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.Debit", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.Fund", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Bank", "Bank")
+                    b.HasOne("Finance.Domain.Models.Banks.Bank", "Bank")
                         .WithMany()
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Currency", "Currency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1677,28 +1819,9 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.FundResource", b =>
+            modelBuilder.Entity("Finance.Domain.Models.IOLInvestments.IOLInvestment", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.Fund", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestment", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.IOLInvestmentAsset", "Asset")
+                    b.HasOne("Finance.Domain.Models.IOLInvestments.IOLInvestmentAsset", "Asset")
                         .WithMany()
                         .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1707,15 +1830,15 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Asset");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAsset", b =>
+            modelBuilder.Entity("Finance.Domain.Models.IOLInvestments.IOLInvestmentAsset", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Currency", "Currency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
                         .WithMany("IOLInvestmentAssets")
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.IOLInvestmentAssetType", "Type")
+                    b.HasOne("Finance.Domain.Models.IOLInvestments.IOLInvestmentAssetType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1726,47 +1849,9 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentAssetResource", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Identities.Identity", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.IOLInvestmentAsset", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.IOLInvestmentResource", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.IOLInvestment", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.Identity", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.User", "User")
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
                         .WithMany("Identities")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1775,15 +1860,15 @@ namespace Finance.Domain.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Income", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Incomes.Income", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Bank", "Bank")
+                    b.HasOne("Finance.Domain.Models.Banks.Bank", "Bank")
                         .WithMany()
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Currency", "Currency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1794,40 +1879,21 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.IncomeResource", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Movements.Movement", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.Income", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.Movement", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.AppModule", "AppModule")
+                    b.HasOne("Finance.Domain.Models.AppModules.AppModule", "AppModule")
                         .WithMany("Movements")
                         .HasForeignKey("AppModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Bank", "Bank")
+                    b.HasOne("Finance.Domain.Models.Banks.Bank", "Bank")
                         .WithMany()
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.Currency", "Currency")
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId");
 
@@ -1838,82 +1904,49 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.MovementResource", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.Movement", "ResourceSource")
-                        .WithMany()
-                        .HasForeignKey("ResourceSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("ResourceSource");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.ResourceOwner", b =>
-                {
-                    b.HasOne("Finance.Domain.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Finance.Domain.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("UserRole", b =>
                 {
-                    b.HasOne("Finance.Domain.Models.Role", null)
+                    b.HasOne("Finance.Domain.Models.Auth.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Finance.Domain.Models.User", null)
+                    b.HasOne("Finance.Domain.Models.Auth.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.AppModule", b =>
+            modelBuilder.Entity("Finance.Domain.Models.AppModules.AppModule", b =>
                 {
                     b.Navigation("Movements");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Bank", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Auth.User", b =>
+                {
+                    b.Navigation("Identities");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Banks.Bank", b =>
                 {
                     b.Navigation("CreditCards");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCard", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCard", b =>
                 {
                     b.Navigation("Statements");
 
                     b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.CreditCardIssuer", b =>
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardIssuer", b =>
                 {
                     b.Navigation("CreditCards");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.Currency", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Currencies.Currency", b =>
                 {
                     b.Navigation("BaseExchangeRates");
 
@@ -1924,14 +1957,9 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Symbols");
                 });
 
-            modelBuilder.Entity("Finance.Domain.Models.DebitOrigin", b =>
+            modelBuilder.Entity("Finance.Domain.Models.Debits.DebitOrigin", b =>
                 {
                     b.Navigation("Debits");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.User", b =>
-                {
-                    b.Navigation("Identities");
                 });
 #pragma warning restore 612, 618
         }

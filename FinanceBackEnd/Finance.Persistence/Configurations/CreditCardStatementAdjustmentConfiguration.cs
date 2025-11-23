@@ -24,13 +24,13 @@ public class CreditCardStatementAdjustmentConfiguration : IEntityTypeConfigurati
             .IsRequired();
 
         builder
-            .HasOne(a => a.CreditCardStatement)
+            .HasOne(a => a.Statement)
             .WithMany()
-            .HasForeignKey(a => a.CreditCardStatementId)
+            .HasForeignKey(a => a.StatementId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
-            .HasIndex(a => new { a.CreditCardStatementId, a.CreatedAt });
+            .HasIndex(a => new { a.StatementId, a.CreatedAt });
     }
 }
