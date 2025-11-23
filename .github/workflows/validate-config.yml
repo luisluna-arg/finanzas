@@ -2,9 +2,15 @@ name: Validate config
 
 on:
     push:
-        branches: [main, frontend-main-app-auth]
+        branches: [ main ]
+        paths:
+        - 'FinanceFrontEnd/FinanceFunds/**'
+        - '.scripts/validate-config.js'
     pull_request:
-        branches: [main, frontend-main-app-auth]
+        branches: [ main ]
+        paths:
+        - 'FinanceFrontEnd/FinanceFunds/**'
+        - '.scripts/validate-config.js'
     workflow_dispatch:
 
 jobs:
