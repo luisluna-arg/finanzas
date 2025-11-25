@@ -1,5 +1,6 @@
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.IOLInvestments;
+using Finance.Domain.Models.Subscriptions;
 
 namespace Finance.Domain.Models.Currencies;
 
@@ -11,6 +12,7 @@ public class Currency() : Entity<Guid>()
     public virtual ICollection<CurrencyExchangeRate> QuoteExchangeRates { get; set; } = [];
     public virtual ICollection<IOLInvestmentAsset> IOLInvestmentAssets { get; set; } = [];
     public virtual ICollection<CurrencySymbol> Symbols { get; set; } = [];
+    public virtual ICollection<Subscription> Subscriptions { get; set; } = [];
 
     public static Currency Default(
         string? shortName = null,

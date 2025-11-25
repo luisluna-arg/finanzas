@@ -34,6 +34,10 @@ public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
             .WithOne(o => o.Currency);
 
         builder
+            .HasMany(o => o.Subscriptions)
+            .WithOne(o => o.Currency);
+
+        builder
             .HasData(CurrencyConstants.CurrencyIds.Select(o => CurrencyMapper(o)).ToList());
     }
 

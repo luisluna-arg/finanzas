@@ -7,6 +7,7 @@ using Finance.Domain.Models.Funds;
 using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.IOLInvestments;
 using Finance.Domain.Models.Movements;
+using Finance.Domain.Models.Subscriptions;
 using Finance.Persistence.Configurations.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -47,3 +48,4 @@ public class IOLInvestmentAssetPermissionsConfiguration : ResourcePermissionsCon
 public class IOLInvestmentPermissionsConfiguration : ResourcePermissionsConfiguration<IOLInvestmentPermissions, IOLInvestment, Guid>;
 public class IncomePermissionsConfiguration : ResourcePermissionsConfiguration<IncomePermissions, Income, Guid>;
 public class MovementPermissionsConfiguration : ResourcePermissionsConfiguration<MovementPermissions, Movement, Guid>;
+public class SubscriptionPermissionsConfiguration : ResourcePermissionsConfiguration<SubscriptionPermissions, Subscription, Guid>;

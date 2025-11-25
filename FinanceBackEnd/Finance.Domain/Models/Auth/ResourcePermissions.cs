@@ -7,6 +7,7 @@ using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.Interfaces;
 using Finance.Domain.Models.IOLInvestments;
 using Finance.Domain.Models.Movements;
+using Finance.Domain.Models.Subscriptions;
 using FinanceBackEnd.Finance.Domain.Enums;
 
 namespace Finance.Domain.Models.Auth;
@@ -30,3 +31,4 @@ public class IOLInvestmentAssetPermissions : ResourcePermissions<IOLInvestmentAs
 public class IOLInvestmentPermissions : ResourcePermissions<IOLInvestment, Guid>;
 public class IncomePermissions : ResourcePermissions<Income, Guid>;
 public class MovementPermissions : ResourcePermissions<Movement, Guid>;
+public class SubscriptionPermissions : ResourcePermissions<Subscription, Guid>;
