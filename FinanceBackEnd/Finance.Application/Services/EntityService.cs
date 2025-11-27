@@ -27,6 +27,20 @@ public class EntityService<TEntity, TId>
         return entity;
     }
 
+    public async Task<ICollection<TEntity>> SetDeactivatedAsync(ICollection<TId> id, bool value, CancellationToken cancellationToken)
+    {
+        var entities = new List<TEntity>();
+        foreach (TId entityId in id)
+        {
+            var entity = await repository.GetByIdAsync(entityId, cancellationToken);
+            if (entity != null)
+            {
+                entities.Add(entity);
+            }
+        }
+        return entities;
+    }
+
     public async Task DeleteAsync(TId id, CancellationToken cancellationToken)
     {
         await repository.DeleteAsync(id, cancellationToken);

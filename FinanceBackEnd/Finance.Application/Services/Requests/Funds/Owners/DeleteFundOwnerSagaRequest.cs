@@ -1,4 +1,5 @@
 using CQRSDispatch;
+using Finance.Application.Commands.Funds.Owners.Base;
 using Finance.Application.Services.Interfaces;
 
 namespace Finance.Application.Commands.Funds.Owners;

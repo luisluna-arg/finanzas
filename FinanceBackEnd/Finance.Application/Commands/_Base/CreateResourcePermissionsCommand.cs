@@ -59,7 +59,7 @@ public abstract class CreateResourcePermissionsCommandHandler<TCommand, TResourc
             return DataResult<TResourcePermissions>.Failure("User not found");
         }
 
-        var FundPermissions = new TResourcePermissions()
+        var entityPermissions = new TResourcePermissions()
         {
             Resource = resource,
             ResourceId = request.ResourceId,
@@ -67,11 +67,11 @@ public abstract class CreateResourcePermissionsCommandHandler<TCommand, TResourc
             UserId = user.Id,
             PermissionLevels = request.PermissionLevels
         };
-        DbContext.Set<TResourcePermissions>().Add(FundPermissions);
+        DbContext.Set<TResourcePermissions>().Add(entityPermissions);
 
         await DbContext.SaveChangesAsync(cancellationToken);
 
-        return DataResult<TResourcePermissions>.Success(FundPermissions);
+        return DataResult<TResourcePermissions>.Success(entityPermissions);
     }
 
     protected abstract Task<TResource?> QuerySource(TCommand request, CancellationToken cancellationToken);

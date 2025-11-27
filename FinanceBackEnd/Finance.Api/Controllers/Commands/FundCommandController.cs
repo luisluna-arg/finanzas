@@ -46,11 +46,11 @@ public class FundCommandController(
         => await ExecuteAsync(request);
 
     [Authorize(Roles = "Admin")]
-    [HttpPost("{bankId}/owner/{userId}")]
+    [HttpPost("{resourceId}/owner/{userId}")]
     public async Task<IActionResult> SetResourcePermissions(SetFundOwnerRequest request)
     {
         var result = await fundPermissionsOwnerService.Set(
-            new SetFundOwnerSagaRequest(request.FundId),
+            new SetFundOwnerSagaRequest(request.ResourceId),
             httpRequest: Request);
 
         if (!result.IsSuccess)
@@ -62,11 +62,11 @@ public class FundCommandController(
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{bankId}/owner/{userId}")]
+    [HttpDelete("{resourceId}/owner/{userId}")]
     public async Task<IActionResult> DeleteResourcePermissions(DeleteFundOwnerRequest request)
     {
         var result = await fundPermissionsOwnerService.Delete(
-            new DeleteFundOwnerSagaRequest(request.FundId));
+            new DeleteFundOwnerSagaRequest(request.ResourceId));
 
         if (!result.IsSuccess)
         {
