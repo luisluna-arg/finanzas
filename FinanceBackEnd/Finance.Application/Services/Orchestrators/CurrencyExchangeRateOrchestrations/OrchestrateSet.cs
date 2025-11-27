@@ -7,9 +7,9 @@ using Finance.Domain.Models.Auth;
 using FinanceBackEnd.Finance.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 
-namespace Finance.Application.Services.Orchestrators.CurrencyExchangeRatePermissionsOrchestrations;
+namespace Finance.Application.Services.Orchestrators.CurrencyExchangeRateOrchestrations;
 
-public sealed partial class CurrencyExchangeRatePermissionsOrchestrator
+public sealed partial class CurrencyExchangeRateOrchestrator
     : BaseResourcePermissionsOrchestrator<
         SetCurrencyExchangeRateOwnerSagaRequest,
         DataResult<CurrencyExchangeRatePermissions>,
