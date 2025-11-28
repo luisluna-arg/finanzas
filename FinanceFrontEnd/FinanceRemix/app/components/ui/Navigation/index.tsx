@@ -35,6 +35,7 @@ export default function Navigation() {
                     <NavLink text="Dashboard" link="/" />
                     <NavLink text="Ingresos" link="/incomes" />
                     <NavLink text="Fondos" link="/funds" />
+                    <NavLink text="Suscripciones" link="/subscriptions" />
                     <NavLink text="Débitos" link="/debits" />
                     <NavLink text="Movimientos" link="/movements" />
                     <NavLink
