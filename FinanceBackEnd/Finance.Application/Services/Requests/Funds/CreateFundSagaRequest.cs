@@ -1,17 +1,6 @@
-using Finance.Application.Commands.Funds;
-using Finance.Application.Services.Interfaces;
+using Finance.Application.Commands.Funds.Owners.Base;
 
 namespace Finance.Application.Services.Requests.Funds;
 
-public class CreateFundSagaRequest : CreateFundCommand, ISagaRequest
-{
-    public CreateFundSagaRequest(Guid bankId, Guid currencyId, DateTime timeStamp, decimal amount, bool dailyUse)
-        : base()
-    {
-        BankId = bankId;
-        CurrencyId = currencyId;
-        TimeStamp = timeStamp;
-        Amount = amount;
-        DailyUse = dailyUse;
-    }
-}
+public class CreateFundSagaRequest(Guid bankId, Guid currencyId, DateTime timeStamp, decimal amount, bool dailyUse)
+    : UpsertFundSagaRequestBase(bankId, currencyId, timeStamp, amount, dailyUse);

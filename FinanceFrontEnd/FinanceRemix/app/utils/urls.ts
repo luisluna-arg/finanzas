@@ -1,9 +1,27 @@
-// Simple runtime configuration - no build-time complexity needed
-const baseUrl =
-  process.env.API_URL ||
-  (process.env.NODE_ENV === 'production'
-    ? 'http://backend:5000' // Docker internal network - updated to port 5000
-    : 'http://localhost:5000'); // Local development
+// Configuration for both local development and containerized environments
+const getBaseUrl = () => {
+  // Check if we're on the client side
+  if (typeof window !== 'undefined') {
+    // Client-side: determine based on current hostname
+    const hostname = window.location.hostname;
+    
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      // Local development
+      return 'http://localhost:5000';
+    } else {
+      // Container environment - use the same hostname but different port
+      // or use the backend service name if running in container network
+      return `http://${hostname}:5000`;
+    }
+  }
+  
+  // Server-side: use environment variables or defaults
+  // In containers, this might be 'http://backend:5000' for internal communication
+  // In local development, this should be 'http://localhost:5000'
+  return 'http://localhost:5000';
+};
+
+const baseUrl = getBaseUrl();
 const apiBaseUrl = `${baseUrl}/api`;
 const debitsBaseUrl = `${apiBaseUrl}/debits`;
 
@@ -63,6 +81,9 @@ const urls = {
   debitOrigins: {
     endpoint: `${apiBaseUrl}/debit-origins`,
   },
+  frequencies: {
+    endpoint: `${apiBaseUrl}/frequencies/`,
+  },
   funds: {
     endpoint: `${apiBaseUrl}/funds/`,
     upload: `${apiBaseUrl}/funds/upload`,
@@ -94,6 +115,10 @@ const urls = {
     totalExpenses: `${apiBaseUrl}/summary/totalExpenses`,
     currentInvestments: `${apiBaseUrl}/summary/currentInvestments`,
     general: `${apiBaseUrl}/summary/general`,
+  },
+  subscriptions: {
+    endpoint: `${apiBaseUrl}/subscriptions/`,
+    paginated: `${apiBaseUrl}/subscriptions/paginated`,
   },
 
   /**

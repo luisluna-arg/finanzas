@@ -5,7 +5,7 @@ using Finance.Application.Commands.CurrencyExchangeRates;
 using Finance.Application.Commands.CurrencyExchangeRates.Owners;
 using Finance.Application.Extensions;
 using Finance.Application.Services.Interfaces;
-using Finance.Application.Services.Orchestrators.CurrencyExchangeRatePermissionsOrchestrations;
+using Finance.Application.Services.Orchestrators.CurrencyExchangeRateOrchestrations;
 using Finance.Application.Services.Requests.CurrencyExchangeRates;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
@@ -20,7 +20,7 @@ public class CurrencyExchangeRateService(
     FinanceDbContext dbContext,
     IResourcePermissionsSagaService<
         CurrencyExchangeRatePermissions,
-        CurrencyExchangeRatePermissionsOrchestrator,
+        CurrencyExchangeRateOrchestrator,
         SetCurrencyExchangeRateOwnerSagaRequest,
         DataResult<CurrencyExchangeRatePermissions>,
         DeleteCurrencyExchangeRateOwnerSagaRequest,
@@ -35,7 +35,7 @@ public class CurrencyExchangeRateService(
     private IDispatcher<FinanceDispatchContext> _dispatcher = dispatcher;
     private IResourcePermissionsSagaService<
         CurrencyExchangeRatePermissions,
-        CurrencyExchangeRatePermissionsOrchestrator,
+        CurrencyExchangeRateOrchestrator,
         SetCurrencyExchangeRateOwnerSagaRequest,
         DataResult<CurrencyExchangeRatePermissions>,
         DeleteCurrencyExchangeRateOwnerSagaRequest,

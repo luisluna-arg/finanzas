@@ -9,6 +9,7 @@ using Finance.Domain.Models.Identities;
 using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.IOLInvestments;
 using Finance.Domain.Models.Movements;
+using Finance.Domain.Models.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Persistence.Extensions;
@@ -29,6 +30,7 @@ public static class ModelBuilderExtensions
         ApplyEntityOwnershipFilter<IOLInvestmentAsset, Guid, IOLInvestmentAssetPermissions>(modelBuilder, context);
         ApplyEntityOwnershipFilter<IOLInvestment, Guid, IOLInvestmentPermissions>(modelBuilder, context);
         ApplyEntityOwnershipFilter<Movement, Guid, MovementPermissions>(modelBuilder, context);
+        ApplyEntityOwnershipFilter<Subscription, Guid, SubscriptionPermissions>(modelBuilder, context);
         ApplyCurrencyConversionFilter(modelBuilder, context);
         ApplyCreditCardRelatedEntitiesFilter(modelBuilder, context);
     }

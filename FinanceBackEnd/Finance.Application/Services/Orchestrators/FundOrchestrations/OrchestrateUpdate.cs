@@ -28,7 +28,7 @@ public partial class FundOrchestrator
     {
         var command = new UpdateFundCommand
         {
-            Id = request.Id,
+            Id = request.FundId,
             BankId = request.BankId,
             CurrencyId = request.CurrencyId,
             TimeStamp = request.TimeStamp,

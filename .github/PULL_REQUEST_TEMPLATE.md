@@ -1,66 +1,68 @@
-# Pull Request Description (use this as a guideline)
+# Pull Request Template
 
-Please provide a clear, self-contained description of the change. PR content should follow the structure and level of detail used in the project example (the branch description attached to this PR). The goal is to make reviews fast and deployments safe, especially for schema or migration changes.
+This template helps structure PR descriptions for efficient reviews and safe deployments. Delete the example text and replace with your specific changes.
 
-What to include (short checklist):
-- **Summary**: concise summary of what changed and why. Reference issues with `Fixes #NNN` when applicable.
-- **Dependencies**: runtime or deployment prerequisites (DB, external services, CLI tools, etc.).
-- **Technical changes**: concrete, per-layer changes (Backend / Frontend / Docs / Others).
-- **Migration & Deployment notes**: data-migration steps, backups, breaking changes, rollout guidance.
-- **Test scenarios**: minimal manual/automated scenarios reviewers can use to validate behavior.
-- **Annotations**: any extra context, links to diagrams, scripts, or external systems.
+## Quick Checklist
+- [ ] Summary explains what changed and why
+- [ ] Dependencies are clearly listed
+- [ ] Technical changes are detailed by layer
+- [ ] Database/migration steps documented
+- [ ] Test scenarios provided
+- [ ] Breaking changes highlighted
 
-Use the sections below as a copy-paste starting point. Replace the example content with details for your specific PR.
+---
 
-# Description
+# Summary
 
-Please include a summary of the changes and the related issue. Include the motivation and higher-level context. List any required dependencies for running or deploying this change.
+Brief description of what changed and why.
 
-Fixes # (issue)
+**Fixes:** #(issue_number) <!-- if applicable -->
 
 # Dependencies
-- Any requirements for testing or running the project from now on 
+<!-- List any requirements for testing/deployment -->
+- Dependencies here
 
-# Technical changes
+# Technical Changes
 
 ## Backend
-- Describe specific backend changes (projects/files/DB tables/commands/queries/services updated)
+- Specific backend changes
 
 ## Frontend
-- Describe frontend changes, if any
+- Frontend changes, if any
 
 ## Documentation
-- Describe docs added/updated
+- Documentation updates
 
-## Others
-- Other changes (scripts, infra, CI, etc.)
+## Infrastructure
+- Docker, CI/CD, or configuration changes
 
-# Migration & Deployment Notes
-- Back up the database before applying migrations.
-- Apply EF migrations prior to routing traffic to the new version.
-- Note any rollback steps or manual verification queries.
+# Migration & Deployment
+<!-- Critical for schema/data changes -->
+- [ ] Back up database before deployment
+- [ ] Apply migrations: `describe migration steps`
+- [ ] Verify: `specific verification steps`
 
-# Test scenarios
+# Test Scenarios
 
-## Backend
-
+**Backend:**
 ```gherkin
-Scenario: <Short description>
-  Given <initial context>
-  When <action>
-  Then <expected result>
+Scenario: Feature works correctly
+  Given initial state
+  When action is performed
+  Then expected result occurs
 ```
 
-## Frontend
-
+**Frontend:**
 ```gherkin
-Scenario: <Short description>
-  Given <initial context>
-  When <action>
-  Then <expected result>
+Scenario: UI responds appropriately
+  Given user context
+  When user interaction
+  Then UI updates as expected
 ```
 
-# Annotations
-- Breaking change: schema and data migration required. Back up the DB before applying the migration.
-- Deployment: apply EF migrations before routing traffic to this version.
-- Verify authorization flows and external scripts that referenced dropped tables.
+# Breaking Changes
+<!-- List any breaking changes -->
+- None / List breaking changes
+
+# Additional Notes
+<!-- Context, diagrams, external links -->

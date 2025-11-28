@@ -461,6 +461,41 @@ namespace Finance.Domain.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Finance.Domain.Models.Auth.SubscriptionPermissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<int[]>("PermissionLevels")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ResourceId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("SubscriptionPermissions");
+                });
+
             modelBuilder.Entity("Finance.Domain.Models.Auth.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1019,6 +1054,30 @@ namespace Finance.Domain.Migrations
                             Deactivated = false,
                             Name = "Annual",
                             UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = (short)2,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "Weekly",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = (short)3,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "Daily",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = (short)4,
+                            CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Deactivated = false,
+                            Name = "OneTime",
+                            UpdatedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1426,6 +1485,51 @@ namespace Finance.Domain.Migrations
                     b.ToTable("Movement");
                 });
 
+            modelBuilder.Entity("Finance.Domain.Models.Subscriptions.Subscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.Property<short>("Frequency")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((short)0);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("Frequency");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("Price")
+                        .IsUnique();
+
+                    b.ToTable("Subscriptions");
+                });
+
             modelBuilder.Entity("UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -1615,6 +1719,25 @@ namespace Finance.Domain.Migrations
             modelBuilder.Entity("Finance.Domain.Models.Auth.MovementPermissions", b =>
                 {
                     b.HasOne("Finance.Domain.Models.Movements.Movement", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.Auth.SubscriptionPermissions", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Subscriptions.Subscription", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1904,6 +2027,23 @@ namespace Finance.Domain.Migrations
                     b.Navigation("Currency");
                 });
 
+            modelBuilder.Entity("Finance.Domain.Models.Subscriptions.Subscription", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.Frequencies.Frequency", null)
+                        .WithMany()
+                        .HasForeignKey("Frequency")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+                });
+
             modelBuilder.Entity("UserRole", b =>
                 {
                     b.HasOne("Finance.Domain.Models.Auth.Role", null)
@@ -1953,6 +2093,8 @@ namespace Finance.Domain.Migrations
                     b.Navigation("IOLInvestmentAssets");
 
                     b.Navigation("QuoteExchangeRates");
+
+                    b.Navigation("Subscriptions");
 
                     b.Navigation("Symbols");
                 });

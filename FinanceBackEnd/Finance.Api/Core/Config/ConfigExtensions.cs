@@ -7,6 +7,7 @@ using Finance.Application.Extensions;
 using Finance.Application.Mapping;
 using Finance.Application.Repositories;
 using Finance.Domain.DataConverters;
+using Finance.Domain.JsonConverters;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -81,10 +82,12 @@ public static class ConfigExtensions
             {
                 NamingStrategy = new CamelCaseNamingStrategy()
             });
+            options.SerializerSettings.Converters.Add(new MoneyNewtonsoftJsonConverter());
         })
         .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.JsonSerializerOptions.Converters.Add(new MoneyJsonConverter());
         });
 
         // Add the DatabaseSeeder as a hosted service

@@ -1,11 +1,6 @@
 name: Validate config
 
 on:
-    push:
-        branches: [ main ]
-        paths:
-        - 'FinanceFrontEnd/FinanceFunds/**'
-        - '.scripts/validate-config.js'
     pull_request:
         branches: [ main ]
         paths:

@@ -12,12 +12,10 @@ using Finance.Domain.Models.Identities;
 using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.IOLInvestments;
 using Finance.Domain.Models.Movements;
+using Finance.Domain.Models.Subscriptions;
 using Finance.Persistence;
 
 namespace Finance.Application.Repositories;
-
-// Consolidated simple repository classes
-// Organized alphabetically for better maintainability
 
 // App Module related repositories
 public class AppModuleTypeRepository(FinanceDbContext dbContext) : BaseRepository<AppModuleType, AppModuleTypeEnum>(dbContext);
@@ -51,6 +49,7 @@ public class IdentityProviderRepository(FinanceDbContext dbContext) : BaseReposi
 public class IdentityRepository(FinanceDbContext dbContext) : BaseRepository<Identity, Guid>(dbContext);
 public class IncomeRepository(FinanceDbContext dbContext) : BaseRepository<Income, Guid>(dbContext);
 public class IncomeResourceRepository(FinanceDbContext dbContext) : BaseRepository<Income, Guid>(dbContext);
+public class SubscriptionResourceRepository(FinanceDbContext dbContext) : BaseRepository<Subscription, Guid>(dbContext);
 
 // IOL Investment related repositories
 public class IOLInvestmentAssetRepository(FinanceDbContext dbContext) : BaseRepository<IOLInvestmentAsset, Guid>(dbContext);

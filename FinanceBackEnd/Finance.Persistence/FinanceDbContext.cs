@@ -11,6 +11,7 @@ using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.Interfaces;
 using Finance.Domain.Models.IOLInvestments;
 using Finance.Domain.Models.Movements;
+using Finance.Domain.Models.Subscriptions;
 using Finance.Domain.SpecialTypes;
 using Finance.Persistence.Configurations;
 using Finance.Persistence.Extensions;
@@ -58,6 +59,7 @@ public class FinanceDbContext : DbContext
     public DbSet<IOLInvestmentAssetPermissions> IOLInvestmentAssetPermissions => Set<IOLInvestmentAssetPermissions>();
     public DbSet<IOLInvestmentPermissions> IOLInvestmentPermissions => Set<IOLInvestmentPermissions>();
     public DbSet<MovementPermissions> MovementPermissions => Set<MovementPermissions>();
+    public DbSet<Subscription> Subscriptions => Set<Subscription>();
 
     private IHttpContextAccessor? HttpContextAccessor { get; }
 

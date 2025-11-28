@@ -3,7 +3,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using Finance.Application.Commands.CurrencyExchangeRates.Owners;
 using Finance.Application.Services.Base;
-using Finance.Application.Services.Orchestrators.CurrencyExchangeRatePermissionsOrchestrations;
+using Finance.Application.Services.Orchestrators.CurrencyExchangeRateOrchestrations;
 using Finance.Domain.Models.Auth;
 using Finance.Persistence;
 
@@ -14,7 +14,7 @@ public class CurrencyExchangeRateOwnerService(
     FinanceDbContext dbContext)
     : BaseResourcePermissionsSagaService<
         CurrencyExchangeRatePermissions,
-        CurrencyExchangeRatePermissionsOrchestrator,
+        CurrencyExchangeRateOrchestrator,
         SetCurrencyExchangeRateOwnerSagaRequest,
         DataResult<CurrencyExchangeRatePermissions>,
         DeleteCurrencyExchangeRateOwnerSagaRequest,

@@ -41,6 +41,36 @@ docker compose -p $projectShared -f $sharedCompose up --build -d
 $exitShared = $LASTEXITCODE
 if ($exitShared -ne 0) {
     Write-Host "Shared failed with exit code: $exitShared"
+    Write-Host ""
+    Write-Host "=== SHARED PROJECT LOGS ==="
+    docker compose -p $projectShared -f $sharedCompose logs --tail=50
+}
+
+Write-Host ""
+Write-Host "Waiting for backend to be healthy (max 60s)..."
+$timeout = 60
+$elapsed = 0
+while ($elapsed -lt $timeout) {
+    $health = docker inspect --format='{{.State.Health.Status}}' "$projectShared-backend-1" 2>$null
+    if ($health -eq "healthy") {
+        Write-Host "Backend is healthy!"
+        break
+    }
+    if ($health -eq "unhealthy") {
+        Write-Host "Backend is unhealthy. Showing logs..."
+        docker compose -p $projectShared -f $sharedCompose logs backend --tail=100
+        Write-Host ""
+        Write-Host "To see live logs: docker compose -p $projectShared -f $sharedCompose logs -f backend"
+        break
+    }
+    Write-Host "Backend status: $health - waiting... ($elapsed/$timeout seconds)"
+    Start-Sleep -Seconds 5
+    $elapsed += 5
+}
+
+if ($elapsed -ge $timeout) {
+    Write-Host "WARNING: Backend health check timed out. Showing logs..."
+    docker compose -p $projectShared -f $sharedCompose logs backend --tail=100
 }
 
 Write-Host ""
@@ -49,20 +79,39 @@ docker compose -p $projectFinances -f $financesCompose up --build -d
 $exitFinances = $LASTEXITCODE
 if ($exitFinances -ne 0) {
     Write-Host "Finances failed with exit code: $exitFinances"
+    Write-Host ""
+    Write-Host "=== FINANCES PROJECT LOGS ==="
+    docker compose -p $projectFinances -f $financesCompose logs --tail=50
 }
 
 Write-Host ""
 if ($exitFinances -eq 0 -and $exitShared -eq 0) {
     Write-Host "All services started successfully!"
+    Write-Host ""
+    Write-Host "=== SERVICE STATUS ==="
+    docker compose -p $projectShared -f $sharedCompose ps
+    docker compose -p $projectFinances -f $financesCompose ps
+    Write-Host ""
+    Write-Host "=== ACCESS URLS ==="
     Write-Host "Frontend: http://localhost:5100"
     Write-Host "Backend API: http://localhost:5000/swagger/index.html"
     Write-Host "Redis: localhost:6379"
+    Write-Host "Postgres: localhost:5432"
     Write-Host ""
-    Write-Host "To stop: docker compose -p $projectFinances stop; docker compose -p $projectShared stop"
+    Write-Host "=== USEFUL COMMANDS ==="
+    Write-Host "View logs (backend): docker compose -p $projectShared -f $sharedCompose logs -f backend"
+    Write-Host "View logs (frontend): docker compose -p $projectFinances -f $financesCompose logs -f frontend"
+    Write-Host "View all logs: docker compose -p $projectShared -f $sharedCompose logs -f; docker compose -p $projectFinances -f $financesCompose logs -f"
+    Write-Host "Stop services: docker compose -p $projectFinances -f $financesCompose stop; docker compose -p $projectShared -f $sharedCompose stop"
+    Write-Host "Remove services: docker compose -p $projectFinances -f $financesCompose down; docker compose -p $projectShared -f $sharedCompose down"
 }
 else {
     Write-Host "Error: One or more services failed to start."
     Write-Host "Finances exit code: $exitFinances"
     Write-Host "Shared exit code: $exitShared"
+    Write-Host ""
+    Write-Host "Run these commands to troubleshoot:"
+    Write-Host "  docker compose -p $projectShared -f $sharedCompose logs"
+    Write-Host "  docker compose -p $projectFinances -f $financesCompose logs"
     exit 1
 }
