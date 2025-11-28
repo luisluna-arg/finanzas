@@ -1,9 +1,6 @@
 name: "CodeQL - FinanceFunds"
 
 on:
-  push:
-    paths:
-      - 'FinanceFrontEnd/FinanceFunds/**'
   pull_request:
     paths:
       - 'FinanceFrontEnd/FinanceFunds/**'

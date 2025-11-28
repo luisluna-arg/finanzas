@@ -1,9 +1,6 @@
 name: "CodeQL - Backend API / C#"
 
 on:
-  push:
-    paths:
-      - 'FinanceBackEnd/**'
   pull_request:
     paths:
       - 'FinanceBackEnd/**'

@@ -1,11 +1,6 @@
 name: Frontend CI
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'FinanceFrontEnd/**'
-  # Run on pull requests that target `main` only and only when frontend files change.
   pull_request:
     branches: [ main ]
     paths:
