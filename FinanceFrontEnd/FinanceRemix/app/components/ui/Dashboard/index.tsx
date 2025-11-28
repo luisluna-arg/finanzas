@@ -32,8 +32,6 @@ const backgroundClasses = [
     //   "bg-gray-500",
 ];
 
-const intFormatter = (r: number) => (r ? r : 0);
-
 const moneyFormatter = (r: number) =>
     (typeof r === "number" ? r : 0).toFixed(2);
 
@@ -100,27 +98,6 @@ const DecimalColumn = (
     };
 
     return result;
-};
-
-const PaymentPlanColumn = (
-    columnName: string,
-    label: string,
-    mapper?: Mapper,
-    totalsReducer?: Reducer
-) => {
-    return {
-        id: columnName,
-        label: label,
-        type: InputType.Integer,
-        class: ["text-end"],
-        headerClass: ["text-end"],
-        mapper: mapper ?? ((v: unknown) => toNumber(v as ValueLike)),
-        formatter: intFormatter,
-        totals: {
-            formatter: intFormatter,
-            reducer: totalsReducer,
-        },
-    };
 };
 
 const dollarCalculator = function (

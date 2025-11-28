@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFetcher, useLoaderData, useRevalidator } from '@remix-run/react';
+import { useLoaderData, useRevalidator } from '@remix-run/react';
 import Table, { TableColumn } from '@/components/ui/utils/Table';
 import { toNumber, ValueLike } from '@/utils/common';
 import {
@@ -206,7 +206,6 @@ function Subscriptions() {
   const { subscriptions, currencies, frequencies } = useLoaderData<SubscriptionsData>();
   const [showModal, setShowModal] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
-  const fetcher = useFetcher();
   const revalidator = useRevalidator();
 
   const handleAdd = () => {
