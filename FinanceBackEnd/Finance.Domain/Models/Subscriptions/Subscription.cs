@@ -1,3 +1,4 @@
+using Finance.Domain.Enums;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.SpecialTypes;
@@ -10,6 +11,5 @@ public class Subscription() : AuditedEntity<Guid>()
     public Currency Currency { get; set; } = default!;
     public string Name { get; set; } = string.Empty;
     public Money Price { get; set; } = 0;
-    public DateTimeOffset StartDate { get; set; } = DateTimeOffset.UtcNow;
-    public DateTimeOffset? EndDate { get; set; } = null;
+    public FrequencyEnum Frequency { get; set; } = FrequencyEnum.Monthly;
 }

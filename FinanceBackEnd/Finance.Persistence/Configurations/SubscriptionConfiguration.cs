@@ -1,5 +1,8 @@
+using Finance.Domain.Enums;
+using Finance.Domain.Models.Frequencies;
 using Finance.Domain.Models.Subscriptions;
 using Finance.Persistence.Configurations.Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Finance.Persistence.Configurations;
@@ -22,5 +25,18 @@ public class SubscriptionConfiguration : AuditedEntityConfiguration<Subscription
         builder
             .HasIndex(o => o.Price)
             .IsUnique();
+
+        builder
+            .Property(t => t.Frequency)
+            .HasConversion(
+                v => (short)v,
+                v => (FrequencyEnum)v)
+            .HasDefaultValue(FrequencyEnum.Monthly);
+
+        builder
+            .HasOne<Frequency>()
+            .WithMany()
+            .HasForeignKey(t => (short)t.Frequency)
+            .IsRequired();
     }
 }
