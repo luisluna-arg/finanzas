@@ -2,8 +2,8 @@
 # Script to stop finance services
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FINANCES_COMPOSE="$SCRIPT_DIR/../Infra/Local/Finances/docker-compose.yaml"
-SHARED_COMPOSE="$SCRIPT_DIR/../Infra/Local/Shared/docker-compose.yaml"
+FINANCES_COMPOSE="$SCRIPT_DIR/../.infra/local/finances/docker-compose.yaml"
+SHARED_COMPOSE="$SCRIPT_DIR/../.infra/local/shared/docker-compose.yaml"
 
 # Get project names from .env files or use defaults
 FINANCES_ENV="$(dirname "$FINANCES_COMPOSE")/.env"

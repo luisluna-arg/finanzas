@@ -5,7 +5,7 @@ if (-not $dockerProcess) {
     exit 1
 }
 
-$sharedCompose = Join-Path $PSScriptRoot "..\Infra\Local\Shared\docker-compose.yaml"
+$sharedCompose = Join-Path $PSScriptRoot "..\.infra\local\shared\docker-compose.yaml"
 
 Write-Host "Checking Shared compose file:"
 Write-Host "  Shared: $sharedCompose"

@@ -8,8 +8,8 @@ if ! docker info > /dev/null 2>&1; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FINANCES_COMPOSE="$SCRIPT_DIR/../Infra/Local/Finances/docker-compose.yaml"
-SHARED_COMPOSE="$SCRIPT_DIR/../Infra/Local/Shared/docker-compose.yaml"
+FINANCES_COMPOSE="$SCRIPT_DIR/../.infra/local/finances/docker-compose.yaml"
+SHARED_COMPOSE="$SCRIPT_DIR/../.infra/local/shared/docker-compose.yaml"
 
 echo "Checking compose files:"
 echo "  Finances: $FINANCES_COMPOSE"

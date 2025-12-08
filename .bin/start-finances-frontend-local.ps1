@@ -1,11 +1,11 @@
-# PowerShell script to check if Docker Desktop is running and start docker compose in Infra\Local\Finances
+# PowerShell script to check if Docker Desktop is running and start docker compose in .infra\local\finances
 $dockerProcess = Get-Process -Name "Docker Desktop" -ErrorAction SilentlyContinue
 if (-not $dockerProcess) {
     Write-Host "Docker Desktop is not running. Please start Docker Desktop."
     exit 1
 }
 
-$financesCompose = Join-Path $PSScriptRoot "..\Infra\Local\Finances\docker-compose.yaml"
+$financesCompose = Join-Path $PSScriptRoot "..\.infra\local\finances\docker-compose.yaml"
 
 Write-Host "Checking compose files:"
 Write-Host "  Finances: $financesCompose"
