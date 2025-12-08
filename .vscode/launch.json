@@ -76,19 +76,7 @@
         "dev"
       ]
     },
-    {
-      "name": "React App Launch",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/FinanceFrontEnd/FinanceFront",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run"
-      ],
-      "args": [
-        "start"
-      ]
-    },
+    
     {
       "name": "FinanceFunds Launch",
       "type": "node",
