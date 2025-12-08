@@ -5,8 +5,8 @@
 !/.scripts/
 !/FinanceFrontEnd/
 !/FinanceBackEnd/
-!/Infra/
-/Infra/Funds/dataprotection/**
+!/.infra/
+/.infra/funds/dataprotection/**
 
 **/node_modules/
 
@@ -23,8 +23,6 @@
 !/.vscode
 
 **/.env.*
-
-finanzas.sln
 
 finance-backend.tar
 finance-frontend.tar

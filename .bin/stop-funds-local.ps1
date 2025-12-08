@@ -1,6 +1,6 @@
 # PowerShell script to stop funds services
-$fundsCompose = Join-Path $PSScriptRoot "..\Infra\Local\Funds\docker-compose.yaml"
-$sharedCompose = Join-Path $PSScriptRoot "..\Infra\Local\Shared\docker-compose.yaml"
+$fundsCompose = Join-Path $PSScriptRoot "..\.infra\local\funds\docker-compose.yaml"
+$sharedCompose = Join-Path $PSScriptRoot "..\.infra\local\shared\docker-compose.yaml"
 
 Write-Host "Checking compose files:"
 Write-Host "  Funds: $fundsCompose"

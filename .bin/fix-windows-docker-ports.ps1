@@ -38,8 +38,8 @@ Write-Host ""
 
 # Solution 5: Reset Docker network
 Write-Host "5. If nothing works, reset Docker network:"
-Write-Host "   docker compose -p finances-main-frontend -f Infra/Local/Finances/docker-compose.yaml down"
-Write-Host "   docker compose -p finances-shared -f Infra/Local/Shared/docker-compose.yaml down"
+Write-Host "   docker compose -p finances-main-frontend -f .infra/local/finances/docker-compose.yaml down"
+Write-Host "   docker compose -p finances-shared -f .infra/local/shared/docker-compose.yaml down"
 Write-Host "   docker network prune -f"
 Write-Host "   wsl --shutdown"
 Write-Host "   Then restart Docker Desktop and run start-finances-local.ps1 again"
