@@ -1,4 +1,4 @@
-import { useAuth } from '../auth';
+import { useAuth } from '@/auth';
 import { Title, Text, Paper, Stack, Group, Badge, Alert, Divider, Box, Code } from '@mantine/core';
 // Importing only what's needed
 

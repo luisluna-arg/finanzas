@@ -1,4 +1,4 @@
-import { useAuth } from '../auth';
+import { useAuth } from '@/auth';
 import {
   Title,
   Text,
@@ -17,11 +17,11 @@ import {
 } from '@mantine/core';
 import { IconReceipt2, IconBuildingBank, IconPlus } from '@tabler/icons-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import FundService from '../services/FundService';
+import FundService from '@/services/FundService';
 import SafeLogger from '@/utils/SafeLogger';
-import type { Fund } from '../services/types/FundTypes';
-import CreateFundModal from '../components/CreateFundModal';
-import { getMaxDecimals } from '../constants/currencies';
+import type { Fund } from '@/services/types/FundTypes';
+import CreateFundModal from '@/components/CreateFundModal';
+import { getMaxDecimals } from '@/constants/currencies';
 
 const FundsDashboard = () => {
   const { user } = useAuth();

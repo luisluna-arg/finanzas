@@ -3,13 +3,13 @@ import { Modal, NumberInput, Select, Button, Stack, Group, Text, Alert } from '@
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconCurrencyDollar, IconInfoCircle } from '@tabler/icons-react';
-import CurrencyExchangeRateService from '../services/CurrencyExchangeRateService';
-import CurrencyService from '../services/CurrencyService';
+import CurrencyExchangeRateService from '@/services/CurrencyExchangeRateService';
+import CurrencyService from '@/services/CurrencyService';
 import SafeLogger from '@/utils/SafeLogger';
-import type { CreateCurrencyExchangeRateCommand } from '../services/types/CurrencyExchangeRateTypes';
-import type { Currency } from '../services/types/CurrencyTypes';
+import type { CreateCurrencyExchangeRateCommand } from '@/services/types/CurrencyExchangeRateTypes';
+import type { Currency } from '@/services/types/CurrencyTypes';
 import { useEffect } from 'react';
-import { CURRENCY_IDS } from '../constants/currencies';
+import { CURRENCY_IDS } from '@/constants/currencies';
 
 interface CreateExchangeRateModalProps {
   opened: boolean;

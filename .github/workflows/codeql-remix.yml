@@ -1,9 +1,9 @@
-name: "CodeQL - FinanceRemix"
+name: "CodeQL - FinanceApp"
 
 on:
   pull_request:
     paths:
-      - 'FinanceFrontEnd/FinanceRemix/**'
+      - 'FinanceFrontEnd/FinanceApp/**'
 
 jobs:
   analyze-remix:
@@ -34,16 +34,16 @@ jobs:
         path: |
           ~/.npm
           node_modules
-        key: npm-${{ runner.os }}-remix-${{ hashFiles('FinanceFrontEnd/FinanceRemix/**/package-lock.json') }}
+        key: npm-${{ runner.os }}-remix-${{ hashFiles('FinanceFrontEnd/FinanceApp/**/package-lock.json') }}
         restore-keys: |
           npm-${{ runner.os }}-remix-
 
     - name: Install dependencies
-      working-directory: FinanceFrontEnd/FinanceRemix
+      working-directory: FinanceFrontEnd/FinanceApp
       run: npm ci
 
     - name: Build (Remix)
-      working-directory: FinanceFrontEnd/FinanceRemix
+      working-directory: FinanceFrontEnd/FinanceApp
       run: npm run build --if-present
 
     - name: Run CodeQL analysis (JS)

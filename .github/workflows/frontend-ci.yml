@@ -19,8 +19,8 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies (FinanceRemix)
-        working-directory: FinanceFrontEnd/FinanceRemix
+      - name: Install dependencies (FinanceApp)
+        working-directory: FinanceFrontEnd/FinanceApp
         run: |
           npm ci
 
@@ -29,14 +29,14 @@ jobs:
         run: |
           npm ci
 
-      - name: Focused no-console lint (FinanceRemix)
-        working-directory: FinanceFrontEnd/FinanceRemix
+      - name: Focused no-console lint (FinanceApp)
+        working-directory: FinanceFrontEnd/FinanceApp
         run: |
           # Enforce only the no-console rule to avoid blocking on unrelated lint errors
           npx eslint . --rule "no-console: 2" --ext .ts,.tsx,.js,.jsx
 
-      - name: Typecheck (FinanceRemix)
-        working-directory: FinanceFrontEnd/FinanceRemix
+      - name: Typecheck (FinanceApp)
+        working-directory: FinanceFrontEnd/FinanceApp
         run: |
           npm run typecheck
 
@@ -53,6 +53,6 @@ jobs:
           tar -xzf gitleaks.tar.gz
           # Scan backend and modern frontends only
           ./gitleaks detect --source FinanceBackEnd --report-path gitleaks-backend.json || true
-          ./gitleaks detect --source FinanceFrontEnd/FinanceRemix --report-path gitleaks-remix.json || true
+          ./gitleaks detect --source FinanceFrontEnd/FinanceApp --report-path gitleaks-remix.json || true
           ./gitleaks detect --source FinanceFrontEnd/FinanceFunds --report-path gitleaks-funds.json || true
         shell: bash
