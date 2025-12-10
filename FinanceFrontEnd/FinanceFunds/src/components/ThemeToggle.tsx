@@ -1,5 +1,5 @@
 import { ActionIcon, useMantineColorScheme } from '@mantine/core';
-import { useTheme } from '../context/useTheme';
+import { useTheme } from '@/context/useTheme';
 import { IconSun, IconMoon } from '@tabler/icons-react';
 
 export function ThemeToggle() {

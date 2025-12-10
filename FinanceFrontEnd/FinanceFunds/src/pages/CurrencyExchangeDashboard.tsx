@@ -1,4 +1,4 @@
-import { useAuth } from '../auth';
+import { useAuth } from '@/auth';
 import {
   Title,
   Text,
@@ -18,9 +18,9 @@ import {
 import { IconCurrencyDollar, IconPlus } from '@tabler/icons-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import SafeLogger from '@/utils/SafeLogger';
-import CurrencyExchangeRateService from '../services/CurrencyExchangeRateService';
-import type { CurrencyExchangeRate } from '../services/types/CurrencyExchangeRateTypes';
-import CreateExchangeRateModal from '../components/CreateExchangeRateModal';
+import CurrencyExchangeRateService from '@/services/CurrencyExchangeRateService';
+import type { CurrencyExchangeRate } from '@/services/types/CurrencyExchangeRateTypes';
+import CreateExchangeRateModal from '@/components/CreateExchangeRateModal';
 
 const CurrencyExchangeDashboard = () => {
   const { user } = useAuth();

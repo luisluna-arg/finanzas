@@ -1,4 +1,4 @@
-import { useAuth } from '../auth';
+import { useAuth } from '@/auth';
 import { Button } from '@mantine/core';
 
 export const LogoutButton = () => {

@@ -11,15 +11,15 @@ import {
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import BankService from '../services/BankService';
-import CurrencyService from '../services/CurrencyService';
-import FundService from '../services/FundService';
+import BankService from '@/services/BankService';
+import CurrencyService from '@/services/CurrencyService';
+import FundService from '@/services/FundService';
 import { notifications } from '@mantine/notifications';
-import Logger from '../utils/Logger';
+import Logger from '@/utils/Logger';
 import SafeLogger from '@/utils/SafeLogger';
-import type { CreateFundRequest } from '../services/types/FundTypes';
-import type { Bank } from '../services/types/BankTypes';
-import type { Currency } from '../services/types/CurrencyTypes';
+import type { CreateFundRequest } from '@/services/types/FundTypes';
+import type { Bank } from '@/services/types/BankTypes';
+import type { Currency } from '@/services/types/CurrencyTypes';
 
 interface CreateFundModalProps {
   opened: boolean;

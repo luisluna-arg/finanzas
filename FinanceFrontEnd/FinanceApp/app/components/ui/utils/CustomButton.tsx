@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { Button } from '../shadcn/button';
+import { Button } from '@/components/ui/shadcn/button';
 
 type ButtonProps = {
   onClick?: () => void;

@@ -2,7 +2,6 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { authenticator } from '@/services/auth/auth.server';
 import { AuthConstants } from '@/services/auth/auth.constants';
 import serverLogger from '@/utils/logger.server';
-import { Button } from '@/components/ui/shadcn/button';
 import CustomButton from '@/components/ui/utils/CustomButton';
 
 export async function action({ request }: ActionFunctionArgs) {
