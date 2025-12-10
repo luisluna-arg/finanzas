@@ -188,6 +188,14 @@ export default function Dashboard() {
   const CreditCardTableSettings = {
     columns: [
       {
+        id: 'timestamp',
+        label: 'Fecha',
+        mapper: (v: unknown) => {
+          const date = safeProp(v, 'timestamp') as string;
+          return date ? new Date(date).toLocaleDateString() : '';
+        },
+      },
+      {
         id: 'concept',
         label: 'Concepto',
       },
@@ -219,14 +227,6 @@ export default function Dashboard() {
           return acc;
         }
       ),
-      {
-        id: 'timestamp',
-        label: 'Fecha',
-        mapper: (v: unknown) => {
-          const date = safeProp(v, 'timestamp') as string;
-          return date ? new Date(date).toLocaleDateString() : '';
-        },
-      },
     ],
   };
 

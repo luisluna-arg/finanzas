@@ -1,7 +1,8 @@
 // Simple in-memory Redis mock for development. When REDIS_URL is set,
 // this module will use a real ioredis client instead.
 
-import Redis from "ioredis";
+import SafeLogger from '@/utils/SafeLogger';
+import Redis from 'ioredis';
 
 class MockRedis {
   private store = new Map<string, { value: string; expiry?: number }>();
@@ -23,10 +24,10 @@ class MockRedis {
     let expiry: number | undefined;
 
     // Handle EX (seconds) and PX (milliseconds) options
-    if (args.length >= 2 && args[0] === "EX") {
+    if (args.length >= 2 && args[0] === 'EX') {
       const seconds = Number(args[1]);
       if (Number.isFinite(seconds)) expiry = Date.now() + seconds * 1000;
-    } else if (args.length >= 2 && args[0] === "PX") {
+    } else if (args.length >= 2 && args[0] === 'PX') {
       const ms = Number(args[1]);
       if (Number.isFinite(ms)) expiry = Date.now() + ms;
     }
@@ -46,7 +47,7 @@ class MockRedis {
 let redisClient: Redis | MockRedis;
 
 if (process.env.REDIS_URL) {
-  console.log("Initializing Redis client with URL:", process.env.REDIS_URL);
+  SafeLogger.log('Initializing Redis client with URL:', process.env.REDIS_URL);
   const client = new Redis(process.env.REDIS_URL, {
     maxRetriesPerRequest: null,
     enableReadyCheck: true,
@@ -54,38 +55,38 @@ if (process.env.REDIS_URL) {
     retryStrategy: (times: number) => {
       // Only retry a few times, then give up
       if (times > 3) {
-        console.error("Redis max retries exceeded, giving up");
+        SafeLogger.error('Redis max retries exceeded, giving up');
         return null; // Stop retrying
       }
       const delay = Math.min(times * 1000, 3000);
-      console.log(`Redis retry attempt ${times}, waiting ${delay}ms`);
+      SafeLogger.log(`Redis retry attempt ${times}, waiting ${delay}ms`);
       return delay;
     },
   });
-  
-  client.on("error", (err) => {
-    console.error("Redis connection error:", err.message);
+
+  client.on('error', (err) => {
+    SafeLogger.error('Redis connection error:', err.message);
   });
-  
-  client.on("connect", () => {
-    console.log("Redis client connected successfully");
+
+  client.on('connect', () => {
+    SafeLogger.log('Redis client connected successfully');
   });
-  
-  client.on("ready", () => {
-    console.log("Redis client ready");
+
+  client.on('ready', () => {
+    SafeLogger.log('Redis client ready');
   });
-  
-  client.on("reconnecting", () => {
-    console.log("Redis client reconnecting...");
+
+  client.on('reconnecting', () => {
+    SafeLogger.log('Redis client reconnecting...');
   });
-  
-  client.on("close", () => {
-    console.log("Redis connection closed");
+
+  client.on('close', () => {
+    SafeLogger.log('Redis connection closed');
   });
-  
+
   redisClient = client;
 } else {
-  console.log("No REDIS_URL provided, using in-memory mock");
+  SafeLogger.log('No REDIS_URL provided, using in-memory mock');
   redisClient = new MockRedis();
 }
 
