@@ -67,7 +67,7 @@
       "name": "Remix App Launch",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/FinanceFrontEnd/FinanceRemix",
+      "cwd": "${workspaceFolder}/FinanceFrontEnd/FinanceApp",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run"
