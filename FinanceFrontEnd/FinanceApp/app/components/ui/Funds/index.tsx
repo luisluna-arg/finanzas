@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { useLoaderData } from "react-router";
 import dayjs from "dayjs";
 import urls from "@/utils/urls";
-import Picker from "@/components/ui/utils/Picker";
+import BankCurrencySelector from "@/components/ui/utils/BankCurrencySelector";
 import PaginatedTable, { Column } from "@/components/ui/utils/PaginatedTable";
 import { InputType } from "@/components/ui/utils/InputType";
 import { toNumber } from "@/utils/common";
+import { cn } from "@/lib/utils";
 
 // Define types for the props and states
 interface PickerData {
@@ -171,66 +172,20 @@ const Funds: React.FC = () => {
     }, [selectedBankId, selectedCurrencyId]);
 
     return (
-        <>
-            <div className="container pt-3 pb-3">
-                <div className="row">
-                    <div className="col-6">
-                        <Picker
-                            id={"bank-picker"}
-                            data={banks}
-                            mapper={{
-                                id: "id",
-                                label: (record: unknown) =>
-                                    `${(record as PickerData).name}`,
-                            }}
-                            onChange={onBankPickerChange}
-                            onFetch={({
-                                responseData,
-                            }: {
-                                responseData: unknown;
-                            }) => {
-                                if (
-                                    Array.isArray(responseData) &&
-                                    responseData.length > 0
-                                ) {
-                                    const first = responseData[0] as PickerData;
-                                    setSelectedBankId(first.id);
-                                }
-                            }}
-                        />
-                    </div>
-                    <div className="col-6">
-                        <Picker
-                            id={"currency-picker"}
-                            data={currencies}
-                            mapper={{
-                                id: "id",
-                                label: (record: unknown) =>
-                                    `${(record as PickerData).name}`,
-                            }}
-                            onChange={onCurrencyPickerChange}
-                            onFetch={({
-                                responseData,
-                            }: {
-                                responseData: unknown;
-                            }) => {
-                                if (
-                                    Array.isArray(responseData) &&
-                                    responseData.length > 0
-                                ) {
-                                    const first = responseData[0] as PickerData;
-                                    setSelectedCurrencyId(first.id);
-                                }
-                            }}
-                        />
-                    </div>
-                </div>
-                <hr className="py-1" />
-                {(!fundsEndpoint || fundsEndpoint.trim() === "") && (
-                    <div className={"container centered"}>Cargando datos</div>
-                )}
-                {fundsEndpoint && (
-                    <PaginatedTable
+        <div className={cn(["py-10", "px-40"])}>
+            <BankCurrencySelector
+                banks={banks}
+                currencies={currencies}
+                bankId={selectedBankId}
+                currencyId={selectedCurrencyId}
+                onBankChange={onBankPickerChange}
+                onCurrencyChange={onCurrencyPickerChange}
+            />
+            {(!fundsEndpoint || fundsEndpoint.trim() === "") && (
+                <div className="text-center">Cargando datos</div>
+            )}
+            {fundsEndpoint && (
+                <PaginatedTable
                         name={"funds-table"}
                         url={fundsEndpoint}
                         reloadData={reloadTable}
@@ -250,8 +205,7 @@ const Funds: React.FC = () => {
                         }}
                     />
                 )}
-            </div>
-        </>
+        </div>
     );
 };
 
