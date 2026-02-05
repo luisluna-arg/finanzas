@@ -2,7 +2,7 @@ import React from "react";
 import urls from "@/utils/urls";
 import dayjs from "dayjs";
 import CommonUtils from "@/utils/common";
-import Picker from "@/components/ui/utils/Picker";
+import BankCurrencySelector from "@/components/ui/utils/BankCurrencySelector";
 import { useLoaderData, useLocation, useNavigate } from "react-router";
 import { InputType } from "@/components/ui/utils/InputType";
 import PaginatedTable, {
@@ -144,33 +144,14 @@ const Incomes: React.FC = () => {
 
     return (
         <div className={cn(["py-10", "px-40"])}>
-            <div className="flex flex-row justify-center gap-10">
-                <Picker
-                    id="bank-picker"
-                    value={bankId}
-                    data={banks}
-                    mapper={{
-                        id: "id",
-                        label: (record: unknown) =>
-                            `${(record as PickerData).name}`,
-                    }}
-                    onChange={onBankPickerChange}
-                    className={"w-60"}
-                />
-                <Picker
-                    id="currency-picker"
-                    value={currencyId}
-                    data={currencies}
-                    mapper={{
-                        id: "id",
-                        label: (record: unknown) =>
-                            `${(record as PickerData).name}`,
-                    }}
-                    onChange={onCurrencyPickerChange}
-                    className={"w-60"}
-                />
-            </div>
-            <hr className={cn("py-1", "mb-5")} />
+            <BankCurrencySelector
+                banks={banks}
+                currencies={currencies}
+                bankId={bankId}
+                currencyId={currencyId}
+                onBankChange={onBankPickerChange}
+                onCurrencyChange={onCurrencyPickerChange}
+            />
             <PaginatedTable
                 name="incomes-table"
                 columns={TableColumns}
