@@ -193,6 +193,10 @@ export async function requireAuth(request: Request) {
   // Check if token is expired (or about to expire within 60s) and try to refresh
   if (isTokenExpired(accessToken)) {
     SafeLogger.info('[requireAuth] Access token expired or about to expire, attempting refresh...');
+    if (!user.serverSessionId) {
+      await destroyUserSession(request);
+      throw redirect('/auth/login');
+    }
     const refreshResult = await refreshSessionTokens(user.serverSessionId);
     if (refreshResult) {
       accessToken = refreshResult.accessToken;
