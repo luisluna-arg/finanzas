@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/shadcn/label';
 import { Separator } from '@/components/ui/shadcn/separator';
 import { cn } from '@/lib/utils';
 import { toNumber, ValueLike } from '@/utils/common';
+import SafeLogger from '@/utils/SafeLogger';
 import {
   Modal,
   ModalHeader,
@@ -313,7 +314,7 @@ function CreditCardDetail({
       setStatements(items);
       setStatementIndex(0);
     } catch (error) {
-      console.error('Error fetching statements:', error);
+      SafeLogger.error('Error fetching statements:', error);
     }
   }, [card.id]);
 
@@ -357,7 +358,7 @@ function CreditCardDetail({
         : (data.items ?? []);
       setTransactions(items);
     } catch (error) {
-      console.error('Error fetching transactions:', error);
+      SafeLogger.error('Error fetching transactions:', error);
       setTransactions([]);
     } finally {
       setLoading(false);
