@@ -2,6 +2,7 @@ import React from "react";
 import { InputType } from "@/components/ui/utils/InputType";
 import Picker, { MapperType } from "@/components/ui/utils/Picker";
 import { Input } from "@/components/ui/shadcn/input";
+import { Checkbox } from "@/components/ui/utils/Checkbox";
 
 export interface Settings {
     id?: string;
@@ -78,16 +79,12 @@ const BooleanInputControl: React.FC<InputControlProps> = ({
     settings,
     value,
 }) => (
-    <div className="mb-2 text-white">
-        <Input
+    <div className="mb-2">
+        <Checkbox
             id={settings.id}
-            className={classesToString([
-                "form-check-input",
-                settings.visible ? "visible" : "invisible",
-            ])}
-            type="checkbox"
-            defaultChecked={Boolean(value)}
-            style={settings.style}
+            className={settings.visible ? "visible" : "invisible"}
+            checked={Boolean(value)}
+            disabled={false}
         />
     </div>
 );
