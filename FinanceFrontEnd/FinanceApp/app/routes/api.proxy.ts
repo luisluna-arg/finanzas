@@ -2,6 +2,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { getUserAndTokens } from '@/services/auth/session.server';
 import { HttpStatusConstants } from '@/services/auth/auth.constants';
 import { JsonErrorResponse } from '@/utils/JsonResponse';
+import { refreshSessionTokens, isTokenExpired } from '@/services/auth/tokenRefresh.server';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -51,11 +52,19 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     throw JsonErrorResponse('Not authenticated', HttpStatusConstants.UNAUTHORIZED);
   }
 
-  const { tokens } = result;
-  const accessToken = tokens.accessToken;
+  const { user, tokens } = result;
+  let accessToken = tokens.accessToken as string | undefined;
 
-  if (!accessToken) {
-    throw JsonErrorResponse('Not authenticated', HttpStatusConstants.UNAUTHORIZED);
+  // If the access token is missing or expired, try to refresh it
+  if (!accessToken || isTokenExpired(accessToken)) {
+    const refreshResult = user.serverSessionId
+      ? await refreshSessionTokens(user.serverSessionId)
+      : null;
+    if (refreshResult) {
+      accessToken = refreshResult.accessToken;
+    } else {
+      throw JsonErrorResponse('Not authenticated', HttpStatusConstants.UNAUTHORIZED);
+    }
   }
 
   try {
@@ -139,11 +148,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     throw JsonErrorResponse('Not authenticated', HttpStatusConstants.UNAUTHORIZED);
   }
 
-  const { tokens } = result;
-  const accessToken = tokens.accessToken;
+  const { user, tokens } = result;
+  let accessToken = tokens.accessToken as string | undefined;
 
-  if (!accessToken) {
-    throw JsonErrorResponse('Not authenticated', HttpStatusConstants.UNAUTHORIZED);
+  // If the access token is missing or expired, try to refresh it
+  if (!accessToken || isTokenExpired(accessToken)) {
+    const refreshResult = user.serverSessionId
+      ? await refreshSessionTokens(user.serverSessionId)
+      : null;
+    if (refreshResult) {
+      accessToken = refreshResult.accessToken;
+    } else {
+      throw JsonErrorResponse('Not authenticated', HttpStatusConstants.UNAUTHORIZED);
+    }
   }
 
   try {

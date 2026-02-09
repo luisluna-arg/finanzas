@@ -25,7 +25,7 @@ const AuthConstants = {
     REDIRECT_URI:
         `${BASE_URL}/auth/callback` || `http://localhost:${PORT}/auth/callback`,
     RETURN_TO_URL: BASE_URL || `http://localhost:${PORT}`,
-    SCOPES: AUTH0_SCOPES?.split(",") ?? ["openid", "email", "profile"],
+    SCOPES: AUTH0_SCOPES?.split(",") ?? ["openid", "email", "profile", "offline_access"],
 };
 
 const SessionContants = {

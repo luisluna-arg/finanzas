@@ -4,6 +4,7 @@ import { verifyIdToken } from './auth.server';
 import type { SessionUser } from './types/SessionUser';
 import SafeLogger from '@/utils/SafeLogger';
 import { sessionLogger } from '@/middleware/logger.server';
+import { refreshSessionTokens, isTokenExpired } from './tokenRefresh.server';
 
 // User session storage (different from auth flow)
 const userSessionStorage = createCookieSessionStorage({
@@ -171,56 +172,47 @@ export async function requireAuth(request: Request) {
     tokens: Tokens;
   };
 
-  // Validate that access token exists and is not expired
-  const accessToken = tokens.accessToken as string;
+  // Validate that access token exists
+  let accessToken = tokens.accessToken as string;
   if (!accessToken) {
-    // No access token, clear session and redirect to login
-    await destroyUserSession(request);
-    throw redirect('/auth/login');
-  }
-
-  // Check if token is expired by decoding the JWT payload
-  try {
-    const tokenParts = accessToken.split('.');
-    if (tokenParts.length !== 3) {
-      throw new Error('Invalid JWT format');
-    }
-
-    const payload = JSON.parse(atob(tokenParts[1]));
-    const now = Math.floor(Date.now() / 1000); // Current time in seconds
-
-    if (payload.exp && payload.exp < now) {
-      // Token is expired, clear session and redirect to login
-      SafeLogger.info(
-        `[requireAuth] Token expired at ${new Date(
-          payload.exp * 1000
-        )}, current time: ${new Date()}`
-      );
+    // No access token — try to refresh if we have a refresh token
+    if (user.serverSessionId) {
+      const refreshResult = await refreshSessionTokens(user.serverSessionId);
+      if (refreshResult) {
+        accessToken = refreshResult.accessToken;
+      } else {
+        await destroyUserSession(request);
+        throw redirect('/auth/login');
+      }
+    } else {
       await destroyUserSession(request);
       throw redirect('/auth/login');
     }
-  } catch (tokenError) {
-    SafeLogger.error('[requireAuth] Token validation failed:', tokenError);
-    await destroyUserSession(request);
-    throw redirect('/auth/login');
   }
 
-  // Avoid printing full tokens to logs. Use a safe logger and only print a short preview.
-  try {
-    const { default: SafeLogger } = await import('@/utils/SafeLogger');
-    const tokenInfo = tokens as { accessToken?: string };
-    SafeLogger.info(
-      '[requireAuth] Access token preview:',
-      tokenInfo.accessToken ? `${tokenInfo.accessToken.substring(0, 10)}...` : null
-    );
-    SafeLogger.info('[requireAuth] Access token length:', tokenInfo.accessToken?.length);
-  } catch (e) {
-    // If logger import fails for any reason, don't block authentication flow.
+  // Check if token is expired (or about to expire within 60s) and try to refresh
+  if (isTokenExpired(accessToken)) {
+    SafeLogger.info('[requireAuth] Access token expired or about to expire, attempting refresh...');
+    if (!user.serverSessionId) {
+      await destroyUserSession(request);
+      throw redirect('/auth/login');
+    }
+    const refreshResult = await refreshSessionTokens(user.serverSessionId);
+    if (refreshResult) {
+      accessToken = refreshResult.accessToken;
+      if (refreshResult.refreshed) {
+        SafeLogger.info('[requireAuth] Token refreshed successfully');
+      }
+    } else {
+      SafeLogger.info('[requireAuth] Token refresh failed, redirecting to login');
+      await destroyUserSession(request);
+      throw redirect('/auth/login');
+    }
   }
 
   return {
     ...user,
-    accessToken: tokens.accessToken as unknown as string | undefined,
+    accessToken,
     refreshToken: tokens.refreshToken as unknown as string | undefined,
   };
 }
