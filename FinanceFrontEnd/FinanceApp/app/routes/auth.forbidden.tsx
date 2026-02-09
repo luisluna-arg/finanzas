@@ -5,6 +5,15 @@ export const loader: LoaderFunction = async () => {
     return { status: HttpStatusConstants.FORBIDDEN };
 };
 
+export const meta = () => {
+    return [
+        {
+            title: 'Acceso Denegado',
+            description: 'You do not have permission to access this resource',
+        },
+    ];
+};
+
 export default function ForbiddenPage() {
     return (
         <div
