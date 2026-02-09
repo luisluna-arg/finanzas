@@ -39,8 +39,6 @@ const formatMoney = (value: unknown) => {
   return toNumber(value as ValueLike, 0).toFixed(2);
 };
 
-// ─── Credit Card List ────────────────────────────────────────────────
-
 function CreditCardList({
   creditCards,
   onSelectCard,
@@ -87,8 +85,6 @@ function CreditCardList({
     </>
   );
 }
-
-// ─── Statement Picker ────────────────────────────────────────────────
 
 function StatementPicker({
   statements,
@@ -138,8 +134,6 @@ function StatementPicker({
     </div>
   );
 }
-
-// ─── Transactions Table ──────────────────────────────────────────────
 
 function TransactionsTable({
   transactions,
@@ -193,8 +187,6 @@ function TransactionsTable({
     </Table>
   );
 }
-
-// ─── Create Statement Modal ──────────────────────────────────────────
 
 function CreateStatementModal({
   show,
@@ -289,8 +281,6 @@ function CreateStatementModal({
   );
 }
 
-// ─── Credit Card Detail ──────────────────────────────────────────────
-
 function CreditCardDetail({
   card,
   onBack,
@@ -304,7 +294,6 @@ function CreditCardDetail({
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Fetch statements
   const fetchStatements = useCallback(async () => {
     try {
       const res = await fetch(
@@ -332,7 +321,6 @@ function CreditCardDetail({
     fetchStatements();
   }, [fetchStatements]);
 
-  // Fetch transactions when statement changes
   const fetchTransactions = useCallback(async () => {
     if (statements.length === 0) return;
 
@@ -341,14 +329,12 @@ function CreditCardDetail({
       let url: string;
 
       if (statementIndex === 0) {
-        // Latest statement — use the proven latest endpoint
         url = urls.proxy(urls.creditCardMovements.latest, {
           CreditCardId: card.id,
           Page: 1,
           PageSize: 200,
         });
       } else {
-        // Older statement — fetch by date range
         const currentStatement = statements[statementIndex];
         const prevStatement = statements[statementIndex + 1];
         const params: Record<string, unknown> = {
@@ -437,8 +423,6 @@ function CreditCardDetail({
     </>
   );
 }
-
-// ─── Main Component ──────────────────────────────────────────────────
 
 function CreditCards() {
   const { creditCards } = useLoaderData<CreditCardsData>();
