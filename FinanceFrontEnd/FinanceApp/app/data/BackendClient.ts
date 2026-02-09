@@ -3,6 +3,7 @@ import { Agent } from "https";
 import serverLogger from "@/utils/logger.server";
 import { BanksQuery } from "./queries/BanksQuery";
 import { CreditCardQuery } from "./queries/CreditCardQuery";
+import { CreditCardStatementQuery } from "./queries/CreditCardStatementQuery";
 import { CurrenciesQuery } from "./queries/CurrenciesQuery";
 import { FrequenciesQuery } from "./queries/FrequenciesQuery";
 import { CurrencyExchangeRatesQuery } from "./queries/CurrencyExchangeRatesQuery";
@@ -21,6 +22,7 @@ export class BackendClient {
     private PaginatedDebitsQuery: PaginatedDebitsQuery;
     private PaginatedSubscriptionsQuery: PaginatedSubscriptionsQuery;
     private CreditCardsQuery: CreditCardQuery;
+    private CreditCardStatementsQuery: CreditCardStatementQuery;
     private CurrenciesQuery: CurrenciesQuery;
     private FrequenciesQuery: FrequenciesQuery;
     private CurrencyExchangeRatesQuery: CurrencyExchangeRatesQuery;
@@ -40,6 +42,10 @@ export class BackendClient {
             this.AccessToken
         );
         this.CreditCardsQuery = new CreditCardQuery(
+            httpsAgent,
+            this.AccessToken
+        );
+        this.CreditCardStatementsQuery = new CreditCardStatementQuery(
             httpsAgent,
             this.AccessToken
         );
@@ -64,6 +70,7 @@ export class BackendClient {
     public GetPaginatedSubscriptionsQuery = (): PaginatedSubscriptionsQuery =>
         this.PaginatedSubscriptionsQuery;
     public GetCreditCardsQuery = (): CreditCardQuery => this.CreditCardsQuery;
+    public GetCreditCardStatementsQuery = (): CreditCardStatementQuery => this.CreditCardStatementsQuery;
     public GetCurrenciesQuery = (): CurrenciesQuery => this.CurrenciesQuery;
     public GetFrequenciesQuery = (): FrequenciesQuery => this.FrequenciesQuery;
     public GetCurrencyExchangeRatesQuery = (): CurrencyExchangeRatesQuery =>

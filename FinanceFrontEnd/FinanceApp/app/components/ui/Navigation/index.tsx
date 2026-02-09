@@ -51,11 +51,11 @@ export default function Navigation() {
             <NavLink text="Ingresos" link="/incomes" />
             <NavLink text="Fondos" link="/funds" />
             <NavLink text="Suscripciones" link="/subscriptions" />
-            <NavLink text="Débitos" link="/debits" />
-            <NavLink text="Movimientos" link="/movements" />
+            {/* <NavLink text="Débitos" link="/debits" /> */}
+            {/* <NavLink text="Movimientos" link="/movements" /> */}
             <NavLink
                 text="Tarjetas de crédito"
-                link="/credit-cards-movements"
+                link="/credit-cards"
             />
             <NavLink
                 text="Cotizaciones"
