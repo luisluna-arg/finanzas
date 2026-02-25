@@ -31,3 +31,6 @@ secrets.local.env
 **/dataprotection/key-*.xml
 
 !.bin
+
+*.log
+**/*.log
