@@ -1,6 +1,6 @@
 # PowerShell script to stop finance services
-$financesCompose = Join-Path $PSScriptRoot "..\.infra\local\finances\docker-compose.yaml"
-$sharedCompose = Join-Path $PSScriptRoot "..\.infra\local\shared\docker-compose.yaml"
+$financesCompose = Join-Path $PSScriptRoot "..\..\.infra\local\finances\docker-compose.yaml"
+$sharedCompose = Join-Path $PSScriptRoot "..\..\.infra\local\shared\docker-compose.yaml"
 
 # Get project names from .env files or use defaults
 $financesEnv = Join-Path (Split-Path -Parent $financesCompose) '.env'

@@ -5,8 +5,8 @@ if (-not $dockerProcess) {
     exit 1
 }
 
-$financesCompose = Join-Path $PSScriptRoot "..\.infra\local\finances\docker-compose.yaml"
-$sharedCompose = Join-Path $PSScriptRoot "..\.infra\local\shared\docker-compose.yaml"
+$financesCompose = Join-Path $PSScriptRoot "..\..\.infra\local\finances\docker-compose.yaml"
+$sharedCompose = Join-Path $PSScriptRoot "..\..\.infra\local\shared\docker-compose.yaml"
 
 Write-Host "Checking compose files:"
 Write-Host "  Finances: $financesCompose"
