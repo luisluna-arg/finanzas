@@ -13,4 +13,18 @@ export default defineConfig({
       '@': path.resolve(__dirname, './app'),
     },
   },
+  optimizeDeps: {
+    // Force Vite to pre-bundle these CJS packages so named exports resolve in the browser
+    include: [
+      '@opentelemetry/resources',
+      '@opentelemetry/sdk-trace-web',
+      '@opentelemetry/sdk-trace-base',
+      '@opentelemetry/exporter-trace-otlp-http',
+      '@opentelemetry/instrumentation-fetch',
+      '@opentelemetry/instrumentation-document-load',
+      '@opentelemetry/instrumentation',
+      '@opentelemetry/semantic-conventions',
+      '@opentelemetry/api',
+    ],
+  },
 });

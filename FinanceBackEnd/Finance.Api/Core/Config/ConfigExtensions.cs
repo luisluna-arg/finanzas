@@ -9,6 +9,7 @@ using Finance.Application.Repositories;
 using Finance.Domain.DataConverters;
 using Finance.Domain.JsonConverters;
 using Finance.Persistence;
+using Finance.Persistence.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -60,8 +61,9 @@ public static class ConfigExtensions
         // Configure Admin User options
         services.Configure<Authentication.Options.AdminUserOptions>(builder.Configuration.GetSection(Authentication.Options.AdminUserOptions.SectionName));
 
-        // Add Context to dependency injection
-        services.AddDbContext<FinanceDbContext>(opt =>
+        // Add Context to dependency injection. Use overload that exposes the service provider
+        // so we can attach registered interceptors (e.g. DbTelemetryInterceptor).
+        services.AddDbContext<FinanceDbContext>((serviceProvider, opt) =>
         {
             opt.UseLazyLoadingProxies(false);
             opt.UseNpgsql(
@@ -70,6 +72,13 @@ public static class ConfigExtensions
                 {
                     npgsqlOptions.CommandTimeout(120);
                 });
+
+            // Attach the DB telemetry interceptor if it is registered in DI
+            var interceptor = serviceProvider.GetService<DbTelemetryInterceptor>();
+            if (interceptor is not null)
+            {
+                opt.AddInterceptors(interceptor);
+            }
         });
         services.AddDatabaseDeveloperPageExceptionFilter();
 
