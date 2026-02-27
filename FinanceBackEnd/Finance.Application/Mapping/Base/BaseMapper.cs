@@ -1,10 +1,17 @@
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace Finance.Application.Mapping.Base;
 
 public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
     where TTarget : class, new()
 {
+    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertyCache = new();
+
+    private static PropertyInfo[] GetCachedProperties(Type type)
+        => _propertyCache.GetOrAdd(type, t => t.GetProperties());
+
     protected IMappingService MappingService { get; private set; }
 
     protected BaseMapper(IMappingService mappingService)
@@ -68,8 +75,8 @@ public abstract class BaseMapper<TSource, TTarget> : IMapper<TSource, TTarget>
 
     protected virtual void MapCommonProperties(TSource source, TTarget target)
     {
-        var sourceProperties = typeof(TSource).GetProperties();
-        var targetProperties = typeof(TTarget).GetProperties();
+        var sourceProperties = GetCachedProperties(typeof(TSource));
+        var targetProperties = GetCachedProperties(typeof(TTarget));
 
         foreach (var sourceProperty in sourceProperties)
         {
