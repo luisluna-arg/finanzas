@@ -21,15 +21,15 @@ public sealed partial class FundPermissionsOrchestrator : BaseResourcePermission
         var createFundPermissionsCommand = new CreateFundPermissionsCommand
         {
             ResourceId = request.Id,
-            UserId = request.UserId!.Value,
+            UserId = request.UserId,
             PermissionLevels = [PermissionLevelEnum.Owner]
         };
-        var FundPermissionsResult = await Dispatcher.DispatchAsync(createFundPermissionsCommand);
-        if (!FundPermissionsResult.IsSuccess || FundPermissionsResult.Data == null)
+        var fundPermissionsResult = await Dispatcher.DispatchAsync(createFundPermissionsCommand, httpRequest);
+        if (!fundPermissionsResult.IsSuccess || fundPermissionsResult.Data == null)
         {
-            throw new Exception(FundPermissionsResult.ErrorMessage);
+            throw new Exception(fundPermissionsResult.ErrorMessage);
         }
 
-        return DataResult<FundPermissions>.Success(FundPermissionsResult.Data);
+        return DataResult<FundPermissions>.Success(fundPermissionsResult.Data);
     }
 }

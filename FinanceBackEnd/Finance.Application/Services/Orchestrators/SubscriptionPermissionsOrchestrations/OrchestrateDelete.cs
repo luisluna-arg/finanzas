@@ -14,7 +14,7 @@ public sealed partial class SubscriptionPermissionsOrchestrator : BaseResourcePe
         {
             EntityId = request.Id
         };
-        var createResourceResult = await Dispatcher.DispatchAsync(deleteSubscriptionOwnerCommand);
+        var createResourceResult = await Dispatcher.DispatchAsync(deleteSubscriptionOwnerCommand, httpRequest);
 
         if (!createResourceResult.IsSuccess)
         {

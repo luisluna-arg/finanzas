@@ -14,7 +14,7 @@ public sealed partial class FundPermissionsOrchestrator : BaseResourcePermission
         {
             EntityId = request.Id
         };
-        var createResourceResult = await Dispatcher.DispatchAsync(deleteFundOwnerCommand);
+        var createResourceResult = await Dispatcher.DispatchAsync(deleteFundOwnerCommand, httpRequest);
 
         if (!createResourceResult.IsSuccess)
         {
