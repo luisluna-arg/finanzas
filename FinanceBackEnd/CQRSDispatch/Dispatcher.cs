@@ -1,4 +1,5 @@
 using CQRSDispatch.Interfaces;
+using CQRSDispatch.Telemetry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,11 @@ namespace CQRSDispatch;
 public class Dispatcher<TContext> : IDispatcher<TContext>
     where TContext : DispatchContext, new()
 {
+    /// <summary>
+    /// Activity source that emits one span per dispatched command/query.
+    /// </summary>
+    public static readonly TaggedActivitySource DispatchActivity = new("Finance.Api.Dispatcher");
+
     protected readonly ILogger<Dispatcher<TContext>> Logger;
     protected readonly IServiceProvider ServiceProvider;
     protected readonly IDispatchContextBuilderAsync<TContext> ExecutionContextBuilder;
@@ -64,6 +70,9 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
         try
         {
             var commandType = command.GetType();
+
+            using var activity = DispatchActivity.StartActivity(commandType.Name, "dispatch.type", "command");
+
             var handlerType = typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(TResult));
             var handler = ServiceProvider.GetRequiredService(handlerType);
 
@@ -114,6 +123,9 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
         try
         {
             var commandType = command.GetType();
+
+            using var activity = DispatchActivity.StartActivity(commandType.Name, "dispatch.type", "command");
+
             var handlerType = typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(CommandResult));
             var handler = ServiceProvider.GetRequiredService(handlerType);
 
@@ -165,6 +177,8 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
         var cancellationToken = CreateCancellationToken();
         try
         {
+            using var activity = DispatchActivity.StartActivity(query.GetType().Name, "dispatch.type", "query");
+
             var handler = FindQueryHandlerInHierarchy<TResult>(query, ServiceProvider);
             var executeMethod = handler.GetType().GetMethod("ExecuteAsync")
                 ?? throw new InvalidOperationException($"ExecuteAsync method not found on handler type {handler.GetType().Name}");

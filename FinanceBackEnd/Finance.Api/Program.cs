@@ -1,5 +1,9 @@
 using Finance.Api.Core.Config;
+using Finance.Application.Telemetry;
 using Finance.Authentication.Extensions;
+using OpenTelemetry.Trace;
+
+var builder = WebApplication.CreateBuilder(args);
 
 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 var isDevelopment = string.Equals(env, "Development", StringComparison.OrdinalIgnoreCase);
@@ -8,7 +12,8 @@ if (isDevelopment)
     DotNetEnv.Env.LoadMulti([".env.local"]);
 }
 
-var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddTelemetry(builder.Configuration, tracing =>
+    tracing.AddAspNetCoreInstrumentation());
 
 // Ensure environment variables are available to configuration
 builder.Configuration.AddEnvironmentVariables();
