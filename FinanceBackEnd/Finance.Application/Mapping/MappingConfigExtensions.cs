@@ -6,6 +6,6 @@ public static class MappingConfigExtensions
 {
     public static void AddMappers(this IServiceCollection services)
     {
-        services.AddScoped<IMappingService, MappingService>();
+        services.AddSingleton<IMappingService, MappingService>();
     }
 }
