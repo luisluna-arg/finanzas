@@ -237,7 +237,22 @@ export default function Dashboard() {
         <section id="expenses-actions">
           <div className="container-fluid mt-4 ml-4 mr-4">
             <div className="grid grid-cols-3 gap-4">
-              <div className="column flex-wrap">
+              <div id="investments-section" className="column flex-wrap justify-content-center">
+                {urls.summary.currentInvestments && (
+                  <FetchTable
+                    name={`Investments`}
+                    title={{
+                      text: `Inversiones`,
+                      class: `text-center medium bg-purple-500 text-white`,
+                    }}
+                    url={urls.summary.currentInvestments}
+                    columns={InvestmentsTableSettings.columns as unknown as unknown[]}
+                    classes={tableClasses}
+                  />
+                )}
+                {!urls.summary.currentFunds && <div>AASAS</div>}
+              </div>
+              <div id="summary-section" className="column flex-wrap">
                 {urls.summary.general && (
                   <div className={tableContainer}>
                     <FetchTable
@@ -246,7 +261,7 @@ export default function Dashboard() {
                         text: `Resúmen`,
                         class: `text-center bg-blue-500 text-white`,
                       }}
-                      url={urls.proxy(urls.summary.general, { DailyUse: true })}
+                      url={urls.summary.general.with({ DailyUse: true })}
                       columns={SummaryTableSettings.columns}
                       classes={tableClasses}
                       showTotals={false}
@@ -261,7 +276,7 @@ export default function Dashboard() {
                         text: `Gastos`,
                         class: `text-center bg-red-500 text-white`,
                       }}
-                      url={urls.proxy(urls.summary.totalExpenses)}
+                      url={urls.summary.totalExpenses}
                       columns={ExpensesTableSettings.columns}
                       classes={tableClasses}
                     />
@@ -275,7 +290,7 @@ export default function Dashboard() {
                         text: `Conversiones de moneda`,
                         class: `text-center bg-sky-500 text-white`,
                       }}
-                      url={urls.proxy(urls.currencyExchangeRates.latest)}
+                      url={urls.currencyExchangeRates.latest}
                       columns={CurrencyExchangeRatesTableSettings.columns}
                       classes={tableClasses}
                       showTotals={false}
@@ -290,7 +305,7 @@ export default function Dashboard() {
                         text: `Fondos`,
                         class: `text-center bg-indigo-500 text-white`,
                       }}
-                      url={urls.proxy(urls.summary.currentFunds, { DailyUse: true })}
+                      url={urls.summary.currentFunds.with({ DailyUse: true })}
                       columns={FundsTableSettings.columns}
                       classes={tableClasses}
                     />
@@ -304,7 +319,7 @@ export default function Dashboard() {
                         text: `Otros Fondos`,
                         class: `text-center bg-indigo-500 text-white`,
                       }}
-                      url={urls.proxy(urls.summary.currentFunds, { DailyUse: false })}
+                      url={urls.summary.currentFunds.with({ DailyUse: false })}
                       columns={FundsTableSettings.columns}
                       classes={tableClasses}
                     />
@@ -314,7 +329,7 @@ export default function Dashboard() {
                   <div className={tableContainer}>
                     {urls.debits.monthly.latest &&
                       debitModules.map((appModuleId) => {
-                        const url = urls.proxy(urls.debits.monthly.latest, {
+                        const url = urls.debits.monthly.latest.with({
                           AppModuleId: appModuleId,
                           IncludeDeactivated: false,
                         });
@@ -343,7 +358,7 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
-              <div className="justify-content-center">
+              <div id="credit-cards-section" className="justify-content-center">
                 {creditCards &&
                   creditCards.map((c: unknown, _index: number) => {
                     const data = c as {
@@ -351,7 +366,7 @@ export default function Dashboard() {
                       name?: string;
                       bank?: { name?: string };
                     };
-                    const url = urls.proxy(urls.creditCardMovements.latest, {
+                    const url = urls.creditCardMovements.latest.with({
                       CreditCardId: data.id,
                       Page: 1,
                       PageSize: 10,
@@ -379,21 +394,6 @@ export default function Dashboard() {
                       />
                     );
                   })}
-              </div>
-              <div className="column flex-wrap justify-content-center">
-                {urls.summary.currentInvestments && (
-                  <FetchTable
-                    name={`Investments`}
-                    title={{
-                      text: `Inversiones`,
-                      class: `text-center medium bg-purple-500 text-white`,
-                    }}
-                    url={urls.proxy(urls.summary.currentInvestments)}
-                    columns={InvestmentsTableSettings.columns as unknown as unknown[]}
-                    classes={tableClasses}
-                  />
-                )}
-                {!urls.summary.currentFunds && <div>AASAS</div>}
               </div>
             </div>
           </div>

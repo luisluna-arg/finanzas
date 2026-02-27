@@ -142,7 +142,7 @@ function CreateStatementModal({
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch(urls.proxy(urls.creditCardStatements.endpoint), {
+      const res = await fetch(String(urls.creditCardStatements.endpoint), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -226,9 +226,11 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
   const fetchStatements = useCallback(async () => {
     try {
       const res = await fetch(
-        urls.proxy(urls.creditCardStatements.endpoint, {
-          CreditCardId: card.id,
-        })
+        String(
+          urls.creditCardStatements.endpoint.with({
+            CreditCardId: card.id,
+          })
+        )
       );
       const data = await res.json();
       const items: CreditCardStatement[] = Array.isArray(data) ? data : (data.items ?? []);
@@ -249,10 +251,10 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
 
     setLoading(true);
     try {
-      let url: string;
+      let url: ReturnType<typeof urls.creditCardMovements.latest.with>;
 
       if (statementIndex === 0) {
-        url = urls.proxy(urls.creditCardMovements.latest, {
+        url = urls.creditCardMovements.latest.with({
           CreditCardId: card.id,
           Page: 1,
           PageSize: 200,
@@ -267,10 +269,10 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
         if (prevStatement) {
           params.From = prevStatement.closureDate;
         }
-        url = urls.proxy(urls.creditCardTransactions.endpoint + '/all', params);
+        url = urls.creditCardTransactions.endpoint.append('/all').with(params);
       }
 
-      const res = await fetch(url);
+      const res = await fetch(String(url));
       const data = await res.json();
       const items: CreditCardTransaction[] = Array.isArray(data) ? data : (data.items ?? []);
       setTransactions(items);

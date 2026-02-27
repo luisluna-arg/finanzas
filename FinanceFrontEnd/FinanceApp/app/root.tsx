@@ -52,14 +52,17 @@ export const loader: LoaderFunction = async ({ request }) => {
   };
 };
 
-type RootLoaderData = { isAuthenticated: boolean; otel: { enabled: boolean; httpEndpoint: string } };
+type RootLoaderData = {
+  isAuthenticated: boolean;
+  otel: { enabled: boolean; httpEndpoint: string };
+};
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useRouteLoaderData<RootLoaderData>('root');
   const otel = data?.otel ?? { enabled: false, httpEndpoint: 'http://localhost:4318' };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -124,7 +127,7 @@ export function ErrorBoundary() {
         <head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>{(`${error.status ?? ''} ${error.statusText ?? ''}`).trim()}</title>
+          <title>{`${error.status ?? ''} ${error.statusText ?? ''}`.trim()}</title>
           <Meta />
           <Links />
         </head>
