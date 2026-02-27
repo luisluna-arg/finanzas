@@ -1,6 +1,7 @@
 // Load all OTel packages via createRequire so Vite never tries to bundle them.
 // These are CJS-only packages (sdk-node, exporter) that break under Vite's ESM bundler.
 import { createRequire } from 'module';
+import SafeLogger from '@/utils/SafeLogger';
 
 const require = createRequire(import.meta.url);
 const enabled = process.env.OTEL_ENABLED === 'true';
@@ -39,5 +40,5 @@ if (enabled) {
 
   sdk.start();
 
-  process.on('SIGTERM', () => sdk.shutdown().catch(console.error));
+  process.on('SIGTERM', () => sdk.shutdown().catch(SafeLogger.error));
 }
