@@ -4,6 +4,9 @@
  * For more information, see https://remix.run/file-conventions/entry.server
  */
 
+// Initialize server-side OpenTelemetry before any other imports
+import '@/telemetry/tracing.server';
+
 import { PassThrough } from 'node:stream';
 
 import type { AppLoadContext, EntryContext } from 'react-router';

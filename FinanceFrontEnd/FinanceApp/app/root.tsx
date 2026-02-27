@@ -8,6 +8,7 @@ import {
   useRouteError,
   useLocation,
   useLoaderData,
+  useRouteLoaderData,
   LinksFunction,
   redirect,
   LoaderFunction,
@@ -42,10 +43,21 @@ export const loader: LoaderFunction = async ({ request }) => {
   const { getUserFromSession } = await import('@/services/auth/session.server');
   const user = await getUserFromSession(request);
 
-  return { isAuthenticated: !!user };
+  return {
+    isAuthenticated: !!user,
+    otel: {
+      enabled: process.env.OTEL_ENABLED === 'true',
+      httpEndpoint: process.env.OTEL_OTLP_HTTP_ENDPOINT ?? 'http://localhost:4318',
+    },
+  };
 };
 
+type RootLoaderData = { isAuthenticated: boolean; otel: { enabled: boolean; httpEndpoint: string } };
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const data = useRouteLoaderData<RootLoaderData>('root');
+  const otel = data?.otel ?? { enabled: false, httpEndpoint: 'http://localhost:4318' };
+
   return (
     <html lang="en">
       <head>
@@ -63,6 +75,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                                 }
                             })();
                         `,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__OTEL=${JSON.stringify(otel)}`,
           }}
         />
       </head>
