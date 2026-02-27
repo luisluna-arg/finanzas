@@ -36,7 +36,7 @@ public sealed partial class CurrencyExchangeRateOrchestrator
             ResourceId = request.Id,
             PermissionLevels = [PermissionLevelEnum.Owner]
         };
-        var permissionsResult = await Dispatcher.DispatchAsync(createCommand);
+        var permissionsResult = await Dispatcher.DispatchAsync(createCommand, httpRequest);
         if (!permissionsResult.IsSuccess || permissionsResult.Data == null)
         {
             throw new Exception(permissionsResult.ErrorMessage);

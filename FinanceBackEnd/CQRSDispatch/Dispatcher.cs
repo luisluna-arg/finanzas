@@ -126,7 +126,13 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
 
             using var activity = DispatchActivity.StartActivity(commandType.Name, "dispatch.type", "command");
 
-            var handlerType = typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(CommandResult));
+            var twoParamHandlerType = typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(CommandResult));
+            var oneParamHandlerType = typeof(ICommandHandler<>).MakeGenericType(commandType);
+
+            var handlerType = ServiceProvider.GetService(twoParamHandlerType) != null
+                ? twoParamHandlerType
+                : oneParamHandlerType;
+
             var handler = ServiceProvider.GetRequiredService(handlerType);
 
             var executeMethod = handlerType.GetMethod("ExecuteAsync")

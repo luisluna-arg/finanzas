@@ -21,10 +21,10 @@ public sealed partial class SubscriptionPermissionsOrchestrator : BaseResourcePe
         var createSubscriptionPermissionsCommand = new CreateSubscriptionPermissionsCommand
         {
             ResourceId = request.Id,
-            UserId = request.UserId!.Value,
+            UserId = request.UserId,
             PermissionLevels = [PermissionLevelEnum.Owner]
         };
-        var SubscriptionPermissionsResult = await Dispatcher.DispatchAsync(createSubscriptionPermissionsCommand);
+        var SubscriptionPermissionsResult = await Dispatcher.DispatchAsync(createSubscriptionPermissionsCommand, httpRequest);
         if (!SubscriptionPermissionsResult.IsSuccess || SubscriptionPermissionsResult.Data == null)
         {
             throw new Exception(SubscriptionPermissionsResult.ErrorMessage);
