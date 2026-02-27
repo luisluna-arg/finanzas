@@ -1,29 +1,26 @@
-import { objectToUrlParams, parseUrl } from "@/utils/urlTreatment";
-import { fetchData } from "@/components/data/fetchData";
+import { fetchData } from '@/components/data/fetchData';
+import { BackendUrl } from '@/utils/BackendUrl';
 
 export interface PaginationData<T> {
-    items: T[];
-    totalItems: number;
-    totalPages: number;
-    currentPage: number;
+  items: T[];
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
 }
 
 export async function fetchPaginatedData<T>(
-    url: string,
-    page: number,
-    pageSize: number = 10
+  url: BackendUrl | string,
+  page: number,
+  pageSize: number = 10
 ): Promise<PaginationData<T>> {
-    const { queryParams, baseUrl } = parseUrl(url);
-    queryParams["Page"] = page.toString();
-    queryParams["PageSize"] = pageSize.toString();
-    const params = objectToUrlParams(queryParams);
-    const paginatedUrl = `${baseUrl}?${params}`;
+  const backendUrl = url instanceof BackendUrl ? url : new BackendUrl(String(url));
+  const paginatedUrl = backendUrl.with({ Page: page, PageSize: pageSize });
 
-    const result = await fetchData<PaginationData<T>>(`${paginatedUrl}`);
-    return {
-        items: result.items,
-        totalItems: result.totalItems,
-        totalPages: result.totalPages,
-        currentPage: result.currentPage,
-    };
+  const result = await fetchData<PaginationData<T>>(paginatedUrl);
+  return {
+    items: result.items,
+    totalItems: result.totalItems,
+    totalPages: result.totalPages,
+    currentPage: result.currentPage,
+  };
 }

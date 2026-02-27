@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
-import type {
-  Subscription,
-  SubscriptionsData,
-} from '@/types/subscription';
+import type { Subscription, SubscriptionsData } from '@/types/subscription';
 import { SubscriptionFrequency } from '@/types/subscription';
 import {
   Table,
@@ -211,7 +208,9 @@ function Subscriptions() {
 
   const isMonthly = (s: Subscription) => {
     if (typeof s.frequency === 'string') {
-      return s.frequency.toLowerCase() === 'monthly' || s.frequency === SubscriptionFrequency.Monthly;
+      return (
+        s.frequency.toLowerCase() === 'monthly' || s.frequency === SubscriptionFrequency.Monthly
+      );
     }
     if (typeof s.frequency === 'number') {
       return s.frequency === 0;
@@ -255,7 +254,7 @@ function Subscriptions() {
     }
 
     try {
-      const response = await fetch(urls.proxy(urls.subscriptions.endpoint), {
+      const response = await fetch(String(urls.subscriptions.endpoint), {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids: [subscription.id] }),
@@ -273,7 +272,7 @@ function Subscriptions() {
   };
 
   const handleSave = async (data: Partial<Subscription>) => {
-    const endpoint = urls.proxy(urls.subscriptions.endpoint);
+    const endpoint = String(urls.subscriptions.endpoint);
     const method = editingSubscription ? 'PUT' : 'POST';
 
     const payload = editingSubscription
@@ -345,7 +344,12 @@ function Subscriptions() {
           <TableBody>
             {subs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3 + (showCurrency ? 1 : 0) + (showFrequency ? 1 : 0) + (showPaymentDate ? 1 : 0)} className="text-center text-gray-500">
+                <TableCell
+                  colSpan={
+                    3 + (showCurrency ? 1 : 0) + (showFrequency ? 1 : 0) + (showPaymentDate ? 1 : 0)
+                  }
+                  className="text-center text-gray-500"
+                >
                   No se encontraron suscripciones
                 </TableCell>
               </TableRow>
@@ -353,7 +357,9 @@ function Subscriptions() {
               subs.map((sub) => (
                 <TableRow key={sub.id}>
                   <TableCell>{sub.name}</TableCell>
-                  <TableCell className="text-right">{toNumber(sub.price as ValueLike, 0)}</TableCell>
+                  <TableCell className="text-right">
+                    {toNumber(sub.price as ValueLike, 0)}
+                  </TableCell>
                   {showCurrency && <TableCell>{sub.currency?.shortName ?? '-'}</TableCell>}
                   {showFrequency && <TableCell>{getFrequencyName(sub.frequency)}</TableCell>}
                   {showPaymentDate && <TableCell>{sub.paymentDate ?? 'N/D'}</TableCell>}
@@ -385,7 +391,9 @@ function Subscriptions() {
             <TableFooter>
               <TableRow>
                 <TableCell className="font-medium">Total</TableCell>
-                <TableCell className="text-right font-medium">{toNumber(total as ValueLike, 0)}</TableCell>
+                <TableCell className="text-right font-medium">
+                  {toNumber(total as ValueLike, 0)}
+                </TableCell>
                 <TableCell></TableCell>
                 <TableCell></TableCell>
               </TableRow>
@@ -415,13 +423,10 @@ function Subscriptions() {
           <h2 className="text-lg font-medium mb-4">Suscripciones Mensuales</h2>
           {Object.entries(monthlyCurrencyGroups).map(([currency, subs]) => (
             <div key={`monthly-${currency}`} className="mb-6">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-3 px-2">{currency}</h3>
-              <SubscriptionTable
-                subs={subs}
-                title=""
-                showTotal={true}
-                showCurrency={false}
-              />
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-3 px-2">
+                {currency}
+              </h3>
+              <SubscriptionTable subs={subs} title="" showTotal={true} showCurrency={false} />
             </div>
           ))}
         </div>

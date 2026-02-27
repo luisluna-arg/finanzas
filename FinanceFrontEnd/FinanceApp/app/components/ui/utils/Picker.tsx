@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import React, { useState, useEffect, useCallback } from 'react';
 import SafeLogger from '@/utils/SafeLogger';
+import type { BackendUrl } from '@/utils/BackendUrl';
 
 // Define types for the props
 type MapperObject = {
@@ -14,7 +15,7 @@ export type MapperType = ((record: unknown) => string | number) | MapperObject;
 interface PickerProps {
   id: string;
   value?: string | number;
-  url?: string;
+  url?: BackendUrl | string;
   data?: unknown[];
   mapper?: MapperType;
   onChange?: ((event: { value: string | number }) => void) | ((picker: { value: string }) => void);
@@ -74,7 +75,7 @@ const Picker: React.FC<PickerProps> = ({
   const fetchData = useCallback(async () => {
     if (!url) return;
     try {
-      const response = await fetch(url);
+      const response = await fetch(String(url));
       const responseData: unknown = await response.json();
       if (Array.isArray(responseData)) {
         setInternalData(responseData);
@@ -100,9 +101,14 @@ const Picker: React.FC<PickerProps> = ({
       id={id}
       value={value?.toString() ?? ''}
       onChange={(e) => onPickerChange(e.target.value)}
-      className={cn('h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm text-gray-950 shadow-sm outline-none focus:border-gray-950 focus:ring-2 focus:ring-gray-950/20 dark:bg-gray-950 dark:text-gray-50 dark:border-gray-700', className)}
+      className={cn(
+        'h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm text-gray-950 shadow-sm outline-none focus:border-gray-950 focus:ring-2 focus:ring-gray-950/20 dark:bg-gray-950 dark:text-gray-50 dark:border-gray-700',
+        className
+      )}
     >
-      <option value="" disabled className="text-gray-500">{placeholder ?? 'Select an item'}</option>
+      <option value="" disabled className="text-gray-500">
+        {placeholder ?? 'Select an item'}
+      </option>
       {internalData.map((item) => {
         const recordId = getRecordId(item);
         const label = getRecordLabel(item);

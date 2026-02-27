@@ -13,6 +13,7 @@ import { InputType } from '@/components/ui/utils/InputType';
 import { fetchData } from '@/components/data/fetchData';
 import { fetchPaginatedData } from '@/components/data/fetchPaginatedData';
 import { handleRequest } from '@/components/data/handleRequest';
+import type { BackendUrl } from '@/utils/BackendUrl';
 import {
   Table,
   TableBody,
@@ -29,7 +30,7 @@ import { Checkbox } from '@/components/ui/utils/Checkbox';
 
 // Type Definitions
 interface Admin {
-  endpoint: string;
+  endpoint: BackendUrl | string;
   key?:
     | string
     | string[]
@@ -49,7 +50,7 @@ export interface Column {
   class?: string;
   label?: string;
   placeholder?: string;
-  endpoint?: string;
+  endpoint?: BackendUrl | string;
   header?: {
     classes?: string | string[];
     style?: React.CSSProperties;
@@ -82,7 +83,7 @@ export interface ConditionalClass {
 export interface PaginatedTableProps {
   name: string;
   data?: Data | null;
-  url?: string;
+  url?: BackendUrl | string;
   admin?: Admin;
   rowCount?: number;
   columns: Column[];
@@ -339,14 +340,18 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     return (
       <TableRow>
         {header ? (
-          <TableHead className={'w-[100px]'} colSpan={columnCount}>
-            <AddButton />
-            <DeleteButton />
+          <TableHead colSpan={columnCount}>
+            <div className={cn(['flex', 'justify-end'])}>
+              <AddButton />
+              <DeleteButton />
+            </div>
           </TableHead>
         ) : (
           <TableCell colSpan={columnCount}>
-            <AddButton />
-            <DeleteButton />
+            <div className={cn(['flex', 'justify-end'])}>
+              <AddButton />
+              <DeleteButton />
+            </div>
           </TableCell>
         )}
       </TableRow>
@@ -437,7 +442,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                     id={String(record.id)}
                     checked={Boolean(record.isSelected)}
                     onChange={() => handleRowCheckChange(record.id ?? index)}
-                      className='flex items-center'
+                    className="flex items-center"
                   />
                 </TableCell>
               )}

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import SafeLogger from '@/utils/SafeLogger';
+import type { BackendUrl } from '@/utils/BackendUrl';
 import dates from '@/utils/dates';
 import LoadingSpinner from '@/components/ui/utils/LoadingSpinner';
 import { InputType } from '@/components/ui/utils/InputType';
@@ -44,7 +45,7 @@ interface Column {
 interface FetchTableProps {
   name: string;
   data?: Row[] | null;
-  url?: string;
+  url?: BackendUrl | string;
   columns: unknown[];
   classes?: string[];
   wrapper?: { classes?: string[] } | null;
@@ -85,56 +86,39 @@ const FetchTable: React.FC<FetchTableProps> = ({
   useEffect(() => {
     if (!url) return;
 
-    SafeLogger.log(`[FetchTable:${name}] Starting fetch for URL:`, url);
-
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        SafeLogger.log(`[FetchTable:${name}] Fetching...`);
-        const response = await fetch(url);
-        SafeLogger.log(`[FetchTable:${name}] Response status:`, response.status);
+        const response = await fetch(String(url));
 
         if (!response.ok) {
-          const errorText = `FetchTable request failed for ${url} with status ${response.status}`;
           let responseBody = '';
           try {
             responseBody = await response.text();
-            SafeLogger.log(responseBody);
-          } catch (e) {
+          } catch {
             responseBody = '[Unable to read response body]';
           }
-          SafeLogger.error(errorText, {
-            url,
-            response: { status: response.status },
-            responseBody,
-          });
+          const errorText = `FetchTable request failed for ${url} with status ${response.status}`;
+          SafeLogger.error(errorText, { url, status: response.status, responseBody });
           throw new Error(`${errorText}\n${responseBody}`);
         }
+
         const result = await response.json();
-        SafeLogger.log(`[FetchTable:${name}] Data received:`, result);
 
         if (result && Array.isArray(result.items)) {
-          SafeLogger.log(
-            `[FetchTable:${name}] Setting ${result.items.length} items from result.items`
-          );
           setData(result.items as Row[]);
           onFetch?.(result.items as Row[]);
         } else if (Array.isArray(result)) {
-          SafeLogger.log(`[FetchTable:${name}] Setting ${result.length} items from result array`);
           setData(result as Row[]);
           onFetch?.(result as Row[]);
         } else {
-          SafeLogger.log(`[FetchTable:${name}] Result is not an array, setting empty`);
           setData([]);
           onFetch?.([]);
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
-        SafeLogger.error('FetchTable error', {
-          error: msg,
-          url,
-        });
+        SafeLogger.error('FetchTable error', { error: msg, url });
         setError(msg);
       } finally {
         setLoading(false);
@@ -142,7 +126,7 @@ const FetchTable: React.FC<FetchTableProps> = ({
     };
 
     fetchData();
-  }, [url, name, onFetch]);
+  }, [url, onFetch]);
 
   if (loading)
     return (

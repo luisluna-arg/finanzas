@@ -1,118 +1,112 @@
-import { useState, useRef } from "react";
-import { useFetcher } from "react-router";
-import {
-    Toast,
-    ToastContainer,
-    ToastHeader,
-    ToastBody,
-} from "@/components/ui/utils/Toast";
-import ActionButton, { ButtonType } from "@/components/ui/utils/ActionButton";
-import SafeLogger from "../../../utils/SafeLogger";
+import { useState, useRef } from 'react';
+import { useFetcher } from 'react-router';
+import type { BackendUrl } from '@/utils/BackendUrl';
+import { Toast, ToastContainer, ToastHeader, ToastBody } from '@/components/ui/utils/Toast';
+import ActionButton, { ButtonType } from '@/components/ui/utils/ActionButton';
+import SafeLogger from '../../../utils/SafeLogger';
 
 interface UploaderProps {
-    url: string;
-    extensions: string[];
-    onSuccess?: () => void;
-    onError?: () => void;
+  url: BackendUrl | string;
+  extensions: string[];
+  onSuccess?: () => void;
+  onError?: () => void;
 }
 
 const Uploader = ({ url, extensions, onSuccess, onError }: UploaderProps) => {
-    const [showToast, setShowToast] = useState<boolean>(false); // State for controlling toast visibility
-    const [toastMessage, setToastMessage] = useState<string>(""); // Message for the toast
-    const [toastType, setToastType] = useState<"success" | "error">("success"); // Toast type
-    type UploadResponse = {
-        success?: boolean;
-        error?: string;
-        [key: string]: unknown;
-    } | null;
-    const fetcher = useFetcher<UploadResponse>();
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [showToast, setShowToast] = useState<boolean>(false); // State for controlling toast visibility
+  const [toastMessage, setToastMessage] = useState<string>(''); // Message for the toast
+  const [toastType, setToastType] = useState<'success' | 'error'>('success'); // Toast type
+  type UploadResponse = {
+    success?: boolean;
+    error?: string;
+    [key: string]: unknown;
+  } | null;
+  const fetcher = useFetcher<UploadResponse>();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    const uploadFile = () => {
-        const fileInput = fileInputRef.current;
-        const file = fileInput?.files?.[0];
+  const uploadFile = () => {
+    const fileInput = fileInputRef.current;
+    const file = fileInput?.files?.[0];
 
-        if (file) {
-            const formData = new FormData();
-            formData.append("file", file);
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
 
-            SafeLogger.log("URL", url);
+      SafeLogger.log('URL', url);
 
-            fetcher.submit(formData, {
-                method: "post",
-                action: url, // URL for the upload action
-                encType: "multipart/form-data",
-            });
-        } else {
-            setToastMessage("No file selected.");
-            setToastType("error");
-            setShowToast(true); // Show the toast
-        }
-    };
-
-    if (fetcher.state === "submitting") {
-        setToastMessage("");
+      fetcher.submit(formData, {
+        method: 'post',
+        action: String(url), // URL for the upload action
+        encType: 'multipart/form-data',
+      });
+    } else {
+      setToastMessage('No file selected.');
+      setToastType('error');
+      setShowToast(true); // Show the toast
     }
+  };
 
-    if (fetcher.data && fetcher.data.success) {
-        fileInputRef.current!.value = "";
-        if (onSuccess) onSuccess();
-        setToastMessage("File uploaded successfully!");
-        setToastType("success");
-        setShowToast(true); // Show success toast
-    } else if (fetcher.data && fetcher.data.error) {
-        setToastMessage(fetcher.data.error ?? String(fetcher.data));
-        if (onError) onError();
-        setToastMessage(fetcher.data.error || "File upload failed.");
-        setToastType("error");
-        setShowToast(true); // Show error toast
-    }
+  if (fetcher.state === 'submitting') {
+    setToastMessage('');
+  }
 
-    return (
-        <>
-            <div className="container">
-                <form className="row">
-                    <div className="input-group">
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            className="form-control"
-                            accept={extensions.join(",")}
-                            aria-describedby="inputGroupFileAddon04"
-                            aria-label="Subir"
-                        />
-                        <ActionButton
-                            text={"Subir"}
-                            //variant={OUTLINE_VARIANT.WARNING}
-                            type={ButtonType.None}
-                            //classes={["btn", "btn-outline-secondary"]}
-                            action={uploadFile}
-                            disabled={false}
-                        />
-                    </div>
-                </form>
-            </div>
+  if (fetcher.data && fetcher.data.success) {
+    fileInputRef.current!.value = '';
+    if (onSuccess) onSuccess();
+    setToastMessage('File uploaded successfully!');
+    setToastType('success');
+    setShowToast(true); // Show success toast
+  } else if (fetcher.data && fetcher.data.error) {
+    setToastMessage(fetcher.data.error ?? String(fetcher.data));
+    if (onError) onError();
+    setToastMessage(fetcher.data.error || 'File upload failed.');
+    setToastType('error');
+    setShowToast(true); // Show error toast
+  }
 
-            {/* Toast Component */}
-            <ToastContainer position="top-end" className="p-3">
-                <Toast
-                    onClose={() => setShowToast(false)}
-                    show={showToast}
-                    delay={3000}
-                    autohide
-                    bg={toastType === "success" ? "success" : "danger"} // Change color based on type
-                >
-                    <ToastHeader>
-                        <strong className="me-auto">
-                            {toastType === "success" ? "Success" : "Error"}
-                        </strong>
-                        <small>Just now</small>
-                    </ToastHeader>
-                    <ToastBody>{toastMessage}</ToastBody>
-                </Toast>
-            </ToastContainer>
-        </>
-    );
+  return (
+    <>
+      <div className="container">
+        <form className="row">
+          <div className="input-group">
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="form-control"
+              accept={extensions.join(',')}
+              aria-describedby="inputGroupFileAddon04"
+              aria-label="Subir"
+            />
+            <ActionButton
+              text={'Subir'}
+              //variant={OUTLINE_VARIANT.WARNING}
+              type={ButtonType.None}
+              //classes={["btn", "btn-outline-secondary"]}
+              action={uploadFile}
+              disabled={false}
+            />
+          </div>
+        </form>
+      </div>
+
+      {/* Toast Component */}
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          autohide
+          bg={toastType === 'success' ? 'success' : 'danger'} // Change color based on type
+        >
+          <ToastHeader>
+            <strong className="me-auto">{toastType === 'success' ? 'Success' : 'Error'}</strong>
+            <small>Just now</small>
+          </ToastHeader>
+          <ToastBody>{toastMessage}</ToastBody>
+        </Toast>
+      </ToastContainer>
+    </>
+  );
 };
 
 export default Uploader;
