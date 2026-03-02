@@ -21,11 +21,15 @@ public static class ServiceCollectionExtensions
         IEnumerable<Assembly> assemblies,
         ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
     {
+        var registry = new CommandHandlerTypeRegistry();
+
         foreach (var assembly in assemblies)
         {
-            RegisterCommandHandlers(services, assembly, serviceLifetime);
+            RegisterCommandHandlers(services, assembly, serviceLifetime, registry);
             RegisterQueryHandlers(services, assembly, serviceLifetime);
         }
+
+        services.AddSingleton(registry);
 
         return services;
     }
@@ -36,7 +40,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection to register handlers to.</param>
     /// <param name="assembly">The assembly to scan for command handlers.</param>
     /// <param name="serviceLifetime">The service lifetime for the handlers.</param>
-    private static void RegisterCommandHandlers(IServiceCollection services, Assembly assembly, ServiceLifetime serviceLifetime)
+    private static void RegisterCommandHandlers(IServiceCollection services, Assembly assembly, ServiceLifetime serviceLifetime, CommandHandlerTypeRegistry registry)
     {
         // Register ICommandHandler<TCommand, TResult>
         var commandHandlerTypes = assembly.GetTypes()
@@ -53,12 +57,11 @@ public static class ServiceCollectionExtensions
             {
                 var genericArguments = handlerInterface.GetGenericArguments();
                 var commandType = genericArguments[0];
-                // var resultType = genericArguments[1];
 
-                // Validate that the command type implements ICommand
                 if (typeof(ICommand).IsAssignableFrom(commandType))
                 {
                     RegisterService(services, handlerInterface, handlerType, serviceLifetime);
+                    registry.Register(commandType, handlerInterface);
                 }
             }
         }
@@ -82,6 +85,7 @@ public static class ServiceCollectionExtensions
                 if (typeof(ICommand).IsAssignableFrom(commandType))
                 {
                     RegisterService(services, handlerInterface, handlerType, serviceLifetime);
+                    registry.Register(commandType, handlerInterface);
                 }
             }
         }
