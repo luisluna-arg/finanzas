@@ -63,9 +63,7 @@ const Incomes: React.FC = () => {
     eval: (field: unknown) => field != null && Number(String(field)) > 0,
   };
 
-  const valueMapper = function (field: unknown) {
-    return field != null ? Number(String(field)) : null;
-  };
+  const valueMapper = (field: unknown) => (field != null ? Number(String(field)) : null);
 
   const numericHeader = {
     classes: 'text-end',
@@ -130,10 +128,7 @@ const Incomes: React.FC = () => {
       editable: {
         defaultValue: 0.0,
       },
-      mapper: (record) => {
-        console.log('Mapping amount for record:', record);
-        return valueMapper(record.amount);
-      },
+      mapper: (record) => valueMapper(record.amount),
       conditionalClass: valueConditionalClass,
     },
   ];
