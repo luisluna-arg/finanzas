@@ -71,6 +71,7 @@ public static class ConfigExtensions
                 npgsqlOptions =>
                 {
                     npgsqlOptions.CommandTimeout(120);
+                    npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                 });
 
             // Attach the DB telemetry interceptor if it is registered in DI

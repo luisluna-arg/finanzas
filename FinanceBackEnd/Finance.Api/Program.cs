@@ -12,11 +12,11 @@ if (isDevelopment)
     DotNetEnv.Env.LoadMulti([".env.local"]);
 }
 
+// Ensure environment variables are available to configuration before any service setup reads them
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Services.AddTelemetry(builder.Configuration, tracing =>
     tracing.AddAspNetCoreInstrumentation());
-
-// Ensure environment variables are available to configuration
-builder.Configuration.AddEnvironmentVariables();
 
 // Configure URLs from appsettings or environment variables
 var httpUrl = Environment.GetEnvironmentVariable("Urls__Http");

@@ -41,7 +41,7 @@ public class CreateIncomeCommandHandler : BaseCommandHandler<CreateIncomeCommand
             Bank = bank,
             Currency = currency,
             Amount = command.Amount,
-            TimeStamp = command.TimeStamp,
+            TimeStamp = command.TimeStamp ?? DateTime.UtcNow,
             Deactivated = false
         };
 
@@ -51,10 +51,10 @@ public class CreateIncomeCommandHandler : BaseCommandHandler<CreateIncomeCommand
     }
 }
 
-public class CreateIncomeCommand : ICommand
+public class CreateIncomeCommand : ICommand<DataResult<Income>>
 {
     public virtual Guid BankId { get; set; }
     public virtual Guid CurrencyId { get; set; }
-    required public DateTime TimeStamp { get; set; }
+    required public DateTime? TimeStamp { get; set; }
     required public Money Amount { get; set; }
 }
