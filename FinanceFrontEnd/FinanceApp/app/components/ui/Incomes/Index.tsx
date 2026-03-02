@@ -74,7 +74,7 @@ const Incomes: React.FC = () => {
 
   const TableColumns: Column<IncomeRow>[] = [
     {
-      id: 'createdAt',
+      id: 'timeStamp',
       label: 'Fecha',
       placeholder: 'Fecha',
       type: InputType.DateTime,
