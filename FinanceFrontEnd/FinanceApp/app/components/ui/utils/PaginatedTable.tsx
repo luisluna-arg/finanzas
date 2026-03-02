@@ -42,7 +42,12 @@ interface Admin {
   deleteEnabled?: boolean;
 }
 
-export interface Column {
+export interface Row {
+  id?: string | number;
+  isSelected?: boolean;
+}
+
+export interface Column<T extends Row = Row> {
   id?: string;
   key?: string;
   min?: number;
@@ -64,9 +69,9 @@ export interface Column {
   mapper?:
     | {
         id: string;
-        label?: string | ((record: Row) => string);
+        label?: string | ((record: T) => string);
       }
-    | ((record: Row) => React.ReactNode);
+    | ((record: T) => React.ReactNode);
   datetime?: {
     timeFormat: 'HH:mm';
     timeIntervals: number;
@@ -80,31 +85,25 @@ export interface ConditionalClass {
   class: string;
 }
 
-export interface PaginatedTableProps {
+interface Data<T extends Row = Row> {
+  items: T[];
+  totalPages: number;
+}
+
+export interface PaginatedTableProps<T extends Row = Row> {
   name: string;
-  data?: Data | null;
+  data?: Data<T> | null;
   url?: BackendUrl | string;
   admin?: Admin;
   rowCount?: number;
-  columns: Column[];
+  columns: Column<T>[];
   onFetch?: (data: unknown) => void;
   onAdd?: (data: unknown) => void;
   onDelete?: (data: unknown) => void;
   reloadData?: boolean;
 }
 
-interface Row {
-  id?: string | number;
-  isSelected?: boolean;
-  [key: string]: unknown;
-}
-
-interface Data {
-  items: Row[];
-  totalPages: number;
-}
-
-const PaginatedTable: React.FC<PaginatedTableProps> = ({
+function PaginatedTable<T extends Row = Row>({
   name,
   data,
   url,
@@ -114,8 +113,8 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   onAdd,
   onDelete,
   // onFetch and reloadData intentionally unused in this component
-}) => {
-  const [tableData, setTableData] = useState<Data>({
+}: PaginatedTableProps<T>) {
+  const [tableData, setTableData] = useState<Data<T>>({
     items: [],
     totalPages: 0,
   });
@@ -136,11 +135,14 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     if (url) {
       setLoading(true);
 
-      fetchPaginatedData<Data>(url, page, 10).then((result) => {
-        const extendedItems = result.items.map((item) => ({
-          ...item,
-          isSelected: false,
-        }));
+      fetchPaginatedData<Data<T>>(url, page, 10).then((result) => {
+        const extendedItems = result.items.map(
+          (item) =>
+            ({
+              ...item,
+              isSelected: false,
+            }) as unknown as T
+        );
 
         setTableData({
           ...result,
@@ -249,7 +251,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     await handleCreate(values);
   };
 
-  const ColumnValue = ({ columnSettings, record }: { columnSettings: Column; record: Row }) => {
+  const ColumnValue = ({ columnSettings, record }: { columnSettings: Column<T>; record: T }) => {
     const columnId = String(columnSettings.id ?? columnSettings.key ?? '');
     let columnValue: unknown = (record as Record<string, unknown>)[columnId];
 
@@ -260,7 +262,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       if (typeof mapper === 'function') {
         columnValue = mapper(record);
       } else if (mapper && Object.hasOwn(mapper, 'label')) {
-        const label = (mapper as { label?: string | ((r: Row) => string) }).label;
+        const label = (mapper as { label?: string | ((r: T) => string) }).label;
 
         if (typeof label !== 'function') {
           columnValue = (record as Record<string, unknown>)[String(label)];
@@ -363,7 +365,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       <TableRow id={adminRowId} className={cn(`${name}-edit-row`)}>
         <TableCell></TableCell>
         {columns &&
-          columns.map((column: Column, index: number) => {
+          columns.map((column: Column<T>, index: number) => {
             const columnId = column.key ?? column.id;
             if (column.editable) {
               return (
@@ -425,14 +427,14 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
     admin,
     adminAddEnabled,
   }: {
-    tableData: Data;
+    tableData: Data<T>;
     admin: Admin | undefined;
     adminAddEnabled: boolean;
   }) => {
     return (
       <TableBody>
         {admin && adminAddEnabled && <EditRow />}
-        {tableData.items.map((record: Row, index: number) => {
+        {tableData.items.map((record: T, index: number) => {
           const rowId = `${name}-data-row-${index}`;
           return (
             <TableRow key={rowId} id={rowId} className={`${name}-data-row`}>
@@ -446,7 +448,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                   />
                 </TableCell>
               )}
-              {columns.map((column: Column, index: number) => (
+              {columns.map((column: Column<T>, index: number) => (
                 <TableCell key={index} className={column.class}>
                   <ColumnValue columnSettings={column} record={record} />
                 </TableCell>
@@ -547,6 +549,6 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
       />
     </div>
   );
-};
+}
 
 export default PaginatedTable;
