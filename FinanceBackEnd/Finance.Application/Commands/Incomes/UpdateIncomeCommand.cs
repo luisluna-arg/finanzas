@@ -42,7 +42,7 @@ public class UpdateIncomeCommandHandler : BaseCommandHandler<UpdateIncomeCommand
         income.Currency = currency;
         income.Bank = bank;
         income.Amount = command.Amount;
-        income.TimeStamp = command.TimeStamp;
+        income.TimeStamp = command.TimeStamp ?? DateTime.UtcNow;
 
         await _incomeRepository.UpdateAsync(income, cancellationToken);
 
@@ -50,11 +50,11 @@ public class UpdateIncomeCommandHandler : BaseCommandHandler<UpdateIncomeCommand
     }
 }
 
-public class UpdateIncomeCommand : ICommand
+public class UpdateIncomeCommand : ICommand<DataResult<Income>>
 {
     required public Guid Id { get; set; }
     public virtual Guid BankId { get; set; }
     public virtual Guid CurrencyId { get; set; }
-    required public DateTime TimeStamp { get; set; }
+    required public DateTime? TimeStamp { get; set; }
     required public Money Amount { get; set; }
 }

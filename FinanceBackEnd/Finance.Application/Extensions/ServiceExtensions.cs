@@ -1,20 +1,24 @@
 using CQRSDispatch;
 using Finance.Application.Commands.CurrencyExchangeRates.Owners;
 using Finance.Application.Commands.Funds.Owners;
+using Finance.Application.Commands.Incomes.Owners;
 using Finance.Application.Commands.Users;
 using Finance.Application.Services;
 using Finance.Application.Services.Interfaces;
 using Finance.Application.Services.Orchestrators.CurrencyExchangeRateOrchestrations;
 using Finance.Application.Services.Orchestrators.FundPermissionsOrchestrations;
+using Finance.Application.Services.Orchestrators.IncomePermissionsOrchestrations;
 using Finance.Application.Services.Orchestrators.SubscriptionPermissionsOrchestrations;
 using Finance.Application.Services.RequestBuilders;
 using Finance.Application.Services.Requests.CurrencyExchangeRates;
 using Finance.Application.Services.Requests.Funds;
+using Finance.Application.Services.Requests.Incomes;
 using Finance.Application.Services.Requests.Subscriptions;
 using Finance.Application.Services.Requests.Subscriptions.Owners;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Funds;
+using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.Interfaces;
 using Finance.Domain.Models.Subscriptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +39,13 @@ public static class SagaServiceExtensions
             DeleteFundOwnerSagaRequest,
             CommandResult,
             FundPermissionsOrchestrator>(services);
+
+        RegisterResourcePermissionsOrchestrator<
+            SetIncomeOwnerSagaRequest,
+            DataResult<IncomePermissions>,
+            DeleteIncomeOwnerSagaRequest,
+            CommandResult,
+            IncomePermissionsOrchestrator>(services);
 
         RegisterResourcePermissionsOrchestrator<
             SetCurrencyExchangeRateOwnerSagaRequest,
@@ -75,6 +86,14 @@ public static class SagaServiceExtensions
             DeleteCurrencyExchangeRateSagaRequest
             >(services);
 
+        RegisterEntityService<
+            Income,
+            IncomeService,
+            CreateIncomeSagaRequest,
+            UpdateIncomeSagaRequest,
+            DeleteIncomeSagaRequest
+            >(services);
+
         RegisterResourcePermissionsSagaService<
             CurrencyExchangeRatePermissions,
             CurrencyExchangeRateOrchestrator,
@@ -92,6 +111,15 @@ public static class SagaServiceExtensions
             DeleteFundOwnerSagaRequest,
             CommandResult,
             FundOwnerService>(services);
+
+        RegisterResourcePermissionsSagaService<
+            IncomePermissions,
+            IncomePermissionsOrchestrator,
+            SetIncomeOwnerSagaRequest,
+            DataResult<IncomePermissions>,
+            DeleteIncomeOwnerSagaRequest,
+            CommandResult,
+            IncomeOwnerService>(services);
 
         RegisterResourcePermissionsSagaService<
             SubscriptionPermissions,

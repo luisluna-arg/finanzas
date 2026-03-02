@@ -23,8 +23,7 @@ public class GetPaginatedIncomesQueryHandler : IQueryHandler<GetPaginatedIncomes
         IQueryable<Income> query = dbContext
             .Income
             .Include(o => o.Bank)
-            .Include(o => o.Currency)
-            .AsQueryable();
+            .Include(o => o.Currency);
 
         if (!request.IncludeDeactivated)
         {
@@ -53,14 +52,13 @@ public class GetPaginatedIncomesQueryHandler : IQueryHandler<GetPaginatedIncomes
 
         // Pagination
         int page = request.Page;
-        int pageSize = request.PageSize > 0 ? request.PageSize : await query.CountAsync();
-        int totalItems = await query.CountAsync();
+        int totalItems = await query.CountAsync(cancellationToken);
+        int pageSize = request.PageSize > 0 ? request.PageSize : totalItems;
         int skip = (page - 1) * pageSize;
         skip = skip < 0 ? 0 : skip;
 
         var paginatedItems = await query
             .OrderByDescending(o => o.TimeStamp)
-            .ThenBy(o => o.Id)
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

@@ -52,7 +52,11 @@ public class GetIncomesQueryHandler : BaseCollectionHandler<GetIncomesQuery, Inc
             query = query.Where(o => o.BankId == request.BankId.Value);
         }
 
-        return DataResult<List<Income>>.Success(await query.ToListAsync(cancellationToken));
+        var result = await query
+            .OrderByDescending(o => o.TimeStamp)
+            .ToListAsync(cancellationToken);
+
+        return DataResult<List<Income>>.Success(result);
     }
 }
 
