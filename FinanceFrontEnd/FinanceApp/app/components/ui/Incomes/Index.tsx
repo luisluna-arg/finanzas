@@ -11,6 +11,7 @@ import PaginatedTable, {
   Row,
 } from '@/components/ui/utils/PaginatedTable';
 import { cn } from '@/lib/utils';
+import type { IncomeRecord } from '@/types/income';
 
 // Define types for the props and states
 interface PickerData {
@@ -18,37 +19,7 @@ interface PickerData {
   name: string;
 }
 
-interface BankData {
-  id: string;
-  name: string;
-  deactivated: boolean;
-  creditCards: unknown[];
-}
-
-interface CurrencyData {
-  id: string;
-  name: string;
-  shortName: string;
-  deactivated: boolean;
-  baseExchangeRates: unknown[];
-  quoteExchangeRates: unknown[];
-  iolInvestmentAssets: unknown[];
-  subscriptions: unknown[];
-  symbols: unknown[];
-}
-
-interface IncomeRecord extends Row {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  timeStamp: string;
-  deactivated: boolean;
-  amount: number;
-  bankId: string;
-  currencyId: string;
-  bank: BankData;
-  currency: CurrencyData;
-}
+interface IncomeRow extends IncomeRecord, Omit<Row, 'id'> {}
 
 interface LoaderData {
   banks: PickerData[];
@@ -103,7 +74,7 @@ const Incomes: React.FC = () => {
     },
   };
 
-  const TableColumns: Column<IncomeRecord>[] = [
+  const TableColumns: Column<IncomeRow>[] = [
     {
       id: 'createdAt',
       label: 'Fecha',
@@ -184,7 +155,7 @@ const Incomes: React.FC = () => {
         onBankChange={onBankPickerChange}
         onCurrencyChange={onCurrencyPickerChange}
       />
-      <PaginatedTable<IncomeRecord>
+      <PaginatedTable<IncomeRow>
         name="incomes-table"
         columns={TableColumns}
         data={paginatedData}
