@@ -172,6 +172,8 @@ function PaginatedTable<T extends Row = Row>({
         columnValue = i.checked;
       } else if (column?.type === InputType.DateTime) {
         columnValue = dates.tryGet(i.value);
+      } else if (column?.type === InputType.Decimal || column?.type === InputType.Integer) {
+        columnValue = i.value === '' ? null : Number(i.value);
       } else {
         columnValue = i.value;
       }
