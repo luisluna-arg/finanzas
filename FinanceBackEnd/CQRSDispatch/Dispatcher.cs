@@ -12,7 +12,7 @@ namespace CQRSDispatch;
 /// Handles logging and error management for dispatch operations.
 /// </summary>
 /// <typeparam name="TContext">The type of dispatch context.</typeparam>
-public class Dispatcher<TContext> : IDispatcher<TContext>
+public sealed class Dispatcher<TContext> : IDispatcher<TContext>
     where TContext : DispatchContext, new()
 {
     /// <summary>
@@ -20,9 +20,10 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     /// </summary>
     public static readonly TaggedActivitySource DispatchActivity = new("Finance.Api.Dispatcher");
 
-    protected readonly ILogger<Dispatcher<TContext>> Logger;
-    protected readonly IServiceProvider ServiceProvider;
-    protected readonly IDispatchContextBuilderAsync<TContext> ExecutionContextBuilder;
+    private readonly ILogger<Dispatcher<TContext>> Logger;
+    private readonly IServiceProvider ServiceProvider;
+    private readonly IDispatchContextBuilderAsync<TContext> ExecutionContextBuilder;
+    private readonly CommandHandlerTypeRegistry HandlerRegistry;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Dispatcher{TContext}"/> class.
@@ -30,11 +31,17 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     /// <param name="logger">Logger instance for logging operations.</param>
     /// <param name="serviceProvider">Service provider for dependency injection.</param>
     /// <param name="executionContextBuilder">Builder for execution context.</param>
-    public Dispatcher(ILogger<Dispatcher<TContext>> logger, IServiceProvider serviceProvider, IDispatchContextBuilderAsync<TContext> executionContextBuilder)
+    /// <param name="handlerRegistry">Registry mapping command types to their handler interface types, built at startup.</param>
+    public Dispatcher(
+        ILogger<Dispatcher<TContext>> logger,
+        IServiceProvider serviceProvider,
+        IDispatchContextBuilderAsync<TContext> executionContextBuilder,
+        CommandHandlerTypeRegistry handlerRegistry)
     {
         Logger = logger;
         ServiceProvider = serviceProvider;
         ExecutionContextBuilder = executionContextBuilder;
+        HandlerRegistry = handlerRegistry;
     }
 
     /// <summary>
@@ -44,7 +51,7 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     /// <param name="command">The command to dispatch.</param>
     /// <param name="httpRequest">The HTTP request context.</param>
     /// <returns>The command execution result.</returns>
-    public virtual async Task<TResult> DispatchAsync<TResult>(IContextAwareCommand<TContext, TResult> command, HttpRequest? httpRequest)
+    public async Task<TResult> DispatchAsync<TResult>(IContextAwareCommand<TContext, TResult> command, HttpRequest? httpRequest)
         where TResult : RequestResult
     {
         Logger.LogInformation("Dispatching command: {CommandType}", command.GetType().Name);
@@ -63,7 +70,7 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     /// <typeparam name="TResult">The result type that inherits from RequestResult.</typeparam>
     /// <param name="command">The command to dispatch.</param>
     /// <returns>The command execution result.</returns>
-    public virtual async Task<TResult> DispatchAsync<TResult>(ICommand<TResult> command)
+    public async Task<TResult> DispatchAsync<TResult>(ICommand<TResult> command)
         where TResult : RequestResult
     {
         var cancellationToken = CreateCancellationToken();
@@ -100,7 +107,7 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     /// <param name="command">The command to dispatch.</param>
     /// <param name="httpRequest">The HTTP request context.</param>
     /// <returns>A CommandResult indicating success or failure.</returns>
-    public virtual async Task<CommandResult> DispatchCommandAsync(IContextAwareCommand<TContext> command, HttpRequest? httpRequest)
+    public async Task<CommandResult> DispatchCommandAsync(IContextAwareCommand<TContext> command, HttpRequest? httpRequest)
     {
         Logger.LogInformation("Dispatching command: {CommandType}", command.GetType().Name);
 
@@ -117,7 +124,7 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     /// </summary>
     /// <param name="command">The command to dispatch.</param>
     /// <returns>A CommandResult indicating success or failure.</returns>
-    public virtual async Task<CommandResult> DispatchCommandAsync(ICommand command)
+    public async Task<CommandResult> DispatchCommandAsync(ICommand command)
     {
         var cancellationToken = CreateCancellationToken();
         try
@@ -126,25 +133,28 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
 
             using var activity = DispatchActivity.StartActivity(commandType.Name, "dispatch.type", "command");
 
-            var twoParamHandlerType = typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(CommandResult));
-            var oneParamHandlerType = typeof(ICommandHandler<>).MakeGenericType(commandType);
-
-            var handlerType = ServiceProvider.GetService(twoParamHandlerType) != null
-                ? twoParamHandlerType
-                : oneParamHandlerType;
-
-            var handler = ServiceProvider.GetRequiredService(handlerType);
+            var (handler, handlerType) = ResolveCommandHandler(commandType);
 
             var executeMethod = handlerType.GetMethod("ExecuteAsync")
                 ?? throw new InvalidOperationException($"ExecuteAsync method not found on handler type {handlerType.Name}");
 
-            var task = executeMethod.Invoke(handler, [command, cancellationToken]) as Task<CommandResult>
-                ?? throw new InvalidOperationException($"Handler ExecuteAsync method did not return expected Task<CommandResult>");
+            var taskObj = executeMethod.Invoke(handler, [command, cancellationToken])
+                ?? throw new InvalidOperationException($"Handler ExecuteAsync returned null for {commandType.Name}");
 
-            var result = await task;
+            // Await the task — the concrete return type may be CommandResult, DataResult<T>, etc.
+            await (Task)taskObj;
+
+            var resultProperty = taskObj.GetType().GetProperty("Result");
+            var result = resultProperty?.GetValue(taskObj) as RequestResult
+                ?? throw new InvalidOperationException(
+                    $"Handler for {commandType.Name} did not return a RequestResult");
 
             Logger.LogInformation("Command dispatched successfully: {CommandType}", commandType.Name);
-            return result;
+
+            // If the result is already a CommandResult, return it directly;
+            // otherwise wrap any RequestResult (e.g. DataResult<T>) into a CommandResult.
+            return result as CommandResult
+                ?? new CommandResult(result.IsSuccess, result.ErrorMessage);
         }
         catch (Exception ex)
         {
@@ -154,13 +164,38 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     }
 
     /// <summary>
+    /// Resolves a command handler from DI using the startup-built registry.
+    /// Tries all registered handler interface types for the command type.
+    /// </summary>
+    private (object handler, Type handlerInterfaceType) ResolveCommandHandler(Type commandType)
+    {
+        var interfaceTypes = HandlerRegistry.GetHandlerInterfaceTypes(commandType);
+
+        if (interfaceTypes != null)
+        {
+            foreach (var candidateType in interfaceTypes)
+            {
+                var handler = ServiceProvider.GetService(candidateType);
+                if (handler != null)
+                    return (handler, candidateType);
+            }
+        }
+
+        throw new InvalidOperationException(
+            $"No command handler has been registered for '{commandType.FullName}'. "
+            + $"Ensure a class implementing ICommandHandler<{commandType.Name}> or "
+            + $"ICommandHandler<{commandType.Name}, TResult> exists and its assembly "
+            + $"is included in AddRequestHandlers().");
+    }
+
+    /// <summary>
     /// Dispatches a context-aware query with HTTP context, returning a DataResult.
     /// </summary>
     /// <typeparam name="TResult">The data type returned by the query.</typeparam>
     /// <param name="query">The query to dispatch.</param>
     /// <param name="httpRequest">The HTTP request context.</param>
     /// <returns>A DataResult containing the queried data or error information.</returns>
-    public virtual async Task<DataResult<TResult>> DispatchQueryAsync<TResult>(IContextAwareQuery<TContext, TResult> query, HttpRequest? httpRequest)
+    public async Task<DataResult<TResult>> DispatchQueryAsync<TResult>(IContextAwareQuery<TContext, TResult> query, HttpRequest? httpRequest)
     {
         Logger.LogInformation("Dispatching query: {QueryType}", query.GetType().Name);
 
@@ -178,7 +213,7 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     /// <typeparam name="TResult">The data type returned by the query.</typeparam>
     /// <param name="query">The query to dispatch.</param>
     /// <returns>A DataResult containing the queried data or error information.</returns>
-    public virtual async Task<DataResult<TResult>> DispatchQueryAsync<TResult>(IQuery<TResult> query)
+    public async Task<DataResult<TResult>> DispatchQueryAsync<TResult>(IQuery<TResult> query)
     {
         var cancellationToken = CreateCancellationToken();
         try
@@ -222,5 +257,5 @@ public class Dispatcher<TContext> : IDispatcher<TContext>
     /// Creates a new cancellation token for dispatch operations.
     /// </summary>
     /// <returns>A new CancellationToken instance.</returns>
-    protected CancellationToken CreateCancellationToken() => new CancellationTokenSource().Token;
+    private CancellationToken CreateCancellationToken() => new CancellationTokenSource().Token;
 }
