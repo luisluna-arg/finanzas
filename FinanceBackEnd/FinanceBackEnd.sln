@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Persistence", "Fina
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Api", "Finance.Api\Finance.Api.csproj", "{B4E4E18D-365D-4661-8B67-76F4F5D3E31D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Api.UnitTests", "Finance.Api.UnitTests\Finance.Api.UnitTests.csproj", "{1514C0E2-5DA9-4B40-AA06-C879404FB5C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Application.Tests", "Finance.Application.Tests\Finance.Application.Tests.csproj", "{1514C0E2-5DA9-4B40-AA06-C879404FB5C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Application", "Finance.Application\Finance.Application.csproj", "{102A747C-0BE9-4118-8BAF-E8BCD654D5AB}"
 EndProject
