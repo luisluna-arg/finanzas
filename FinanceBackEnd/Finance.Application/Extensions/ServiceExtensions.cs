@@ -8,19 +8,16 @@ using Finance.Application.Legacy.Services.Interfaces;
 using Finance.Application.Legacy.Services.Orchestrators.CurrencyExchangeRateOrchestrations;
 using Finance.Application.Legacy.Services.Orchestrators.FundPermissionsOrchestrations;
 using Finance.Application.Legacy.Services.Orchestrators.IncomePermissionsOrchestrations;
-using Finance.Application.Legacy.Services.Orchestrators.SubscriptionPermissionsOrchestrations;
 using Finance.Application.Legacy.Services.RequestBuilders;
 using Finance.Application.Legacy.Services.Requests.CurrencyExchangeRates;
 using Finance.Application.Legacy.Services.Requests.Funds;
 using Finance.Application.Legacy.Services.Requests.Incomes;
-using Finance.Application.Legacy.Services.Requests.Subscriptions;
-using Finance.Application.Legacy.Services.Requests.Subscriptions.Owners;
+using Finance.Application.Services;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Funds;
 using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.Interfaces;
-using Finance.Domain.Models.Subscriptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -70,13 +67,7 @@ public static class SagaServiceExtensions
             DeleteUserSagaRequest
             >(services);
 
-        RegisterEntityService<
-            Subscription,
-            SubscriptionService,
-            CreateSubscriptionSagaRequest,
-            UpdateSubscriptionSagaRequest,
-            DeleteSubscriptionSagaRequest
-            >(services);
+        services.AddScoped<SubscriptionService>();
 
         RegisterEntityService<
             CurrencyExchangeRate,
@@ -120,15 +111,6 @@ public static class SagaServiceExtensions
             DeleteIncomeOwnerSagaRequest,
             CommandResult,
             IncomeOwnerService>(services);
-
-        RegisterResourcePermissionsSagaService<
-            SubscriptionPermissions,
-            SubscriptionPermissionsOrchestrator,
-            SetSubscriptionOwnerSagaRequest,
-            DataResult<SubscriptionPermissions>,
-            DeleteSubscriptionOwnerSagaRequest,
-            CommandResult,
-            SubscriptionOwnerService>(services);
 
         RegisterScopedService<IdentityService>(services);
 
