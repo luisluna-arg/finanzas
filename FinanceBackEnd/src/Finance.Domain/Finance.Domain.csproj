@@ -13,7 +13,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- exclude CS1591 from "warnings as errors" -->
     <WarningsNotAsErrors>1591</WarningsNotAsErrors>
-    <CodeAnalysisRuleSet>../SonarSuppress.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>../../SonarSuppress.ruleset</CodeAnalysisRuleSet>
     <!-- suppress Warning CS1591 -->
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
