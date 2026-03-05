@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Commands.Debits;
-using Finance.Application.Mapping;
+using Finance.Application.Legacy.Commands.Debits;
+using Finance.Application.Legacy.Mapping;
 using Finance.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 

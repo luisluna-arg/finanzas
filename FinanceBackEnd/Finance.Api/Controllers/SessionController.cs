@@ -1,6 +1,6 @@
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Queries.Users;
+using Finance.Application.Legacy.Queries.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

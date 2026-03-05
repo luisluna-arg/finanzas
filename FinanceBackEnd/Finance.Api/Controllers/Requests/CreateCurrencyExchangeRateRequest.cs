@@ -1,4 +1,4 @@
-using Finance.Application.Commands.CurrencyExchangeRates;
+using Finance.Application.Legacy.Commands.CurrencyExchangeRates;
 
 namespace Finance.Api.Controllers.Requests;
 

@@ -1,0 +1,29 @@
+using CQRSDispatch;
+using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Legacy.Queries.Base;
+using Finance.Domain.Models.Auth;
+using Finance.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace Finance.Application.Legacy.Queries.Users;
+
+public class GetAllUsersQuery : GetAllQuery<User>;
+
+public class GetAllUsersQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllUsersQuery, User>(db)
+{
+    public override async Task<DataResult<List<User>>> ExecuteAsync(GetAllUsersQuery request, CancellationToken cancellationToken)
+    {
+        var query = DbContext.User
+            .Include(u => u.Roles)
+            .Include(u => u.Identities)
+            .AsSplitQuery() // Split query to avoid Cartesian explosion with multiple includes
+            .AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        return DataResult<List<User>>.Success(await query.ToListAsync(cancellationToken));
+    }
+}

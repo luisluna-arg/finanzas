@@ -1,0 +1,19 @@
+using CQRSDispatch;
+using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Legacy.Queries.Base;
+using Finance.Domain.Models.Debits;
+using Finance.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace Finance.Application.Legacy.Queries.DebitOrigins;
+
+public class GetDebitOriginQuery : GetSingleByIdQuery<DebitOrigin?, Guid>;
+
+public class GetDebitOriginQueryHandler(FinanceDbContext db) : BaseQueryHandler<GetDebitOriginQuery, DebitOrigin?>(db)
+{
+    public override async Task<DataResult<DebitOrigin?>> ExecuteAsync(GetDebitOriginQuery request, CancellationToken cancellationToken)
+        => DataResult<DebitOrigin?>.Success(
+            await DbContext.DebitOrigin
+            .Include(o => o.AppModule)
+            .FirstOrDefaultAsync(o => o.Id == request.Id));
+}

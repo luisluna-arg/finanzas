@@ -1,0 +1,30 @@
+using CQRSDispatch;
+using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Legacy.Queries.Base;
+using Finance.Domain.Models.IOLInvestments;
+using Finance.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace Finance.Application.Legacy.Queries.IOLInvestmentAssets;
+
+public class GetAllIOLInvestmentAssetsQuery : GetAllQuery<IOLInvestmentAsset>;
+
+public class GetAllIOLInvestmentAssetsQueryHandler(FinanceDbContext db)
+    : BaseCollectionHandler<GetAllIOLInvestmentAssetsQuery, IOLInvestmentAsset>(db)
+{
+    public override async Task<DataResult<List<IOLInvestmentAsset>>> ExecuteAsync(GetAllIOLInvestmentAssetsQuery request, CancellationToken cancellationToken)
+    {
+        var query = DbContext.IOLInvestmentAsset
+            .Include(o => o.Type)
+            .AsQueryable();
+
+        if (!request.IncludeDeactivated)
+        {
+            query = query.Where(o => !o.Deactivated);
+        }
+
+        query = query.OrderBy(o => o.Symbol).ThenBy(o => o.Description).ThenBy(o => o.Type.Name);
+
+        return DataResult<List<IOLInvestmentAsset>>.Success(await query.ToListAsync(cancellationToken));
+    }
+}

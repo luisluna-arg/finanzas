@@ -1,9 +1,9 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Dtos.Frequencies;
-using Finance.Application.Mapping;
-using Finance.Application.Queries.Frequencies;
+using Finance.Application.Legacy.Dtos.Frequencies;
+using Finance.Application.Legacy.Mapping;
+using Finance.Application.Legacy.Queries.Frequencies;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.Frequencies;
 using Microsoft.AspNetCore.Mvc;
