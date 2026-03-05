@@ -1,0 +1,145 @@
+using CQRSDispatch;
+using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
+using Finance.Application.Legacy.Commands.CurrencyExchangeRates;
+using Finance.Application.Legacy.Commands.CurrencyExchangeRates.Owners;
+using Finance.Application.Extensions;
+using Finance.Application.Legacy.Services.Interfaces;
+using Finance.Application.Legacy.Services.Orchestrators.CurrencyExchangeRateOrchestrations;
+using Finance.Application.Legacy.Services.Requests.CurrencyExchangeRates;
+using Finance.Domain.Models.Auth;
+using Finance.Domain.Models.Currencies;
+using Finance.Persistence;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Storage;
+
+namespace Finance.Application.Legacy.Services;
+
+public class CurrencyExchangeRateService(
+    IDispatcher<FinanceDispatchContext> dispatcher,
+    FinanceDbContext dbContext,
+    IResourcePermissionsSagaService<
+        CurrencyExchangeRatePermissions,
+        CurrencyExchangeRateOrchestrator,
+        SetCurrencyExchangeRateOwnerSagaRequest,
+        DataResult<CurrencyExchangeRatePermissions>,
+        DeleteCurrencyExchangeRateOwnerSagaRequest,
+        CommandResult> FundPermissionsOwnerService)
+    : ISagaService<
+        CreateCurrencyExchangeRateSagaRequest,
+        UpdateCurrencyExchangeRateSagaRequest,
+        DeleteCurrencyExchangeRateSagaRequest,
+        CurrencyExchangeRate>
+{
+    public FinanceDbContext _dbContext = dbContext;
+    private IDispatcher<FinanceDispatchContext> _dispatcher = dispatcher;
+    private IResourcePermissionsSagaService<
+        CurrencyExchangeRatePermissions,
+        CurrencyExchangeRateOrchestrator,
+        SetCurrencyExchangeRateOwnerSagaRequest,
+        DataResult<CurrencyExchangeRatePermissions>,
+        DeleteCurrencyExchangeRateOwnerSagaRequest,
+        CommandResult> _FundPermissionsOwnerService = FundPermissionsOwnerService;
+
+    public async Task<DataResult<CurrencyExchangeRate>> Create(CreateCurrencyExchangeRateSagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
+    {
+        var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
+        var shouldCommit = transaction == null;
+        try
+        {
+            var command = new CreateCurrencyExchangeRateCommand
+            {
+                BaseCurrencyId = request.BaseCurrencyId,
+                QuoteCurrencyId = request.QuoteCurrencyId,
+                BuyRate = request.BuyRate,
+                SellRate = request.SellRate,
+                TimeStamp = request.TimeStamp,
+            };
+            var createCurrencyExchangeRateResult = await _dispatcher.DispatchAsync(command, httpRequest);
+            if (!createCurrencyExchangeRateResult.IsSuccess)
+            {
+                throw new Exception(createCurrencyExchangeRateResult.ErrorMessage);
+            }
+
+            var FundPermissionsOwnerResult = await _FundPermissionsOwnerService.Set(
+                new SetCurrencyExchangeRateOwnerSagaRequest(createCurrencyExchangeRateResult.Data.Id),
+                transaction: localTransaction,
+                httpRequest: httpRequest);
+
+            if (!FundPermissionsOwnerResult.IsSuccess)
+            {
+                throw new Exception(FundPermissionsOwnerResult.ErrorMessage);
+            }
+
+            if (shouldCommit) await localTransaction.CommitAsync();
+
+            return DataResult<CurrencyExchangeRate>.Success(createCurrencyExchangeRateResult.Data);
+        }
+        catch (Exception ex)
+        {
+            if (shouldCommit) await localTransaction.RollbackAsync();
+
+            return DataResult<CurrencyExchangeRate>.Failure(ex.GetInnerMostMessage());
+        }
+    }
+
+    public async Task<DataResult<CurrencyExchangeRate>> Update(UpdateCurrencyExchangeRateSagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
+    {
+        var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
+        var shouldCommit = transaction == null;
+        try
+        {
+            var command = new UpdateCurrencyExchangeRateCommand
+            {
+                Id = request.Id,
+                BuyRate = request.BuyRate,
+                SellRate = request.SellRate
+            };
+            var result = await _dispatcher.DispatchAsync(command);
+
+            if (shouldCommit) await localTransaction.CommitAsync();
+
+            if (!result.IsSuccess)
+            {
+                throw new Exception(result.ErrorMessage);
+            }
+
+            return DataResult<CurrencyExchangeRate>.Success(result.Data);
+        }
+        catch (Exception ex)
+        {
+            if (shouldCommit) await localTransaction.RollbackAsync();
+
+            return DataResult<CurrencyExchangeRate>.Failure(ex.GetInnerMostMessage());
+        }
+    }
+
+    public async Task<CommandResult> Delete(DeleteCurrencyExchangeRateSagaRequest request, IDbContextTransaction? transaction = null, HttpRequest? httpRequest = null)
+    {
+        var localTransaction = transaction ?? await _dbContext.Database.BeginTransactionAsync();
+        var shouldCommit = transaction == null;
+        try
+        {
+            var command = new DeleteCurrencyExchangeRateCommand
+            {
+                Ids = [request.Id]
+            };
+            var result = await _dispatcher.DispatchAsync(command);
+
+            if (shouldCommit) await localTransaction.CommitAsync();
+
+            if (!result.IsSuccess)
+            {
+                throw new Exception(result.ErrorMessage);
+            }
+
+            return CommandResult.Success();
+        }
+        catch (Exception ex)
+        {
+            if (shouldCommit) await localTransaction.RollbackAsync();
+
+            return CommandResult.Failure(ex.GetInnerMostMessage());
+        }
+    }
+}

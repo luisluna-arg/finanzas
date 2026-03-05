@@ -1,0 +1,19 @@
+using CQRSDispatch;
+using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Legacy.Repositories;
+using Finance.Domain.Models.Currencies;
+using Finance.Persistence;
+
+namespace Finance.Application.Legacy.Queries.CurrencyConvertions;
+
+public class GetCurrencyConversionQuery : GetSingleByIdQuery<CurrencyConversion?, Guid>;
+
+public class GetCurrencyConversionQueryHandler(FinanceDbContext db, IRepository<CurrencyConversion, Guid> repository)
+    : BaseQueryHandler<GetCurrencyConversionQuery, CurrencyConversion?>(db)
+{
+    private readonly IRepository<CurrencyConversion, Guid> _repository = repository;
+
+    public override async Task<DataResult<CurrencyConversion?>> ExecuteAsync(GetCurrencyConversionQuery request, CancellationToken cancellationToken)
+        => DataResult<CurrencyConversion?>.Success(await _repository.GetByIdAsync(request.Id, cancellationToken));
+}

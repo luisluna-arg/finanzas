@@ -1,9 +1,9 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Dtos.Identities;
-using Finance.Application.Mapping;
-using Finance.Application.Queries.Identities;
+using Finance.Application.Legacy.Dtos.Identities;
+using Finance.Application.Legacy.Mapping;
+using Finance.Application.Legacy.Queries.Identities;
 using Finance.Domain.Models.Identities;
 using Microsoft.AspNetCore.Mvc;
 

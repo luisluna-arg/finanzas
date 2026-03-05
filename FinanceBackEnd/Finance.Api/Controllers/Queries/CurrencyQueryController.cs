@@ -1,9 +1,9 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Dtos.Currencies;
-using Finance.Application.Mapping;
-using Finance.Application.Queries.Currencies;
+using Finance.Application.Legacy.Dtos.Currencies;
+using Finance.Application.Legacy.Mapping;
+using Finance.Application.Legacy.Queries.Currencies;
 using Finance.Domain.Models.Currencies;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,9 +1,9 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Commands.IOLInvestments;
-using Finance.Application.Dtos.IOLInvestments;
-using Finance.Application.Mapping;
+using Finance.Application.Legacy.Commands.IOLInvestments;
+using Finance.Application.Legacy.Dtos.IOLInvestments;
+using Finance.Application.Legacy.Mapping;
 using Finance.Domain.Models.IOLInvestments;
 using Microsoft.AspNetCore.Mvc;
 

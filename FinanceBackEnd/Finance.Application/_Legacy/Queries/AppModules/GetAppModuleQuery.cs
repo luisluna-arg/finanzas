@@ -1,0 +1,19 @@
+using CQRSDispatch;
+using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Legacy.Repositories;
+using Finance.Domain.Models.AppModules;
+using Finance.Persistence;
+
+namespace Finance.Application.Legacy.Queries.AppModules;
+
+public class GetAppModuleQuery : GetSingleByIdQuery<AppModule, Guid>;
+
+public class GetAppModuleQueryHandler(FinanceDbContext db, IAppModuleRepository repository)
+    : BaseQueryHandler<GetAppModuleQuery, AppModule?>(db)
+{
+    private readonly IAppModuleRepository _repository = repository;
+
+    public override async Task<DataResult<AppModule?>> ExecuteAsync(GetAppModuleQuery request, CancellationToken cancellationToken)
+        => DataResult<AppModule?>.Success(await _repository.GetByIdAsync(request.Id, cancellationToken));
+}

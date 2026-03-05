@@ -2,10 +2,10 @@ using System.ComponentModel;
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Commands.Movements;
-using Finance.Application.Dtos.Movements;
 using Finance.Application.Helpers;
-using Finance.Application.Mapping;
+using Finance.Application.Legacy.Commands.Movements;
+using Finance.Application.Legacy.Dtos.Movements;
+using Finance.Application.Legacy.Mapping;
 using Finance.Domain.Models.Movements;
 using Microsoft.AspNetCore.Mvc;
 

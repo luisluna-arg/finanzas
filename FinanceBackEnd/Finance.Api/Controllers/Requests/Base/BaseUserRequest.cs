@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Finance.Application.Dtos.Identities;
+using Finance.Application.Legacy.Dtos.Identities;
 using Finance.Domain.Enums;
 
 namespace Finance.Api.Controllers.Requests;
