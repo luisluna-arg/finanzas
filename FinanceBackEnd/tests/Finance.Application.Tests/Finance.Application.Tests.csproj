@@ -13,7 +13,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- exclude CS1591 from “warnings as errors” -->
     <WarningsNotAsErrors>1591</WarningsNotAsErrors>
-    <CodeAnalysisRuleSet>../SonarSuppress.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>../../SonarSuppress.ruleset</CodeAnalysisRuleSet>
     <!-- suppress Warning CS1591 -->
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
@@ -37,9 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CQRSDispatch\CQRSDispatch.csproj" />
-    <ProjectReference Include="..\Finance.Application\Finance.Application.csproj" />
-    <ProjectReference Include="..\Finance.Persistence\Finance.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\CQRSDispatch\CQRSDispatch.csproj" />
+    <ProjectReference Include="..\..\src\Finance.Application\Finance.Application.csproj" />
+    <ProjectReference Include="..\..\src\Finance.Persistence\Finance.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

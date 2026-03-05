@@ -3,21 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Persistence", "Finance.Persistence\Finance.Persistence.csproj", "{F9E21653-8764-47AC-9D92-38A57D86A491}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/Finance.Persistence", "src\Finance.Persistence\Finance.Persistence.csproj", "{F9E21653-8764-47AC-9D92-38A57D86A491}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Api", "Finance.Api\Finance.Api.csproj", "{B4E4E18D-365D-4661-8B67-76F4F5D3E31D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/Finance.Api", "src\Finance.Api\Finance.Api.csproj", "{B4E4E18D-365D-4661-8B67-76F4F5D3E31D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Application.Tests", "Finance.Application.Tests\Finance.Application.Tests.csproj", "{1514C0E2-5DA9-4B40-AA06-C879404FB5C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/Finance.Application.Tests", "tests\Finance.Application.Tests\Finance.Application.Tests.csproj", "{1514C0E2-5DA9-4B40-AA06-C879404FB5C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Application", "Finance.Application\Finance.Application.csproj", "{102A747C-0BE9-4118-8BAF-E8BCD654D5AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/Finance.Application", "src\Finance.Application\Finance.Application.csproj", "{102A747C-0BE9-4118-8BAF-E8BCD654D5AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Domain", "Finance.Domain\Finance.Domain.csproj", "{5A1076DF-FB25-46D1-9D45-241FF1D60743}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/Finance.Domain", "src\Finance.Domain\Finance.Domain.csproj", "{5A1076DF-FB25-46D1-9D45-241FF1D60743}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Migrations", "Finance.Migrations\Finance.Migrations.csproj", "{07941F27-5614-424A-A929-57DCC27AE006}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/Finance.Migrations", "src\Finance.Migrations\Finance.Migrations.csproj", "{07941F27-5614-424A-A929-57DCC27AE006}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Authentication", "Finance.Authentication\Finance.Authentication.csproj", "{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/Finance.Authentication", "src\Finance.Authentication\Finance.Authentication.csproj", "{CD482A24-7ACF-4EC1-8B02-77AC14A180A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CQRSDispatch", "CQRSDispatch\CQRSDispatch.csproj", "{1CB44F2D-23FB-416C-9A33-424E6DDBA954}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/CQRSDispatch", "src\CQRSDispatch\CQRSDispatch.csproj", "{1CB44F2D-23FB-416C-9A33-424E6DDBA954}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
