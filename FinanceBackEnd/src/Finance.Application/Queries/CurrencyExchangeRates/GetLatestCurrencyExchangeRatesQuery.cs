@@ -5,22 +5,26 @@ using Finance.Domain.Models.Currencies;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Queries.CurrencyExchangeRates;
+namespace Finance.Application.Queries.CurrencyExchangeRates;
+
+public class GetLatestCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate>
+{
+    public Guid? BaseCurrencyId { get; set; }
+    public Guid? QuoteCurrencyId { get; set; }
+}
 
 public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionQueryHandler<GetLatestCurrencyExchangeRatesQuery, CurrencyExchangeRate>
 {
-    public GetLatestCurrencyExchangeRatesQueryHandler(FinanceDbContext db)
-        : base(db)
-    {
-    }
+    public GetLatestCurrencyExchangeRatesQueryHandler(FinanceDbContext db) : base(db) { }
 
-    public override async Task<DataResult<List<CurrencyExchangeRate>>> ExecuteAsync(GetLatestCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
+    public override async Task<DataResult<List<CurrencyExchangeRate>>> ExecuteAsync(
+        GetLatestCurrencyExchangeRatesQuery request, CancellationToken cancellationToken)
     {
         var latestQuery =
             from o in DbContext.CurrencyExchangeRate
             where (!request.BaseCurrencyId.HasValue || o.BaseCurrencyId == request.BaseCurrencyId.Value)
-               && (!request.QuoteCurrencyId.HasValue || o.QuoteCurrencyId == request.QuoteCurrencyId.Value)
-               && (request.IncludeDeactivated || !o.Deactivated)
+                && (!request.QuoteCurrencyId.HasValue || o.QuoteCurrencyId == request.QuoteCurrencyId.Value)
+                && (request.IncludeDeactivated || !o.Deactivated)
             group o by new { o.BaseCurrencyId, o.QuoteCurrencyId } into g
             select new
             {
@@ -35,8 +39,8 @@ public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionQueryHan
                 on new { o.BaseCurrencyId, o.QuoteCurrencyId, o.TimeStamp }
                 equals new { l.BaseCurrencyId, l.QuoteCurrencyId, TimeStamp = l.LatestTime }
             where (!request.BaseCurrencyId.HasValue || o.BaseCurrencyId == request.BaseCurrencyId.Value)
-               && (!request.QuoteCurrencyId.HasValue || o.QuoteCurrencyId == request.QuoteCurrencyId.Value)
-               && (request.IncludeDeactivated || !o.Deactivated)
+                && (!request.QuoteCurrencyId.HasValue || o.QuoteCurrencyId == request.QuoteCurrencyId.Value)
+                && (request.IncludeDeactivated || !o.Deactivated)
             orderby o.BaseCurrency.Name, o.QuoteCurrency.Name
             select o;
 
@@ -45,15 +49,9 @@ public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionQueryHan
                 .ThenInclude(c => c.Symbols)
             .Include(o => o.QuoteCurrency)
                 .ThenInclude(c => c.Symbols)
-            .AsSplitQuery() // Split query to avoid Cartesian explosion with multiple includes
+            .AsSplitQuery()
             .ToListAsync(cancellationToken);
 
         return DataResult<List<CurrencyExchangeRate>>.Success(result);
     }
-}
-
-public class GetLatestCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate>
-{
-    public Guid? BaseCurrencyId { get; set; }
-    public Guid? QuoteCurrencyId { get; set; }
 }

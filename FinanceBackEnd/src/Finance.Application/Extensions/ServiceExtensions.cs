@@ -1,13 +1,9 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Commands.CurrencyExchangeRates.Owners;
 using Finance.Application.Legacy.Commands.Users;
 using Finance.Application.Services;
 using Finance.Application.Legacy.Services.Interfaces;
-using Finance.Application.Legacy.Services.Orchestrators.CurrencyExchangeRateOrchestrations;
 using Finance.Application.Legacy.Services.RequestBuilders;
-using Finance.Application.Legacy.Services.Requests.CurrencyExchangeRates;
 using Finance.Domain.Models.Auth;
-using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -22,13 +18,6 @@ public static class SagaServiceExtensions
         // TODO Copy RepositoryExtensions 
         RegisterScopedService<CurrencyConversionService>(services);
 
-        RegisterResourcePermissionsOrchestrator<
-            SetCurrencyExchangeRateOwnerSagaRequest,
-            DataResult<CurrencyExchangeRatePermissions>,
-            DeleteCurrencyExchangeRateOwnerSagaRequest,
-            CommandResult,
-            CurrencyExchangeRateOrchestrator>(services);
-
         services.AddScoped<FundService>();
 
         RegisterEntityService<
@@ -41,23 +30,7 @@ public static class SagaServiceExtensions
 
         services.AddScoped<IncomeService>();
         services.AddScoped<SubscriptionService>();
-
-        RegisterEntityService<
-            CurrencyExchangeRate,
-            CurrencyExchangeRateService,
-            CreateCurrencyExchangeRateSagaRequest,
-            UpdateCurrencyExchangeRateSagaRequest,
-            DeleteCurrencyExchangeRateSagaRequest
-            >(services);
-
-        RegisterResourcePermissionsSagaService<
-            CurrencyExchangeRatePermissions,
-            CurrencyExchangeRateOrchestrator,
-            SetCurrencyExchangeRateOwnerSagaRequest,
-            DataResult<CurrencyExchangeRatePermissions>,
-            DeleteCurrencyExchangeRateOwnerSagaRequest,
-            CommandResult,
-            CurrencyExchangeRateOwnerService>(services);
+        services.AddScoped<CurrencyExchangeRateService>();
 
         RegisterScopedService<IdentityService>(services);
 

@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Queries.CurrencyExchangeRates;
+using Finance.Application.Queries.CurrencyExchangeRates;
 using Finance.Domain.DataConverters;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Interfaces;
