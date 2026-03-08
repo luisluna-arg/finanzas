@@ -1,0 +1,48 @@
+name: "Backend API Unit Tests / C#"
+
+on:
+  push:
+    paths:
+      - 'FinanceBackEnd/**'
+  pull_request:
+    paths:
+      - 'FinanceBackEnd/**'
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Debug repository info
+      run: |
+        echo "Repository: ${{ github.repository }}"
+        echo "Event: ${{ github.event_name }}"
+        echo "Ref: ${{ github.ref }}"
+        echo "SHA: ${{ github.sha }}"
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          nuget-${{ runner.os }}-
+
+    - name: Restore NuGet packages
+      run: |
+        dotnet restore FinanceBackEnd/tests/Finance.Application.Tests/Finance.Application.Tests.csproj
+
+    - name: Run unit tests
+      run: |
+        dotnet test FinanceBackEnd/tests/Finance.Application.Tests/Finance.Application.Tests.csproj --configuration Release --no-restore --logger "trx;LogFileName=backend-api-unit-tests.trx"
