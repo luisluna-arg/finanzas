@@ -1,17 +1,13 @@
 using CQRSDispatch;
 using Finance.Application.Legacy.Commands.CurrencyExchangeRates.Owners;
-using Finance.Application.Legacy.Commands.Incomes.Owners;
 using Finance.Application.Legacy.Commands.Users;
 using Finance.Application.Services;
 using Finance.Application.Legacy.Services.Interfaces;
 using Finance.Application.Legacy.Services.Orchestrators.CurrencyExchangeRateOrchestrations;
-using Finance.Application.Legacy.Services.Orchestrators.IncomePermissionsOrchestrations;
 using Finance.Application.Legacy.Services.RequestBuilders;
 using Finance.Application.Legacy.Services.Requests.CurrencyExchangeRates;
-using Finance.Application.Legacy.Services.Requests.Incomes;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
-using Finance.Domain.Models.Incomes;
 using Finance.Domain.Models.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -25,13 +21,6 @@ public static class SagaServiceExtensions
     {
         // TODO Copy RepositoryExtensions 
         RegisterScopedService<CurrencyConversionService>(services);
-
-        RegisterResourcePermissionsOrchestrator<
-            SetIncomeOwnerSagaRequest,
-            DataResult<IncomePermissions>,
-            DeleteIncomeOwnerSagaRequest,
-            CommandResult,
-            IncomePermissionsOrchestrator>(services);
 
         RegisterResourcePermissionsOrchestrator<
             SetCurrencyExchangeRateOwnerSagaRequest,
@@ -50,6 +39,7 @@ public static class SagaServiceExtensions
             DeleteUserSagaRequest
             >(services);
 
+        services.AddScoped<IncomeService>();
         services.AddScoped<SubscriptionService>();
 
         RegisterEntityService<
@@ -60,14 +50,6 @@ public static class SagaServiceExtensions
             DeleteCurrencyExchangeRateSagaRequest
             >(services);
 
-        RegisterEntityService<
-            Income,
-            IncomeService,
-            CreateIncomeSagaRequest,
-            UpdateIncomeSagaRequest,
-            DeleteIncomeSagaRequest
-            >(services);
-
         RegisterResourcePermissionsSagaService<
             CurrencyExchangeRatePermissions,
             CurrencyExchangeRateOrchestrator,
@@ -76,15 +58,6 @@ public static class SagaServiceExtensions
             DeleteCurrencyExchangeRateOwnerSagaRequest,
             CommandResult,
             CurrencyExchangeRateOwnerService>(services);
-
-        RegisterResourcePermissionsSagaService<
-            IncomePermissions,
-            IncomePermissionsOrchestrator,
-            SetIncomeOwnerSagaRequest,
-            DataResult<IncomePermissions>,
-            DeleteIncomeOwnerSagaRequest,
-            CommandResult,
-            IncomeOwnerService>(services);
 
         RegisterScopedService<IdentityService>(services);
 
