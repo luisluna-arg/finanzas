@@ -6,15 +6,16 @@ using Finance.Domain.Models.Debits;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Queries.Debits;
+namespace Finance.Application.Queries.Debits;
 
-public class GetAllDebitsQueryHandler : BaseCollectionQueryHandler<GetAllDebitsQuery, Debit>
+public class GetAllDebitsQuery : GetAllQuery<Debit>
 {
-    public GetAllDebitsQueryHandler(FinanceDbContext db)
-        : base(db)
-    {
-    }
+    public Guid? AppModuleId { get; set; }
+    public FrequencyEnum Frequency { get; set; }
+}
 
+public class GetAllDebitsQueryHandler(FinanceDbContext db) : BaseCollectionQueryHandler<GetAllDebitsQuery, Debit>(db)
+{
     public override async Task<DataResult<List<Debit>>> ExecuteAsync(GetAllDebitsQuery request, CancellationToken cancellationToken)
     {
         var query = DbContext.Debit.Include(o => o.Origin).ThenInclude(o => o.AppModule).AsQueryable();
@@ -30,13 +31,6 @@ public class GetAllDebitsQueryHandler : BaseCollectionQueryHandler<GetAllDebitsQ
         }
 
         return DataResult<List<Debit>>.Success(
-            await query.OrderByDescending(o => o.TimeStamp).ThenBy(o => o.Origin.Name).ToListAsync(cancellationToken)
-        );
+            await query.OrderByDescending(o => o.TimeStamp).ThenBy(o => o.Origin.Name).ToListAsync(cancellationToken));
     }
-}
-
-public class GetAllDebitsQuery : GetAllQuery<Debit>
-{
-    public Guid? AppModuleId { get; set; }
-    public FrequencyEnum Frequency { get; set; }
 }

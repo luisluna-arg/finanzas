@@ -6,23 +6,24 @@ using Finance.Domain.Models.Debits;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Queries.Debits;
+namespace Finance.Application.Queries.Debits;
 
-public class GetLatestDebitsQueryHandler : BaseCollectionQueryHandler<GetLatestDebitsQuery, Debit>
+public class GetLatestDebitsQuery : GetAllQuery<Debit>
 {
-    public GetLatestDebitsQueryHandler(FinanceDbContext db)
-        : base(db)
-    {
-    }
+    public Guid? AppModuleId { get; set; }
+    public FrequencyEnum Frequency { get; set; }
+}
 
+public class GetLatestDebitsQueryHandler(FinanceDbContext db) : BaseCollectionQueryHandler<GetLatestDebitsQuery, Debit>(db)
+{
     public override async Task<DataResult<List<Debit>>> ExecuteAsync(GetLatestDebitsQuery request, CancellationToken cancellationToken)
     {
         var originIds = DbContext.DebitOrigin.Where(o => o.AppModuleId == request.AppModuleId).Select(o => o.Id).ToArray();
 
         var baseQuery = DbContext.Debit
-                .Include(o => o.Origin)
-                .ThenInclude(o => o.AppModule)
-                .AsQueryable();
+            .Include(o => o.Origin)
+            .ThenInclude(o => o.AppModule)
+            .AsQueryable();
 
         if (!request.IncludeDeactivated)
         {
@@ -34,19 +35,13 @@ public class GetLatestDebitsQueryHandler : BaseCollectionQueryHandler<GetLatestD
         foreach (var id in originIds)
         {
             var record = await baseQuery
-                        .Where(o => o.OriginId == id)
-                        .OrderByDescending(e => e.TimeStamp)
-                        .FirstOrDefaultAsync(cancellationToken);
+                .Where(o => o.OriginId == id)
+                .OrderByDescending(e => e.TimeStamp)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (record != null) debits.Add(record);
         }
 
         return DataResult<List<Debit>>.Success(debits.OrderBy(x => x.Origin.Name).ToList());
     }
-}
-
-public class GetLatestDebitsQuery : GetAllQuery<Debit>
-{
-    public Guid? AppModuleId { get; set; }
-    public FrequencyEnum Frequency { get; set; }
 }

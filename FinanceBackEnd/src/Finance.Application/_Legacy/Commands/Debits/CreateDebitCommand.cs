@@ -68,7 +68,7 @@ public class CreateDebitCommandHandler : BaseCommandHandler<CreateDebitCommand, 
     }
 }
 
-public class CreateDebitCommand : ICommand
+public class CreateDebitCommand : ICommand<DataResult<Debit>>
 {
     public Guid AppModuleId { get; set; }
     [Required]

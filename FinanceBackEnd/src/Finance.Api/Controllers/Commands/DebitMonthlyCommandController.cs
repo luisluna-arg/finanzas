@@ -1,23 +1,24 @@
 using System.ComponentModel;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Commands.Debits;
 using Finance.Application.Legacy.Mapping;
+using Finance.Application.Services;
+using Finance.Application.Services.Debits;
 using Finance.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/debits/monthly")]
-public class MonthlyDebitCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
-    : DebitCommandController(mapper, dispatcher)
+public class MonthlyDebitCommandController(
+    IMappingService mapper,
+    IDispatcher<FinanceDispatchContext> dispatcher,
+    DebitService debitService)
+    : DebitCommandController(mapper, dispatcher, debitService)
 {
     [HttpPost]
-    public new async Task<IActionResult> Create(CreateDebitCommand command)
-    {
-        command.Frequency = FrequencyEnum.Monthly;
-        return await base.Create(command);
-    }
+    public new async Task<IActionResult> Create(CreateDebitRequest request)
+        => await base.Create(request with { Frequency = FrequencyEnum.Monthly });
 
     [HttpPost]
     [Route("upload")]

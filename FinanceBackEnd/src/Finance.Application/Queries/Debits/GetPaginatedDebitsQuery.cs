@@ -7,18 +7,18 @@ using Finance.Domain.Models.Debits;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Queries.Debits;
+namespace Finance.Application.Queries.Debits;
 
-public class GetPaginatedDebitsQueryHandler : IQueryHandler<GetPaginatedDebitsQuery, PaginatedResult<Debit>>
+public class GetPaginatedDebitsQuery : GetPaginatedQuery<Debit>
 {
-    private readonly FinanceDbContext dbContext;
+    public Guid? AppModuleId { get; set; }
+    public Guid? OriginId { get; set; }
+    public AppModuleTypeEnum? AppModuleType { get; set; }
+    public FrequencyEnum Frequency { get; set; }
+}
 
-    public GetPaginatedDebitsQueryHandler(
-        FinanceDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
-
+public class GetPaginatedDebitsQueryHandler(FinanceDbContext dbContext) : IQueryHandler<GetPaginatedDebitsQuery, PaginatedResult<Debit>>
+{
     public async Task<DataResult<PaginatedResult<Debit>>> ExecuteAsync(GetPaginatedDebitsQuery request, CancellationToken cancellationToken)
     {
         IQueryable<Debit> query = dbContext.Set<Debit>()
@@ -57,10 +57,9 @@ public class GetPaginatedDebitsQueryHandler : IQueryHandler<GetPaginatedDebitsQu
             query = query.Where(o => o.Origin.AppModule.Type.Id == request.AppModuleType.Value);
         }
 
-        // Pagination
         int page = request.Page;
         int pageSize = request.PageSize;
-        int totalItems = await query.CountAsync();
+        int totalItems = await query.CountAsync(cancellationToken);
 
         var paginatedItems = await query
             .OrderByDescending(o => o.TimeStamp)
@@ -69,16 +68,6 @@ public class GetPaginatedDebitsQueryHandler : IQueryHandler<GetPaginatedDebitsQu
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        var paginatedResult = new PaginatedResult<Debit>(paginatedItems, page, pageSize, totalItems);
-
-        return DataResult<PaginatedResult<Debit>>.Success(paginatedResult);
+        return DataResult<PaginatedResult<Debit>>.Success(new PaginatedResult<Debit>(paginatedItems, page, pageSize, totalItems));
     }
-}
-
-public class GetPaginatedDebitsQuery : GetPaginatedQuery<Debit>
-{
-    public Guid? AppModuleId { get; set; }
-    public Guid? OriginId { get; set; }
-    public AppModuleTypeEnum? AppModuleType { get; set; }
-    public FrequencyEnum Frequency { get; set; }
 }
