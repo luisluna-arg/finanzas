@@ -8,30 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Funds;
 
-public class GetLatestFundQuery : IQuery<Fund?>
+public record GetLatestFundQuery(Guid BankId, bool? DailyUse = null) : IQuery<Fund?>;
+
+public class GetLatestFundQueryHandler(FinanceDbContext db, IRepository<Fund, Guid> movementRepository)
+    : BaseQueryHandler<GetLatestFundQuery, Fund?>(db)
 {
-    private Guid bankId;
-
-    public GetLatestFundQuery(Guid bankId)
-    {
-        this.bankId = bankId;
-    }
-
-    public Guid BankId { get => bankId; }
-    public bool? DailyUse { get; set; }
-}
-
-public class GetLatestFundQueryHandler : BaseQueryHandler<GetLatestFundQuery, Fund?>
-{
-    private readonly IRepository<Fund, Guid> movementRepository;
-
-    public GetLatestFundQueryHandler(
-        FinanceDbContext db,
-        IRepository<Fund, Guid> movementRepository)
-        : base(db)
-    {
-        this.movementRepository = movementRepository;
-    }
 
     public override async Task<DataResult<Fund?>> ExecuteAsync(GetLatestFundQuery request, CancellationToken cancellationToken)
     {

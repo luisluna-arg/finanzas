@@ -3,7 +3,7 @@ using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
 using Finance.Application.Legacy.Dtos.Subscriptions;
 using Finance.Application.Legacy.Mapping;
-using Finance.Application.Legacy.Queries.Subscriptions;
+using Finance.Application.Queries.Subscriptions;
 using Finance.Domain.Models.Subscriptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
