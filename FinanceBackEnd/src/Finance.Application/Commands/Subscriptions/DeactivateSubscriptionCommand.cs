@@ -1,10 +1,11 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Commands.Subscriptions.Base;
-using Finance.Application.Legacy.Services;
+using Finance.Application.Commands.Base;
+using Finance.Application.Commands.Subscriptions.Base;
+using Finance.Application.Services;
 using Finance.Domain.Models.Subscriptions;
 
-namespace Finance.Application.Legacy.Commands.Subscriptions;
+namespace Finance.Application.Commands.Subscriptions;
 
 public class DeactivateSubscriptionCommand : BatchSubscriptionUpdateBaseCommand;
 

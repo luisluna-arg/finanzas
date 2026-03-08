@@ -1,5 +1,5 @@
-using Finance.Application.Legacy.Commands.Subscriptions;
-using Finance.Application.Legacy.Services;
+using Finance.Application.Commands.Subscriptions;
+using Finance.Application.Services;
 using Finance.Domain.Models.Subscriptions;
 using FluentValidation;
 

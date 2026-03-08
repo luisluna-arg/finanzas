@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using Finance.Application.Legacy.Repositories.Base;
+using Finance.Application.Repositories.Base;
 
 public static class RepositoryExtensions
 {

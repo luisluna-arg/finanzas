@@ -1,8 +1,8 @@
 using CQRSDispatch;
 using Finance.Application.Legacy.Base.Handlers;
 using Finance.Application.Legacy.Queries.Base;
-using Finance.Application.Legacy.Repositories;
-using Finance.Application.Legacy.Repositories.Base;
+using Finance.Application.Repositories;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.IOLInvestments;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;

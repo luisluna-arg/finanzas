@@ -1,8 +1,8 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Commands.Subscriptions;
-using Finance.Application.Legacy.Repositories;
+using Finance.Application.Commands.Subscriptions;
+using Finance.Application.Repositories;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;

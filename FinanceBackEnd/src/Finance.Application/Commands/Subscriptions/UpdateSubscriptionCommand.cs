@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Commands.Subscriptions.Base;
-using Finance.Application.Legacy.Repositories;
+using Finance.Application.Commands.Base;
+using Finance.Application.Commands.Subscriptions.Base;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Subscriptions;
 using Finance.Persistence;
 using FluentValidation;
 
-namespace Finance.Application.Legacy.Commands.Subscriptions;
+namespace Finance.Application.Commands.Subscriptions;
 
 public class UpdateSubscriptionCommand : UpsertSubscriptionBaseCommand
 {

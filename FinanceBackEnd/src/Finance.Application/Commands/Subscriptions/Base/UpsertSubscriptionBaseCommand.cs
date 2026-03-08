@@ -6,7 +6,7 @@ using Finance.Domain.Enums;
 using Finance.Domain.Models.Subscriptions;
 using FluentValidation;
 
-namespace Finance.Application.Legacy.Commands.Subscriptions.Base;
+namespace Finance.Application.Commands.Subscriptions.Base;
 
 public abstract class UpsertSubscriptionBaseCommand : IContextAwareCommand<FinanceDispatchContext, DataResult<Subscription>>
 {

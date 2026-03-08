@@ -1,7 +1,8 @@
 using CQRSDispatch;
 using Finance.Application.Legacy.Base.Handlers;
 using Finance.Application.Legacy.Queries.Base;
-using Finance.Application.Legacy.Repositories;
+using Finance.Application.Repositories;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.Incomes;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -34,12 +35,12 @@ public class GetIncomesQueryHandler : BaseCollectionHandler<GetIncomesQuery, Inc
 
         if (request.From.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Repositories.Base.ExpressionOperator.GreaterThanOrEqual, request.From.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.GreaterThanOrEqual, request.From.Value);
         }
 
         if (request.To.HasValue)
         {
-            query = query.FilterBy("TimeStamp", Repositories.Base.ExpressionOperator.LessThanOrEqual, request.To.Value);
+            query = query.FilterBy("TimeStamp", ExpressionOperator.LessThanOrEqual, request.To.Value);
         }
 
         if (request.CurrencyId.HasValue)

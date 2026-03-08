@@ -1,4 +1,5 @@
 
+using Finance.Application.Repositories;
 using Finance.Domain.Models.AppModules;
 
 namespace Finance.Application.Legacy.Repositories;

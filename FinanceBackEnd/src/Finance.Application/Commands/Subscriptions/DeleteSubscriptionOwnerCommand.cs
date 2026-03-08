@@ -1,10 +1,10 @@
 
-using Finance.Application.Legacy.Commands.Base;
+using Finance.Application.Commands.Base;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Subscriptions;
 using Finance.Persistence;
 
-namespace Finance.Application.Legacy.Commands;
+namespace Finance.Application.Commands.Subscriptions;
 
 public class DeleteSubscriptionOwnerCommand
     : DeleteEntityOwnerCommand<Subscription, Guid, SubscriptionPermissions>;

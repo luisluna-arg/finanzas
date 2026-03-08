@@ -1,14 +1,14 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Commands.Base;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Base;
 using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Commands;
+namespace Finance.Application.Commands;
 
 public abstract class CreateResourcePermissionsCommand<TResource, TId, TResourcePermissions>
     : IContextAwareCommand<FinanceDispatchContext, DataResult<TResourcePermissions>>

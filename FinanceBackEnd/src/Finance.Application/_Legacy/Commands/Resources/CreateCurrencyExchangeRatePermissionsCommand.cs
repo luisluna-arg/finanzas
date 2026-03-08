@@ -1,3 +1,4 @@
+using Finance.Application.Commands;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
 using Finance.Persistence;

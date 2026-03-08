@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Commands.Base;
 using Finance.Application.Legacy.Repositories;
+using Finance.Application.Repositories;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.AppModules;
 using Finance.Domain.Models.Currencies;

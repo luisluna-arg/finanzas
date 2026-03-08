@@ -1,4 +1,4 @@
-using Finance.Application.Legacy.Repositories.Base;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.Debits;
 using Finance.Persistence;
 

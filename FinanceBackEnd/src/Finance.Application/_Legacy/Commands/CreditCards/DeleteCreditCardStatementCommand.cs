@@ -1,6 +1,6 @@
 using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Repositories;
-using Finance.Application.Legacy.Services;
+using Finance.Application.Repositories;
+using Finance.Application.Services;
 using Finance.Domain.Models.CreditCards;
 
 namespace Finance.Application.Legacy.Commands.CreditCards;

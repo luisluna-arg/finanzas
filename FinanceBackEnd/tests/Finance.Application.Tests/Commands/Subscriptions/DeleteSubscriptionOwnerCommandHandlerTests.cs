@@ -1,5 +1,5 @@
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Commands;
+using Finance.Application.Commands.Subscriptions;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Identities;
 using Finance.Domain.Models.Subscriptions;

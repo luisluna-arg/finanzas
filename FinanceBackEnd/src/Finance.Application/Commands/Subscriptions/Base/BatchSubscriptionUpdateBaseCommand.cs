@@ -3,7 +3,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using FluentValidation;
 
-namespace Finance.Application.Legacy.Commands.Subscriptions.Base;
+namespace Finance.Application.Commands.Subscriptions.Base;
 
 public abstract class BatchSubscriptionUpdateBaseCommand : IContextAwareCommand<FinanceDispatchContext, CommandResult>
 {

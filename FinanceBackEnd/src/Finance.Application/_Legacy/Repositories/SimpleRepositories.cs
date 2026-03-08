@@ -1,4 +1,4 @@
-using Finance.Application.Legacy.Repositories.Base;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.AppModules;
 using Finance.Domain.Models.Auth;

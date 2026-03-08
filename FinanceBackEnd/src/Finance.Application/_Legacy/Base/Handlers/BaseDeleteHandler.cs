@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Repositories;
-using Finance.Application.Legacy.Services;
+using Finance.Application.Repositories;
+using Finance.Application.Services;
 using Finance.Domain.Models.Base;
 using FluentValidation;
 

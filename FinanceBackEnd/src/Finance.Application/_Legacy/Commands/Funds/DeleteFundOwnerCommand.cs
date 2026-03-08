@@ -1,5 +1,5 @@
 
-using Finance.Application.Legacy.Commands.Base;
+using Finance.Application.Commands.Base;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Funds;
 using Finance.Persistence;
