@@ -4,7 +4,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using Finance.Application.Commands.Base;
 using Finance.Application.Commands.Debits.Base;
-using Finance.Application.Legacy.Commands.DebitOrigins;
+using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.Debits;
 using Finance.Persistence;

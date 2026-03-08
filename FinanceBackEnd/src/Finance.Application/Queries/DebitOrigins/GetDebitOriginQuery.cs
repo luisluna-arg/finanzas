@@ -5,7 +5,7 @@ using Finance.Domain.Models.Debits;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Queries.DebitOrigins;
+namespace Finance.Application.Queries.DebitOrigins;
 
 public class GetDebitOriginQuery : GetSingleByIdQuery<DebitOrigin?, Guid>;
 
@@ -15,5 +15,5 @@ public class GetDebitOriginQueryHandler(FinanceDbContext db) : BaseQueryHandler<
         => DataResult<DebitOrigin?>.Success(
             await DbContext.DebitOrigin
             .Include(o => o.AppModule)
-            .FirstOrDefaultAsync(o => o.Id == request.Id));
+            .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken));
 }
