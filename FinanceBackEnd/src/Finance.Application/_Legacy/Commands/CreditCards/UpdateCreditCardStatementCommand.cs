@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.CreditCards;
 using Finance.Persistence;
 using FluentValidation;
 
-namespace Finance.Application.Legacy.Commands.CreditCards;
+namespace Finance.Application.Commands.CreditCards;
 
 public class UpdateCreditCardStatementCommandHandler(
     IRepository<CreditCardStatement, Guid> creditCardStatementRepository,

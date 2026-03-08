@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Auth;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ namespace Finance.Application.Legacy.Queries.Roles;
 
 public class GetAllRolesQuery : GetAllQuery<Role>;
 
-public class GetAllRolesQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllRolesQuery, Role>(db)
+public class GetAllRolesQueryHandler(FinanceDbContext db) : BaseCollectionQueryHandler<GetAllRolesQuery, Role>(db)
 {
     public override async Task<DataResult<List<Role>>> ExecuteAsync(GetAllRolesQuery request, CancellationToken cancellationToken)
     {

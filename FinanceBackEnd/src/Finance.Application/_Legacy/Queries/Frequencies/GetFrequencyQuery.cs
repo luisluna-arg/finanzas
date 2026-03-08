@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.Frequencies;
 using Finance.Persistence;

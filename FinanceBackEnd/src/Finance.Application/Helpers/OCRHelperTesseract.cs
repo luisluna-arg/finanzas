@@ -12,7 +12,15 @@ using Tesseract;
 namespace Finance.Helpers;
 
 [SupportedOSPlatform("windows")]
-public class OcrHelper
+public interface IOcrHelper
+{
+    string[] CitricCaptureToImage(IEnumerable<IFormFile> files);
+
+    MemoryStream AdjustImage(MemoryStream stream);
+}
+
+[SupportedOSPlatform("windows")]
+public class OcrHelper : IOcrHelper
 {
     private const string LanguageFilePath = @"./Assets/tessdata";
 

@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.IOLInvestments;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Legacy.Queries.IOLInvestments;
 
-public class GetAllIOLInvestmentQueryHandler : BaseCollectionHandler<GetIOLInvestmentsQuery, IOLInvestment>
+public class GetAllIOLInvestmentQueryHandler : BaseCollectionQueryHandler<GetIOLInvestmentsQuery, IOLInvestment>
 {
     private readonly IRepository<IOLInvestment, Guid> repository;
 

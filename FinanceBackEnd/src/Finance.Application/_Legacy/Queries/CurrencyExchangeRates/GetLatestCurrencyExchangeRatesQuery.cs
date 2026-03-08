@@ -1,13 +1,13 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Currencies;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Legacy.Queries.CurrencyExchangeRates;
 
-public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionHandler<GetLatestCurrencyExchangeRatesQuery, CurrencyExchangeRate>
+public class GetLatestCurrencyExchangeRatesQueryHandler : BaseCollectionQueryHandler<GetLatestCurrencyExchangeRatesQuery, CurrencyExchangeRate>
 {
     public GetLatestCurrencyExchangeRatesQueryHandler(FinanceDbContext db)
         : base(db)

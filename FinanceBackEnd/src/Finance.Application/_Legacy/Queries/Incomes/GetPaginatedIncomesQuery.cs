@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Commons;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Queries.Base;
 using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.Incomes;
 using Finance.Persistence;

@@ -1,13 +1,12 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Commands.Base;
-using Finance.Application.Commands.Subscriptions.Base;
 using Finance.Application.Services;
 using Finance.Domain.Models.Subscriptions;
 
 namespace Finance.Application.Commands.Subscriptions;
 
-public class DeactivateSubscriptionCommand : BatchSubscriptionUpdateBaseCommand;
+public class DeactivateSubscriptionCommand : BatchUpdateBaseCommand;
 
 public class DeactivateSubscriptionCommandHandler(IEntityService<Subscription, Guid> service) : ICommandHandler<DeactivateSubscriptionCommand>
 {
@@ -21,4 +20,4 @@ public class DeactivateSubscriptionCommandHandler(IEntityService<Subscription, G
     }
 }
 
-public class DeactivateSubscriptionCommandValidator : BatchSubscriptionUpdateBaseCommandValidator<DeactivateSubscriptionCommand>;
+public class DeactivateSubscriptionCommandValidator : BatchUpdateBaseCommandValidator<DeactivateSubscriptionCommand>;

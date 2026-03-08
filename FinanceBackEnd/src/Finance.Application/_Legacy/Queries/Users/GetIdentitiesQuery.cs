@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Identities;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ public class GetIdentitiesQuery : GetAllQuery<Identity>
     public Guid UserId { get; set; }
 }
 
-public class GetIdentitiesQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetIdentitiesQuery, Identity>(db)
+public class GetIdentitiesQueryHandler(FinanceDbContext db) : BaseCollectionQueryHandler<GetIdentitiesQuery, Identity>(db)
 {
     public override async Task<DataResult<List<Identity>>> ExecuteAsync(GetIdentitiesQuery request, CancellationToken cancellationToken)
     {

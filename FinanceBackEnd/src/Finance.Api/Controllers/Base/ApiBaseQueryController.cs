@@ -3,7 +3,7 @@ using Finance.Application.Auth;
 using Finance.Application.Commons;
 using Finance.Application.Legacy.Dtos.Base;
 using Finance.Application.Legacy.Mapping;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

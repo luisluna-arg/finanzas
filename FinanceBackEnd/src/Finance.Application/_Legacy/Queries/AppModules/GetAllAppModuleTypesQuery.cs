@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Application.Repositories;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.AppModules;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Legacy.Queries.AppModules;
 
-public class GetAllAppModuleTypesQueryHandler : BaseCollectionHandler<GetAllAppModuleTypesQuery, AppModuleType>
+public class GetAllAppModuleTypesQueryHandler : BaseCollectionQueryHandler<GetAllAppModuleTypesQuery, AppModuleType>
 {
     private readonly IRepository<AppModuleType, AppModuleTypeEnum> _appModuleTypeRepository;
 
