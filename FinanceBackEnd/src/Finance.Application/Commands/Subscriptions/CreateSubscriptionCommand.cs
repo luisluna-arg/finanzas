@@ -1,7 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Base.Handlers;
 using Finance.Application.Commands.Base;
 using Finance.Application.Commands.Subscriptions.Base;
 using Finance.Application.Repositories;

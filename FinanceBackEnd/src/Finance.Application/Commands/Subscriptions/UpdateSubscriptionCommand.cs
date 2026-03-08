@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using CQRSDispatch;
-using Finance.Application.Base.Handlers;
 using Finance.Application.Commands.Base;
 using Finance.Application.Commands.Subscriptions.Base;
 using Finance.Application.Repositories;

@@ -1,6 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Base.Handlers;
+using Finance.Application.Commands.Base;
 using Finance.Application.Repositories;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.Currencies;

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Base.Handlers;
+using Finance.Application.Commands.Base;
 using Finance.Application.Legacy.Commands.DebitOrigins;
 using Finance.Application.Repositories;
 using Finance.Domain.Enums;

@@ -1,5 +1,5 @@
 using CQRSDispatch;
-using Finance.Application.Base.Handlers;
+using Finance.Application.Commands.Base;
 using Finance.Application.Legacy.Repositories;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.AppModules;
