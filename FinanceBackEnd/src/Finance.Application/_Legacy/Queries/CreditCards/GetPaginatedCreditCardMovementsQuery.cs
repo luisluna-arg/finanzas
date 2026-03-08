@@ -1,4 +1,4 @@
-// using Finance.Application.Legacy.Queries.Base;
+// using Finance.Application.Queries.Base;
 // using Finance.Application.Commons;
 // using CQRSDispatch;
 // using CQRSDispatch.Interfaces;

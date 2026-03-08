@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Currencies;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ namespace Finance.Application.Legacy.Queries.Currencies;
 
 public class GetAllCurrenciesQuery : GetAllQuery<Currency>;
 
-public class GetAllCurrenciesQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllCurrenciesQuery, Currency>(db)
+public class GetAllCurrenciesQueryHandler(FinanceDbContext db) : BaseCollectionQueryHandler<GetAllCurrenciesQuery, Currency>(db)
 {
     public override async Task<DataResult<List<Currency>>> ExecuteAsync(GetAllCurrenciesQuery request, CancellationToken cancellationToken)
     {

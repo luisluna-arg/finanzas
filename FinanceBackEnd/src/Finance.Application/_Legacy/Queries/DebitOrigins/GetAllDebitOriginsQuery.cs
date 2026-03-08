@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Debits;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ namespace Finance.Application.Legacy.Queries.DebitOrigins;
 
 public class GetAllDebitOriginsQuery : GetAllQuery<DebitOrigin>;
 
-public class GetAllDebitOriginsQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllDebitOriginsQuery, DebitOrigin>(db)
+public class GetAllDebitOriginsQueryHandler(FinanceDbContext db) : BaseCollectionQueryHandler<GetAllDebitOriginsQuery, DebitOrigin>(db)
 {
     public override async Task<DataResult<List<DebitOrigin>>> ExecuteAsync(GetAllDebitOriginsQuery request, CancellationToken cancellationToken)
     {

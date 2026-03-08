@@ -1,4 +1,4 @@
-using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
 using Finance.Application.Services;
 using Finance.Domain.Models.CreditCards;

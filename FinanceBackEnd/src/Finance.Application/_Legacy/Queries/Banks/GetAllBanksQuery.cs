@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Banks;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ namespace Finance.Application.Legacy.Queries.Banks;
 
 public class GetAllBanksQuery : GetAllQuery<Bank>;
 
-public class GetAllBanksQueryHandler(FinanceDbContext db) : BaseCollectionHandler<GetAllBanksQuery, Bank>(db)
+public class GetAllBanksQueryHandler(FinanceDbContext db) : BaseCollectionQueryHandler<GetAllBanksQuery, Bank>(db)
 {
     public override async Task<DataResult<List<Bank>>> ExecuteAsync(GetAllBanksQuery request, CancellationToken cancellationToken)
     {

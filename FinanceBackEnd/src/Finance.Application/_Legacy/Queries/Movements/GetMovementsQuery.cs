@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Application.Repositories;
 using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.Movements;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Legacy.Queries.Movements;
 
-public class GetMovementsQueryHandler : BaseCollectionHandler<GetMovementsQuery, Movement>
+public class GetMovementsQueryHandler : BaseCollectionQueryHandler<GetMovementsQuery, Movement>
 {
     private readonly IRepository<Movement, Guid> movementRepository;
 

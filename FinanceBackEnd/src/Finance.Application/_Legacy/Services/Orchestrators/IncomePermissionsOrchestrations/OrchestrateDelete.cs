@@ -1,5 +1,5 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Commands;
+using Finance.Application.Commands;
 using Finance.Application.Legacy.Commands.Incomes.Owners;
 using Finance.Domain.Models.Auth;
 using Microsoft.AspNetCore.Http;

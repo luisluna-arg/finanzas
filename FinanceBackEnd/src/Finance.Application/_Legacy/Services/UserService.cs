@@ -11,8 +11,10 @@ using Finance.Domain.Models.Auth;
 using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage;
+using Finance.Application.Queries.Users;
+using Finance.Application.Legacy.Services;
 
-namespace Finance.Application.Legacy.Services;
+namespace Finance.Application.Services;
 
 public class UserService(
     IDispatcher<FinanceDispatchContext> dispatcher,

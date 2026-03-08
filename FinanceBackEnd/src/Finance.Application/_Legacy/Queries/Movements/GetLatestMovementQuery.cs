@@ -1,12 +1,12 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.Movements;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Queries.Movements;
+namespace Finance.Application.Queries.Movements;
 
 public class GetLatestMovementQueryHandler : BaseQueryHandler<GetLatestMovementQuery, Movement?>
 {

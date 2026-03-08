@@ -1,11 +1,11 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.Auth;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Queries.Users;
+namespace Finance.Application.Queries.Users;
 
 public class GetUserBySourceIdsQuery : ContextAwareQuery<User?>
 {

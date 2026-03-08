@@ -1,6 +1,6 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.IOLInvestments;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +10,7 @@ namespace Finance.Application.Legacy.Queries.IOLInvestmentAssets;
 public class GetAllIOLInvestmentAssetsQuery : GetAllQuery<IOLInvestmentAsset>;
 
 public class GetAllIOLInvestmentAssetsQueryHandler(FinanceDbContext db)
-    : BaseCollectionHandler<GetAllIOLInvestmentAssetsQuery, IOLInvestmentAsset>(db)
+    : BaseCollectionQueryHandler<GetAllIOLInvestmentAssetsQuery, IOLInvestmentAsset>(db)
 {
     public override async Task<DataResult<List<IOLInvestmentAsset>>> ExecuteAsync(GetAllIOLInvestmentAssetsQuery request, CancellationToken cancellationToken)
     {

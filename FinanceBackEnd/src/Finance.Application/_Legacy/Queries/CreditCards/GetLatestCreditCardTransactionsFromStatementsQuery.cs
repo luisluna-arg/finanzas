@@ -1,13 +1,13 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Queries.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Queries.Base;
 using Finance.Domain.Models.CreditCards;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Legacy.Queries.CreditCards;
 
-public class GetLatestCreditCardTransactionsFromStatementsQueryHandler : BaseCollectionHandler<GetLatestCreditCardTransactionsFromStatementsQuery, CreditCardTransaction>
+public class GetLatestCreditCardTransactionsFromStatementsQueryHandler : BaseCollectionQueryHandler<GetLatestCreditCardTransactionsFromStatementsQuery, CreditCardTransaction>
 {
     public GetLatestCreditCardTransactionsFromStatementsQueryHandler(FinanceDbContext db)
         : base(db)
