@@ -1,9 +1,9 @@
-// using Finance.Application.Legacy.Base.Handlers;
+// using Finance.Application.Base.Handlers;
 // using CQRSDispatch;
 // using CQRSDispatch.Interfaces;
 // // using Finance.Helpers.ExcelHelper;
-// using Finance.Application.Legacy.Repositories;
-// using Finance.Application.Legacy.Repositories.Base;
+// using Finance.Application.Repositories;
+// using Finance.Application.Repositories.Base;
 // using Finance.Persistence;
 // using Microsoft.AspNetCore.Http;
 // using Microsoft.EntityFrameworkCore;

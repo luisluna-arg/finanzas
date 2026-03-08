@@ -1,7 +1,7 @@
-using Finance.Application.Legacy.Repositories;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Base;
 
-namespace Finance.Application.Legacy.Services;
+namespace Finance.Application.Services;
 
 public class EntityService<TEntity, TId>
     : IEntityService<TEntity, TId>

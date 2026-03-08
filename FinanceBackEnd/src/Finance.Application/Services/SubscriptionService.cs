@@ -1,8 +1,8 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Commands;
-using Finance.Application.Legacy.Commands.Subscriptions;
+using Finance.Application.Commands;
+using Finance.Application.Commands.Subscriptions;
 using Finance.Application.Services.Subscriptions;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Subscriptions;

@@ -3,7 +3,7 @@ using Finance.Domain.Models.Base;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Repositories.Base;
+namespace Finance.Application.Repositories.Base;
 
 public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
     where TEntity : Entity<TId>

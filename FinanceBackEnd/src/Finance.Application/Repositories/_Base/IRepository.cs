@@ -1,7 +1,7 @@
-using Finance.Application.Legacy.Repositories.Base;
+using Finance.Application.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Repositories;
+namespace Finance.Application.Repositories;
 
 public interface IRepository<TEntity, TId>
     where TEntity : class

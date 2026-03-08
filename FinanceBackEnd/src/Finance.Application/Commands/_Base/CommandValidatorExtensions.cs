@@ -1,6 +1,8 @@
 using FluentValidation;
 using FluentValidation.Results;
 
+namespace Finance.Application.Commands.Base;
+
 public static class CommandValidatorExtensions
 {
     public static void ThrowIfNotValid<TCommand>(this TCommand command, AbstractValidator<TCommand> validator)

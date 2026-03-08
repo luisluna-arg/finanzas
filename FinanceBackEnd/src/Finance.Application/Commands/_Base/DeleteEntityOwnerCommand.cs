@@ -6,7 +6,7 @@ using Finance.Domain.Models.Base;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Commands.Base;
+namespace Finance.Application.Commands.Base;
 
 public abstract class DeleteEntityOwnerCommand<TEntity, TId, TResourcePermissions> : OwnerBaseCommand<CommandResult>
     where TEntity : Entity<TId>

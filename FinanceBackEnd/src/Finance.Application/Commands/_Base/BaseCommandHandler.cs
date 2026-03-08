@@ -2,7 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Persistence;
 
-namespace Finance.Application.Legacy.Base.Handlers;
+namespace Finance.Application.Base.Handlers;
 
 public abstract class BaseCommandHandler<TCommand, TResult> : ICommandHandler<TCommand, DataResult<TResult>>
     where TCommand : ICommand

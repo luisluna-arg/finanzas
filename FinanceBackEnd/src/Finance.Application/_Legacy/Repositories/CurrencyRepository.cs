@@ -1,4 +1,4 @@
-using Finance.Application.Legacy.Repositories.Base;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.Currencies;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;

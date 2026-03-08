@@ -1,4 +1,4 @@
-namespace Finance.Application.Legacy.Repositories.Base;
+namespace Finance.Application.Repositories.Base;
 
 public enum ExpressionOperator
 {

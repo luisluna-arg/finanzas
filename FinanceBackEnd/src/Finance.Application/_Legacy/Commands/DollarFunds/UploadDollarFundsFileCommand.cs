@@ -1,8 +1,9 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Base.Handlers;
+using Finance.Application.Base.Handlers;
 using Finance.Application.Legacy.Repositories;
-using Finance.Application.Legacy.Repositories.Base;
+using Finance.Application.Repositories;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.Banks;
 using Finance.Domain.Models.Movements;
 using Finance.Helpers;

@@ -1,7 +1,7 @@
-// using Finance.Application.Legacy.Base.Handlers;
+// using Finance.Application.Base.Handlers;
 // using CQRSDispatch;
 // using CQRSDispatch.Interfaces;
-// // using Finance.Application.Legacy.Repositories;
+// // using Finance.Application.Repositories;
 // using Finance.Persistence;
 
 // namespace Finance.Application.Legacy.Commands.CreditCards;

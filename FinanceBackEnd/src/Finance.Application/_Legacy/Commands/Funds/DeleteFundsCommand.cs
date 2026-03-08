@@ -1,6 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Services;
+using Finance.Application.Services;
 using Finance.Domain.Models.Funds;
 
 namespace Finance.Application.Legacy.Commands.Funds;

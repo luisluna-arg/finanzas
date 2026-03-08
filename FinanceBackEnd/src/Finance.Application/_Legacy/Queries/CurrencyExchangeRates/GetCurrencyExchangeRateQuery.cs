@@ -1,5 +1,5 @@
 using Finance.Application.Legacy.Queries.Base;
-using Finance.Application.Legacy.Repositories;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Currencies;
 using Finance.Persistence;
 

@@ -1,5 +1,4 @@
-using Finance.Application.Legacy.Commands.Subscriptions;
-using Finance.Application.Legacy.Repositories;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Subscriptions;
 using Finance.Persistence;
@@ -7,6 +6,7 @@ using Finance.Domain.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Commands.Subscriptions;
 
 namespace Finance.Application.Tests.Commands.Subscriptions;
 

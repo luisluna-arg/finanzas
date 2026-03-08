@@ -3,7 +3,7 @@ using Finance.Domain.Models.Subscriptions;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Commands.Subscriptions;
+namespace Finance.Application.Commands.Subscriptions;
 
 public class CreateSubscriptionOwnershipCommand : CreateResourcePermissionsCommand<Subscription, Guid, SubscriptionPermissions>;
 

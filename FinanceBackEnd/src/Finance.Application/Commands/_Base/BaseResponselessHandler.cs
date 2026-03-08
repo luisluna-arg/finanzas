@@ -2,7 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Persistence;
 
-namespace Finance.Application.Legacy.Base.Handlers;
+namespace Finance.Application.Base.Handlers;
 
 public abstract class BaseResponselessHandler<TRequest> : ICommandHandler<TRequest>
     where TRequest : ICommand

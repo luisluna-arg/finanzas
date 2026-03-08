@@ -1,6 +1,6 @@
 using Finance.Domain.Models.Base;
 
-namespace Finance.Application.Legacy.Services;
+namespace Finance.Application.Services;
 
 public interface IEntityService<TEntity, TId>
     where TEntity : Entity<TId>

@@ -1,8 +1,8 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Base.Handlers;
-using Finance.Application.Legacy.Repositories;
-using Finance.Application.Legacy.Repositories.Base;
+using Finance.Application.Base.Handlers;
+using Finance.Application.Repositories;
+using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.CreditCards;
 using Finance.Helpers.ExcelHelper;
 using Finance.Persistence;

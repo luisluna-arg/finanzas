@@ -1,6 +1,6 @@
 // using CQRSDispatch;
 // using CQRSDispatch.Interfaces;
-// // using Finance.Application.Legacy.Services;
+// // using Finance.Application.Services;
 
 // namespace Finance.Application.Legacy.Commands.CreditCards;
 
