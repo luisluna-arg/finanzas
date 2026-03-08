@@ -5,7 +5,7 @@ using Finance.Domain.Models.Debits;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Finance.Application.Legacy.Queries.DebitOrigins;
+namespace Finance.Application.Queries.DebitOrigins;
 
 public class GetAllDebitOriginsQuery : GetAllQuery<DebitOrigin>;
 

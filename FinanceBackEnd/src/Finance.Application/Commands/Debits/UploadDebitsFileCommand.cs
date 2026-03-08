@@ -13,6 +13,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Legacy.Commands.Debits;
 
+public class UploadDebitsFileCommand : ICommand
+{
+    public UploadDebitsFileCommand(IFormFile file, string appModuleId, DateTimeKind dateKind, FrequencyEnum frequency)
+    {
+        this.File = file;
+        this.AppModuleId = new Guid(appModuleId);
+        this.DateKind = dateKind;
+        this.Frequency = frequency;
+    }
+
+    public IFormFile File { get; set; }
+    public Guid AppModuleId { get; set; }
+    public DateTimeKind DateKind { get; set; }
+    public FrequencyEnum Frequency { get; set; }
+}
+
 public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebitsFileCommand>
 {
     private readonly IAppModuleRepository _appModuleRepository;
@@ -98,20 +114,4 @@ public class UploadDebitsFileCommandHandler : BaseResponselessHandler<UploadDebi
 
         return CommandResult.Success();
     }
-}
-
-public class UploadDebitsFileCommand : ICommand
-{
-    public UploadDebitsFileCommand(IFormFile file, string appModuleId, DateTimeKind dateKind, FrequencyEnum frequency)
-    {
-        this.File = file;
-        this.AppModuleId = new Guid(appModuleId);
-        this.DateKind = dateKind;
-        this.Frequency = frequency;
-    }
-
-    public IFormFile File { get; set; }
-    public Guid AppModuleId { get; set; }
-    public DateTimeKind DateKind { get; set; }
-    public FrequencyEnum Frequency { get; set; }
 }

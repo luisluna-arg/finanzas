@@ -3,7 +3,7 @@ using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
 using Finance.Application.Legacy.Dtos.DebitOrigins;
 using Finance.Application.Legacy.Mapping;
-using Finance.Application.Legacy.Queries.DebitOrigins;
+using Finance.Application.Queries.DebitOrigins;
 using Finance.Domain.Models.Debits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

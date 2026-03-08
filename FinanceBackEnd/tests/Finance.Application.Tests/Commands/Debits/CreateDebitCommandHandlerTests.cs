@@ -2,7 +2,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
 using Finance.Application.Commands.Debits;
-using Finance.Application.Legacy.Commands.DebitOrigins;
+using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Debits;
@@ -89,7 +89,7 @@ public class CreateDebitCommandHandlerTests : IDisposable
         var command = new CreateDebitCommand { AppModuleId = appModuleId, Origin = "  NewOrigin  ", Amount = new Money(100m) };
 
         _originRepo.Setup(r => r.GetByAsync(It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>())).ReturnsAsync((DebitOrigin?)null);
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<DebitOrigin>>(It.IsAny<CreateDebitOriginCommand>()))
+        _dispatcher.Setup(d => d.DispatchAsync<DataResult<DebitOrigin>>(It.IsAny<CreateDebitOriginCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(DataResult<DebitOrigin>.Success(new DebitOrigin { Name = "NewOrigin" }));
         _dispatcher.Setup(d => d.DispatchAsync<DataResult<DebitPermissions>>(It.IsAny<CreateDebitPermissionsCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(DataResult<DebitPermissions>.Success(new DebitPermissions()));
@@ -97,7 +97,8 @@ public class CreateDebitCommandHandlerTests : IDisposable
         await CreateHandler().ExecuteAsync(command, default);
 
         _dispatcher.Verify(d => d.DispatchAsync<DataResult<DebitOrigin>>(
-            It.Is<CreateDebitOriginCommand>(c => c.Name == "NewOrigin" && c.AppModuleId == appModuleId)),
+            It.Is<CreateDebitOriginCommand>(c => c.Name == "NewOrigin" && c.AppModuleId == appModuleId),
+            It.IsAny<HttpRequest?>()),
             Times.Once);
     }
 
