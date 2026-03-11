@@ -6,8 +6,8 @@ using Finance.Persistence;
 
 namespace Finance.Application.Commands;
 
-public class DeleteFundOwnerCommand
+public sealed class DeleteFundOwnerCommand
     : DeleteEntityOwnerCommand<Fund, Guid, FundPermissions>;
 
-public class DeleteFundOwnerCommandHandler(FinanceDbContext dbContext)
+public sealed class DeleteFundOwnerCommandHandler(FinanceDbContext dbContext)
     : DeleteEntityOwnerCommandHandler<DeleteFundOwnerCommand, Fund, Guid, FundPermissions>(dbContext);

@@ -8,7 +8,7 @@ using Finance.Persistence;
 
 namespace Finance.Application.Legacy.Commands.CreditCards;
 
-public class DeleteCreditCardTransactionCommandHandler : BaseCommandHandler<DeleteCreditCardTransactionCommand, CreditCardTransaction>
+public sealed class DeleteCreditCardTransactionCommandHandler : BaseCommandHandler<DeleteCreditCardTransactionCommand, CreditCardTransaction>
 {
     private readonly IRepository<CreditCardTransaction, Guid> transactionRepository;
 
@@ -32,7 +32,7 @@ public class DeleteCreditCardTransactionCommandHandler : BaseCommandHandler<Dele
     }
 }
 
-public class DeleteCreditCardTransactionCommand : ICommand
+public sealed class DeleteCreditCardTransactionCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }

@@ -224,7 +224,7 @@ public class SubscriptionServiceTests : IDisposable
         var result = await _sut.Delete(request);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal("delete failed", result.ErrorMessage);
+        Assert.Equal("Type Subscription delete operation failed", result.ErrorMessage);
         _dispatcher.Verify(d => d.DispatchAsync<CommandResult>(
             It.IsAny<DeleteSubscriptionOwnerCommand>(),
             It.IsAny<HttpRequest?>()),

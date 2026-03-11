@@ -14,6 +14,13 @@ namespace Finance.Application.Services;
 public class CurrencyExchangeRateService(
     IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
+    : ICRUDService<
+        CurrencyExchangeRate,
+        Guid,
+        CurrencyExchangeRatePermissions,
+        CreateCurrencyExchangeRateRequest,
+        UpdateCurrencyExchangeRateRequest,
+        DeleteCurrencyExchangeRateRequest>
 {
     public async Task<DataResult<CurrencyExchangeRate>> Create(CreateCurrencyExchangeRateRequest request, HttpRequest? httpRequest = null)
     {
@@ -62,19 +69,18 @@ public class CurrencyExchangeRateService(
         try
         {
             var deleteResult = await dispatcher.DispatchAsync(
-                new DeleteCurrencyExchangeRatesCommand(request.Ids));
+                new DeleteCurrencyExchangeRatesCommand() { Ids = request.Ids },
+                httpRequest);
 
-            if (!deleteResult.IsSuccess)
-            {
-                await tx.RollbackAsync();
-                return deleteResult;
-            }
+            deleteResult.ThrowIfFailed($"Type {typeof(CurrencyExchangeRate).Name} delete operation failed");
 
             foreach (var id in request.Ids)
             {
-                await dispatcher.DispatchAsync(
+                var ownershipDeleteResult = await dispatcher.DispatchAsync(
                     new DeleteCurrencyExchangeRateOwnerCommand { EntityId = id },
                     httpRequest);
+
+                ownershipDeleteResult.ThrowIfFailed($"Type {typeof(CurrencyExchangeRate).Name} owner delete operation failed");
             }
 
             await tx.CommitAsync();
@@ -99,5 +105,15 @@ public class CurrencyExchangeRateService(
     public async Task<CommandResult> DeleteOwner(Guid resourceId, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
             new DeleteCurrencyExchangeRateOwnerCommand { EntityId = resourceId },
+            httpRequest);
+
+    public async Task<CommandResult> Activate(Guid[] ids, HttpRequest? httpRequest = null)
+        => await dispatcher.DispatchAsync(
+            new ActivateCurrencyExchangeRateCommand { Ids = ids },
+            httpRequest);
+
+    public async Task<CommandResult> Deactivate(Guid[] ids, HttpRequest? httpRequest = null)
+        => await dispatcher.DispatchAsync(
+            new DeactivateCurrencyExchangeRateCommand { Ids = ids },
             httpRequest);
 }

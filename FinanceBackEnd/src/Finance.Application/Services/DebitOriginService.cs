@@ -14,6 +14,13 @@ namespace Finance.Application.Services;
 public class DebitOriginService(
     IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
+    : ICRUDService<
+        DebitOrigin,
+        Guid,
+        DebitOriginPermissions,
+        CreateDebitOriginRequest,
+        UpdateDebitOriginRequest,
+        DeleteDebitOriginRequest>
 {
     public async Task<DataResult<DebitOrigin>> Create(CreateDebitOriginRequest request, HttpRequest? httpRequest = null)
     {
@@ -76,20 +83,18 @@ public class DebitOriginService(
         try
         {
             var deleteResult = await dispatcher.DispatchAsync(
-                new DeleteDebitOriginCommand { Ids = request.Ids },
+                new DeleteDebitOriginCommand() { Ids = request.Ids },
                 httpRequest);
 
-            if (!deleteResult.IsSuccess)
-            {
-                await tx.RollbackAsync();
-                return deleteResult;
-            }
+            deleteResult.ThrowIfFailed($"Type {typeof(DebitOrigin).Name} delete operation failed");
 
             foreach (var id in request.Ids)
             {
-                await dispatcher.DispatchAsync(
+                var ownershipDeleteResult = await dispatcher.DispatchAsync(
                     new DeleteDebitOriginOwnerCommand { EntityId = id },
                     httpRequest);
+
+                ownershipDeleteResult.ThrowIfFailed($"Type {typeof(DebitOrigin).Name} owner delete operation failed");
             }
 
             await tx.CommitAsync();
@@ -116,13 +121,13 @@ public class DebitOriginService(
             new DeleteDebitOriginOwnerCommand { EntityId = resourceId },
             httpRequest);
 
-    public async Task<CommandResult> Activate(ActivateDebitOriginRequest request, HttpRequest? httpRequest = null)
+    public async Task<CommandResult> Activate(Guid[] ids, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
-            new ActivateDebitOriginCommand { Ids = request.Ids },
+            new ActivateDebitOriginCommand { Ids = ids },
             httpRequest);
 
-    public async Task<CommandResult> Deactivate(DeactivateDebitOriginRequest request, HttpRequest? httpRequest = null)
+    public async Task<CommandResult> Deactivate(Guid[] ids, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
-            new DeactivateDebitOriginCommand { Ids = request.Ids },
+            new DeactivateDebitOriginCommand { Ids = ids },
             httpRequest);
 }

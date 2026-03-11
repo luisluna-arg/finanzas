@@ -285,7 +285,7 @@ public class CreditCardServiceTests : IDisposable
         var result = await _sut.Delete(request);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal("delete error", result.ErrorMessage);
+        Assert.Equal("Type CreditCard delete operation failed", result.ErrorMessage);
     }
 
     [Fact]

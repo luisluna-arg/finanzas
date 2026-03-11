@@ -12,7 +12,7 @@ public class DeleteIdentityCommand : ICommand<CommandResult>
     public Guid IdentityId { get; set; }
 }
 
-public class DeleteIdentityCommandHandler : ICommandHandler<DeleteIdentityCommand, CommandResult>
+public sealed class DeleteIdentityCommandHandler : ICommandHandler<DeleteIdentityCommand, CommandResult>
 {
     public FinanceDbContext DbContext { get; }
 

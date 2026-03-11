@@ -1,37 +1,49 @@
 using Finance.Application.Commands.DebitOrigins;
-using Finance.Application.Services;
+using Finance.Application.Tests.Commands.Base;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Debits;
+using FinanceBackEnd.Finance.Domain.Enums;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Tests.Commands.DebitOrigins;
 
-public class ActivateDebitOriginCommandHandlerTests
+public class ActivateDebitOriginCommandHandlerTests : ActivateDeactivateTestBase
 {
-    private readonly Mock<IEntityService<DebitOrigin, Guid>> _entityService;
-
-    public ActivateDebitOriginCommandHandlerTests()
+    private async Task<DebitOrigin> SeedDebitOriginAsync(bool deactivated)
     {
-        _entityService = new Mock<IEntityService<DebitOrigin, Guid>>();
+        var origin = new DebitOrigin { Id = Guid.NewGuid(), Name = "Origin", AppModuleId = Guid.NewGuid(), Deactivated = deactivated };
+        DbContext.DebitOrigin.Add(origin);
+        DbContext.DebitOriginPermissions.Add(new DebitOriginPermissions
+        {
+            Id = Guid.NewGuid(),
+            ResourceId = origin.Id,
+            Resource = origin,
+            UserId = CurrentUser.Id,
+            User = CurrentUser,
+            PermissionLevels = [PermissionLevelEnum.Owner],
+        });
+        await DbContext.SaveChangesAsync();
+        return origin;
     }
 
     [Fact]
-    public async Task Activate_ValidIds_CallsSetDeactivatedWithFalseAndReturnsSuccess()
+    public async Task Activate_ValidIds_ActivatesEntitiesAndReturnsSuccess()
     {
-        var ids = new[] { Guid.NewGuid() };
-        _entityService.Setup(s => s.SetDeactivatedAsync(It.IsAny<ICollection<Guid>>(), false, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<DebitOrigin>());
+        var origin = await SeedDebitOriginAsync(deactivated: true);
+        var handler = new ActivateDebitOriginCommandHandler(DbContext);
 
-        var handler = new ActivateDebitOriginCommandHandler(_entityService.Object);
-        var result = await handler.ExecuteAsync(new ActivateDebitOriginCommand { Ids = ids }, default);
+        var result = await handler.ExecuteAsync(new ActivateDebitOriginCommand { Ids = [origin.Id] }, default);
 
         Assert.True(result.IsSuccess);
-        _entityService.Verify(s => s.SetDeactivatedAsync(ids, false, It.IsAny<CancellationToken>()), Times.Once);
+        var updated = await DbContext.DebitOrigin.IgnoreQueryFilters().FirstAsync(o => o.Id == origin.Id);
+        Assert.False(updated.Deactivated);
     }
 
     [Fact]
     public async Task Activate_EmptyIds_ThrowsValidationException()
     {
-        var handler = new ActivateDebitOriginCommandHandler(_entityService.Object);
+        var handler = new ActivateDebitOriginCommandHandler(DbContext);
 
         await Assert.ThrowsAsync<ValidationException>(() =>
             handler.ExecuteAsync(new ActivateDebitOriginCommand { Ids = [] }, default));
@@ -40,7 +52,7 @@ public class ActivateDebitOriginCommandHandlerTests
     [Fact]
     public async Task Activate_EmptyGuidInIds_ThrowsValidationException()
     {
-        var handler = new ActivateDebitOriginCommandHandler(_entityService.Object);
+        var handler = new ActivateDebitOriginCommandHandler(DbContext);
 
         await Assert.ThrowsAsync<ValidationException>(() =>
             handler.ExecuteAsync(new ActivateDebitOriginCommand { Ids = [Guid.Empty] }, default));

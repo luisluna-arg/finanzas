@@ -1,18 +1,13 @@
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
-using Finance.Application.Services;
+using Finance.Application.Commands.Base;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Currencies;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
-public record DeleteCurrencyExchangeRatesCommand(Guid[] Ids) : ICommand<CommandResult>;
+public class DeleteCurrencyExchangeRatesCommand : DeleteEntityCommand<Guid>;
 
-public class DeleteCurrencyExchangeRatesCommandHandler(IEntityService<CurrencyExchangeRate, Guid> service)
-    : ICommandHandler<DeleteCurrencyExchangeRatesCommand>
-{
-    public async Task<CommandResult> ExecuteAsync(DeleteCurrencyExchangeRatesCommand request, CancellationToken cancellationToken)
-    {
-        await service.DeleteAsync(request.Ids, cancellationToken);
-        return CommandResult.Success();
-    }
-}
+public sealed class DeleteCurrencyExchangeRatesCommandHandler(IRepository<CurrencyExchangeRate, Guid> repository)
+    : DeleteEntityCommandHandler<CurrencyExchangeRate, Guid, DeleteCurrencyExchangeRatesCommand, DeleteCurrencyExchangeRatesCommandValidator>(repository);
+
+public sealed class DeleteCurrencyExchangeRatesCommandValidator()
+    : DeleteEntityCommandValidator<DeleteCurrencyExchangeRatesCommand, Guid>();

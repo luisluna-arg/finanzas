@@ -4,7 +4,7 @@
 
 // namespace Finance.Application.Legacy.Commands.CreditCards;
 
-// public class DeleteCreditCardMovementCommandHandler : ICommandHandler<DeleteCreditCardMovementCommand>
+// public sealed class DeleteCreditCardMovementCommandHandler : ICommandHandler<DeleteCreditCardMovementCommand>
 // {
 //     private readonly IEntityService<CreditCardMovement, Guid> _service;
 
@@ -21,7 +21,7 @@
 //     }
 // }
 
-// public class DeleteCreditCardMovementCommand : ICommand
+// public sealed class DeleteCreditCardMovementCommand : ICommand
 // {
 //     public Guid[] Ids { get; set; } = [];
 // }

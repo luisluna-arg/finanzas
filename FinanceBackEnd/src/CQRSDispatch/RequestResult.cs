@@ -34,6 +34,22 @@ public abstract class RequestResult
     /// </summary>
     public string? ErrorMessage { get; set; }
 
+    public void ThrowIfFailed()
+    {
+        if (!IsSuccess)
+        {
+            throw new Exception(ErrorMessage ?? "Operation failed.");
+        }
+    }
+
+    public void ThrowIfFailed(string? message)
+    {
+        if (!IsSuccess)
+        {
+            throw new Exception(message ?? ErrorMessage ?? "Operation failed.");
+        }
+    }
+
     /// <summary>
     /// Creates a successful result instance of the specified type.
     /// </summary>

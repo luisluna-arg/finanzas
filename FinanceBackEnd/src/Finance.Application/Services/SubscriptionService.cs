@@ -14,6 +14,13 @@ namespace Finance.Application.Services;
 public class SubscriptionService(
     IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
+    : ICRUDService<
+        Subscription,
+        Guid,
+        SubscriptionPermissions,
+        CreateSubscriptionRequest,
+        UpdateSubscriptionRequest,
+        DeleteSubscriptionRequest>
 {
     public async Task<DataResult<Subscription>> Create(CreateSubscriptionRequest request, HttpRequest? httpRequest = null)
     {
@@ -64,20 +71,18 @@ public class SubscriptionService(
         try
         {
             var deleteResult = await dispatcher.DispatchAsync(
-                new DeleteSubscriptionCommand { Ids = request.Ids },
+                new DeleteSubscriptionCommand() { Ids = request.Ids },
                 httpRequest);
 
-            if (!deleteResult.IsSuccess)
-            {
-                await tx.RollbackAsync();
-                return deleteResult;
-            }
+            deleteResult.ThrowIfFailed($"Type {typeof(Subscription).Name} delete operation failed");
 
             foreach (var id in request.Ids)
             {
-                await dispatcher.DispatchAsync(
+                var ownershipDeleteResult = await dispatcher.DispatchAsync(
                     new DeleteSubscriptionOwnerCommand { EntityId = id },
                     httpRequest);
+
+                ownershipDeleteResult.ThrowIfFailed($"Type {typeof(Subscription).Name} owner delete operation failed");
             }
 
             await tx.CommitAsync();
@@ -102,5 +107,15 @@ public class SubscriptionService(
     public async Task<CommandResult> DeleteOwner(Guid resourceId, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
             new DeleteSubscriptionOwnerCommand { EntityId = resourceId },
+            httpRequest);
+
+    public async Task<CommandResult> Activate(Guid[] ids, HttpRequest? httpRequest = null)
+        => await dispatcher.DispatchAsync(
+            new ActivateSubscriptionCommand { Ids = ids },
+            httpRequest);
+
+    public async Task<CommandResult> Deactivate(Guid[] ids, HttpRequest? httpRequest = null)
+        => await dispatcher.DispatchAsync(
+            new DeactivateSubscriptionCommand { Ids = ids },
             httpRequest);
 }

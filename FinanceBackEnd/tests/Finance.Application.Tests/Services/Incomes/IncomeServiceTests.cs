@@ -1,7 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Commands;
 using Finance.Application.Commands.Incomes;
 using Finance.Application.Services;
 using Finance.Application.Services.Incomes;
@@ -181,7 +180,7 @@ public class IncomeServiceTests : IDisposable
         var request = new DeleteIncomeRequest([Guid.NewGuid()]);
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomesCommand>()))
+            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomesCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomeOwnerCommand>(), It.IsAny<HttpRequest?>()))
@@ -200,7 +199,7 @@ public class IncomeServiceTests : IDisposable
         var request = new DeleteIncomeRequest([id1, id2]);
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomesCommand>()))
+            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomesCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomeOwnerCommand>(), It.IsAny<HttpRequest?>()))
@@ -224,13 +223,13 @@ public class IncomeServiceTests : IDisposable
         var request = new DeleteIncomeRequest([Guid.NewGuid()]);
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomesCommand>()))
+            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomesCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Failure("delete failed"));
 
         var result = await _sut.Delete(request);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal("delete failed", result.ErrorMessage);
+        Assert.Equal("Type Income delete operation failed", result.ErrorMessage);
         _dispatcher.Verify(d => d.DispatchAsync<CommandResult>(
             It.IsAny<DeleteIncomeOwnerCommand>(),
             It.IsAny<HttpRequest?>()),
@@ -243,7 +242,7 @@ public class IncomeServiceTests : IDisposable
         var request = new DeleteIncomeRequest([Guid.NewGuid()]);
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomesCommand>()))
+            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteIncomesCommand>(), It.IsAny<HttpRequest?>()))
             .Throws(new Exception("unexpected error"));
 
         var result = await _sut.Delete(request);

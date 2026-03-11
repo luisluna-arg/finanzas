@@ -5,7 +5,7 @@ using Finance.Domain.Models.IOLInvestments;
 
 namespace Finance.Application.Legacy.Commands.IOLInvestments;
 
-public class DeleteIOLInvestmentCommandHandler : ICommandHandler<DeleteIOLInvestmentCommand>
+public sealed class DeleteIOLInvestmentCommandHandler : ICommandHandler<DeleteIOLInvestmentCommand>
 {
     private readonly IEntityService<IOLInvestment, Guid> _service;
 
@@ -22,7 +22,7 @@ public class DeleteIOLInvestmentCommandHandler : ICommandHandler<DeleteIOLInvest
     }
 }
 
-public class DeleteIOLInvestmentCommand : ICommand
+public sealed class DeleteIOLInvestmentCommand : ICommand
 {
     public Guid[] Ids { get; set; } = [];
 }

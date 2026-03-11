@@ -4,10 +4,10 @@ using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Incomes;
 using Finance.Persistence;
 
-namespace Finance.Application.Commands;
+namespace Finance.Application.Commands.Incomes;
 
-public class DeleteIncomeOwnerCommand
+public sealed class DeleteIncomeOwnerCommand
     : DeleteEntityOwnerCommand<Income, Guid, IncomePermissions>;
 
-public class DeleteIncomeOwnerCommandHandler(FinanceDbContext dbContext)
+public sealed class DeleteIncomeOwnerCommandHandler(FinanceDbContext dbContext)
     : DeleteEntityOwnerCommandHandler<DeleteIncomeOwnerCommand, Income, Guid, IncomePermissions>(dbContext);

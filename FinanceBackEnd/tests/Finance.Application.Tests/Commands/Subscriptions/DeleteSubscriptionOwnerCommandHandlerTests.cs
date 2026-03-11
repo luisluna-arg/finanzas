@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Finance.Application.Tests.Commands.Subscriptions;
 
-public class DeleteSubscriptionOwnerCommandHandlerTests : IDisposable
+public sealed class DeleteSubscriptionOwnerCommandHandlerTests : IDisposable
 {
     private readonly FinanceDbContext _dbContext;
 

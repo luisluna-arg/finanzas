@@ -9,5 +9,5 @@
         "editor.insertSpaces": true,
         "editor.defaultFormatter": "vscode.json-language-features"
     },
-    "dotnet-test-explorer.testProjectPath": "FinanceBackEnd/Finance.Application.Tests"
+    "dotnet-test-explorer.testProjectPath": "FinanceBackEnd/tests/**/*.csproj",
 }

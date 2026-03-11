@@ -206,7 +206,7 @@ public class DebitServiceTests : IDisposable
         var result = await _sut.Delete(request);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal("delete error", result.ErrorMessage);
+        Assert.Equal("Type Debit delete operation failed", result.ErrorMessage);
     }
 
     [Fact]
@@ -278,13 +278,12 @@ public class DebitServiceTests : IDisposable
     public async Task Activate_DispatchesActivateCommandWithCorrectIds()
     {
         var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
-        var request = new ActivateDebitRequest(ids);
 
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<ActivateDebitCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
 
-        var result = await _sut.Activate(request);
+        var result = await _sut.Activate(ids);
 
         Assert.True(result.IsSuccess);
         _dispatcher.Verify(d => d.DispatchAsync<CommandResult>(
@@ -301,13 +300,12 @@ public class DebitServiceTests : IDisposable
     public async Task Deactivate_DispatchesDeactivateCommandWithCorrectIds()
     {
         var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
-        var request = new DeactivateDebitRequest(ids);
 
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeactivateDebitCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
 
-        var result = await _sut.Deactivate(request);
+        var result = await _sut.Deactivate(ids);
 
         Assert.True(result.IsSuccess);
         _dispatcher.Verify(d => d.DispatchAsync<CommandResult>(

@@ -5,8 +5,8 @@ using Finance.Persistence;
 
 namespace Finance.Application.Commands.CreditCards;
 
-public class DeleteCreditCardOwnerCommand
+public sealed class DeleteCreditCardOwnerCommand
     : DeleteEntityOwnerCommand<CreditCard, Guid, CreditCardPermissions>;
 
-public class DeleteCreditCardOwnerCommandHandler(FinanceDbContext dbContext)
+public sealed class DeleteCreditCardOwnerCommandHandler(FinanceDbContext dbContext)
     : DeleteEntityOwnerCommandHandler<DeleteCreditCardOwnerCommand, CreditCard, Guid, CreditCardPermissions>(dbContext);

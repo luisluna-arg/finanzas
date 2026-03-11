@@ -1,53 +1,61 @@
 using Finance.Application.Commands.Debits;
-using Finance.Application.Services;
+using Finance.Application.Tests.Commands.Base;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Debits;
+using FinanceBackEnd.Finance.Domain.Enums;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Tests.Commands.Debits;
 
-public class DeactivateDebitCommandHandlerTests
+public class DeactivateDebitCommandHandlerTests : ActivateDeactivateTestBase
 {
-    private readonly Mock<IEntityService<Debit, Guid>> _entityService;
-
-    public DeactivateDebitCommandHandlerTests()
+    private async Task<Debit> SeedDebitAsync(bool deactivated)
     {
-        _entityService = new Mock<IEntityService<Debit, Guid>>();
+        var origin = new DebitOrigin { Id = Guid.NewGuid(), Name = "Origin", AppModuleId = Guid.NewGuid() };
+        var debit = new Debit { Id = Guid.NewGuid(), Origin = origin, OriginId = origin.Id, Deactivated = deactivated };
+        DbContext.Debit.Add(debit);
+        DbContext.DebitPermissions.Add(new DebitPermissions
+        {
+            Id = Guid.NewGuid(),
+            ResourceId = debit.Id,
+            Resource = debit,
+            UserId = CurrentUser.Id,
+            User = CurrentUser,
+            PermissionLevels = [PermissionLevelEnum.Owner],
+        });
+        await DbContext.SaveChangesAsync();
+        return debit;
     }
 
     [Fact]
-    public async Task Deactivate_ValidIds_CallsSetDeactivatedWithTrueAndReturnsSuccess()
+    public async Task Deactivate_ValidIds_DeactivatesEntitiesAndReturnsSuccess()
     {
-        var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
-        var command = new DeactivateDebitCommand { Ids = ids };
+        var debit = await SeedDebitAsync(deactivated: false);
+        var handler = new DeactivateDebitCommandHandler(DbContext);
 
-        var handler = new DeactivateDebitCommandHandler(_entityService.Object);
-
-        var result = await handler.ExecuteAsync(command, default);
+        var result = await handler.ExecuteAsync(new DeactivateDebitCommand { Ids = [debit.Id] }, default);
 
         Assert.True(result.IsSuccess);
-        _entityService.Verify(es => es.SetDeactivatedAsync(
-            It.Is<ICollection<Guid>>(c => c.SequenceEqual(ids)),
-            true,
-            It.IsAny<CancellationToken>()));
+        var updated = await DbContext.Debit.IgnoreQueryFilters().FirstAsync(d => d.Id == debit.Id);
+        Assert.True(updated.Deactivated);
     }
 
     [Fact]
     public async Task Deactivate_EmptyIds_ThrowsValidationException()
     {
-        var command = new DeactivateDebitCommand { Ids = [] };
+        var handler = new DeactivateDebitCommandHandler(DbContext);
 
-        var handler = new DeactivateDebitCommandHandler(_entityService.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            handler.ExecuteAsync(new DeactivateDebitCommand { Ids = [] }, default));
     }
 
     [Fact]
     public async Task Deactivate_EmptyGuidInIds_ThrowsValidationException()
     {
-        var command = new DeactivateDebitCommand { Ids = [Guid.Empty] };
+        var handler = new DeactivateDebitCommandHandler(DbContext);
 
-        var handler = new DeactivateDebitCommandHandler(_entityService.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            handler.ExecuteAsync(new DeactivateDebitCommand { Ids = [Guid.Empty] }, default));
     }
 }

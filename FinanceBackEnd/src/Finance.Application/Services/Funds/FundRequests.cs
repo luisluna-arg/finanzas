@@ -18,7 +18,3 @@ public sealed record UpdateFundRequest(
     bool DailyUse);
 
 public sealed record DeleteFundRequest(Guid[] Ids);
-
-public sealed record ActivateFundRequest(Guid[] Ids);
-
-public sealed record DeactivateFundRequest(Guid[] Ids);

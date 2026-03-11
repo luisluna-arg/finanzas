@@ -1,18 +1,13 @@
 using Finance.Application.Commands.Debits;
-using Finance.Application.Services;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Debits;
 using FluentValidation;
 
 namespace Finance.Application.Tests.Commands.Debits;
 
-public class DeleteDebitCommandHandlerTests
+public sealed class DeleteDebitCommandHandlerTests
 {
-    private readonly Mock<IEntityService<Debit, Guid>> _entityService;
-
-    public DeleteDebitCommandHandlerTests()
-    {
-        _entityService = new Mock<IEntityService<Debit, Guid>>();
-    }
+    private readonly Mock<IRepository<Debit, Guid>> _repository = new();
 
     [Fact]
     public async Task Delete_ValidIds_CallsDeleteServiceAndReturnsSuccess()
@@ -20,15 +15,19 @@ public class DeleteDebitCommandHandlerTests
         var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
         var command = new DeleteDebitCommand { Ids = ids };
 
-        var handler = new DeleteDebitCommandHandler(_entityService.Object);
+        var handler = new DeleteDebitCommandHandler(_repository.Object);
 
         var result = await handler.ExecuteAsync(command, default);
 
         Assert.True(result.IsSuccess);
-        _entityService.Verify(es => es.DeleteAsync(
-            It.Is<ICollection<Guid>>(c => c.SequenceEqual(ids)),
+        _repository.Verify(es => es.DeleteAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<CancellationToken>(),
+            false),
+            Times.Exactly(ids.Length));
+        _repository.Verify(es => es.PersistAsync(
             It.IsAny<CancellationToken>()),
-            Times.Once);
+            Times.Once());
     }
 
     [Fact]
@@ -36,7 +35,7 @@ public class DeleteDebitCommandHandlerTests
     {
         var command = new DeleteDebitCommand { Ids = [] };
 
-        var handler = new DeleteDebitCommandHandler(_entityService.Object);
+        var handler = new DeleteDebitCommandHandler(_repository.Object);
 
         await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
     }
@@ -46,7 +45,7 @@ public class DeleteDebitCommandHandlerTests
     {
         var command = new DeleteDebitCommand { Ids = [Guid.Empty] };
 
-        var handler = new DeleteDebitCommandHandler(_entityService.Object);
+        var handler = new DeleteDebitCommandHandler(_repository.Object);
 
         await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
     }

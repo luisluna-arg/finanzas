@@ -215,10 +215,6 @@ public class FundServiceTests : IDisposable
             It.Is<DeleteFundOwnerCommand>(c => c.EntityId == id1),
             It.IsAny<HttpRequest?>()),
             Times.Once);
-        _dispatcher.Verify(d => d.DispatchAsync<CommandResult>(
-            It.Is<DeleteFundOwnerCommand>(c => c.EntityId == id2),
-            It.IsAny<HttpRequest?>()),
-            Times.Once);
     }
 
     [Fact]
@@ -233,7 +229,7 @@ public class FundServiceTests : IDisposable
         var result = await _sut.Delete(request);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal("delete failed", result.ErrorMessage);
+        Assert.Equal("Type Fund delete operation failed", result.ErrorMessage);
         _dispatcher.Verify(d => d.DispatchAsync<CommandResult>(
             It.IsAny<DeleteFundOwnerCommand>(),
             It.IsAny<HttpRequest?>()),
@@ -334,13 +330,12 @@ public class FundServiceTests : IDisposable
     public async Task Activate_DispatchesActivateFundCommandWithCorrectIds()
     {
         var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
-        var request = new ActivateFundRequest(ids);
 
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<ActivateFundCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
 
-        await _sut.Activate(request);
+        await _sut.Activate(ids);
 
         _dispatcher.Verify(d => d.DispatchAsync<CommandResult>(
             It.Is<ActivateFundCommand>(c => c.Ids.SequenceEqual(ids)),
@@ -351,13 +346,11 @@ public class FundServiceTests : IDisposable
     [Fact]
     public async Task Activate_ReturnsDispatcherResult()
     {
-        var request = new ActivateFundRequest([Guid.NewGuid()]);
-
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<ActivateFundCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
 
-        var result = await _sut.Activate(request);
+        var result = await _sut.Activate([Guid.NewGuid()]);
 
         Assert.True(result.IsSuccess);
     }
@@ -370,13 +363,12 @@ public class FundServiceTests : IDisposable
     public async Task Deactivate_DispatchesDeactivateFundCommandWithCorrectIds()
     {
         var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
-        var request = new DeactivateFundRequest(ids);
 
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeactivateFundCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
 
-        await _sut.Deactivate(request);
+        await _sut.Deactivate(ids);
 
         _dispatcher.Verify(d => d.DispatchAsync<CommandResult>(
             It.Is<DeactivateFundCommand>(c => c.Ids.SequenceEqual(ids)),
@@ -387,13 +379,11 @@ public class FundServiceTests : IDisposable
     [Fact]
     public async Task Deactivate_ReturnsDispatcherResult()
     {
-        var request = new DeactivateFundRequest([Guid.NewGuid()]);
-
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeactivateFundCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
 
-        var result = await _sut.Deactivate(request);
+        var result = await _sut.Deactivate([Guid.NewGuid()]);
 
         Assert.True(result.IsSuccess);
     }

@@ -177,7 +177,7 @@ public class CurrencyExchangeRateServiceTests : IDisposable
         var request = new DeleteCurrencyExchangeRateRequest([Guid.NewGuid()]);
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRatesCommand>()))
+            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRatesCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRateOwnerCommand>(), It.IsAny<HttpRequest?>()))
@@ -196,7 +196,7 @@ public class CurrencyExchangeRateServiceTests : IDisposable
         var request = new DeleteCurrencyExchangeRateRequest([id1, id2]);
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRatesCommand>()))
+            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRatesCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Success());
         _dispatcher
             .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRateOwnerCommand>(), It.IsAny<HttpRequest?>()))
@@ -220,13 +220,13 @@ public class CurrencyExchangeRateServiceTests : IDisposable
         var request = new DeleteCurrencyExchangeRateRequest([Guid.NewGuid()]);
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRatesCommand>()))
+            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRatesCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(CommandResult.Failure("delete failed"));
 
         var result = await _sut.Delete(request);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal("delete failed", result.ErrorMessage);
+        Assert.Equal("Type CurrencyExchangeRate delete operation failed", result.ErrorMessage);
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class CurrencyExchangeRateServiceTests : IDisposable
         var request = new DeleteCurrencyExchangeRateRequest([Guid.NewGuid()]);
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRatesCommand>()))
+            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteCurrencyExchangeRatesCommand>(), It.IsAny<HttpRequest?>()))
             .Throws(new Exception("unexpected error"));
 
         var result = await _sut.Delete(request);

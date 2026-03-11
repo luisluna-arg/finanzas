@@ -1,53 +1,60 @@
 using Finance.Application.Commands.Subscriptions;
-using Finance.Application.Services;
+using Finance.Application.Tests.Commands.Base;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Subscriptions;
+using FinanceBackEnd.Finance.Domain.Enums;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Tests.Commands.Subscriptions;
 
-public class ActivateSubscriptionCommandHandlerTests
+public class ActivateSubscriptionCommandHandlerTests : ActivateDeactivateTestBase
 {
-    private readonly Mock<IEntityService<Subscription, Guid>> _entityService;
-
-    public ActivateSubscriptionCommandHandlerTests()
+    private async Task<Subscription> SeedSubscriptionAsync(bool deactivated)
     {
-        _entityService = new Mock<IEntityService<Subscription, Guid>>();
+        var subscription = new Subscription { Id = Guid.NewGuid(), Name = Guid.NewGuid().ToString(), CurrencyId = Guid.NewGuid(), Deactivated = deactivated };
+        DbContext.Subscriptions.Add(subscription);
+        DbContext.Set<SubscriptionPermissions>().Add(new SubscriptionPermissions
+        {
+            Id = Guid.NewGuid(),
+            ResourceId = subscription.Id,
+            Resource = subscription,
+            UserId = CurrentUser.Id,
+            User = CurrentUser,
+            PermissionLevels = [PermissionLevelEnum.Owner],
+        });
+        await DbContext.SaveChangesAsync();
+        return subscription;
     }
 
     [Fact]
-    public async Task Activate_ValidIds_CallsSetDeactivatedWithFalseAndReturnsSuccess()
+    public async Task Activate_ValidIds_ActivatesEntitiesAndReturnsSuccess()
     {
-        var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
-        var command = new ActivateSubscriptionCommand { Ids = ids };
+        var subscription = await SeedSubscriptionAsync(deactivated: true);
+        var handler = new ActivateSubscriptionCommandHandler(DbContext);
 
-        var handler = new ActivateSubscriptionCommandHandler(_entityService.Object);
-
-        var result = await handler.ExecuteAsync(command, default);
+        var result = await handler.ExecuteAsync(new ActivateSubscriptionCommand { Ids = [subscription.Id] }, default);
 
         Assert.True(result.IsSuccess);
-        _entityService.Verify(es => es.SetDeactivatedAsync(
-            It.Is<ICollection<Guid>>(c => c.SequenceEqual(ids)),
-            false,
-            It.IsAny<CancellationToken>()));
+        var updated = await DbContext.Subscriptions.IgnoreQueryFilters().FirstAsync(s => s.Id == subscription.Id);
+        Assert.False(updated.Deactivated);
     }
 
     [Fact]
     public async Task Activate_EmptyIds_ThrowsValidationException()
     {
-        var command = new ActivateSubscriptionCommand { Ids = [] };
+        var handler = new ActivateSubscriptionCommandHandler(DbContext);
 
-        var handler = new ActivateSubscriptionCommandHandler(_entityService.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            handler.ExecuteAsync(new ActivateSubscriptionCommand { Ids = [] }, default));
     }
 
     [Fact]
     public async Task Activate_EmptyGuidInIds_ThrowsValidationException()
     {
-        var command = new ActivateSubscriptionCommand { Ids = [Guid.Empty] };
+        var handler = new ActivateSubscriptionCommandHandler(DbContext);
 
-        var handler = new ActivateSubscriptionCommandHandler(_entityService.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            handler.ExecuteAsync(new ActivateSubscriptionCommand { Ids = [Guid.Empty] }, default));
     }
 }

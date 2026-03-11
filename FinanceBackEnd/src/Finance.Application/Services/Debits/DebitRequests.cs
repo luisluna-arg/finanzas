@@ -19,7 +19,3 @@ public sealed record UpdateDebitRequest(
     FrequencyEnum Frequency);
 
 public sealed record DeleteDebitRequest(Guid[] Ids);
-
-public sealed record ActivateDebitRequest(Guid[] Ids);
-
-public sealed record DeactivateDebitRequest(Guid[] Ids);
