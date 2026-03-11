@@ -33,6 +33,7 @@ public static class SagaServiceExtensions
         services.AddScoped<CurrencyExchangeRateService>();
         services.AddScoped<DebitService>();
         services.AddScoped<DebitOriginService>();
+        services.AddScoped<CreditCardService>();
 
         RegisterScopedService<IdentityService>(services);
 

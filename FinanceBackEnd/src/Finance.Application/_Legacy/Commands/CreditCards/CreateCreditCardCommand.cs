@@ -42,7 +42,7 @@ public class CreateCreditCardCommandHandler : BaseCommandHandler<CreateCreditCar
     }
 }
 
-public class CreateCreditCardCommand : ICommand
+public class CreateCreditCardCommand : ICommand<DataResult<CreditCard>>
 {
     [Required]
     public Guid BankId { get; set; }
