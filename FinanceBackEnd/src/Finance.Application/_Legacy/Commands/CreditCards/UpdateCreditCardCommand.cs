@@ -43,7 +43,7 @@ public class UpdateCreditCardCommandHandler : BaseCommandHandler<UpdateCreditCar
     }
 }
 
-public class UpdateCreditCardCommand : ICommand
+public class UpdateCreditCardCommand : ICommand<DataResult<CreditCard>>
 {
     [Required]
     public Guid Id { get; set; }
