@@ -1,7 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Auth;
-using Finance.Application.Commands;
 using Finance.Application.Commands.Incomes;
 using Finance.Application.Services.Incomes;
 using Finance.Domain.Models.Auth;
@@ -15,6 +14,13 @@ namespace Finance.Application.Services;
 public class IncomeService(
     IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
+    : ICRUDService<
+        Income,
+        Guid,
+        IncomePermissions,
+        CreateIncomeRequest,
+        UpdateIncomeRequest,
+        DeleteIncomeRequest>
 {
     public async Task<DataResult<Income>> Create(CreateIncomeRequest request, HttpRequest? httpRequest = null)
     {
@@ -64,19 +70,18 @@ public class IncomeService(
         try
         {
             var deleteResult = await dispatcher.DispatchAsync(
-                new DeleteIncomesCommand(request.Ids));
+                new DeleteIncomesCommand() { Ids = request.Ids },
+                httpRequest);
 
-            if (!deleteResult.IsSuccess)
-            {
-                await tx.RollbackAsync();
-                return deleteResult;
-            }
+            deleteResult.ThrowIfFailed($"Type {typeof(Income).Name} delete operation failed");
 
             foreach (var id in request.Ids)
             {
-                await dispatcher.DispatchAsync(
+                var ownershipDeleteResult = await dispatcher.DispatchAsync(
                     new DeleteIncomeOwnerCommand { EntityId = id },
                     httpRequest);
+
+                ownershipDeleteResult.ThrowIfFailed($"Type {typeof(Income).Name} owner delete operation failed");
             }
 
             await tx.CommitAsync();
@@ -101,5 +106,15 @@ public class IncomeService(
     public async Task<CommandResult> DeleteOwner(Guid resourceId, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
             new DeleteIncomeOwnerCommand { EntityId = resourceId },
+            httpRequest);
+
+    public async Task<CommandResult> Activate(Guid[] ids, HttpRequest? httpRequest = null)
+        => await dispatcher.DispatchAsync(
+            new ActivateIncomeCommand { Ids = ids },
+            httpRequest);
+
+    public async Task<CommandResult> Deactivate(Guid[] ids, HttpRequest? httpRequest = null)
+        => await dispatcher.DispatchAsync(
+            new DeactivateIncomeCommand { Ids = ids },
             httpRequest);
 }

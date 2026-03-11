@@ -5,8 +5,8 @@ using Finance.Persistence;
 
 namespace Finance.Application.Commands.Debits;
 
-public class DeleteDebitOwnerCommand
+public sealed class DeleteDebitOwnerCommand
     : DeleteEntityOwnerCommand<Debit, Guid, DebitPermissions>;
 
-public class DeleteDebitOwnerCommandHandler(FinanceDbContext dbContext)
+public sealed class DeleteDebitOwnerCommandHandler(FinanceDbContext dbContext)
     : DeleteEntityOwnerCommandHandler<DeleteDebitOwnerCommand, Debit, Guid, DebitPermissions>(dbContext);

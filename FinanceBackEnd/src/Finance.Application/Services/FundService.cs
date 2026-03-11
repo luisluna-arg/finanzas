@@ -15,6 +15,13 @@ namespace Finance.Application.Services;
 public class FundService(
     IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
+    : ICRUDService<
+        Fund,
+        Guid,
+        FundPermissions,
+        CreateFundRequest,
+        UpdateFundRequest,
+        DeleteFundRequest>
 {
     public async Task<DataResult<Fund>> Create(CreateFundRequest request, HttpRequest? httpRequest = null)
     {
@@ -67,20 +74,18 @@ public class FundService(
         try
         {
             var deleteResult = await dispatcher.DispatchAsync(
-                new DeleteFundsCommand { Ids = request.Ids },
+                new DeleteFundsCommand() { Ids = request.Ids },
                 httpRequest);
 
-            if (!deleteResult.IsSuccess)
-            {
-                await tx.RollbackAsync();
-                return deleteResult;
-            }
+            deleteResult.ThrowIfFailed($"Type {typeof(Fund).Name} delete operation failed");
 
             foreach (var id in request.Ids)
             {
-                await dispatcher.DispatchAsync(
+                var ownershipDeleteResult = await dispatcher.DispatchAsync(
                     new DeleteFundOwnerCommand { EntityId = id },
                     httpRequest);
+
+                ownershipDeleteResult.ThrowIfFailed($"Type {typeof(Fund).Name} owner delete operation failed");
             }
 
             await tx.CommitAsync();
@@ -107,13 +112,13 @@ public class FundService(
             new DeleteFundOwnerCommand { EntityId = resourceId },
             httpRequest);
 
-    public async Task<CommandResult> Activate(ActivateFundRequest request, HttpRequest? httpRequest = null)
+    public async Task<CommandResult> Activate(Guid[] ids, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
-            new ActivateFundCommand { Ids = request.Ids },
+            new ActivateFundCommand { Ids = ids },
             httpRequest);
 
-    public async Task<CommandResult> Deactivate(DeactivateFundRequest request, HttpRequest? httpRequest = null)
+    public async Task<CommandResult> Deactivate(Guid[] ids, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
-            new DeactivateFundCommand { Ids = request.Ids },
+            new DeactivateFundCommand { Ids = ids },
             httpRequest);
 }

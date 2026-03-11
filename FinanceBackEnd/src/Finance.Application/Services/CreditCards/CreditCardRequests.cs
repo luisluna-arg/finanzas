@@ -1,3 +1,4 @@
+
 namespace Finance.Application.Services.CreditCards;
 
 public sealed record CreateCreditCardRequest(Guid BankId, string Name, bool Deactivated);

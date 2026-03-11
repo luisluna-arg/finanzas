@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Finance.Application.Tests.Commands.DebitOrigins;
 
-public class DeleteDebitOriginOwnerCommandHandlerTests : IDisposable
+public sealed class DeleteDebitOriginOwnerCommandHandlerTests : IDisposable
 {
     private readonly FinanceDbContext _dbContext;
 

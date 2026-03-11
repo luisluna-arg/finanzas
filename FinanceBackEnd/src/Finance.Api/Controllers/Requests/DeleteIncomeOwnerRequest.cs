@@ -2,7 +2,7 @@ using Finance.Api.Controllers.Requests.Base;
 
 namespace Finance.Api.Controllers.Requests;
 
-public class DeleteIncomeOwnerRequest : BaseResourceOwnerRequest
+public sealed class DeleteIncomeOwnerRequest : BaseResourceOwnerRequest
 {
     public DeleteIncomeOwnerRequest(Guid fundId, Guid userId)
         : base(fundId, userId)

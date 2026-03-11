@@ -5,10 +5,10 @@ using Finance.Domain.Models.CreditCards;
 
 namespace Finance.Application.Legacy.Commands.CreditCards;
 
-public class DeleteCreditCardStatementCommand : BaseDeleteCommand<Guid>;
+public sealed class DeleteCreditCardStatementCommand : BaseDeleteCommand<Guid>;
 
-public class DeleteCreditCardStatementCommandHandler(IEntityService<CreditCardStatement, Guid> service)
+public sealed class DeleteCreditCardStatementCommandHandler(IEntityService<CreditCardStatement, Guid> service)
     : BaseDeleteCommandHandler<CreditCardStatement, Guid>(service);
 
-public class DeleteCreditCardStatementCommandValidator(IRepository<CreditCardStatement, Guid> repository)
+public sealed class DeleteCreditCardStatementCommandValidator(IRepository<CreditCardStatement, Guid> repository)
     : BaseDeleteCommandValidator<DeleteCreditCardStatementCommand, CreditCardStatement, Guid>(repository);

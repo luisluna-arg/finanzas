@@ -1,25 +1,23 @@
 using Finance.Application.Commands.Incomes;
-using Finance.Application.Services;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Incomes;
 
 namespace Finance.Application.Tests.Commands.Incomes;
 
-public class DeleteIncomesCommandHandlerTests
+public sealed class DeleteIncomesCommandHandlerTests
 {
-    private readonly Mock<IEntityService<Income, Guid>> _service;
-
-    public DeleteIncomesCommandHandlerTests()
-    {
-        _service = new Mock<IEntityService<Income, Guid>>();
-    }
+    private readonly Mock<IRepository<Income, Guid>> _service = new();
 
     [Fact]
     public async Task Delete_HappyPath_CallsServiceDeleteAndReturnsSuccess()
     {
         var ids = new[] { Guid.NewGuid(), Guid.NewGuid() };
-        var command = new DeleteIncomesCommand(ids);
+        var command = new DeleteIncomesCommand() { Ids = ids };
 
-        _service.Setup(s => s.DeleteAsync(It.IsAny<ICollection<Guid>>(), It.IsAny<CancellationToken>()))
+        _service.Setup(s => s.DeleteAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<CancellationToken>(),
+            false))
             .Returns(Task.CompletedTask);
 
         var handler = new DeleteIncomesCommandHandler(_service.Object);
@@ -27,8 +25,12 @@ public class DeleteIncomesCommandHandlerTests
 
         Assert.True(result.IsSuccess);
         _service.Verify(s => s.DeleteAsync(
-            It.Is<ICollection<Guid>>(c => c.SequenceEqual(ids)),
+            It.IsAny<Guid>(),
+            It.IsAny<CancellationToken>(),
+            false),
+            Times.Exactly(ids.Length));
+        _service.Verify(s => s.PersistAsync(
             It.IsAny<CancellationToken>()),
-            Times.Once);
+            Times.Once());
     }
 }

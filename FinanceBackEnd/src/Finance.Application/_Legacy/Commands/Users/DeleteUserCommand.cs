@@ -18,7 +18,7 @@ public class DeleteUserCommand : IContextAwareCommand<FinanceDispatchContext, Co
     }
 }
 
-public class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, CommandResult>
+public sealed class DeleteUserCommandHandler : ICommandHandler<DeleteUserCommand, CommandResult>
 {
     public FinanceDbContext DbContext { get; }
 

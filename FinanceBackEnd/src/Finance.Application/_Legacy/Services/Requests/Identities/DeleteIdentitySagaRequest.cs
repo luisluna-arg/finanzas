@@ -3,7 +3,7 @@ using Finance.Application.Legacy.Services.Interfaces;
 
 namespace Finance.Api.Controllers.Requests.Identities;
 
-public class DeleteIdentitySagaRequest : DeleteIdentityCommand, ISagaRequest
+public sealed class DeleteIdentitySagaRequest : DeleteIdentityCommand, ISagaRequest
 {
     public DeleteIdentitySagaRequest(Guid userId, Guid identityId)
         : base()

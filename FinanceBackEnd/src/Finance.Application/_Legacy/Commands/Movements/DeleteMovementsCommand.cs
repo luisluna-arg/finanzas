@@ -5,7 +5,7 @@ using Finance.Domain.Models.Movements;
 
 namespace Finance.Application.Legacy.Commands.Movements;
 
-public class DeleteMovementsCommandHandler : ICommandHandler<DeleteMovementsCommand>
+public sealed class DeleteMovementsCommandHandler : ICommandHandler<DeleteMovementsCommand>
 {
     private readonly IEntityService<Movement, Guid> _service;
 
@@ -21,7 +21,7 @@ public class DeleteMovementsCommandHandler : ICommandHandler<DeleteMovementsComm
     }
 }
 
-public class DeleteMovementsCommand : ICommand
+public sealed class DeleteMovementsCommand : ICommand
 {
     public Guid[] Ids { get; set; } = [];
 }

@@ -1,19 +1,12 @@
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
-using Finance.Application.Services;
+using Finance.Application.Commands.Base;
 using Finance.Domain.Models.Currencies;
+using Finance.Persistence;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
-public class ActivateCurrencyExchangeRateCommandHandler(IEntityService<CurrencyExchangeRate, Guid> service)
-    : ICommandHandler<ActivateCurrencyExchangeRateCommand, DataResult<CurrencyExchangeRate?>>
-{
-    public async Task<DataResult<CurrencyExchangeRate?>> ExecuteAsync(
-        ActivateCurrencyExchangeRateCommand request, CancellationToken cancellationToken)
-        => DataResult<CurrencyExchangeRate?>.Success(await service.SetDeactivatedAsync(request.Id, false, cancellationToken));
-}
+public class ActivateCurrencyExchangeRateCommand : BatchUpdateBaseCommand;
 
-public class ActivateCurrencyExchangeRateCommand : ICommand<DataResult<CurrencyExchangeRate?>>
-{
-    public Guid Id { get; set; }
-}
+public class ActivateCurrencyExchangeRateCommandHandler(FinanceDbContext dbContext)
+    : BaseActivateCommandHandler<ActivateCurrencyExchangeRateCommand, ActivateCurrencyExchangeRateCommandValidator, CurrencyExchangeRate, Guid>(dbContext);
+
+public class ActivateCurrencyExchangeRateCommandValidator : BatchUpdateBaseCommandValidator<ActivateCurrencyExchangeRateCommand>;

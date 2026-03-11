@@ -6,8 +6,8 @@ using Finance.Persistence;
 
 namespace Finance.Application.Commands.Subscriptions;
 
-public class DeleteSubscriptionOwnerCommand
+public sealed class DeleteSubscriptionOwnerCommand
     : DeleteEntityOwnerCommand<Subscription, Guid, SubscriptionPermissions>;
 
-public class DeleteSubscriptionOwnerCommandHandler(FinanceDbContext dbContext)
+public sealed class DeleteSubscriptionOwnerCommandHandler(FinanceDbContext dbContext)
     : DeleteEntityOwnerCommandHandler<DeleteSubscriptionOwnerCommand, Subscription, Guid, SubscriptionPermissions>(dbContext);

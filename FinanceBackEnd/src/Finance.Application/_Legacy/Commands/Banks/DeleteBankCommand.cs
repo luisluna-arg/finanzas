@@ -5,7 +5,7 @@ using Finance.Domain.Models.Banks;
 
 namespace Finance.Application.Legacy.Commands.Banks;
 
-public class DeleteBankCommandHandler : ICommandHandler<DeleteBankCommand>
+public sealed class DeleteBankCommandHandler : ICommandHandler<DeleteBankCommand>
 {
     private readonly IEntityService<Bank, Guid> _service;
 
@@ -22,7 +22,7 @@ public class DeleteBankCommandHandler : ICommandHandler<DeleteBankCommand>
     }
 }
 
-public class DeleteBankCommand : ICommand
+public sealed class DeleteBankCommand : ICommand
 {
     public Guid[] Ids { get; set; } = [];
 }

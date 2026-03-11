@@ -14,6 +14,13 @@ namespace Finance.Application.Services;
 public class DebitService(
     IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
+    : ICRUDService<
+        Debit,
+        Guid,
+        DebitPermissions,
+        CreateDebitRequest,
+        UpdateDebitRequest,
+        DeleteDebitRequest>
 {
     public async Task<DataResult<Debit>> Create(CreateDebitRequest request, HttpRequest? httpRequest = null)
     {
@@ -66,20 +73,18 @@ public class DebitService(
         try
         {
             var deleteResult = await dispatcher.DispatchAsync(
-                new DeleteDebitCommand { Ids = request.Ids },
+                new DeleteDebitCommand() { Ids = request.Ids },
                 httpRequest);
 
-            if (!deleteResult.IsSuccess)
-            {
-                await tx.RollbackAsync();
-                return deleteResult;
-            }
+            deleteResult.ThrowIfFailed($"Type {typeof(Debit).Name} delete operation failed");
 
             foreach (var id in request.Ids)
             {
-                await dispatcher.DispatchAsync(
+                var ownershipDeleteResult = await dispatcher.DispatchAsync(
                     new DeleteDebitOwnerCommand { EntityId = id },
                     httpRequest);
+
+                ownershipDeleteResult.ThrowIfFailed($"Type {typeof(Debit).Name} owner delete operation failed");
             }
 
             await tx.CommitAsync();
@@ -106,13 +111,13 @@ public class DebitService(
             new DeleteDebitOwnerCommand { EntityId = resourceId },
             httpRequest);
 
-    public async Task<CommandResult> Activate(ActivateDebitRequest request, HttpRequest? httpRequest = null)
+    public async Task<CommandResult> Activate(Guid[] ids, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
-            new ActivateDebitCommand { Ids = request.Ids },
+            new ActivateDebitCommand { Ids = ids },
             httpRequest);
 
-    public async Task<CommandResult> Deactivate(DeactivateDebitRequest request, HttpRequest? httpRequest = null)
+    public async Task<CommandResult> Deactivate(Guid[] ids, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
-            new DeactivateDebitCommand { Ids = request.Ids },
+            new DeactivateDebitCommand { Ids = ids },
             httpRequest);
 }

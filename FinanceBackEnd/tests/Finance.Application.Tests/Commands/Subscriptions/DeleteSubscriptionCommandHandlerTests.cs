@@ -1,18 +1,13 @@
 using Finance.Application.Commands.Subscriptions;
-using Finance.Application.Services;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Subscriptions;
 using FluentValidation;
 
 namespace Finance.Application.Tests.Commands.Subscriptions;
 
-public class DeleteSubscriptionCommandHandlerTests
+public sealed class DeleteSubscriptionCommandHandlerTests
 {
-    private readonly Mock<IEntityService<Subscription, Guid>> _entityService;
-
-    public DeleteSubscriptionCommandHandlerTests()
-    {
-        _entityService = new Mock<IEntityService<Subscription, Guid>>();
-    }
+    private readonly Mock<IRepository<Subscription, Guid>> _entityService = new();
 
     [Fact]
     public async Task Delete_ValidIds_CallsDeleteServiceAndReturnsSuccess()
@@ -26,9 +21,10 @@ public class DeleteSubscriptionCommandHandlerTests
 
         Assert.True(result.IsSuccess);
         _entityService.Verify(es => es.DeleteAsync(
-            It.Is<ICollection<Guid>>(c => c.SequenceEqual(ids)),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
+            It.IsAny<Guid>(),
+            It.IsAny<CancellationToken>(),
+            false), Times.Exactly(ids.Length));
+        _entityService.Verify(es => es.PersistAsync(It.IsAny<CancellationToken>()), Times.Once());
     }
 
     [Fact]

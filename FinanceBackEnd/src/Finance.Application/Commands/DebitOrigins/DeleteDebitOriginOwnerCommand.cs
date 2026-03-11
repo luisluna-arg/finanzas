@@ -5,8 +5,8 @@ using Finance.Persistence;
 
 namespace Finance.Application.Commands.DebitOrigins;
 
-public class DeleteDebitOriginOwnerCommand
+public sealed class DeleteDebitOriginOwnerCommand
     : DeleteEntityOwnerCommand<DebitOrigin, Guid, DebitOriginPermissions>;
 
-public class DeleteDebitOriginOwnerCommandHandler(FinanceDbContext dbContext)
+public sealed class DeleteDebitOriginOwnerCommandHandler(FinanceDbContext dbContext)
     : DeleteEntityOwnerCommandHandler<DeleteDebitOriginOwnerCommand, DebitOrigin, Guid, DebitOriginPermissions>(dbContext);

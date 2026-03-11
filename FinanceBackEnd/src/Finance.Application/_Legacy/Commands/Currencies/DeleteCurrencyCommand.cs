@@ -8,7 +8,7 @@ using Finance.Persistence;
 
 namespace Finance.Application.Legacy.Commands.Currencies;
 
-public class DeleteCurrencyCommandHandler : BaseResponselessHandler<DeleteCurrencyCommand>
+public sealed class DeleteCurrencyCommandHandler : BaseResponselessHandler<DeleteCurrencyCommand>
 {
     private readonly IRepository<Currency, Guid> currencyRepository;
 
@@ -27,7 +27,7 @@ public class DeleteCurrencyCommandHandler : BaseResponselessHandler<DeleteCurren
     }
 }
 
-public class DeleteCurrencyCommand : ICommand
+public sealed class DeleteCurrencyCommand : ICommand
 {
     [Required]
     public Guid Id { get; set; }

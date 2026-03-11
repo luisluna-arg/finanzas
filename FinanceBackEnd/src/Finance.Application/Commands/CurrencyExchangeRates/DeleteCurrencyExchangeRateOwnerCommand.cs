@@ -5,8 +5,8 @@ using Finance.Persistence;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
-public class DeleteCurrencyExchangeRateOwnerCommand
+public sealed class DeleteCurrencyExchangeRateOwnerCommand
     : DeleteEntityOwnerCommand<CurrencyExchangeRate, Guid, CurrencyExchangeRatePermissions>;
 
-public class DeleteCurrencyExchangeRateOwnerCommandHandler(FinanceDbContext dbContext)
+public sealed class DeleteCurrencyExchangeRateOwnerCommandHandler(FinanceDbContext dbContext)
     : DeleteEntityOwnerCommandHandler<DeleteCurrencyExchangeRateOwnerCommand, CurrencyExchangeRate, Guid, CurrencyExchangeRatePermissions>(dbContext);

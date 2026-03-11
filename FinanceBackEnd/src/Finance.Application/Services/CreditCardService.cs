@@ -8,12 +8,20 @@ using Finance.Domain.Models.CreditCards;
 using FinanceBackEnd.Finance.Domain.Enums;
 using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
+using Finance.Application.Legacy.Commands.CreditCards;
 
 namespace Finance.Application.Services;
 
 public class CreditCardService(
     IDispatcher<FinanceDispatchContext> dispatcher,
     FinanceDbContext dbContext)
+    : ICRUDService<
+        CreditCard,
+        Guid,
+        CreditCardPermissions,
+        CreateCreditCardRequest,
+        UpdateCreditCardRequest,
+        DeleteCreditCardRequest>
 {
     public async Task<DataResult<CreditCard>> Create(CreateCreditCardRequest request, HttpRequest? httpRequest = null)
     {
@@ -21,7 +29,7 @@ public class CreditCardService(
         try
         {
             var result = await dispatcher.DispatchAsync(
-                new Finance.Application.Legacy.Commands.CreditCards.CreateCreditCardCommand
+                new CreateCreditCardCommand
                 {
                     BankId = request.BankId,
                     Name = request.Name,
@@ -54,7 +62,7 @@ public class CreditCardService(
 
     public async Task<DataResult<CreditCard>> Update(UpdateCreditCardRequest request, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
-            new Finance.Application.Legacy.Commands.CreditCards.UpdateCreditCardCommand
+            new UpdateCreditCardCommand
             {
                 Id = request.Id,
                 BankId = request.BankId,
@@ -68,19 +76,17 @@ public class CreditCardService(
         try
         {
             var deleteResult = await dispatcher.DispatchCommandAsync(
-                new Finance.Application.Legacy.Commands.CreditCards.DeleteCreditCardCommand { Ids = request.Ids });
+                new DeleteCreditCardCommand { Ids = request.Ids });
 
-            if (!deleteResult.IsSuccess)
-            {
-                await tx.RollbackAsync();
-                return deleteResult;
-            }
+            deleteResult.ThrowIfFailed($"Type {typeof(CreditCard).Name} delete operation failed");
 
             foreach (var id in request.Ids)
             {
-                await dispatcher.DispatchAsync(
+                var ownershipDeleteResult = await dispatcher.DispatchAsync(
                     new DeleteCreditCardOwnerCommand { EntityId = id },
                     httpRequest);
+
+                ownershipDeleteResult.ThrowIfFailed($"Type {typeof(CreditCard).Name} owner delete operation failed");
             }
 
             await tx.CommitAsync();
@@ -105,5 +111,15 @@ public class CreditCardService(
     public async Task<CommandResult> DeleteOwner(Guid resourceId, HttpRequest? httpRequest = null)
         => await dispatcher.DispatchAsync(
             new DeleteCreditCardOwnerCommand { EntityId = resourceId },
+            httpRequest);
+
+    public async Task<CommandResult> Activate(Guid[] ids, HttpRequest? httpRequest = null)
+        => await dispatcher.DispatchAsync(
+            new ActivateCreditCardCommand { Ids = ids },
+            httpRequest);
+
+    public async Task<CommandResult> Deactivate(Guid[] ids, HttpRequest? httpRequest = null)
+        => await dispatcher.DispatchAsync(
+            new DeactivateCreditCardCommand { Ids = ids },
             httpRequest);
 }

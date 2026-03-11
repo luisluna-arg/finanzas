@@ -5,7 +5,7 @@ using Finance.Domain.Models.CreditCards;
 
 namespace Finance.Application.Legacy.Commands.CreditCards;
 
-public class DeleteCreditCardCommandHandler : ICommandHandler<DeleteCreditCardCommand>
+public sealed class DeleteCreditCardCommandHandler : ICommandHandler<DeleteCreditCardCommand>
 {
     private readonly IEntityService<CreditCard, Guid> _service;
 
@@ -22,7 +22,7 @@ public class DeleteCreditCardCommandHandler : ICommandHandler<DeleteCreditCardCo
     }
 }
 
-public class DeleteCreditCardCommand : ICommand
+public sealed class DeleteCreditCardCommand : ICommand
 {
     public Guid[] Ids { get; set; } = [];
 }

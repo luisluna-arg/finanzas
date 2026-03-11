@@ -1,23 +1,12 @@
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
 using Finance.Application.Commands.Base;
-using Finance.Application.Services;
 using Finance.Domain.Models.Subscriptions;
+using Finance.Persistence;
 
 namespace Finance.Application.Commands.Subscriptions;
 
 public class DeactivateSubscriptionCommand : BatchUpdateBaseCommand;
 
-public class DeactivateSubscriptionCommandHandler(IEntityService<Subscription, Guid> service) : ICommandHandler<DeactivateSubscriptionCommand>
-{
-    private readonly IEntityService<Subscription, Guid> _service = service;
-
-    public async Task<CommandResult> ExecuteAsync(DeactivateSubscriptionCommand command, CancellationToken cancellationToken)
-    {
-        command.ThrowIfNotValid(new DeactivateSubscriptionCommandValidator());
-        await _service.SetDeactivatedAsync(command.Ids, true, cancellationToken);
-        return CommandResult.Success();
-    }
-}
+public class DeactivateSubscriptionCommandHandler(FinanceDbContext dbContext)
+    : BaseDeactivateCommandHandler<DeactivateSubscriptionCommand, DeactivateSubscriptionCommandValidator, Subscription, Guid>(dbContext);
 
 public class DeactivateSubscriptionCommandValidator : BatchUpdateBaseCommandValidator<DeactivateSubscriptionCommand>;

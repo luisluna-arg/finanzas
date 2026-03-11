@@ -1,21 +1,13 @@
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
 using Finance.Application.Commands.Base;
-using Finance.Application.Services;
+using Finance.Application.Repositories;
 using Finance.Domain.Models.Funds;
 
 namespace Finance.Application.Commands.Funds;
 
-public class DeleteFundsCommandHandler(IEntityService<Fund, Guid> service) : ICommandHandler<DeleteFundsCommand, CommandResult>
-{
-    public async Task<CommandResult> ExecuteAsync(DeleteFundsCommand request, CancellationToken cancellationToken)
-    {
-        request.ThrowIfNotValid(new DeleteFundsCommandValidator());
-        await service.DeleteAsync(request.Ids, cancellationToken);
-        return CommandResult.Success();
-    }
-}
+public sealed class DeleteFundsCommand() : DeleteEntityCommand<Guid>();
 
-public class DeleteFundsCommand : BatchUpdateBaseCommand;
+public sealed class DeleteFundsCommandHandler(IRepository<Fund, Guid> repository)
+    : DeleteEntityCommandHandler<Fund, Guid, DeleteFundsCommand, DeleteFundsCommandValidator>(repository);
 
-public class DeleteFundsCommandValidator : BatchUpdateBaseCommandValidator<DeleteFundsCommand>;
+public sealed class DeleteFundsCommandValidator()
+    : DeleteEntityCommandValidator<DeleteFundsCommand, Guid>();
