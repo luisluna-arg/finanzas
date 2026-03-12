@@ -37,7 +37,7 @@ public class UpdateMovementCommandHandler : BaseCommandHandler<PartialUpdateMove
     }
 }
 
-public class PartialUpdateMovementCommand : ICommand
+public class PartialUpdateMovementCommand : ICommand<DataResult<Movement>>
 {
     required public Guid Id { get; set; }
 
