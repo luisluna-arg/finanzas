@@ -3,14 +3,13 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Services;
 using Finance.Domain.Models.IOLInvestments;
 
-namespace Finance.Application.Legacy.Commands.IOLInvestments;
+namespace Finance.Application.Commands.IOLInvestments;
 
 public sealed class DeleteIOLInvestmentCommandHandler : ICommandHandler<DeleteIOLInvestmentCommand>
 {
     private readonly IEntityService<IOLInvestment, Guid> _service;
 
-    public DeleteIOLInvestmentCommandHandler(
-        IEntityService<IOLInvestment, Guid> service)
+    public DeleteIOLInvestmentCommandHandler(IEntityService<IOLInvestment, Guid> service)
     {
         _service = service;
     }
