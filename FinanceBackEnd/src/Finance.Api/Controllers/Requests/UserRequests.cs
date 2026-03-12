@@ -1,8 +1,8 @@
 namespace Finance.Api.Controllers.Requests;
 
-public sealed class CreateUserRequest : BaseUserRequest;
+public class CreateUserRequest : BaseUserRequest;
 
-public sealed class UpdateUserRequest : BaseUserRequest
+public sealed class UpdateUserRequest : CreateUserRequest
 {
     public Guid Id { get; set; }
 }
