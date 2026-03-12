@@ -1,5 +1,5 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Commands.Movements;
+using Finance.Application.Commands.Movements;
 
 namespace Finance.Application.Tests.Services.Movements;
 

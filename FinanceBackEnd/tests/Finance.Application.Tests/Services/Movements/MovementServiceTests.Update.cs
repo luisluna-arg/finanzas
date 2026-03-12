@@ -1,5 +1,5 @@
 using CQRSDispatch;
-using Finance.Application.Legacy.Commands.Movements;
+using Finance.Application.Commands.Movements;
 using Finance.Application.Services.Movements;
 using Finance.Domain.Models.Movements;
 using Finance.Domain.SpecialTypes;
