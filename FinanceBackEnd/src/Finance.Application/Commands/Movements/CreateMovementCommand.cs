@@ -7,7 +7,7 @@ using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Movements;
 using Finance.Persistence;
 
-namespace Finance.Application.Legacy.Commands.Movements;
+namespace Finance.Application.Commands.Movements;
 
 public class CreateMovementCommandHandler : BaseCommandHandler<CreateMovementCommand, Movement>
 {

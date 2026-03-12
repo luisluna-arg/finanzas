@@ -3,7 +3,7 @@ using CQRSDispatch.Interfaces;
 using Finance.Application.Services;
 using Finance.Domain.Models.Movements;
 
-namespace Finance.Application.Legacy.Commands.Movements;
+namespace Finance.Application.Commands.Movements;
 
 public class ActivateMovementCommandHandler : ICommandHandler<ActivateMovementCommand, DataResult<Movement?>>
 {

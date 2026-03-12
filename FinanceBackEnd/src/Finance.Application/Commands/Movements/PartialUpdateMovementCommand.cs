@@ -6,7 +6,7 @@ using Finance.Domain.Models.Movements;
 using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
 
-namespace Finance.Application.Legacy.Commands.Movements;
+namespace Finance.Application.Commands.Movements;
 
 public class UpdateMovementCommandHandler : BaseCommandHandler<PartialUpdateMovementCommand, Movement>
 {
@@ -37,7 +37,7 @@ public class UpdateMovementCommandHandler : BaseCommandHandler<PartialUpdateMove
     }
 }
 
-public class PartialUpdateMovementCommand : ICommand
+public class PartialUpdateMovementCommand : ICommand<DataResult<Movement>>
 {
     required public Guid Id { get; set; }
 
