@@ -9,7 +9,7 @@ using Finance.Domain.Models.IOLInvestments;
 using Finance.Persistence;
 using Finance.Persistence.Constants;
 
-namespace Finance.Application.Legacy.Commands.IOLInvestments;
+namespace Finance.Application.Commands.IOLInvestments;
 
 public class CreateIOLInvestmentCommandHandler : BaseCommandHandler<CreateIOLInvestmentCommand, IOLInvestment>
 {
@@ -82,7 +82,7 @@ public class CreateIOLInvestmentCommandHandler : BaseCommandHandler<CreateIOLInv
     }
 }
 
-public class CreateIOLInvestmentCommand : ICommand
+public class CreateIOLInvestmentCommand : ICommand<DataResult<IOLInvestment>>
 {
     required public string AssetSymbol { get; set; } = string.Empty;
     required public uint Alarms { get; set; } = 0;

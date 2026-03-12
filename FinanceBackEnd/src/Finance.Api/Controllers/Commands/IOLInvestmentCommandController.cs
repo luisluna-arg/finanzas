@@ -1,43 +1,39 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
+using Finance.Api.Controllers.Requests;
 using Finance.Application.Auth;
 using Finance.Application.Legacy.Commands.IOLInvestments;
 using Finance.Application.Legacy.Dtos.IOLInvestments;
 using Finance.Application.Legacy.Mapping;
+using Finance.Application.Services;
+using Finance.Application.Services.IOLInvestments;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.IOLInvestments;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
 
 [Route("api/iol-investment")]
-public class IOLInvestmentCommandController(IMappingService mapper, IDispatcher<FinanceDispatchContext> dispatcher)
-    : ApiBaseCommandController<IOLInvestment?, Guid, IOLInvestmentDto>(mapper, dispatcher)
+public class IOLInvestmentCommandController(
+    IMappingService mapper,
+    IDispatcher<FinanceDispatchContext> dispatcher,
+    IOLInvestmentService iolInvestmentService)
+    : CommandController<
+        IOLInvestment,
+        IOLInvestmentPermissions,
+        CreateIOLInvestmentRequest,
+        UpdateIOLInvestmentRequest,
+        DeleteIOLInvestmentRequest,
+        SetIOLInvestmentOwnerRequest,
+        DeleteIOLInvestmentOwnerRequest,
+        Guid,
+        IOLInvestmentDto,
+        IOLInvestmentService>(mapper, dispatcher, iolInvestmentService)
 {
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateIOLInvestmentCommand command)
-        => await ExecuteAsync(command);
-
-    [HttpDelete]
-    public async Task<IActionResult> Delete(DeleteIOLInvestmentCommand request)
-        => await ExecuteAsync(request);
-
-    [HttpPut]
-    public async Task<IActionResult> Update(UpdateIOLInvestmentCommand command)
-        => await ExecuteAsync(command);
-
-    [HttpPost]
-    [Route("upload")]
+    [HttpPost("upload")]
     public async Task<IActionResult> Upload(IFormFile file)
     {
         await ExecuteAsync(new UploadIOLInvestmentsCommand(file));
         return Ok();
     }
-
-    [HttpPatch("activate/{id}")]
-    public async Task<IActionResult> Activate(Guid id)
-        => await ExecuteAsync(new ActivateIOLInvestmentCommand { Id = id });
-
-    [HttpPatch("deactivate/{id}")]
-    public async Task<IActionResult> Deactivate(Guid id)
-        => await ExecuteAsync(new DeactivateIOLInvestmentCommand { Id = id });
 }

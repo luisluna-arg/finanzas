@@ -7,7 +7,7 @@ using Finance.Domain.Models.Base;
 using Finance.Domain.Models.IOLInvestments;
 using Finance.Persistence;
 
-namespace Finance.Application.Legacy.Commands.IOLInvestments;
+namespace Finance.Application.Commands.IOLInvestments;
 
 public class UpdateIOLInvestmentCommandHandler : BaseCommandHandler<UpdateIOLInvestmentCommand, IOLInvestment>
 {
@@ -78,7 +78,7 @@ public class UpdateIOLInvestmentCommandHandler : BaseCommandHandler<UpdateIOLInv
     }
 }
 
-public class UpdateIOLInvestmentCommand : ICommand
+public class UpdateIOLInvestmentCommand : ICommand<DataResult<IOLInvestment>>
 {
     required public Guid Id { get; set; }
     required public string AssetSymbol { get; set; } = string.Empty;
