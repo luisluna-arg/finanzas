@@ -64,7 +64,7 @@ function handleBotRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  return new Promise((resolve, _) => {
+  return new Promise((resolve) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(
       <ServerRouter context={remixContext} url={request.url} />,
