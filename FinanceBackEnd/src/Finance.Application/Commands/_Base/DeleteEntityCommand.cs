@@ -8,7 +8,7 @@ namespace Finance.Application.Commands.Base;
 public abstract class DeleteEntityCommand<TId>() : BatchUpdateBaseCommand<TId>();
 
 public abstract class DeleteEntityCommandHandler<TEntity, TKey, TCommand, TValidator>(IRepository<TEntity, TKey> repository)
-    : ICommandHandler<TCommand>
+    : ICommandHandler<TCommand, CommandResult>
     where TCommand : DeleteEntityCommand<TKey>
     where TEntity : Entity<TKey>
     where TValidator : DeleteEntityCommandValidator<TCommand, TKey>, new()
