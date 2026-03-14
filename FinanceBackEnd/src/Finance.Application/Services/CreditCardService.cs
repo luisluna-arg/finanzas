@@ -8,7 +8,6 @@ using Finance.Domain.Models.CreditCards;
 using FinanceBackEnd.Finance.Domain.Enums;
 using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
-using Finance.Application.Legacy.Commands.CreditCards;
 
 namespace Finance.Application.Services;
 

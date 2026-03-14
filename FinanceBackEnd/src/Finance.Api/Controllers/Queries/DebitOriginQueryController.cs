@@ -1,8 +1,8 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Dtos.DebitOrigins;
-using Finance.Application.Legacy.Mapping;
+using Finance.Application.Dtos.DebitOrigins;
+using Finance.Application.Mapping;
 using Finance.Application.Queries.DebitOrigins;
 using Finance.Domain.Models.Debits;
 using Microsoft.AspNetCore.Authorization;

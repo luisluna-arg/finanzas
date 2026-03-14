@@ -1,7 +1,7 @@
 using CQRSDispatch;
+using Finance.Application.Commands.CreditCards;
 using Finance.Application.Services.CreditCards;
 using Finance.Domain.Models.CreditCards;
-using UpdateCreditCardCommand = Finance.Application.Legacy.Commands.CreditCards.UpdateCreditCardCommand;
 
 namespace Finance.Application.Tests.Services.CreditCards;
 

@@ -1,8 +1,8 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Mapping;
-using Finance.Application.Legacy.Queries.CurrencyConvertions;
+using Finance.Application.Mapping;
+using Finance.Application.Queries.CurrencyConvertions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Queries;

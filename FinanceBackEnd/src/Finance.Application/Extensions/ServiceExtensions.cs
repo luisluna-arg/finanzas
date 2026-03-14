@@ -1,13 +1,10 @@
-using CQRSDispatch;
-using Finance.Application.Legacy.Commands.Users;
+using Finance.Application.Commands.Users;
 using Finance.Application.Services;
-using Finance.Application.Legacy.Services.Interfaces;
-using Finance.Application.Legacy.Services.RequestBuilders;
+using Finance.Application.Services.Interfaces;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Finance.Application.Legacy.Services;
 
 namespace Finance.Application.Extensions;
 
@@ -39,28 +36,6 @@ public static class SagaServiceExtensions
         RegisterScopedService<IdentityService>(services);
 
         return services;
-    }
-
-    private static void RegisterResourcePermissionsSagaService<TPermissions, TOrchestrator, TSetRequest, TDataResult, TDeleteRequest, TCommandResult, TService>(IServiceCollection services)
-        where TPermissions : IEntity
-        where TOrchestrator : class, IResourcePermissionsOrchestrator<TSetRequest, TDataResult, TDeleteRequest, TCommandResult>, new()
-        where TSetRequest : ISagaRequest
-        where TDataResult : RequestResult, new()
-        where TDeleteRequest : ISagaRequest
-        where TCommandResult : RequestResult, new()
-        where TService : class, IResourcePermissionsSagaService<TPermissions, TOrchestrator, TSetRequest, TDataResult, TDeleteRequest, TCommandResult>
-    {
-        RegisterScopedService<TService, IResourcePermissionsSagaService<TPermissions, TOrchestrator, TSetRequest, TDataResult, TDeleteRequest, TCommandResult>>(services);
-    }
-
-    private static void RegisterResourcePermissionsOrchestrator<TSetRequest, TDataResult, TDeleteRequest, TCommandResult, TOrchestrator>(IServiceCollection services)
-        where TSetRequest : ISagaRequest
-        where TDataResult : RequestResult, new()
-        where TDeleteRequest : ISagaRequest
-        where TCommandResult : RequestResult, new()
-        where TOrchestrator : class, IResourcePermissionsOrchestrator<TSetRequest, TDataResult, TDeleteRequest, TCommandResult>
-    {
-        RegisterScopedService<TOrchestrator, IResourcePermissionsOrchestrator<TSetRequest, TDataResult, TDeleteRequest, TCommandResult>>(services);
     }
 
     private static void RegisterEntityService<TEntity, TSagaService, TCreateRequest, TUpdateRequest, TDeleteRequest>(IServiceCollection services)
