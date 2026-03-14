@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Commands.Base;
 
-public abstract class BaseDeactivateCommandHandler<TCommand, TValidator, TEntity, TId>(FinanceDbContext dbContext) : ICommandHandler<TCommand>
+public abstract class BaseDeactivateCommandHandler<TCommand, TValidator, TEntity, TId>(FinanceDbContext dbContext) : ICommandHandler<TCommand, CommandResult>
     where TCommand : BatchUpdateBaseCommand<TId>
     where TValidator : BatchUpdateBaseCommandValidator<TCommand, TId>
     where TEntity : Entity<TId>
