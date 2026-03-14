@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Commands.Base;
-using Finance.Application.Legacy.Repositories;
+using Finance.Application.Repositories;
 using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 

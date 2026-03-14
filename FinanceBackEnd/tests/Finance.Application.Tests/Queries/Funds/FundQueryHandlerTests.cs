@@ -1,7 +1,6 @@
-using Finance.Application.Legacy.Repositories;
+using Finance.Application.Repositories;
 using Finance.Application.Queries.Funds;
 using Finance.Application.Queries.Movements;
-using Finance.Application.Repositories;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.AppModules;
 using Finance.Domain.Models.Banks;

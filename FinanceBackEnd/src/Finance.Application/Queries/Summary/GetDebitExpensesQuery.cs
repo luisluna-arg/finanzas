@@ -1,6 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Dtos.Summary;
+using Finance.Application.Dtos.Summary;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 

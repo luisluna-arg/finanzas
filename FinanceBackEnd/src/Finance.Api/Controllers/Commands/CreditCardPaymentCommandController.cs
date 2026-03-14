@@ -1,9 +1,9 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Commands.CreditCards;
-using Finance.Application.Legacy.Dtos.CreditCards;
-using Finance.Application.Legacy.Mapping;
+using Finance.Application.Commands.CreditCards;
+using Finance.Application.Dtos.CreditCards;
+using Finance.Application.Mapping;
 using Finance.Domain.Models.CreditCards;
 using Microsoft.AspNetCore.Mvc;
 

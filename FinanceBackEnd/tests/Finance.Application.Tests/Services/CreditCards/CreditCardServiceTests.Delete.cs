@@ -2,7 +2,6 @@ using CQRSDispatch;
 using Finance.Application.Commands.CreditCards;
 using Finance.Application.Services.CreditCards;
 using Microsoft.AspNetCore.Http;
-using DeleteCreditCardCommand = Finance.Application.Legacy.Commands.CreditCards.DeleteCreditCardCommand;
 
 namespace Finance.Application.Tests.Services.CreditCards;
 

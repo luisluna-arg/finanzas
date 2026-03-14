@@ -1,7 +1,6 @@
 using System.Runtime.Versioning;
 using System.Text;
 using Finance.Application.Commands.Funds;
-using Finance.Application.Legacy.Repositories;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.AppModules;
 using Finance.Domain.Models.Banks;

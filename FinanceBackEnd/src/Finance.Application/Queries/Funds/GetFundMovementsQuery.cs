@@ -6,7 +6,6 @@ using Finance.Application.Repositories.Base;
 using Finance.Domain.Models.Movements;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Finance.Application.Legacy.Repositories;
 
 namespace Finance.Application.Queries.Movements;
 

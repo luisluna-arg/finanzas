@@ -1,6 +1,6 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
-using Finance.Application.Legacy.Commands.Users;
+using Finance.Application.Commands.Users;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Base;
 using Finance.Persistence;
