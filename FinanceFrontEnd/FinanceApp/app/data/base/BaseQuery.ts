@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Agent } from 'https';
 import serverLogger from '@/utils/logger.server';
 import { BackendUrl } from '@/utils/BackendUrl';
+import { buildAxiosConfig } from './axiosConfig';
 
 export interface QueryEndpoints {
   get: BackendUrl | string;
@@ -18,15 +19,13 @@ export class BaseQuery {
     this.accessToken = accessToken;
   }
 
+  protected axiosConfig(params?: object) {
+    return buildAxiosConfig(this.httpsAgent, this.accessToken, params);
+  }
+
   async get<TFilter>(filters?: TFilter) {
     try {
-      const config = {
-        params: filters ?? {},
-        httpsAgent: this.httpsAgent,
-        headers: {
-          Authorization: `Bearer ${this.accessToken}`,
-        },
-      };
+      const config = this.axiosConfig(filters ?? {});
       const endpointUrl =
         this.getEndpoint instanceof BackendUrl
           ? this.getEndpoint.toRaw()

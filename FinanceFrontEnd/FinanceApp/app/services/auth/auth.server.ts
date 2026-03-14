@@ -22,10 +22,14 @@ const JWKS = createRemoteJWKSet(
 );
 
 export async function verifyIdToken(idToken: string) {
-    const { payload } = await jwtVerify(idToken, JWKS, {
+    const verifyPromise = jwtVerify(idToken, JWKS, {
         issuer: `https://${AuthConstants.DOMAIN}/`,
         audience: AuthConstants.CLIENT_ID,
     });
+    const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('JWKS verification timed out')), 5000)
+    );
+    const { payload } = await Promise.race([verifyPromise, timeoutPromise]);
     return payload;
 }
 

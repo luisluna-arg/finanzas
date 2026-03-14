@@ -64,7 +64,7 @@ function handleBotRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(
       <ServerRouter context={remixContext} url={request.url} />,
@@ -87,7 +87,12 @@ function handleBotRequest(
         },
         onShellError(error: unknown) {
           SafeLogger.error('[Bot Request] Shell Error:', error);
-          reject(error);
+          resolve(
+            new Response('<!DOCTYPE html><html><body><h1>Server Error</h1></body></html>', {
+              status: 500,
+              headers: { 'Content-Type': 'text/html' },
+            })
+          );
         },
         onError(error: unknown) {
           SafeLogger.error('[Bot Request] Render Error:', error);
@@ -109,7 +114,7 @@ function handleBrowserRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(
       <ServerRouter context={remixContext} url={request.url} />,
@@ -131,7 +136,13 @@ function handleBrowserRequest(
           pipe(body);
         },
         onShellError(error: unknown) {
-          reject(error);
+          SafeLogger.error('[Browser Request] Shell Error:', error);
+          resolve(
+            new Response('<!DOCTYPE html><html><body><h1>Server Error</h1></body></html>', {
+              status: 500,
+              headers: { 'Content-Type': 'text/html' },
+            })
+          );
         },
         onError(error: unknown) {
           responseStatusCode = HttpStatusConstants.INTERNAL_SERVER_ERROR;

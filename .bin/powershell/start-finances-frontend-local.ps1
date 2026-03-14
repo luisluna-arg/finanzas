@@ -5,7 +5,7 @@ if (-not $dockerProcess) {
     exit 1
 }
 
-$financesCompose = Join-Path $PSScriptRoot "..\.infra\local\finances\docker-compose.yaml"
+$financesCompose = Join-Path $PSScriptRoot "..\..\.infra\local\finances\docker-compose.yaml"
 
 Write-Host "Checking compose files:"
 Write-Host "  Finances: $financesCompose"
@@ -33,9 +33,32 @@ if ($exitFinances -ne 0) {
 
 Write-Host ""
 if ($exitFinances -eq 0) {
+    Write-Host "Waiting for finances frontend to be healthy (max 60s)..."
+    $timeout = 60
+    $elapsed = 0
+    while ($elapsed -lt $timeout) {
+        $health = docker inspect --format='{{.State.Health.Status}}' "$projectFinances-frontend-1" 2>$null
+        if ($health -eq "healthy") {
+            Write-Host "Frontend is healthy!"
+            break
+        }
+        if ($health -eq "unhealthy") {
+            Write-Host "Frontend is unhealthy. Showing logs..."
+            docker compose -p $projectFinances -f $financesCompose logs frontend --tail=50
+            break
+        }
+        Write-Host "Frontend status: $health - waiting... ($elapsed/$timeout seconds)"
+        Start-Sleep -Seconds 5
+        $elapsed += 5
+    }
+    if ($elapsed -ge $timeout) {
+        Write-Host "WARNING: Frontend health check timed out. Showing logs..."
+        docker compose -p $projectFinances -f $financesCompose logs frontend --tail=50
+    }
+
+    Write-Host ""
     Write-Host "All services started successfully!"
     Write-Host "Frontend: http://localhost:5100"
-    Write-Host "Redis: localhost:6379"
     Write-Host ""
     Write-Host "To stop: docker compose -p $projectFinances stop"
 }

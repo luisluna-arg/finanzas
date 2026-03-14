@@ -13,13 +13,7 @@ export class CreditCardStatementQuery extends BaseQuery {
 
   async getLatest() {
     try {
-      const config = {
-        httpsAgent: this.httpsAgent,
-        headers: {
-          Authorization: `Bearer ${this.accessToken}`,
-        },
-      };
-      const response = await axios.get(urls.creditCardStatements.latest.toRaw(), config);
+      const response = await axios.get(urls.creditCardStatements.latest.toRaw(), this.axiosConfig());
       return response.data;
     } catch (error) {
       serverLogger.error('Error fetching latest statements:', error);
