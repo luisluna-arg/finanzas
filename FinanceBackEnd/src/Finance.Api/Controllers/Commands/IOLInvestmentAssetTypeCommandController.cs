@@ -1,7 +1,7 @@
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
-using Finance.Application.Legacy.Commands.IOLInvestments;
+using Finance.Application.Commands.IOLInvestments;
 using Finance.Application.Legacy.Dtos.IOLInvestmentAssetTypes;
 using Finance.Application.Legacy.Mapping;
 using Finance.Domain.Enums;
@@ -16,9 +16,9 @@ public class IOLInvestmentAssetTypeCommandController(IMappingService mapper, IDi
 {
     [HttpPatch("activate/{id}")]
     public async Task<IActionResult> Activate(IOLInvestmentAssetTypeEnum id)
-        => await Handle404(new ActivateIOLInvestmentAssetTypeCommand { Id = id });
+        => await ExecuteAsync(new ActivateIOLInvestmentAssetTypeCommand { Ids = [id] });
 
     [HttpPatch("deactivate/{id}")]
     public async Task<IActionResult> Deactivate(IOLInvestmentAssetTypeEnum id)
-        => await Handle404(new DeactivateIOLInvestmentAssetTypeCommand { Id = id });
+        => await ExecuteAsync(new DeactivateIOLInvestmentAssetTypeCommand { Ids = [id] });
 }
