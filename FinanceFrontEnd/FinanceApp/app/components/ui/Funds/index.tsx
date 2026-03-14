@@ -3,7 +3,7 @@ import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import dayjs from 'dayjs';
 import urls from '@/utils/urls';
 import BankCurrencySelector from '@/components/ui/utils/BankCurrencySelector';
-import PaginatedTable, { Column, Row } from '@/components/ui/utils/PaginatedTable';
+import PaginatedTable, { Column } from '@/components/ui/utils/PaginatedTable';
 import { InputType } from '@/components/ui/utils/InputType';
 import CommonUtils, { toNumber } from '@/utils/common';
 import { cn } from '@/lib/utils';
