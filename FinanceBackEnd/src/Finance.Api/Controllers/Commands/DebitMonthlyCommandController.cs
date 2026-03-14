@@ -17,7 +17,7 @@ public class MonthlyDebitCommandController(
     : DebitCommandController(mapper, dispatcher, debitService)
 {
     [HttpPost]
-    public new async Task<IActionResult> Create(CreateDebitRequest request)
+    public override async Task<IActionResult> Create(CreateDebitRequest request)
         => await base.Create(request with { Frequency = FrequencyEnum.Monthly });
 
     [HttpPost]

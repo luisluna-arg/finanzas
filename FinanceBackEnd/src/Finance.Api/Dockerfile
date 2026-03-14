@@ -45,7 +45,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY . .
 RUN dotnet restore "FinanceBackEnd.sln"
-RUN dotnet publish "Finance.Api/Finance.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish
+RUN dotnet publish "src/Finance.Api/Finance.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 FROM base AS final
 WORKDIR /app

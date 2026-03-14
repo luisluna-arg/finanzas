@@ -49,7 +49,7 @@ public abstract class CommandController<
     { get => crudService; }
 
     [HttpPost]
-    public async Task<IActionResult> Create(TCreateRequest command)
+    public virtual async Task<IActionResult> Create(TCreateRequest command)
     {
         var result = await CrudService.Create(command, httpRequest: Request);
         if (!result.IsSuccess)
