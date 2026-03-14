@@ -24,7 +24,7 @@ else
 fi
 
 echo "Rebuilding backend service (project: $PROJECT_SHARED)..."
-docker compose -p "$PROJECT_SHARED" -f "$SHARED_COMPOSE" up --build -d backend
+docker compose -p "$PROJECT_SHARED" -f "$SHARED_COMPOSE" up --build --force-recreate -d backend
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then
   echo "Backend rebuild failed with exit code: $EXIT_CODE"

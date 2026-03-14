@@ -13,9 +13,9 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/FinanceBackEnd/Finance.Api/bin/Debug/net9.0/Finance.Api.dll",
+      "program": "${workspaceFolder}/FinanceBackEnd/src/Finance.Api/bin/Debug/net9.0/Finance.Api.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/FinanceBackEnd/Finance.Api",
+      "cwd": "${workspaceFolder}/FinanceBackEnd/src/Finance.Api",
       "stopAtEntry": false,
       // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
       // "serverReadyAction": {
@@ -31,17 +31,17 @@
       }
     },
     {
-      "name": "Attach to .NET Core (Docker) - Select 'dotnet' process",
+      "name": ".NET Core (Docker)",
       "type": "coreclr",
       "request": "attach",
       "preLaunchTask": "",
-      "processId": "${command:pickRemoteProcess}",
+      "processId": 1,
       "pipeTransport": {
         "pipeProgram": "docker",
         "pipeArgs": [
           "exec",
           "-i",
-          "${input:containerList}",
+          "finances-shared-backend-1",
           "sh",
           "-c"
         ],

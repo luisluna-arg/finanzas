@@ -67,7 +67,7 @@ services:
   backend:
     build:
       context: ../../../FinanceBackEnd
-      dockerfile: Finance.Api/Dockerfile
+      dockerfile: src/Finance.Api/Dockerfile
       args:
         BUILD_CONFIGURATION: Debug
     env_file:
@@ -76,7 +76,11 @@ services:
       - "5000:5000"
     restart: unless-stopped
     volumes:
-      - ./dataprotection:/root/.aspnet/DataProtection-Keys
+      - dataprotection-keys:/root/.aspnet/DataProtection-Keys
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     depends_on:
       redis:
         condition: service_healthy
@@ -95,6 +99,7 @@ volumes:
   redis-data:
   postgres-data:
   grafana-data:
+  dataprotection-keys:
 networks:
   default:
     name: shared_network

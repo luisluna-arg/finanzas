@@ -20,7 +20,7 @@ $projectShared = if (Test-Path $sharedEnv) {
 } else { "shared" }
 
 Write-Host "Rebuilding backend service (project: $projectShared)..."
-docker compose -p $projectShared -f $sharedCompose up --build -d backend
+docker compose -p $projectShared -f $sharedCompose up --build --force-recreate -d backend
 $exitCode = $LASTEXITCODE
 if ($exitCode -ne 0) {
     Write-Host "Backend rebuild failed with exit code: $exitCode"
