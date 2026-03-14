@@ -30,13 +30,7 @@ export class BasePaginatedQuery extends BaseQuery {
         this.getPaginatedEndpoint instanceof BackendUrl
           ? this.getPaginatedEndpoint.toRaw()
           : String(this.getPaginatedEndpoint);
-      const response = await axios.get(endpointUrl, {
-        params: filters,
-        httpsAgent: this.httpsAgent,
-        headers: {
-          Authorization: `Bearer ${this.accessToken}`,
-        },
-      });
+      const response = await axios.get(endpointUrl, this.axiosConfig(filters));
 
       return response.data;
     } catch (error) {

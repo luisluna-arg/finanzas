@@ -51,6 +51,8 @@ public static class ConfigExtensions
 
         // Make sure API Explorer is enabled for controller discovery
         services.AddEndpointsApiExplorer();
+
+        services.AddHealthChecks();
     }
 
     public static void ConfigureDataBase(this IServiceCollection services, WebApplicationBuilder builder)
@@ -123,6 +125,9 @@ public static class ConfigExtensions
 
         // Configure controllers
         app.MapControllers();
+
+        // Health check endpoint (no auth required — used by Docker and load balancers)
+        app.MapHealthChecks("/health");
 
         // Configure Swagger and API reference for both development and production
         SwaggerConfig.ConfigureOpenApiUI(app);

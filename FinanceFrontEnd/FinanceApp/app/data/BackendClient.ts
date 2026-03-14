@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Agent } from "https";
 import serverLogger from "@/utils/logger.server";
+import { buildAxiosConfig } from "./base/axiosConfig";
 import { BanksQuery } from "./queries/BanksQuery";
 import { CreditCardQuery } from "./queries/CreditCardQuery";
 import { CreditCardStatementQuery } from "./queries/CreditCardStatementQuery";
@@ -78,13 +79,7 @@ export class BackendClient {
 
     async get<TFilter>(endpoint: string, filters?: TFilter) {
         try {
-            const response = await axios.get(endpoint, {
-                params: filters ?? {},
-                httpsAgent: this.HttpsAgent,
-                headers: {
-                    Authorization: `Bearer ${this.AccessToken}`,
-                },
-            });
+            const response = await axios.get(endpoint, buildAxiosConfig(this.HttpsAgent, this.AccessToken, filters ?? {}));
 
             return response.data;
         } catch (error) {

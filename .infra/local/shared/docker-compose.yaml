@@ -89,11 +89,11 @@ services:
       jaeger:
         condition: service_started  # Jaeger is optional; tracing is disabled if unreachable
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/swagger/index.html"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
 
 volumes:
   redis-data:
