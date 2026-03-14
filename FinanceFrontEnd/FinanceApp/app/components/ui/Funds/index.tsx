@@ -2,11 +2,10 @@ import React from 'react';
 import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import dayjs from 'dayjs';
 import urls from '@/utils/urls';
-import CommonUtils from '@/utils/common';
 import BankCurrencySelector from '@/components/ui/utils/BankCurrencySelector';
 import PaginatedTable, { Column, Row } from '@/components/ui/utils/PaginatedTable';
 import { InputType } from '@/components/ui/utils/InputType';
-import { toNumber } from '@/utils/common';
+import CommonUtils, { toNumber } from '@/utils/common';
 import { cn } from '@/lib/utils';
 import type { FundRecord } from '@/types/fund';
 
@@ -15,8 +14,6 @@ interface PickerData {
   id: string;
   name: string;
 }
-
-interface FundRow extends FundRecord, Omit<Row, 'id'> {}
 
 interface LoaderData {
   banks: PickerData[];
