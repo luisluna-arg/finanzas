@@ -1,0 +1,13 @@
+using Finance.Application.Commands.Base;
+using Finance.Domain.Enums;
+using Finance.Domain.Models.IOLInvestments;
+using Finance.Persistence;
+
+namespace Finance.Application.Commands.IOLInvestments;
+
+public class DeactivateIOLInvestmentAssetTypeCommand : BatchUpdateBaseCommand<IOLInvestmentAssetTypeEnum>;
+
+public class DeactivateIOLInvestmentAssetTypeCommandHandler(FinanceDbContext dbContext)
+    : BaseDeactivateCommandHandler<DeactivateIOLInvestmentAssetTypeCommand, DeactivateIOLInvestmentAssetTypeCommandValidator, IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum>(dbContext);
+
+public class DeactivateIOLInvestmentAssetTypeCommandValidator : BatchUpdateBaseCommandValidator<DeactivateIOLInvestmentAssetTypeCommand, IOLInvestmentAssetTypeEnum>;

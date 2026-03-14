@@ -32,9 +32,4 @@ public abstract class BatchUpdateBaseCommandValidator<TCommand, TId> : AbstractV
 }
 
 public abstract class BatchUpdateBaseCommandValidator<TCommand> : BatchUpdateBaseCommandValidator<TCommand, Guid>
-    where TCommand : BatchUpdateBaseCommand
-{
-    public BatchUpdateBaseCommandValidator() : base()
-    {
-    }
-}
+    where TCommand : BatchUpdateBaseCommand<Guid>;
