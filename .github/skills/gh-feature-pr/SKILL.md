@@ -1,0 +1,112 @@
+---
+name: gh-feature-pr
+description: "Create a GitHub feature issue, branch, commit, publish, and open a PR for staged or unstaged changes under one or more given paths. Use when: shipping a new feature, creating a feature PR, committing changes, publishing a feature branch."
+argument-hint: "<path1> [path2 ...]  — one or more workspace-relative paths whose changes to include"
+---
+
+# GitHub Feature PR Workflow
+
+End-to-end workflow: inspect changes under the given path(s), file a feature issue, create a feature branch, commit only those changes, push, and open a PR populated from the repo's PR template.
+
+## When to Use
+
+- Adding a new feature that touches one or more specific folders or files
+- Generating a GitHub issue + PR pair in one step
+- Any time the user says "create a feature PR for changes under <path>"
+- Works for any language or framework — backend, frontend, infrastructure, scripts, etc.
+
+## Required Inputs
+
+| Input | Example |
+|---|---|
+| One or more repo-relative paths | `src/api/` `app/components/` `infra/` |
+
+Multiple paths can be provided space-separated or as a list.
+
+## Procedure
+
+### 1 — Inspect changes
+
+For each provided path run:
+
+```powershell
+git diff --stat HEAD -- <path>
+git diff HEAD -- <path>
+```
+
+Also run `git status` to see any untracked files under the paths.
+
+Use the diffs to understand:
+- Which files changed or were added
+- What the feature does (new endpoint, new UI component, new service, etc.)
+- A concise one-line summary and a fuller description for the issue body
+
+### 2 — Create the GitHub feature issue
+
+Use the GH CLI. Derive the title and body from the diff analysis:
+
+```powershell
+gh issue create `
+  --title "<concise title describing the feature>" `
+  --body "<markdown body: Description / Affected files / Acceptance criteria>" `
+  --label enhancement
+```
+
+Note the issue number returned (e.g. `#81`).
+
+### 3 — Create a feature branch
+
+Branch name convention: `feature/<short-slug>` derived from the issue title (lowercase, hyphens only).
+
+```powershell
+git checkout -b feature/<short-slug>
+```
+
+### 4 — Commit only the target paths
+
+Stage exclusively the files under the provided path(s):
+
+```powershell
+git add <path1> [<path2> ...]
+git commit -m "feat: <one-line summary>
+
+<Optional body paragraph>
+
+Closes #<issue-number>"
+```
+
+Do NOT stage files outside the paths the user specified.
+
+### 5 — Publish the branch
+
+```powershell
+git push -u origin feature/<short-slug>
+```
+
+### 6 — Open the PR using the repo's PR template
+
+Read `.github/PULL_REQUEST_TEMPLATE.md` and populate every section with content derived from the diff analysis. Then run:
+
+```powershell
+gh pr create `
+  --base main `
+  --head feature/<short-slug> `
+  --title "feat: <same title as issue>" `
+  --body "<populated PR template body>"
+```
+
+The PR body must follow the template structure from [.github/PULL_REQUEST_TEMPLATE.md](../../PULL_REQUEST_TEMPLATE.md):
+
+- **# Why** — what the feature is and why it was added
+- **## What is the solution?** — how the feature was implemented at a high level
+- **## What areas of the site does it impact?** — which modules/layers are affected
+- **## Test scenarios** — Gherkin scenarios covering the new functionality
+- **## Other Notes** — `Closes #<issue-number>`
+
+## Output
+
+Report to the user:
+- Issue URL
+- Branch name
+- Commit SHA (from `git log -1 --oneline`)
+- PR URL
