@@ -1,12 +1,12 @@
 ---
 name: gh-feature-pr
-description: "Create a GitHub feature issue, branch, commit, publish, and open a PR for staged or unstaged changes under one or more given paths. Use when: shipping a new feature, creating a feature PR, committing changes, publishing a feature branch."
+description: "Create a GitHub feature issue, branch, commit, publish, and open a PR for staged or unstaged changes under one or more given paths, if no given paths then all the unstaged files should be used. Use when: shipping a new feature, creating a feature PR, committing changes, publishing a feature branch."
 argument-hint: "<path1> [path2 ...]  — one or more workspace-relative paths whose changes to include"
 ---
 
 # GitHub Feature PR Workflow
 
-End-to-end workflow: inspect changes under the given path(s), file a feature issue, create a feature branch, commit only those changes, push, and open a PR populated from the repo's PR template.
+End-to-end workflow: inspect changes under the given path(s) or the whole workspace if no paths are provided, file a feature issue, create a feature branch, commit only those changes, push, and open a PR populated from the repo's PR template.
 
 ## When to Use
 
