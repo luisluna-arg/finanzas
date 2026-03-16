@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/utils/Modal';
 import urls from '@/utils/urls';
 import type { CreditCard, CreditCardStatement, CreditCardTransaction } from '@/types/creditCard';
+import EditStatementModal from './EditStatementModal';
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-';
@@ -222,6 +223,7 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
   const [transactions, setTransactions] = useState<CreditCardTransaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const fetchStatements = useCallback(async () => {
     try {
@@ -316,6 +318,16 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
           >
             Nuevo Resúmen
           </Button>
+          {statements.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-primary text-primary hover:bg-primary/10"
+              onClick={() => setShowEditModal(true)}
+            >
+              Editar Resúmen
+            </Button>
+          )}
         </div>
       </div>
       <Separator className="my-5" />
@@ -338,6 +350,19 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
         creditCardId={card.id}
         onCreated={fetchStatements}
       />
+
+      {statements.length > 0 && (
+        <EditStatementModal
+          show={showEditModal}
+          onHide={() => setShowEditModal(false)}
+          statement={statements[statementIndex]}
+          transactions={transactions}
+          onSaved={() => {
+            fetchStatements();
+            fetchTransactions();
+          }}
+        />
+      )}
     </>
   );
 }
