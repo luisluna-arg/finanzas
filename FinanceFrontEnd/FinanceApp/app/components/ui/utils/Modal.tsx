@@ -57,7 +57,7 @@ export const Modal: React.FC<ModalProps> = ({
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className={`w-full ${sizeClass[size]} transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}>
+                                <Dialog.Panel className={`w-full ${sizeClass[size]} transform overflow-hidden rounded-2xl bg-background text-foreground p-6 text-left align-middle shadow-xl transition-all border border-border`}>
                                     {children}
                                 </Dialog.Panel>
                             </Transition.Child>
@@ -86,7 +86,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 <button
                     aria-label="close"
                     onClick={onHide}
-                    className="ml-4 text-gray-500 hover:text-gray-700"
+                    className="ml-4 text-muted-foreground hover:text-foreground"
                 >
                     ×
                 </button>
