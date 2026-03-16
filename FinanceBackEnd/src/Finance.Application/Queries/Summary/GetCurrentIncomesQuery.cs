@@ -36,9 +36,8 @@ public class GetCurrentIncomesQueryHandler(FinanceDbContext db, IRepository<Inco
 
         var data = await query
             .Where(q => q.TimeStamp >= dateFilter)
-            .OrderByDescending(i => i.TimeStamp)
             .GroupBy(g => new { g.BankId, g.CurrencyId })
-            .Select(g => g.First())
+            .Select(g => g.OrderByDescending(i => i.TimeStamp).First())
             .ToListAsync(cancellationToken);
 
         return DataResult<List<Income>>.Success(data);
