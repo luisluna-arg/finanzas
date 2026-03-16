@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { useLoaderData } from 'react-router';
+import React from 'react';
+import { useLoaderData, useLocation, useNavigate } from 'react-router';
 import dayjs from 'dayjs';
 import urls from '@/utils/urls';
 import BankCurrencySelector from '@/components/ui/utils/BankCurrencySelector';
 import PaginatedTable, { Column } from '@/components/ui/utils/PaginatedTable';
 import { InputType } from '@/components/ui/utils/InputType';
-import { toNumber } from '@/utils/common';
+import CommonUtils, { toNumber } from '@/utils/common';
 import { cn } from '@/lib/utils';
+import type { FundRecord } from '@/types/fund';
 
 // Define types for the props and states
 interface PickerData {
@@ -17,38 +18,38 @@ interface PickerData {
 interface LoaderData {
   banks: PickerData[];
   currencies: PickerData[];
+  data: FundRecord[];
+  bankId: string;
+  currencyId: string;
 }
 
 const dateFormat = 'DD/MM/YYYY';
 
-const buildFundsEndpoint = (bankId: string, currencyId: string) => {
-  return urls.funds.paginated.with({
-    BankId: bankId,
-    CurrencyId: currencyId,
-    Page: 1,
-    PageSize: 10,
-  });
-};
-
 const Funds: React.FC = () => {
-  const { banks, currencies } = useLoaderData<LoaderData>();
-  const [selectedBankId, setSelectedBankId] = useState<string>(banks[0].id);
-  const [selectedCurrencyId, setSelectedCurrencyId] = useState<string>(currencies[0].id);
-  const [fundsEndpoint, setFundsEndpoint] = useState(
-    buildFundsEndpoint(selectedBankId, selectedCurrencyId)
-  );
-  const [reloadTable, setReloadTable] = useState<boolean>(true);
+  const { banks, currencies, data, bankId, currencyId } = useLoaderData<LoaderData>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Removed updateFundsEndpoint helper to keep effect dependencies stable.
+  const reload = ({
+    currentBankId,
+    currentCurrencyId,
+  }: {
+    currentBankId?: string;
+    currentCurrencyId?: string;
+  }) => {
+    const params = CommonUtils.Params({
+      bankId: currentBankId ?? bankId,
+      currencyId: currentCurrencyId ?? currencyId,
+    });
+    navigate(`${location.pathname}?${params}`);
+  };
 
   const onBankPickerChange = (picker: { value: string }) => {
-    const newBankId = selectedBankId !== picker.value ? picker.value : selectedBankId;
-    setSelectedBankId(newBankId);
+    reload({ currentBankId: picker.value });
   };
 
   const onCurrencyPickerChange = (picker: { value: string }) => {
-    const newCurrencyId = selectedCurrencyId !== picker.value ? picker.value : selectedCurrencyId;
-    setSelectedCurrencyId(newCurrencyId);
+    reload({ currentCurrencyId: picker.value });
   };
 
   const valueConditionalClass = {
@@ -72,13 +73,7 @@ const Funds: React.FC = () => {
       placeholder: 'Fecha',
       type: InputType.DateTime,
       editable: {
-        defaultValue: () => {
-          const rowSelector = document.querySelector('.bank-table-data-row > td > span');
-
-          if (!rowSelector?.textContent) return dayjs().format(dateFormat);
-
-          return dayjs(rowSelector.textContent, `${dateFormat}`).format(dateFormat);
-        },
+        defaultValue: () => dayjs().format(dateFormat),
       },
       datetime: {
         timeFormat: 'HH:mm',
@@ -101,7 +96,7 @@ const Funds: React.FC = () => {
       endpoint: urls.banks.endpoint,
       mapper: {
         id: 'id',
-        label: 'name',
+        label: (record) => (record as unknown as FundRecord).bank.name,
       },
     },
     {
@@ -113,7 +108,7 @@ const Funds: React.FC = () => {
       endpoint: urls.currencies.endpoint,
       mapper: {
         id: 'id',
-        label: 'name',
+        label: (record) => (record as unknown as FundRecord).currency.name,
       },
     },
     {
@@ -148,46 +143,43 @@ const Funds: React.FC = () => {
     },
   ];
 
-  // Update the endpoint whenever selectedBankId or selectedCurrencyId changes
-  React.useEffect(() => {
-    if (selectedBankId && selectedCurrencyId) {
-      setFundsEndpoint(buildFundsEndpoint(selectedBankId, selectedCurrencyId));
-      setReloadTable(true);
-    }
-  }, [selectedBankId, selectedCurrencyId]);
+  const paginatedData = Array.isArray(data)
+    ? {
+        items: data,
+        totalPages: 1,
+      }
+    : data;
 
   return (
     <div className={cn(['py-10', 'px-40'])}>
       <BankCurrencySelector
         banks={banks}
         currencies={currencies}
-        bankId={selectedBankId}
-        currencyId={selectedCurrencyId}
+        bankId={bankId}
+        currencyId={currencyId}
         onBankChange={onBankPickerChange}
         onCurrencyChange={onCurrencyPickerChange}
       />
-      {!fundsEndpoint && <div className="text-center">Cargando datos</div>}
-      {fundsEndpoint && (
-        <PaginatedTable
-          name={'funds-table'}
-          url={fundsEndpoint}
-          reloadData={reloadTable}
-          columns={TableColumns}
-          admin={{
-            endpoint: urls.funds.endpoint,
-            key: [
-              {
-                id: 'BankId',
-                value: selectedBankId,
-              },
-              {
-                id: 'CurrencyId',
-                value: selectedCurrencyId,
-              },
-            ],
-          }}
-        />
-      )}
+      <PaginatedTable
+        name={'funds-table'}
+        columns={TableColumns}
+        data={paginatedData}
+        onAdd={() => reload({})}
+        onDelete={() => reload({})}
+        admin={{
+          endpoint: urls.funds.endpoint,
+          key: [
+            {
+              id: 'BankId',
+              value: bankId,
+            },
+            {
+              id: 'CurrencyId',
+              value: currencyId,
+            },
+          ],
+        }}
+      />
     </div>
   );
 };
