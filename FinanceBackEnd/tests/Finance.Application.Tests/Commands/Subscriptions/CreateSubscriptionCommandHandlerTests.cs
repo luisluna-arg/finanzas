@@ -1,16 +1,10 @@
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
-using Finance.Application.Auth;
 using Finance.Application.Commands.Subscriptions;
 using Finance.Application.Repositories;
 using Finance.Domain.Enums;
-using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Subscriptions;
 using Finance.Persistence;
-using FinanceBackEnd.Finance.Domain.Enums;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -20,14 +14,12 @@ public class CreateSubscriptionCommandHandlerTests : IDisposable
 {
     private readonly Mock<IRepository<Subscription, Guid>> _subscriptionRepo;
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepo;
-    private readonly Mock<IDispatcher<FinanceDispatchContext>> _dispatcher;
     private readonly FinanceDbContext _dbContext;
 
     public CreateSubscriptionCommandHandlerTests()
     {
         _subscriptionRepo = new Mock<IRepository<Subscription, Guid>>();
         _currencyRepo = new Mock<IRepository<Currency, Guid>>();
-        _dispatcher = new Mock<IDispatcher<FinanceDispatchContext>>();
 
         var options = new DbContextOptionsBuilder<FinanceDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -38,6 +30,9 @@ public class CreateSubscriptionCommandHandlerTests : IDisposable
     }
 
     public void Dispose() => _dbContext.Dispose();
+
+    private CreateSubscriptionCommandHandler CreateHandler() =>
+        new(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object);
 
     [Fact]
     public async Task Create_HappyPath_AddsCurrencyAndReturnsSuccess()
@@ -52,13 +47,8 @@ public class CreateSubscriptionCommandHandlerTests : IDisposable
         };
 
         _currencyRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(currency);
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<SubscriptionPermissions>>(
-            It.IsAny<CreateSubscriptionOwnershipCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<SubscriptionPermissions>.Success(new SubscriptionPermissions()));
 
-        var handler = new CreateSubscriptionCommandHandler(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object, _dispatcher.Object);
-
-        var result = await handler.ExecuteAsync(command, default);
+        var result = await CreateHandler().ExecuteAsync(command, default);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("Netflix", result.Data.Name);
@@ -74,37 +64,10 @@ public class CreateSubscriptionCommandHandlerTests : IDisposable
         var command = new CreateSubscriptionCommand { CurrencyId = currency.Id, Name = "Netflix", Price = 9.99m };
 
         _currencyRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(currency);
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<SubscriptionPermissions>>(
-            It.IsAny<CreateSubscriptionOwnershipCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<SubscriptionPermissions>.Success(new SubscriptionPermissions()));
 
-        var handler = new CreateSubscriptionCommandHandler(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object, _dispatcher.Object);
-
-        await handler.ExecuteAsync(command, default);
+        await CreateHandler().ExecuteAsync(command, default);
 
         _subscriptionRepo.Verify(r => r.AddAsync(It.IsAny<Subscription>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Create_HappyPath_DispatchesOwnershipCommandWithOwnerPermission()
-    {
-        var currency = new Currency { Id = Guid.NewGuid(), Name = "", ShortName = "" };
-        var command = new CreateSubscriptionCommand { CurrencyId = currency.Id, Name = "Netflix", Price = 9.99m };
-
-        _currencyRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(currency);
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<SubscriptionPermissions>>(
-            It.IsAny<CreateSubscriptionOwnershipCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<SubscriptionPermissions>.Success(new SubscriptionPermissions()));
-
-        var handler = new CreateSubscriptionCommandHandler(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object, _dispatcher.Object);
-
-        await handler.ExecuteAsync(command, default);
-
-        _dispatcher.Verify(d => d.DispatchAsync<DataResult<SubscriptionPermissions>>(
-            It.Is<CreateSubscriptionOwnershipCommand>(c =>
-                c.PermissionLevels.Contains(PermissionLevelEnum.Owner)),
-            It.IsAny<HttpRequest?>()),
-            Times.Once);
     }
 
     [Fact]
@@ -113,9 +76,7 @@ public class CreateSubscriptionCommandHandlerTests : IDisposable
         _currencyRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((Currency?)null);
         var command = new CreateSubscriptionCommand { CurrencyId = Guid.NewGuid(), Name = "Netflix", Price = 9.99m };
 
-        var handler = new CreateSubscriptionCommandHandler(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<Exception>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<Exception>(() => CreateHandler().ExecuteAsync(command, default));
     }
 
     [Fact]
@@ -123,9 +84,7 @@ public class CreateSubscriptionCommandHandlerTests : IDisposable
     {
         var command = new CreateSubscriptionCommand { CurrencyId = Guid.NewGuid(), Name = "", Price = 9.99m };
 
-        var handler = new CreateSubscriptionCommandHandler(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() => CreateHandler().ExecuteAsync(command, default));
     }
 
     [Fact]
@@ -133,9 +92,7 @@ public class CreateSubscriptionCommandHandlerTests : IDisposable
     {
         var command = new CreateSubscriptionCommand { CurrencyId = Guid.Empty, Name = "Netflix", Price = 9.99m };
 
-        var handler = new CreateSubscriptionCommandHandler(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() => CreateHandler().ExecuteAsync(command, default));
     }
 
     [Fact]
@@ -143,8 +100,6 @@ public class CreateSubscriptionCommandHandlerTests : IDisposable
     {
         var command = new CreateSubscriptionCommand { CurrencyId = Guid.NewGuid(), Name = "Netflix", Price = -1m };
 
-        var handler = new CreateSubscriptionCommandHandler(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() => CreateHandler().ExecuteAsync(command, default));
     }
 }

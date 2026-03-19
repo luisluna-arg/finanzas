@@ -16,15 +16,15 @@ public partial class MovementServiceTests
     private static UpdateMovementRequest BuildUpdateRequest(Guid id) =>
         new(id, DateTime.UtcNow, "Updated", null, new Money(500m), null);
 
-    private void SetupCreateMovementDispatch(DataResult<Movement> result) =>
-        _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<Movement>>(It.IsAny<CreateMovementCommand>()))
-            .ReturnsAsync(result);
-
     private void SetupCreatePermissionsDispatch() =>
         _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<MovementPermissions>>(It.IsAny<CreateMovementPermissionsCommand>(), It.IsAny<HttpRequest?>()))
+            .Setup(d => d.DispatchAsync(It.IsAny<CreateMovementPermissionsCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(DataResult<MovementPermissions>.Success(new MovementPermissions()));
+
+    private void SetupCreateMovementDispatch(DataResult<Movement> result) =>
+        _dispatcher
+            .Setup(d => d.DispatchAsync(It.IsAny<CreateMovementCommand>()))
+            .ReturnsAsync(result);
 
     private void SetupDeleteMovementDispatch(CommandResult result) =>
         _dispatcher
@@ -33,6 +33,6 @@ public partial class MovementServiceTests
 
     private void SetupDeleteOwnerDispatch(CommandResult result) =>
         _dispatcher
-            .Setup(d => d.DispatchAsync<CommandResult>(It.IsAny<DeleteMovementOwnerCommand>(), It.IsAny<HttpRequest?>()))
+            .Setup(d => d.DispatchAsync(It.IsAny<DeleteMovementOwnerCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(result);
 }

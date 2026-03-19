@@ -33,7 +33,7 @@ public class IOLInvestmentCommandController(
     [HttpPost("upload")]
     public async Task<IActionResult> Upload(IFormFile file)
     {
-        await ExecuteAsync(new UploadIOLInvestmentsCommand(file));
+        await Dispatcher.DispatchCommandAsync(new UploadIOLInvestmentsCommand(file));
         return Ok();
     }
 }

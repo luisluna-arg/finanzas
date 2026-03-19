@@ -1,16 +1,10 @@
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
-using Finance.Application.Auth;
 using Finance.Application.Commands.Incomes;
 using Finance.Application.Repositories;
-using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Banks;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Incomes;
 using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
-using FinanceBackEnd.Finance.Domain.Enums;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -21,7 +15,6 @@ public class CreateIncomeCommandHandlerTests : IDisposable
     private readonly Mock<IRepository<Income, Guid>> _incomeRepo;
     private readonly Mock<IRepository<Bank, Guid>> _bankRepo;
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepo;
-    private readonly Mock<IDispatcher<FinanceDispatchContext>> _dispatcher;
     private readonly FinanceDbContext _dbContext;
 
     public CreateIncomeCommandHandlerTests()
@@ -29,7 +22,6 @@ public class CreateIncomeCommandHandlerTests : IDisposable
         _incomeRepo = new Mock<IRepository<Income, Guid>>();
         _bankRepo = new Mock<IRepository<Bank, Guid>>();
         _currencyRepo = new Mock<IRepository<Currency, Guid>>();
-        _dispatcher = new Mock<IDispatcher<FinanceDispatchContext>>();
 
         var options = new DbContextOptionsBuilder<FinanceDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -60,11 +52,8 @@ public class CreateIncomeCommandHandlerTests : IDisposable
             .Setup(r => r.AddAsync(It.IsAny<Income>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()))
             .Callback<Income, CancellationToken, bool>((income, _, _) => income.Id = Guid.NewGuid())
             .Returns(Task.CompletedTask);
-        _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IncomePermissions>>(It.IsAny<CreateIncomePermissionsCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<IncomePermissions>.Success(new IncomePermissions()));
 
-        var handler = new CreateIncomeCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _incomeRepo.Object, _dispatcher.Object);
+        var handler = new CreateIncomeCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _incomeRepo.Object);
         var result = await handler.ExecuteAsync(command, default);
 
         Assert.True(result.IsSuccess);
@@ -73,12 +62,6 @@ public class CreateIncomeCommandHandlerTests : IDisposable
         Assert.Equal(100m, (decimal)result.Data.Amount);
 
         _incomeRepo.Verify(r => r.AddAsync(It.IsAny<Income>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()), Times.Once);
-        _dispatcher.Verify(d => d.DispatchAsync<DataResult<IncomePermissions>>(
-            It.Is<CreateIncomePermissionsCommand>(c =>
-                c.ResourceId == result.Data.Id &&
-                c.PermissionLevels.Contains(PermissionLevelEnum.Owner)),
-            It.IsAny<HttpRequest?>()),
-            Times.Once);
     }
 
     [Fact]
@@ -94,7 +77,7 @@ public class CreateIncomeCommandHandlerTests : IDisposable
 
         _bankRepo.Setup(r => r.GetByIdAsync(command.BankId, It.IsAny<CancellationToken>())).ReturnsAsync((Bank?)null);
 
-        var handler = new CreateIncomeCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _incomeRepo.Object, _dispatcher.Object);
+        var handler = new CreateIncomeCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _incomeRepo.Object);
         await Assert.ThrowsAsync<Exception>(() => handler.ExecuteAsync(command, default));
     }
 
@@ -113,7 +96,7 @@ public class CreateIncomeCommandHandlerTests : IDisposable
         _bankRepo.Setup(r => r.GetByIdAsync(bank.Id, It.IsAny<CancellationToken>())).ReturnsAsync(bank);
         _currencyRepo.Setup(r => r.GetByIdAsync(command.CurrencyId, It.IsAny<CancellationToken>())).ReturnsAsync((Currency?)null);
 
-        var handler = new CreateIncomeCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _incomeRepo.Object, _dispatcher.Object);
+        var handler = new CreateIncomeCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _incomeRepo.Object);
         await Assert.ThrowsAsync<Exception>(() => handler.ExecuteAsync(command, default));
     }
 }

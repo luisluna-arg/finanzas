@@ -41,14 +41,6 @@ public class CreditCardService(
                 return result;
             }
 
-            await dispatcher.DispatchAsync(
-                new CreateCreditCardPermissionsCommand
-                {
-                    ResourceId = result.Data!.Id,
-                    PermissionLevels = [PermissionLevelEnum.Owner],
-                },
-                httpRequest);
-
             await tx.CommitAsync();
             return result;
         }

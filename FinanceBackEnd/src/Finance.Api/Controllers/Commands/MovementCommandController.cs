@@ -36,7 +36,7 @@ public class MovementCommandController(
     [Route("upload")]
     public async Task<IActionResult> Upload(IFormFile file, Guid appModuleId, Guid bankId, [DefaultValue("Local")] string dateKind)
     {
-        await ExecuteAsync(new UploadMovementsFileCommand(file, appModuleId, bankId, EnumHelper.Parse<DateTimeKind>(dateKind)));
+        await Dispatcher.DispatchCommandAsync(new UploadMovementsFileCommand(file, appModuleId, bankId, EnumHelper.Parse<DateTimeKind>(dateKind)));
         return Ok();
     }
 }

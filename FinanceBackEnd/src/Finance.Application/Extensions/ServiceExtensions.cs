@@ -12,10 +12,9 @@ public static class SagaServiceExtensions
 {
     public static IServiceCollection AddSagaServices(this IServiceCollection services)
     {
-        // TODO Copy RepositoryExtensions 
-        RegisterScopedService<CurrencyConversionService>(services);
+        services.RegisterScopedService<CurrencyConversionService>();
 
-        services.AddScoped<FundService>();
+        services.RegisterScopedService<FundService>();
 
         RegisterEntityService<
             User,
@@ -25,15 +24,16 @@ public static class SagaServiceExtensions
             DeleteUserSagaRequest
             >(services);
 
-        services.AddScoped<IncomeService>();
-        services.AddScoped<SubscriptionService>();
-        services.AddScoped<CurrencyExchangeRateService>();
-        services.AddScoped<DebitService>();
-        services.AddScoped<DebitOriginService>();
-        services.AddScoped<CreditCardService>();
-        services.AddScoped<MovementService>();
-
-        RegisterScopedService<IdentityService>(services);
+        services.RegisterScopedService<IncomeService>();
+        services.RegisterScopedService<SubscriptionService>();
+        services.RegisterScopedService<CurrencyExchangeRateService>();
+        services.RegisterScopedService<DebitService>();
+        services.RegisterScopedService<DebitOriginService>();
+        services.RegisterScopedService<CreditCardService>();
+        services.RegisterScopedService<MovementService>();
+        services.RegisterScopedService<IOLInvestmentService>();
+        services.RegisterScopedService<IOLInvestmentAssetService>();
+        services.RegisterScopedService<IdentityService>();
 
         return services;
     }
@@ -52,7 +52,7 @@ public static class SagaServiceExtensions
             TEntity>>(services);
     }
 
-    private static void RegisterScopedService<TService>(IServiceCollection services)
+    private static void RegisterScopedService<TService>(this IServiceCollection services)
         where TService : class
     {
         services.TryAddScoped<TService>();

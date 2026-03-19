@@ -45,14 +45,6 @@ public class MovementService(
                 return result;
             }
 
-            await dispatcher.DispatchAsync(
-                new CreateMovementPermissionsCommand
-                {
-                    ResourceId = result.Data!.Id,
-                    PermissionLevels = [PermissionLevelEnum.Owner],
-                },
-                httpRequest);
-
             await tx.CommitAsync();
             return result;
         }

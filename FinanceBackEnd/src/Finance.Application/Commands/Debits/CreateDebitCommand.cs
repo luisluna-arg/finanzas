@@ -7,7 +7,6 @@ using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.Debits;
 using Finance.Persistence;
-using FinanceBackEnd.Finance.Domain.Enums;
 
 namespace Finance.Application.Commands.Debits;
 
@@ -60,14 +59,6 @@ public class CreateDebitCommandHandler(
         };
 
         await _debitRepository.AddAsync(debit, cancellationToken);
-
-        await _dispatcher.DispatchAsync(
-            new CreateDebitPermissionsCommand
-            {
-                ResourceId = debit.Id,
-                PermissionLevels = [PermissionLevelEnum.Owner],
-            },
-            command.Context.HttpRequest);
 
         return DataResult<Debit>.Success(debit);
     }

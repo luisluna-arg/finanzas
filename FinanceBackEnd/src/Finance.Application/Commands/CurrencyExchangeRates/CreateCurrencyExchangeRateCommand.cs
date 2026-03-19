@@ -5,7 +5,6 @@ using Finance.Application.Commands.Base;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.Currencies;
 using Finance.Persistence;
-using FinanceBackEnd.Finance.Domain.Enums;
 
 namespace Finance.Application.Commands.CurrencyExchangeRates;
 
@@ -23,8 +22,7 @@ public class CreateCurrencyExchangeRateCommand : IContextAwareCommand<FinanceDis
 public class CreateCurrencyExchangeRateCommandHandler(
     FinanceDbContext db,
     IRepository<Currency, Guid> currencyRepository,
-    IRepository<CurrencyExchangeRate, Guid> currencyExchangeRateRepository,
-    IDispatcher<FinanceDispatchContext> dispatcher)
+    IRepository<CurrencyExchangeRate, Guid> currencyExchangeRateRepository)
     : BaseCommandHandler<CreateCurrencyExchangeRateCommand, CurrencyExchangeRate>(db)
 {
     public override async Task<DataResult<CurrencyExchangeRate>> ExecuteAsync(
@@ -46,14 +44,6 @@ public class CreateCurrencyExchangeRateCommandHandler(
         };
 
         await currencyExchangeRateRepository.AddAsync(newRate, cancellationToken);
-
-        await dispatcher.DispatchAsync(
-            new CreateCurrencyExchangeRatePermissionsCommand
-            {
-                ResourceId = newRate.Id,
-                PermissionLevels = [PermissionLevelEnum.Owner],
-            },
-            command.Context.HttpRequest);
 
         return DataResult<CurrencyExchangeRate>.Success(newRate);
     }

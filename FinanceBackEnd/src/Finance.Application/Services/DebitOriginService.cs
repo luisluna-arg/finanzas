@@ -5,8 +5,8 @@ using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Services.DebitOrigins;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Debits;
-using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
+using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Services;
@@ -40,20 +40,6 @@ public class DebitOriginService(
             {
                 await tx.RollbackAsync();
                 return result;
-            }
-
-            var permResult = await dispatcher.DispatchAsync(
-                new CreateDebitOriginPermissionsCommand
-                {
-                    ResourceId = result.Data!.Id,
-                    PermissionLevels = [PermissionLevelEnum.Owner],
-                },
-                httpRequest);
-
-            if (!permResult.IsSuccess)
-            {
-                await tx.RollbackAsync();
-                return DataResult<DebitOrigin>.Failure(permResult.ErrorMessage ?? "Permission creation failed.");
             }
 
             await tx.CommitAsync();

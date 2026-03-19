@@ -8,16 +8,24 @@ using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Incomes;
 using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
-using FinanceBackEnd.Finance.Domain.Enums;
 
 namespace Finance.Application.Commands.Incomes;
+
+public class CreateIncomeCommand : IContextAwareCommand<FinanceDispatchContext, DataResult<Income>>
+{
+    public virtual Guid BankId { get; set; }
+    public virtual Guid CurrencyId { get; set; }
+    required public DateTime? TimeStamp { get; set; }
+    required public Money Amount { get; set; }
+    internal FinanceDispatchContext Context { get; private set; } = new();
+    public void SetContext(FinanceDispatchContext context) => Context = context;
+}
 
 public class CreateIncomeCommandHandler(
     FinanceDbContext db,
     IRepository<Bank, Guid> bankRepository,
     IRepository<Currency, Guid> currencyRepository,
-    IRepository<Income, Guid> incomeRepository,
-    IDispatcher<FinanceDispatchContext> dispatcher)
+    IRepository<Income, Guid> incomeRepository)
     : BaseCommandHandler<CreateIncomeCommand, Income>(db)
 {
     public override async Task<DataResult<Income>> ExecuteAsync(CreateIncomeCommand command, CancellationToken cancellationToken)
@@ -39,24 +47,6 @@ public class CreateIncomeCommandHandler(
 
         await incomeRepository.AddAsync(newIncome, cancellationToken);
 
-        await dispatcher.DispatchAsync(
-            new CreateIncomePermissionsCommand
-            {
-                ResourceId = newIncome.Id,
-                PermissionLevels = [PermissionLevelEnum.Owner],
-            },
-            command.Context.HttpRequest);
-
         return DataResult<Income>.Success(newIncome);
     }
-}
-
-public class CreateIncomeCommand : IContextAwareCommand<FinanceDispatchContext, DataResult<Income>>
-{
-    public virtual Guid BankId { get; set; }
-    public virtual Guid CurrencyId { get; set; }
-    required public DateTime? TimeStamp { get; set; }
-    required public Money Amount { get; set; }
-    internal FinanceDispatchContext Context { get; private set; } = new();
-    public void SetContext(FinanceDispatchContext context) => Context = context;
 }
