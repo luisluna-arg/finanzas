@@ -100,7 +100,7 @@ export interface PaginatedTableProps<T extends Row = Row> {
   onFetch?: (data: unknown) => void;
   onAdd?: (data: unknown) => void;
   onDelete?: (data: unknown) => void;
-  reloadData?: boolean;
+  reloadData?: number;
 }
 
 function PaginatedTable<T extends Row = Row>({
@@ -112,7 +112,7 @@ function PaginatedTable<T extends Row = Row>({
   columns,
   onAdd,
   onDelete,
-  // onFetch and reloadData intentionally unused in this component
+  reloadData,
 }: PaginatedTableProps<T>) {
   const [tableData, setTableData] = useState<Data<T>>({
     items: [],
@@ -127,6 +127,10 @@ function PaginatedTable<T extends Row = Row>({
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [loading, setLoading] = useState(!url ? false : true);
   const [reloadFlag, setReloadFlag] = useState(!url ? false : true);
+
+  useEffect(() => {
+    if (reloadData) setReloadFlag(true);
+  }, [reloadData]); // reloadData is a counter; any increment triggers a reload
 
   const pageSize = rowCount ?? 10;
   const adminRowId = `${name}-edit-row`;

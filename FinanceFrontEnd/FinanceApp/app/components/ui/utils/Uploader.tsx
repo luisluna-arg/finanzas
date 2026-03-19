@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import { useFetcher } from 'react-router';
 import type { BackendUrl } from '@/utils/BackendUrl';
 import { Toast, ToastContainer, ToastHeader, ToastBody } from '@/components/ui/utils/Toast';
 import ActionButton, { ButtonType } from '@/components/ui/utils/ActionButton';
@@ -13,56 +12,58 @@ interface UploaderProps {
 }
 
 const Uploader = ({ url, extensions, onSuccess, onError }: UploaderProps) => {
-  const [showToast, setShowToast] = useState<boolean>(false); // State for controlling toast visibility
-  const [toastMessage, setToastMessage] = useState<string>(''); // Message for the toast
-  const [toastType, setToastType] = useState<'success' | 'error'>('success'); // Toast type
-  type UploadResponse = {
-    success?: boolean;
-    error?: string;
-    [key: string]: unknown;
-  } | null;
-  const fetcher = useFetcher<UploadResponse>();
+  const [showToast, setShowToast] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>('');
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [uploading, setUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const uploadFile = () => {
+  const uploadFile = async () => {
     const fileInput = fileInputRef.current;
     const file = fileInput?.files?.[0];
 
-    if (file) {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      SafeLogger.log('URL', url);
-
-      fetcher.submit(formData, {
-        method: 'post',
-        action: String(url), // URL for the upload action
-        encType: 'multipart/form-data',
-      });
-    } else {
+    if (!file) {
       setToastMessage('No file selected.');
       setToastType('error');
-      setShowToast(true); // Show the toast
+      setShowToast(true);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    SafeLogger.log('URL', url);
+
+    setUploading(true);
+    try {
+      const response = await fetch(String(url), {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        setToastMessage('File uploaded successfully!');
+        setToastType('success');
+        setShowToast(true);
+        if (onSuccess) onSuccess();
+      } else {
+        const errorText = await response.text().catch(() => 'File upload failed.');
+        setToastMessage(errorText || 'File upload failed.');
+        setToastType('error');
+        setShowToast(true);
+        if (onError) onError();
+      }
+    } catch (error) {
+      SafeLogger.error('Upload error:', error);
+      setToastMessage('File upload failed.');
+      setToastType('error');
+      setShowToast(true);
+      if (onError) onError();
+    } finally {
+      setUploading(false);
     }
   };
-
-  if (fetcher.state === 'submitting') {
-    setToastMessage('');
-  }
-
-  if (fetcher.data && fetcher.data.success) {
-    fileInputRef.current!.value = '';
-    if (onSuccess) onSuccess();
-    setToastMessage('File uploaded successfully!');
-    setToastType('success');
-    setShowToast(true); // Show success toast
-  } else if (fetcher.data && fetcher.data.error) {
-    setToastMessage(fetcher.data.error ?? String(fetcher.data));
-    if (onError) onError();
-    setToastMessage(fetcher.data.error || 'File upload failed.');
-    setToastType('error');
-    setShowToast(true); // Show error toast
-  }
 
   return (
     <>
@@ -78,12 +79,10 @@ const Uploader = ({ url, extensions, onSuccess, onError }: UploaderProps) => {
               aria-label="Subir"
             />
             <ActionButton
-              text={'Subir'}
-              //variant={OUTLINE_VARIANT.WARNING}
+              text={uploading ? 'Subiendo...' : 'Subir'}
               type={ButtonType.None}
-              //classes={["btn", "btn-outline-secondary"]}
               action={uploadFile}
-              disabled={false}
+              disabled={uploading}
             />
           </div>
         </form>
