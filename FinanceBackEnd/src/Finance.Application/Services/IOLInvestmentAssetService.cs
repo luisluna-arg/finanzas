@@ -42,14 +42,6 @@ public class IOLInvestmentAssetService(
                 return result;
             }
 
-            await dispatcher.DispatchAsync(
-                new CreateIOLInvestmentAssetPermissionsCommand
-                {
-                    ResourceId = result.Data!.Id,
-                    PermissionLevels = [PermissionLevelEnum.Owner],
-                },
-                httpRequest);
-
             await tx.CommitAsync();
             return result;
         }

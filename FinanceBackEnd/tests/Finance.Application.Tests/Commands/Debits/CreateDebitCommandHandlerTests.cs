@@ -4,12 +4,10 @@ using Finance.Application.Auth;
 using Finance.Application.Commands.Debits;
 using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Repositories;
-using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Debits;
 using Finance.Domain.Enums;
 using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
-using FinanceBackEnd.Finance.Domain.Enums;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -58,8 +56,6 @@ public class CreateDebitCommandHandlerTests : IDisposable
         var command = ValidCommand();
 
         _originRepo.Setup(r => r.GetByAsync(It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>())).ReturnsAsync(origin);
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<DebitPermissions>>(It.IsAny<CreateDebitPermissionsCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<DebitPermissions>.Success(new DebitPermissions()));
 
         var result = await CreateHandler().ExecuteAsync(command, default);
 
@@ -74,8 +70,6 @@ public class CreateDebitCommandHandlerTests : IDisposable
     {
         var origin = new DebitOrigin { Id = Guid.NewGuid(), Name = "Rent" };
         _originRepo.Setup(r => r.GetByAsync(It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>())).ReturnsAsync(origin);
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<DebitPermissions>>(It.IsAny<CreateDebitPermissionsCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<DebitPermissions>.Success(new DebitPermissions()));
 
         await CreateHandler().ExecuteAsync(ValidCommand(), default);
 
@@ -89,31 +83,13 @@ public class CreateDebitCommandHandlerTests : IDisposable
         var command = new CreateDebitCommand { AppModuleId = appModuleId, Origin = "  NewOrigin  ", Amount = new Money(100m) };
 
         _originRepo.Setup(r => r.GetByAsync(It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>())).ReturnsAsync((DebitOrigin?)null);
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<DebitOrigin>>(It.IsAny<CreateDebitOriginCommand>(), It.IsAny<HttpRequest?>()))
+        _dispatcher.Setup(d => d.DispatchAsync(It.IsAny<CreateDebitOriginCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(DataResult<DebitOrigin>.Success(new DebitOrigin { Name = "NewOrigin" }));
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<DebitPermissions>>(It.IsAny<CreateDebitPermissionsCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<DebitPermissions>.Success(new DebitPermissions()));
 
         await CreateHandler().ExecuteAsync(command, default);
 
-        _dispatcher.Verify(d => d.DispatchAsync<DataResult<DebitOrigin>>(
+        _dispatcher.Verify(d => d.DispatchAsync(
             It.Is<CreateDebitOriginCommand>(c => c.Name == "NewOrigin" && c.AppModuleId == appModuleId),
-            It.IsAny<HttpRequest?>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task Create_ValidCommand_DispatchesPermissionsWithOwner()
-    {
-        var origin = new DebitOrigin { Id = Guid.NewGuid(), Name = "Rent" };
-        _originRepo.Setup(r => r.GetByAsync(It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>())).ReturnsAsync(origin);
-        _dispatcher.Setup(d => d.DispatchAsync<DataResult<DebitPermissions>>(It.IsAny<CreateDebitPermissionsCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<DebitPermissions>.Success(new DebitPermissions()));
-
-        await CreateHandler().ExecuteAsync(ValidCommand(), default);
-
-        _dispatcher.Verify(d => d.DispatchAsync<DataResult<DebitPermissions>>(
-            It.Is<CreateDebitPermissionsCommand>(c => c.PermissionLevels.Contains(PermissionLevelEnum.Owner)),
             It.IsAny<HttpRequest?>()),
             Times.Once);
     }

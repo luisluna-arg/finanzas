@@ -4,7 +4,6 @@ using Finance.Application.Services.IOLInvestmentAssets;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.IOLInvestments;
-using FinanceBackEnd.Finance.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Tests.Services.IOLInvestmentAssets;
@@ -21,10 +20,10 @@ public partial class IOLInvestmentAssetServiceTests
         var request = ACreateRequest();
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IOLInvestmentAsset>>(It.IsAny<CreateIOLInvestmentAssetCommand>()))
+            .Setup(d => d.DispatchAsync(It.IsAny<CreateIOLInvestmentAssetCommand>()))
             .ReturnsAsync(DataResult<IOLInvestmentAsset>.Success(asset));
         _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IOLInvestmentAssetPermissions>>(It.IsAny<CreateIOLInvestmentAssetPermissionsCommand>(), It.IsAny<HttpRequest?>()))
+            .Setup(d => d.DispatchAsync(It.IsAny<CreateIOLInvestmentAssetPermissionsCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(DataResult<IOLInvestmentAssetPermissions>.Success(new IOLInvestmentAssetPermissions()));
 
         var result = await _sut.Create(request);
@@ -40,15 +39,15 @@ public partial class IOLInvestmentAssetServiceTests
         var asset = new IOLInvestmentAsset { Id = Guid.NewGuid() };
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IOLInvestmentAsset>>(It.IsAny<CreateIOLInvestmentAssetCommand>()))
+            .Setup(d => d.DispatchAsync(It.IsAny<CreateIOLInvestmentAssetCommand>()))
             .ReturnsAsync(DataResult<IOLInvestmentAsset>.Success(asset));
         _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IOLInvestmentAssetPermissions>>(It.IsAny<CreateIOLInvestmentAssetPermissionsCommand>(), It.IsAny<HttpRequest?>()))
+            .Setup(d => d.DispatchAsync(It.IsAny<CreateIOLInvestmentAssetPermissionsCommand>(), It.IsAny<HttpRequest?>()))
             .ReturnsAsync(DataResult<IOLInvestmentAssetPermissions>.Success(new IOLInvestmentAssetPermissions()));
 
         await _sut.Create(request);
 
-        _dispatcher.Verify(d => d.DispatchAsync<DataResult<IOLInvestmentAsset>>(
+        _dispatcher.Verify(d => d.DispatchAsync(
             It.Is<CreateIOLInvestmentAssetCommand>(c =>
                 c.TypeId == request.TypeId &&
                 c.CurrencyId == request.CurrencyId &&
@@ -58,35 +57,12 @@ public partial class IOLInvestmentAssetServiceTests
     }
 
     [Fact]
-    public async Task Create_DispatchesPermissionsCommandWithOwnerLevel()
-    {
-        var asset = new IOLInvestmentAsset { Id = Guid.NewGuid() };
-        var request = ACreateRequest();
-
-        _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IOLInvestmentAsset>>(It.IsAny<CreateIOLInvestmentAssetCommand>()))
-            .ReturnsAsync(DataResult<IOLInvestmentAsset>.Success(asset));
-        _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IOLInvestmentAssetPermissions>>(It.IsAny<CreateIOLInvestmentAssetPermissionsCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<IOLInvestmentAssetPermissions>.Success(new IOLInvestmentAssetPermissions()));
-
-        await _sut.Create(request);
-
-        _dispatcher.Verify(d => d.DispatchAsync<DataResult<IOLInvestmentAssetPermissions>>(
-            It.Is<CreateIOLInvestmentAssetPermissionsCommand>(c =>
-                c.ResourceId == asset.Id &&
-                c.PermissionLevels.Contains(PermissionLevelEnum.Owner)),
-            It.IsAny<HttpRequest?>()),
-            Times.Once);
-    }
-
-    [Fact]
     public async Task Create_WhenCommandDispatchFails_ReturnsFailure()
     {
         var request = ACreateRequest();
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IOLInvestmentAsset>>(It.IsAny<CreateIOLInvestmentAssetCommand>()))
+            .Setup(d => d.DispatchAsync(It.IsAny<CreateIOLInvestmentAssetCommand>()))
             .ReturnsAsync(DataResult<IOLInvestmentAsset>.Failure("create error"));
 
         var result = await _sut.Create(request);
@@ -101,12 +77,12 @@ public partial class IOLInvestmentAssetServiceTests
         var request = ACreateRequest();
 
         _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<IOLInvestmentAsset>>(It.IsAny<CreateIOLInvestmentAssetCommand>()))
+            .Setup(d => d.DispatchAsync(It.IsAny<CreateIOLInvestmentAssetCommand>()))
             .ReturnsAsync(DataResult<IOLInvestmentAsset>.Failure("create error"));
 
         await _sut.Create(request);
 
-        _dispatcher.Verify(d => d.DispatchAsync<DataResult<IOLInvestmentAssetPermissions>>(
+        _dispatcher.Verify(d => d.DispatchAsync(
             It.IsAny<CreateIOLInvestmentAssetPermissionsCommand>(),
             It.IsAny<HttpRequest?>()),
             Times.Never);

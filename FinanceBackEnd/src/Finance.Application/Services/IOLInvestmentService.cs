@@ -50,14 +50,6 @@ public class IOLInvestmentService(
                 return result;
             }
 
-            await dispatcher.DispatchAsync(
-                new CreateIOLInvestmentPermissionsCommand
-                {
-                    ResourceId = result.Data!.Id,
-                    PermissionLevels = [PermissionLevelEnum.Owner],
-                },
-                httpRequest);
-
             await tx.CommitAsync();
             return result;
         }

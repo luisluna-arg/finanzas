@@ -16,6 +16,7 @@ using Finance.Domain.SpecialTypes;
 using Finance.Persistence.Configurations;
 using Finance.Persistence.Extensions;
 using Finance.Persistence.TypeConverters;
+using FinanceBackEnd.Finance.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,16 +82,82 @@ public class FinanceDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    private static TPermission BuildOwnership<TResource, TId, TPermission>(TId id, Guid userId)
+        where TResource : IEntity
+        where TPermission : ResourcePermissions<TResource, TId>, new()
+        => new TPermission { ResourceId = id, UserId = userId, PermissionLevels = [PermissionLevelEnum.Owner] };
+
+    private static readonly Dictionary<Type, Func<Guid, Guid, object>> _permissionFactories = new()
     {
+        [typeof(CreditCard)] = BuildOwnership<CreditCard, Guid, CreditCardPermissions>,
+        [typeof(CurrencyExchangeRate)] = BuildOwnership<CurrencyExchangeRate, Guid, CurrencyExchangeRatePermissions>,
+        [typeof(Debit)] = BuildOwnership<Debit, Guid, DebitPermissions>,
+        [typeof(DebitOrigin)] = BuildOwnership<DebitOrigin, Guid, DebitOriginPermissions>,
+        [typeof(Fund)] = BuildOwnership<Fund, Guid, FundPermissions>,
+        [typeof(Income)] = BuildOwnership<Income, Guid, IncomePermissions>,
+        [typeof(IOLInvestment)] = BuildOwnership<IOLInvestment, Guid, IOLInvestmentPermissions>,
+        [typeof(IOLInvestmentAsset)] = BuildOwnership<IOLInvestmentAsset, Guid, IOLInvestmentAssetPermissions>,
+        [typeof(Movement)] = BuildOwnership<Movement, Guid, MovementPermissions>,
+        [typeof(Subscription)] = BuildOwnership<Subscription, Guid, SubscriptionPermissions>,
+    };
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        await AutoCreateOwnershipPermissionsAsync(cancellationToken);
         SetAuditableDefaults();
-        return base.SaveChangesAsync(cancellationToken);
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     public override int SaveChanges()
     {
+        AutoCreateOwnershipPermissions();
         SetAuditableDefaults();
         return base.SaveChanges();
+    }
+
+    private async Task AutoCreateOwnershipPermissionsAsync(CancellationToken cancellationToken)
+    {
+        if (HttpContextAccessor?.HttpContext == null) return;
+
+        var addedOwned = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Added && _permissionFactories.ContainsKey(e.Entity.GetType()))
+            .Select(e => (Type: e.Entity.GetType(), Id: (Guid)e.Property("Id").CurrentValue!))
+            .ToList();
+
+        if (addedOwned.Count == 0) return;
+
+        var user = await User
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Include(u => u.Identities)
+            .FirstOrDefaultAsync(u => u.Identities.Any(i => i.SourceId == CurrentUserId), cancellationToken);
+
+        if (user == null) return;
+
+        foreach (var (type, entityId) in addedOwned)
+            Add(_permissionFactories[type](entityId, user.Id));
+    }
+
+    private void AutoCreateOwnershipPermissions()
+    {
+        if (HttpContextAccessor?.HttpContext == null) return;
+
+        var addedOwned = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Added && _permissionFactories.ContainsKey(e.Entity.GetType()))
+            .Select(e => (Type: e.Entity.GetType(), Id: (Guid)e.Property("Id").CurrentValue!))
+            .ToList();
+
+        if (addedOwned.Count == 0) return;
+
+        var user = User
+            .IgnoreQueryFilters()
+            .Include(u => u.Identities)
+            .FirstOrDefault(u => u.Identities.Any(i => i.SourceId == CurrentUserId));
+
+        if (user == null) return;
+
+        foreach (var (type, entityId) in addedOwned)
+            Add(_permissionFactories[type](entityId, user.Id));
     }
 
     private void SetAuditableDefaults()

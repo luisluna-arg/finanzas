@@ -1,16 +1,10 @@
-using CQRSDispatch;
-using CQRSDispatch.Interfaces;
-using Finance.Application.Auth;
 using Finance.Application.Commands.Funds;
 using Finance.Application.Repositories;
-using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Banks;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Funds;
 using Finance.Persistence;
-using FinanceBackEnd.Finance.Domain.Enums;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -21,7 +15,6 @@ public class CreateFundCommandHandlerTests : IDisposable
     private readonly Mock<IRepository<Fund, Guid>> _fundRepo;
     private readonly Mock<IRepository<Bank, Guid>> _bankRepo;
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepo;
-    private readonly Mock<IDispatcher<FinanceDispatchContext>> _dispatcher;
     private readonly FinanceDbContext _dbContext;
 
     public CreateFundCommandHandlerTests()
@@ -29,7 +22,6 @@ public class CreateFundCommandHandlerTests : IDisposable
         _fundRepo = new Mock<IRepository<Fund, Guid>>();
         _bankRepo = new Mock<IRepository<Bank, Guid>>();
         _currencyRepo = new Mock<IRepository<Currency, Guid>>();
-        _dispatcher = new Mock<IDispatcher<FinanceDispatchContext>>();
 
         var options = new DbContextOptionsBuilder<FinanceDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -40,6 +32,9 @@ public class CreateFundCommandHandlerTests : IDisposable
     }
 
     public void Dispose() => _dbContext.Dispose();
+
+    private CreateFundCommandHandler CreateHandler() =>
+        new(_dbContext, _bankRepo.Object, _currencyRepo.Object, _fundRepo.Object);
 
     [Fact]
     public async Task Create_HappyPath_AddsFundAndReturnsSuccess()
@@ -61,13 +56,8 @@ public class CreateFundCommandHandlerTests : IDisposable
             .Setup(r => r.AddAsync(It.IsAny<Fund>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()))
             .Callback<Fund, CancellationToken, bool>((fund, _, _) => fund.Id = Guid.NewGuid())
             .Returns(Task.CompletedTask);
-        _dispatcher
-            .Setup(d => d.DispatchAsync<DataResult<FundPermissions>>(It.IsAny<CreateFundPermissionsCommand>(), It.IsAny<HttpRequest?>()))
-            .ReturnsAsync(DataResult<FundPermissions>.Success(new FundPermissions()));
 
-        var handler = new CreateFundCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _fundRepo.Object, _dispatcher.Object);
-
-        var result = await handler.ExecuteAsync(command, default);
+        var result = await CreateHandler().ExecuteAsync(command, default);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(bank, result.Data.Bank);
@@ -76,12 +66,6 @@ public class CreateFundCommandHandlerTests : IDisposable
         Assert.True(result.Data.DailyUse);
 
         _fundRepo.Verify(r => r.AddAsync(It.IsAny<Fund>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()), Times.Once);
-        _dispatcher.Verify(d => d.DispatchAsync<DataResult<FundPermissions>>(
-            It.Is<CreateFundPermissionsCommand>(c =>
-                c.ResourceId == result.Data.Id &&
-                c.PermissionLevels.Contains(PermissionLevelEnum.Owner)),
-            It.IsAny<HttpRequest?>()),
-            Times.Once);
     }
 
     [Fact]
@@ -97,9 +81,7 @@ public class CreateFundCommandHandlerTests : IDisposable
 
         _bankRepo.Setup(r => r.GetByIdAsync(command.BankId, It.IsAny<CancellationToken>())).ReturnsAsync((Bank?)null);
 
-        var handler = new CreateFundCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _fundRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<Exception>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<Exception>(() => CreateHandler().ExecuteAsync(command, default));
     }
 
     [Fact]
@@ -117,9 +99,7 @@ public class CreateFundCommandHandlerTests : IDisposable
         _bankRepo.Setup(r => r.GetByIdAsync(bank.Id, It.IsAny<CancellationToken>())).ReturnsAsync(bank);
         _currencyRepo.Setup(r => r.GetByIdAsync(command.CurrencyId, It.IsAny<CancellationToken>())).ReturnsAsync((Currency?)null);
 
-        var handler = new CreateFundCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _fundRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<Exception>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<Exception>(() => CreateHandler().ExecuteAsync(command, default));
     }
 
     [Fact]
@@ -133,9 +113,7 @@ public class CreateFundCommandHandlerTests : IDisposable
             Amount = 100m,
         };
 
-        var handler = new CreateFundCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _fundRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() => CreateHandler().ExecuteAsync(command, default));
     }
 
     [Fact]
@@ -149,9 +127,7 @@ public class CreateFundCommandHandlerTests : IDisposable
             Amount = 100m,
         };
 
-        var handler = new CreateFundCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _fundRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() => CreateHandler().ExecuteAsync(command, default));
     }
 
     [Fact]
@@ -165,8 +141,6 @@ public class CreateFundCommandHandlerTests : IDisposable
             Amount = 100m,
         };
 
-        var handler = new CreateFundCommandHandler(_dbContext, _bankRepo.Object, _currencyRepo.Object, _fundRepo.Object, _dispatcher.Object);
-
-        await Assert.ThrowsAsync<ValidationException>(() => handler.ExecuteAsync(command, default));
+        await Assert.ThrowsAsync<ValidationException>(() => CreateHandler().ExecuteAsync(command, default));
     }
 }
