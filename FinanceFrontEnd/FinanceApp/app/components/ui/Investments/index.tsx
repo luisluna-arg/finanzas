@@ -10,7 +10,7 @@ type InvestmentField = {
 };
 
 function Movements() {
-  const [reloadData, setReloadData] = useState<boolean>(false);
+  const [reloadData, setReloadData] = useState<number>(0);
 
   const AppModuleTypeEnumFundsId = 3;
 
@@ -33,21 +33,24 @@ function Movements() {
     },
     class: 'text-end',
     editable: true,
-    mapper: (field: unknown) => {
+    mapper: (record: unknown) => {
+      const field = (record as Record<string, unknown>)[columnId];
       const num = typeof field === 'number' ? field : Number(String(field));
       return Number.isFinite(num) ? parseFloat(num.toFixed(2)) : num;
     },
     conditionalClass: [
       {
         class: 'text-success fw-bold',
-        eval: (field: unknown) => {
+        eval: (record: unknown) => {
+          const field = (record as Record<string, unknown>)[columnId];
           const num = typeof field === 'number' ? field : Number(String(field));
           return Number(num) > 0;
         },
       },
       {
         class: 'text-danger fw-bold',
-        eval: (field: unknown) => {
+        eval: (record: unknown) => {
+          const field = (record as Record<string, unknown>)[columnId];
           const num = typeof field === 'number' ? field : Number(String(field));
           return Number(num) < 0;
         },
@@ -110,7 +113,7 @@ function Movements() {
               url={IOLInvestmentsUploadEndpoint}
               extensions={['.xls', '.xlsx']}
               onSuccess={() => {
-                setReloadData(true);
+                setReloadData((n) => n + 1);
               }}
             />
             <hr className="py-1" />

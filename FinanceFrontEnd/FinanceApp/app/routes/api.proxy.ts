@@ -164,17 +164,25 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   try {
-    // Get the request body for POST/PUT/DELETE operations
-    const body = await request.text();
-    
+    const incomingContentType = request.headers.get('Content-Type') ?? '';
+    const isMultipart = incomingContentType.includes('multipart/form-data');
+
+    const body: BodyInit | undefined = isMultipart
+      ? await request.arrayBuffer()
+      : (await request.text()) || undefined;
+
+    const forwardHeaders: HeadersInit = {
+      Authorization: `Bearer ${accessToken}`,
+      ...(isMultipart
+        ? { 'Content-Type': incomingContentType }
+        : { 'Content-Type': 'application/json' }),
+    };
+
     // Fetch from external API
     const apiResponse = await fetch(endpoint, {
       method: request.method,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: body || undefined,
+      headers: forwardHeaders,
+      body,
     });
 
     if (!apiResponse.ok) {
