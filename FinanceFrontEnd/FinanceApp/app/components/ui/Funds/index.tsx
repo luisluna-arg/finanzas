@@ -149,12 +149,10 @@ const Funds: React.FC = () => {
 
   const paginatedData = Array.isArray(data)
     ? {
-        items: data,
-        totalPages: 1,
-      }
+      items: data,
+      totalPages: 1,
+    }
     : data;
-  
-  SafeLogger.log('Funds component loaded with data:', paginatedData);
 
   return (
     <div className={cn(['py-10', 'px-40'])}>
