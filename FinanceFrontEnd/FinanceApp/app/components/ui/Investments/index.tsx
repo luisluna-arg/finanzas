@@ -3,7 +3,6 @@ import urls from '@/utils/urls';
 import Uploader from '@/components/ui/utils/Uploader';
 import PaginatedTable, { Column } from '@/components/ui/utils/PaginatedTable';
 import { InputType } from '@/components/ui/utils/InputType';
-
 type InvestmentField = {
   symbol: string;
   description: string;
@@ -80,7 +79,7 @@ function Movements() {
       placeholder,
       editable: true,
       mapper: (field: unknown) => {
-        const f = field as InvestmentField;
+        const f = (field as Record<string, unknown>).asset as InvestmentField;
         return `${f?.symbol ?? ''} - ${f?.description ?? ''}`;
       },
     },
