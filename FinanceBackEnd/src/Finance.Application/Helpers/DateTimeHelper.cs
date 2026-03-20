@@ -27,7 +27,7 @@ public static class DateTimeHelper
     public static DateTime ParseDateTime(object? value, string format, IFormatProvider? formatProvider = null, DateTimeKind kind = DateTimeKind.Unspecified)
         => ParseNullDateTime(value, format, formatProvider, kind) ?? default;
 
-    internal static DateTime FromTimeZoneToUTC(DateTime currentDate, short offset)
+    public static DateTime FromTimeZoneToUTC(DateTime currentDate, short offset)
     {
         TimeSpan timeZoneOffset = TimeSpan.FromHours(offset);
 

@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Http;
 
 public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
 {
-    public IEnumerable<IOLInvestment> Read(IEnumerable<IFormFile> files, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
-        => files.SelectMany(o => Read(o, dateTimeKind)).ToArray();
+    public IEnumerable<IOLInvestment> Read(IEnumerable<IFormFile> files, short? timezoneOffset = null)
+        => files.SelectMany(o => Read(o, timezoneOffset)).ToArray();
 
-    public IEnumerable<IOLInvestment> Read(IFormFile file, DateTimeKind dateTimeKind = DateTimeKind.Unspecified)
+    public IEnumerable<IOLInvestment> Read(IFormFile file, short? timezoneOffset = null)
     {
         var records = new List<IOLInvestment>();
 
@@ -35,9 +35,11 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
                 Func<object, string> currencySymbolParser = ExtractCurrencySymbol;
 
                 var dateString = sheet.Rows[0][1].ToString();
-                var currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy HH:mm:ss", null, dateTimeKind);
+                var currentDate = DateTimeHelper.ParseDateTime(dateString, "d/M/yyyy HH:mm:ss");
                 if (currentDate.Ticks == DateTime.MinValue.Ticks) currentDate = DateTime.Now;
-                currentDate = DateTimeHelper.FromTimeZoneToUTC(currentDate, -3);
+                currentDate = timezoneOffset.HasValue
+                    ? DateTimeHelper.FromTimeZoneToUTC(currentDate, timezoneOffset.Value)
+                    : DateTime.SpecifyKind(currentDate, DateTimeKind.Local).ToUniversalTime();
 
                 var now = DateTime.UtcNow;
 

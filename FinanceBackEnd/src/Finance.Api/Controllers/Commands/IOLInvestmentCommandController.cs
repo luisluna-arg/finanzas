@@ -31,9 +31,9 @@ public class IOLInvestmentCommandController(
         IOLInvestmentService>(mapper, dispatcher, iolInvestmentService)
 {
     [HttpPost("upload")]
-    public async Task<IActionResult> Upload(IFormFile file)
+    public async Task<IActionResult> Upload(IFormFile file, [FromQuery] short? timezoneOffset = null)
     {
-        await Dispatcher.DispatchCommandAsync(new UploadIOLInvestmentsCommand(file));
+        await Dispatcher.DispatchCommandAsync(new UploadIOLInvestmentsCommand(file, timezoneOffset));
         return Ok();
     }
 }

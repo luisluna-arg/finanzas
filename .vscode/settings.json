@@ -10,4 +10,9 @@
         "editor.defaultFormatter": "vscode.json-language-features"
     },
     "dotnet-test-explorer.testProjectPath": "FinanceBackEnd/tests/**/*.csproj",
+    "chat.tools.terminal.autoApprove": {
+        "dotnet build": true,
+        "ForceNoAlign": true,
+        "dotnet test": true
+    },
 }

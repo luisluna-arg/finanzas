@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import urls from '@/utils/urls';
 import Uploader from '@/components/ui/utils/Uploader';
 import PaginatedTable, { Column } from '@/components/ui/utils/PaginatedTable';
@@ -12,17 +12,12 @@ type InvestmentField = {
 function Movements() {
   const [reloadData, setReloadData] = useState<number>(0);
 
-  const AppModuleTypeEnumFundsId = 3;
-
   const IOLInvestmentsUploadEndpoint = urls.iolInvestments.upload.with({
-    DateKind: 'Local',
-    AppModuleId: AppModuleTypeEnumFundsId,
+    timezoneOffset: -new Date().getTimezoneOffset() / 60,
   });
   const iolInvestmentsEndpoint = urls.iolInvestments.paginated;
 
   const onFetchInvestmentsTable = () => {};
-
-  useEffect(() => {}, [AppModuleTypeEnumFundsId]);
 
   const numericColumn = (columnId: string, label: string): Column => ({
     id: columnId,
