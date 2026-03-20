@@ -88,12 +88,18 @@ git push -u origin fix/<short-slug>
 Read `.github/PULL_REQUEST_TEMPLATE.md` and populate every section with content derived from the diff analysis. Then run:
 
 ```powershell
+$prBody = @'
+<populated PR template body>
+'@
+
 gh pr create `
   --base main `
   --head fix/<short-slug> `
   --title "fix: <same title as issue>" `
-  --body "<populated PR template body>"
+  --body $prBody
 ```
+
+> **Important:** Always assign the PR body to a variable using a PowerShell here-string (`@' ... '@`) before passing it to `gh pr create`. Passing the body as an inline string with backtick line-continuation causes PowerShell to silently truncate the body at the first backtick inside the content (e.g. inline code fences).
 
 The PR body must follow the template structure from [.github/PULL_REQUEST_TEMPLATE.md](../../PULL_REQUEST_TEMPLATE.md):
 
