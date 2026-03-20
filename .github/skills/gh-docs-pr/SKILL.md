@@ -100,7 +100,6 @@ The PR body must follow the template structure from [.github/PULL_REQUEST_TEMPLA
 - **# Why** — what prompted the documentation change
 - **## What is the solution?** — what was written or updated and how it helps
 - **## What areas of the site does it impact?** — which modules, layers, or workflows the docs relate to
-- **## Test scenarios** — N/A for docs; note any examples or diagrams added
 - **## Other Notes** — `Closes #<issue-number>`
 
 ## Output
