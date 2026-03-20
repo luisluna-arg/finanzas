@@ -8,6 +8,7 @@ import { InputType } from '@/components/ui/utils/InputType';
 import CommonUtils, { toNumber } from '@/utils/common';
 import { cn } from '@/lib/utils';
 import type { FundRecord } from '@/types/fund';
+import SafeLogger from '@/utils/SafeLogger';
 
 // Define types for the props and states
 interface PickerData {
@@ -57,7 +58,10 @@ const Funds: React.FC = () => {
     eval: (field: unknown) => field != null && toNumber(field) > 0,
   };
 
-  const valueMapper = (field: unknown) => (field != null ? toNumber(field) : null);
+  const valueMapper = (record: unknown) => {
+    const amount = (record as FundRecord).amount;
+    return amount != null ? toNumber(amount) : null;
+  };
 
   const numericHeader = {
     classes: 'text-end',
@@ -149,6 +153,8 @@ const Funds: React.FC = () => {
         totalPages: 1,
       }
     : data;
+  
+  SafeLogger.log('Funds component loaded with data:', paginatedData);
 
   return (
     <div className={cn(['py-10', 'px-40'])}>
