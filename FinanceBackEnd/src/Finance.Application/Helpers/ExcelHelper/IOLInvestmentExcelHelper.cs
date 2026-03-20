@@ -98,10 +98,17 @@ public class IOLInvestmentExcelHelper : IExcelHelper<IOLInvestment>
     }
 
     private object? SanitizeDecimalString(object value)
-        => value?.ToString()?
+    {
+        var text = value?.ToString()?
             .Replace("$", string.Empty)
             .Replace("%", string.Empty)
             .Replace(".", string.Empty)
             .Replace(",", ".")
             .Trim();
+
+        if (text is null) return null;
+
+        var idx = text.IndexOfAny(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-']);
+        return idx > 0 ? text[idx..] : text;
+    }
 }
