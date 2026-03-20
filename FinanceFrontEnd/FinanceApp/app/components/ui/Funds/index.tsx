@@ -8,7 +8,6 @@ import { InputType } from '@/components/ui/utils/InputType';
 import CommonUtils, { toNumber } from '@/utils/common';
 import { cn } from '@/lib/utils';
 import type { FundRecord } from '@/types/fund';
-import SafeLogger from '@/utils/SafeLogger';
 
 // Define types for the props and states
 interface PickerData {
