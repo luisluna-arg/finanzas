@@ -8,6 +8,7 @@ using Finance.Application.Mapping;
 using Finance.Application.Repositories;
 using Finance.Domain.DataConverters;
 using Finance.Domain.JsonConverters;
+using Finance.Domain.Models.IOLInvestments;
 using Finance.Persistence;
 using Finance.Persistence.Telemetry;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,7 @@ public static class ConfigExtensions
 
         services.AddSagaServices();
 
-        services.AddScoped<IOLInvestmentExcelHelper>();
+        services.AddScoped<IExcelHelper<IOLInvestment>, IOLInvestmentExcelHelper>();
 
         services.AddDispatecherServices();
 

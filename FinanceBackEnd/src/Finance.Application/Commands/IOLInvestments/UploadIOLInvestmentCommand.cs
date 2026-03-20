@@ -18,7 +18,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
     private readonly IRepository<IOLInvestment, Guid> _iolInvestment;
     private readonly IRepository<IOLInvestmentAsset, Guid> _iolInvestmentAsset;
     private readonly IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> _iolInvestmentAssetType;
-    private readonly IOLInvestmentExcelHelper _iolInvestmentExcelHelper;
+    private readonly IExcelHelper<IOLInvestment> _iolInvestmentExcelHelper;
 
     public UploadIOLInvestmentCommandHandler(
         FinanceDbContext db,
@@ -26,7 +26,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
         IRepository<IOLInvestment, Guid> iolInvestmentRepository,
         IRepository<IOLInvestmentAsset, Guid> iolInvestmentAssetRepository,
         IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum> iolInvestmentAssetTypeRepository,
-        IOLInvestmentExcelHelper iolInvestmentExcelHelper)
+        IExcelHelper<IOLInvestment> iolInvestmentExcelHelper)
         : base(db)
     {
         _iolInvestment = iolInvestmentRepository;
@@ -40,7 +40,7 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
     {
         var files = command.File;
 
-        var newRecords = _iolInvestmentExcelHelper.Read(files, DateTimeKind.Utc).ToArray();
+        var newRecords = _iolInvestmentExcelHelper.Read(files, command.TimezoneOffset).ToArray();
 
         if (newRecords.Length > 0)
         {
@@ -104,10 +104,12 @@ public class UploadIOLInvestmentCommandHandler : BaseResponselessHandler<UploadI
 
 public class UploadIOLInvestmentsCommand : ICommand
 {
-    public UploadIOLInvestmentsCommand(IFormFile file)
+    public UploadIOLInvestmentsCommand(IFormFile file, short? timezoneOffset = null)
     {
         File = file;
+        TimezoneOffset = timezoneOffset;
     }
 
     public IFormFile File { get; set; }
+    public short? TimezoneOffset { get; set; }
 }
