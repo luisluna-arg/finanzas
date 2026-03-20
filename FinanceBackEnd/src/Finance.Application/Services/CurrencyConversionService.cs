@@ -45,6 +45,7 @@ public class CurrencyConversionService(
             if (item.CurrencyId == destinationCurrency)
             {
                 result.Add(item.Amount);
+                continue;
             }
 
             var exchangeRate = exchangeRates.Data.FirstOrDefault(er => er.BaseCurrencyId == item.CurrencyId);
