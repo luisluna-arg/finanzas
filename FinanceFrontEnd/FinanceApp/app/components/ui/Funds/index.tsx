@@ -57,7 +57,10 @@ const Funds: React.FC = () => {
     eval: (field: unknown) => field != null && toNumber(field) > 0,
   };
 
-  const valueMapper = (field: unknown) => (field != null ? toNumber(field) : null);
+  const valueMapper = (record: unknown) => {
+    const amount = (record as FundRecord).amount;
+    return amount != null ? toNumber(amount) : null;
+  };
 
   const numericHeader = {
     classes: 'text-end',
@@ -145,9 +148,9 @@ const Funds: React.FC = () => {
 
   const paginatedData = Array.isArray(data)
     ? {
-        items: data,
-        totalPages: 1,
-      }
+      items: data,
+      totalPages: 1,
+    }
     : data;
 
   return (
