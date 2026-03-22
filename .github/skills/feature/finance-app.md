@@ -142,6 +142,15 @@ export default <EntityName>s;
 
 ---
 
+## Step 5 — Verify
+
+Run both checks from `FinanceFrontEnd/FinanceApp` and fix any errors before committing:
+
+```powershell
+npm run typecheck
+npm run lint
+```
+
 ## Checklist
 
 - [ ] URL entry added in `utils/urls.ts`
@@ -150,3 +159,5 @@ export default <EntityName>s;
 - [ ] Route file created in `app/routes/`
 - [ ] Route registered in `app/routes.ts`
 - [ ] UI component created in `app/components/ui/<EntityName>s/`
+- [ ] `npm run typecheck` passes with no errors
+- [ ] `npm run lint` passes with no errors

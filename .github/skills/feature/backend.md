@@ -2,6 +2,22 @@
 
 Full step-by-step guide for adding a new entity to the `FinanceBackEnd` solution.
 
+> **IMPORTANT — Read this entire file before starting.** All steps below are required. Steps 1–8 are implementation; **Step 9 (unit tests) is mandatory** and must not be skipped.
+
+---
+
+## Required Steps (all mandatory)
+
+1. Domain Model
+2. Persistence Configuration + Migration
+3. DTO
+4. Commands (Create, Update, Delete)
+5. Queries (GetAll, GetSingle, GetPaginated)
+6. Mapper
+7. Service Requests
+8. API Controllers (Command + Query)
+9. **Unit Tests** — command handler tests, query handler tests, service tests
+
 ---
 
 ## Step 1 — Domain Model
