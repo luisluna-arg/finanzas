@@ -35,8 +35,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       Page: 1,
     });
 
-  const currencies = await client.GetCurrenciesQuery().get();
-  const frequencies = await client.GetFrequenciesQuery().get();
+  const currencies = await client.GetCatalogCurrenciesQuery().get();
+  const frequencies = await client.GetCatalogFrequenciesQuery().get();
 
   return {
     subscriptions,

@@ -12,10 +12,11 @@ import PaginatedTable, {
   Row,
 } from '@/components/ui/utils/PaginatedTable';
 import { cn } from '@/lib/utils';
-import type { CurrencyExchangeRateRecord, CurrencyData } from '@/types/currencyExchangeRate';
+import type { CurrencyExchangeRateRecord } from '@/types/currencyExchangeRate';
+import type { CatalogItem } from '@/types/catalog';
 
 interface LoaderData {
-  currencies: CurrencyData[];
+  currencies: CatalogItem[];
   data: CurrencyExchangeRateRecord[] | { items: CurrencyExchangeRateRecord[]; totalPages: number };
   baseCurrencyId: string;
   quoteCurrencyId: string;
@@ -143,7 +144,7 @@ const CurrencyExchangeRates: React.FC = () => {
             data={currencies}
             mapper={{
               id: 'id',
-              label: (record: unknown) => `${(record as CurrencyData).name}`,
+              label: (record: unknown) => `${(record as CatalogItem).name}`,
             }}
             onChange={(picker: { value: string }) => reload({ currentBaseCurrencyId: picker.value })}
             className="w-60"
@@ -158,7 +159,7 @@ const CurrencyExchangeRates: React.FC = () => {
             data={currencies}
             mapper={{
               id: 'id',
-              label: (record: unknown) => `${(record as CurrencyData).name}`,
+              label: (record: unknown) => `${(record as CatalogItem).name}`,
             }}
             onChange={(picker: { value: string }) => reload({ currentQuoteCurrencyId: picker.value })}
             className="w-60"

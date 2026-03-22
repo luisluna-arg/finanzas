@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import type { Subscription, SubscriptionsData } from '@/types/subscription';
 import { SubscriptionFrequency } from '@/types/subscription';
+import type { CatalogItem } from '@/types/catalog';
 import {
   Table,
   TableBody,
@@ -30,8 +31,8 @@ interface SubscriptionModalProps {
   show: boolean;
   onHide: () => void;
   subscription?: Subscription | null;
-  currencies: Array<{ id: string; name: string; shortName: string }>;
-  frequencies: Array<{ id: string; name: string }>;
+  currencies: CatalogItem[];
+  frequencies: Array<{ id: number; name: string }>;
   onSave: (data: Partial<Subscription>) => void;
 }
 
@@ -163,7 +164,7 @@ function SubscriptionModal({
               >
                 {currencies.map((currency) => (
                   <option key={currency.id} value={currency.id}>
-                    {currency.name} ({currency.shortName})
+                    {currency.name}
                   </option>
                 ))}
               </select>

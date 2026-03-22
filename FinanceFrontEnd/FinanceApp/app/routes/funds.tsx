@@ -34,7 +34,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return client.get(dataUrl);
   };
 
-  const queries = [await client.GetBanksQuery().get(), await client.GetCurrenciesQuery().get()];
+  const queries = [await client.GetCatalogBanksQuery().get(), await client.GetCatalogCurrenciesQuery().get()];
 
   if (selectedBankId && selectedCurrencyId) {
     queries.push(getDataPromise(selectedBankId, selectedCurrencyId));

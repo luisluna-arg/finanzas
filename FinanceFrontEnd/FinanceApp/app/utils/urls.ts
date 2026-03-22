@@ -32,6 +32,23 @@ const getApiBaseUrl = () => `${getBaseUrl()}/api`;
 const getDebitsBaseUrl = () => `${getApiBaseUrl()}/debits`;
 
 const urls = {
+  catalog: {
+    banks: {
+      get endpoint() {
+        return new BackendUrl(`${getApiBaseUrl()}/catalog/banks`);
+      },
+    },
+    currencies: {
+      get endpoint() {
+        return new BackendUrl(`${getApiBaseUrl()}/catalog/currencies`);
+      },
+    },
+    frequencies: {
+      get endpoint() {
+        return new BackendUrl(`${getApiBaseUrl()}/catalog/frequencies`);
+      },
+    },
+  },
   appModules: {
     get endpoint() {
       return new BackendUrl(`${getApiBaseUrl()}/app-modules/`);

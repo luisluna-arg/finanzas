@@ -1,3 +1,5 @@
+import type { CatalogItem } from '@/types/catalog';
+
 export enum SubscriptionFrequency {
   Monthly = 'monthly',
   Annual = 'annual',
@@ -26,9 +28,9 @@ export interface SubscriptionsData {
     items: Subscription[];
     totalCount: number;
   };
-  currencies: Currency[];
+  currencies: CatalogItem[];
   frequencies: Array<{
-    id: string;
+    id: number;
     name: string;
   }>;
 }

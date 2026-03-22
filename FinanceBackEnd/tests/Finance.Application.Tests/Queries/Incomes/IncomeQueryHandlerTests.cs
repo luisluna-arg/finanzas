@@ -1,33 +1,18 @@
 using Finance.Application.Queries.Incomes;
 using Finance.Application.Repositories;
+using Finance.Application.Tests.Queries.Base;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Banks;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Identities;
 using Finance.Domain.Models.Incomes;
 using Finance.Domain.SpecialTypes;
-using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Finance.Application.Tests.Queries.Incomes;
 
-public class IncomeQueryHandlerTests : IDisposable
+public class IncomeQueryHandlerTests : QueryHandlerBaseTests
 {
-    private readonly FinanceDbContext _dbContext;
-
-    public IncomeQueryHandlerTests()
-    {
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
-    }
-
-    public void Dispose() => _dbContext.Dispose();
-
     [Fact]
     public async Task GetIncomes_FiltersByDateCurrencyBankAndDeactivated()
     {

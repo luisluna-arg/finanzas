@@ -1,31 +1,15 @@
 using Finance.Application.Queries.CurrencyExchangeRates;
 using Finance.Application.Repositories;
+using Finance.Application.Tests.Queries.Base;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Identities;
-using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Finance.Application.Tests.Queries.CurrencyExchangeRates;
 
-public class CurrencyExchangeRateQueryHandlerTests : IDisposable
+public class CurrencyExchangeRateQueryHandlerTests : QueryHandlerBaseTests
 {
-    private readonly FinanceDbContext _dbContext;
-
-    public CurrencyExchangeRateQueryHandlerTests()
-    {
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
-    }
-
-    public void Dispose() => _dbContext.Dispose();
-
     [Fact]
     public async Task GetAllCurrencyExchangeRates_FiltersByPairAndTimestampAndDeactivated()
     {
