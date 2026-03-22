@@ -200,6 +200,14 @@ Add a navigation link in `src/components/Navigation.tsx` if the page should appe
 
 ---
 
+## Step 6 — Verify
+
+Run both checks from `FinanceFrontEnd/FinanceFunds` and fix any errors before committing:
+
+```powershell
+npm run lint
+```
+
 ## Checklist
 
 - [ ] Types file created in `services/types/`
@@ -208,3 +216,5 @@ Add a navigation link in `src/components/Navigation.tsx` if the page should appe
 - [ ] Dashboard page created and exported from `pages/index.ts`
 - [ ] Route registered in `App.tsx`
 - [ ] Navigation link added (if applicable)
+- [ ] `npm run typecheck` passes with no errors
+- [ ] `npm run lint` passes with no errors
