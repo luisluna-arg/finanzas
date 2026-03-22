@@ -1,31 +1,15 @@
 using Finance.Application.Queries.DebitOrigins;
+using Finance.Application.Tests.Queries.Base;
 using Finance.Domain.Models.AppModules;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Debits;
 using Finance.Domain.Models.Identities;
-using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Finance.Application.Tests.Queries.DebitOrigins;
 
-public class DebitOriginQueryHandlerTests : IDisposable
+public class DebitOriginQueryHandlerTests : QueryHandlerBaseTests
 {
-    private readonly FinanceDbContext _dbContext;
-
-    public DebitOriginQueryHandlerTests()
-    {
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
-    }
-
-    public void Dispose() => _dbContext.Dispose();
-
     private async Task<User> CreateCurrentUserAsync()
     {
         var user = new User

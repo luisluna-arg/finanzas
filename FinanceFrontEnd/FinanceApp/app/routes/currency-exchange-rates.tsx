@@ -35,7 +35,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return client.get(endpoint);
   };
 
-  const currencies = await client.GetCurrenciesQuery().get();
+  const currencies = await client.GetCatalogCurrenciesQuery().get();
 
   let data = null;
   if (selectedBaseCurrencyId && selectedQuoteCurrencyId) {

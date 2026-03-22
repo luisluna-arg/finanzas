@@ -8,28 +8,13 @@ using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Funds;
 using Finance.Domain.Models.Identities;
 using Finance.Domain.Models.Movements;
-using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Queries.Funds;
 
-public class FundQueryHandlerTests : IDisposable
+public class FundQueryHandlerTests : QueryHandlerBaseTests
 {
-    private readonly FinanceDbContext _dbContext;
-
-    public FundQueryHandlerTests()
-    {
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
-    }
-
-    public void Dispose() => _dbContext.Dispose();
-
     [Fact]
     public async Task GetFunds_FiltersByDateCurrencyBankDailyUseAndDeactivated()
     {

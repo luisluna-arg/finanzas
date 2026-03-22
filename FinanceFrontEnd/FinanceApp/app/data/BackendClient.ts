@@ -3,6 +3,9 @@ import { Agent } from "https";
 import serverLogger from "@/utils/logger.server";
 import { buildAxiosConfig } from "./base/axiosConfig";
 import { BanksQuery } from "./queries/BanksQuery";
+import { CatalogBanksQuery } from "./queries/CatalogBanksQuery";
+import { CatalogCurrenciesQuery } from "./queries/CatalogCurrenciesQuery";
+import { CatalogFrequenciesQuery } from "./queries/CatalogFrequenciesQuery";
 import { CreditCardQuery } from "./queries/CreditCardQuery";
 import { CreditCardStatementQuery } from "./queries/CreditCardStatementQuery";
 import { CurrenciesQuery } from "./queries/CurrenciesQuery";
@@ -19,6 +22,9 @@ export class BackendClient {
     private AccessToken: string;
 
     private BanksQuery: BanksQuery;
+    private CatalogBanksQuery: CatalogBanksQuery;
+    private CatalogCurrenciesQuery: CatalogCurrenciesQuery;
+    private CatalogFrequenciesQuery: CatalogFrequenciesQuery;
     private DebitsQuery: DebitsQuery;
     private PaginatedDebitsQuery: PaginatedDebitsQuery;
     private PaginatedSubscriptionsQuery: PaginatedSubscriptionsQuery;
@@ -33,6 +39,9 @@ export class BackendClient {
         this.AccessToken = accessToken;
 
         this.BanksQuery = new BanksQuery(httpsAgent, this.AccessToken);
+        this.CatalogBanksQuery = new CatalogBanksQuery(httpsAgent, this.AccessToken);
+        this.CatalogCurrenciesQuery = new CatalogCurrenciesQuery(httpsAgent, this.AccessToken);
+        this.CatalogFrequenciesQuery = new CatalogFrequenciesQuery(httpsAgent, this.AccessToken);
         this.DebitsQuery = new DebitsQuery(httpsAgent, this.AccessToken);
         this.PaginatedDebitsQuery = new PaginatedDebitsQuery(
             httpsAgent,
@@ -65,6 +74,9 @@ export class BackendClient {
     }
 
     public GetBanksQuery = (): BanksQuery => this.BanksQuery;
+    public GetCatalogBanksQuery = (): CatalogBanksQuery => this.CatalogBanksQuery;
+    public GetCatalogCurrenciesQuery = (): CatalogCurrenciesQuery => this.CatalogCurrenciesQuery;
+    public GetCatalogFrequenciesQuery = (): CatalogFrequenciesQuery => this.CatalogFrequenciesQuery;
     public GetDebitsQuery = (): DebitsQuery => this.DebitsQuery;
     public GetPaginatedDebitsQuery = (): PaginatedDebitsQuery =>
         this.PaginatedDebitsQuery;
