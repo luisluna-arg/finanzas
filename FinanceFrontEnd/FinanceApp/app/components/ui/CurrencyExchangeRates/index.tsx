@@ -12,7 +12,7 @@ import PaginatedTable, {
   Row,
 } from '@/components/ui/utils/PaginatedTable';
 import { cn } from '@/lib/utils';
-import type { CurrencyExchangeRateRecord, CurrencyData } from '@/types/currencyExchangeRate';
+import type { CurrencyExchangeRateRecord } from '@/types/currencyExchangeRate';
 import type { CatalogItem } from '@/types/catalog';
 
 interface LoaderData {
