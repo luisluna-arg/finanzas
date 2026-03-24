@@ -131,6 +131,37 @@ public class FundQueryHandlerTests : QueryHandlerBaseTests
     }
 
     [Fact]
+    public async Task GetPaginatedFunds_SameTimestamp_OrdersByCreatedAtAscending()
+    {
+        var user = await CreateCurrentUserAsync();
+        var bank = new Bank { Id = Guid.NewGuid(), Name = "Bank 1" };
+        var currency = new Currency { Id = Guid.NewGuid(), Name = "Peso", ShortName = "ARS" };
+        var ts = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var funds = new[]
+        {
+            new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = currency, CurrencyId = currency.Id, TimeStamp = ts, CreatedAt = new DateTime(2025, 6, 3, 0, 0, 0, DateTimeKind.Utc), Amount = 30m },
+            new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = currency, CurrencyId = currency.Id, TimeStamp = ts, CreatedAt = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc), Amount = 10m },
+            new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = currency, CurrencyId = currency.Id, TimeStamp = ts, CreatedAt = new DateTime(2025, 6, 2, 0, 0, 0, DateTimeKind.Utc), Amount = 20m },
+        };
+
+        await _dbContext.Fund.AddRangeAsync(funds);
+        await _dbContext.SaveChangesAsync();
+        await GrantFundAccessAsync(user, funds);
+
+        var handler = new GetPaginatedFundsQueryHandler(_dbContext);
+        var result = await handler.ExecuteAsync(new GetPaginatedFundsQuery { Page = 1, PageSize = 3, IncludeDeactivated = true }, default);
+
+        Assert.True(result.IsSuccess);
+        var items = result.Data.Items.ToList();
+        Assert.Equal(3, items.Count);
+        // All share the same TimeStamp; secondary sort is ThenBy(CreatedAt) ascending
+        Assert.Equal(10m, (decimal)items[0].Amount);
+        Assert.Equal(20m, (decimal)items[1].Amount);
+        Assert.Equal(30m, (decimal)items[2].Amount);
+    }
+
+    [Fact]
     public async Task GetSingleFund_ReturnsRepositoryResult()
     {
         var fund = new Fund { Id = Guid.NewGuid(), Amount = 100m, TimeStamp = DateTime.UtcNow };

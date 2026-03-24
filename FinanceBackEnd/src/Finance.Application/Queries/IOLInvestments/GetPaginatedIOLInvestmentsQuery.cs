@@ -44,7 +44,6 @@ public class GetPaginatedIOLInvestmentsQueryHandler : IQueryHandler<GetPaginated
             query = query.Where(o => o.AssetId == Guid.Parse(request.AssetId));
         }
 
-        // Pagination
         int page = request.Page;
         int pageSize = request.PageSize;
         int totalItems = await query.CountAsync();

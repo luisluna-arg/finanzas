@@ -1,7 +1,7 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Dtos.Summary;
-using Finance.Domain.Models.Currencies;
+using Finance.Domain.Policies;
 using Finance.Domain.Models.Funds;
 using Finance.Persistence;
 using Finance.Persistence.Constants;
@@ -16,7 +16,7 @@ public record GetCurrentFundsQuery : IQuery<TotalFunds>
     public Guid? CurrencyId { get; init; } = Guid.Parse(CurrencyConstants.PesoId);
 }
 
-public class GetCurrentFundsQueryHandler(FinanceDbContext db)
+public class GetCurrentFundsQueryHandler(FinanceDbContext db, ICurrencyConversionPolicy currencyConversionPolicy)
     : IQueryHandler<GetCurrentFundsQuery, TotalFunds>
 {
     private readonly FinanceDbContext _db = db;
@@ -45,19 +45,10 @@ public class GetCurrentFundsQueryHandler(FinanceDbContext db)
             return DataResult<TotalFunds>.Failure("Default currency not found.");
         }
 
-        var bankIds = await fundsQuery.Select(o => o.BankId).Distinct().ToArrayAsync(cancellationToken);
-
-        var funds = new List<Fund>();
-
-        foreach (var bankId in bankIds)
-        {
-            var latestFunds = await fundsQuery
-                .Where(f => f.BankId == bankId)
-                .GroupBy(f => f.CurrencyId)
-                .Select(g => g.OrderByDescending(x => x.TimeStamp).First())
-                .ToListAsync(cancellationToken);
-            funds.AddRange(latestFunds);
-        }
+        var funds = await fundsQuery
+            .GroupBy(f => new { f.BankId, f.CurrencyId })
+            .Select(g => g.OrderByDescending(x => x.TimeStamp).First())
+            .ToListAsync(cancellationToken);
 
         var currencyExchangeRates = _db.CurrencyExchangeRate
             .Include(o => o.BaseCurrency)
@@ -65,21 +56,10 @@ public class GetCurrentFundsQueryHandler(FinanceDbContext db)
             .AsSplitQuery() // Split query to avoid Cartesian explosion with multiple includes
             .Where(o => !o.Deactivated);
 
-        var baseCurrencyIds = await currencyExchangeRates
-            .Select(o => o.BaseCurrencyId)
-            .Distinct()
-            .ToArrayAsync(cancellationToken);
-
-        var currencyRates = new List<CurrencyExchangeRate>();
-        foreach (var baseCurrencyId in baseCurrencyIds)
-        {
-            var latestRates = await currencyExchangeRates
-                .Where(o => o.BaseCurrencyId == baseCurrencyId)
-                .GroupBy(o => o.QuoteCurrencyId)
-                .Select(g => g.OrderByDescending(x => x.TimeStamp).First())
-                .ToListAsync(cancellationToken);
-            currencyRates.AddRange(latestRates);
-        }
+        var currencyRates = await currencyExchangeRates
+            .GroupBy(o => new { o.BaseCurrencyId, o.QuoteCurrencyId })
+            .Select(g => g.OrderByDescending(x => x.TimeStamp).First())
+            .ToListAsync(cancellationToken);
 
         Func<Fund, string> nameFormater = (o) => $"{o.Bank!.Name} {o.Currency!.Name}";
 
@@ -112,32 +92,16 @@ public class GetCurrentFundsQueryHandler(FinanceDbContext db)
                     (o.BaseCurrencyId == fund.CurrencyId && o.QuoteCurrencyId == defaultCurrency!.Id));
             if (currencyRate == null) continue;
 
-            Currency baseCurrency, quoteCurrency;
-
-            decimal amount = 0;
-            if (fund.CurrencyId == currencyRate.BaseCurrencyId)
-            {
-                baseCurrency = currencyRate.BaseCurrency;
-                quoteCurrency = currencyRate.QuoteCurrency;
-
-                amount = fund.Amount / currencyRate.SellRate;
-            }
-            else
-            {
-                baseCurrency = currencyRate.QuoteCurrency;
-                quoteCurrency = currencyRate.BaseCurrency;
-
-                amount = fund.Amount * currencyRate.BuyRate;
-            }
+            var amount = currencyConversionPolicy.Apply(fund.Amount, fund.CurrencyId, currencyRate);
 
             var fundDto = new FundDto()
             {
                 Id = $"{fund.Id}",
                 Label = nameFormater(fund),
                 Value = fund.Amount,
-                BaseCurrencyId = baseCurrency?.Id ?? Guid.Empty,
-                BaseCurrency = baseCurrency?.ShortName ?? string.Empty,
-                BaseCurrencySymbol = baseCurrency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty,
+                BaseCurrencyId = fund.Currency?.Id ?? Guid.Empty,
+                BaseCurrency = fund.Currency?.ShortName ?? string.Empty,
+                BaseCurrencySymbol = fund.Currency?.Symbols?.FirstOrDefault()?.Symbol ?? string.Empty,
                 QuoteCurrencyValue = amount,
                 DefaultCurrencyId = defaultCurrency?.Id ?? Guid.Empty,
                 DefaultCurrency = defaultCurrency?.ShortName ?? string.Empty,

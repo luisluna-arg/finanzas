@@ -4,34 +4,22 @@ using Finance.Domain.Models.Banks;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Incomes;
 using Finance.Domain.SpecialTypes;
-using Finance.Persistence;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.Incomes;
 
-public class CreateIncomeCommandHandlerTests : IDisposable
+public class CreateIncomeCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<Income, Guid>> _incomeRepo;
     private readonly Mock<IRepository<Bank, Guid>> _bankRepo;
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepo;
-    private readonly FinanceDbContext _dbContext;
 
     public CreateIncomeCommandHandlerTests()
     {
         _incomeRepo = new Mock<IRepository<Income, Guid>>();
         _bankRepo = new Mock<IRepository<Bank, Guid>>();
         _currencyRepo = new Mock<IRepository<Currency, Guid>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     [Fact]
     public async Task Create_HappyPath_AddsIncomeAndReturnsSuccess()

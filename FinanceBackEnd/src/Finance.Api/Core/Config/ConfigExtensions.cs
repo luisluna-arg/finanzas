@@ -6,9 +6,9 @@ using Finance.Application.Auth;
 using Finance.Application.Extensions;
 using Finance.Application.Mapping;
 using Finance.Application.Repositories;
-using Finance.Domain.DataConverters;
 using Finance.Domain.JsonConverters;
 using Finance.Domain.Models.IOLInvestments;
+using Finance.Domain.Policies;
 using Finance.Persistence;
 using Finance.Persistence.Telemetry;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +41,9 @@ public static class ConfigExtensions
 
         services.AddDispatecherServices();
 
-        services.AddScoped<ICurrencyConverter, CurrencyConverter>();
+        services.AddScoped<ICurrencyConversionPolicy, CurrencyConversionPolicy>();
+
+        services.AddMemoryCache();
 
         services.AddCors(options =>
         {

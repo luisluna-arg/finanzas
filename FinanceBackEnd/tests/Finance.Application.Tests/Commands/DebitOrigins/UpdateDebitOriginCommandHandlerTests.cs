@@ -2,33 +2,21 @@ using Finance.Application.Commands.DebitOrigins;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.AppModules;
 using Finance.Domain.Models.Debits;
-using Finance.Persistence;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.DebitOrigins;
 
-public class UpdateDebitOriginCommandHandlerTests : IDisposable
+public class UpdateDebitOriginCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<AppModule, Guid>> _appModuleRepo;
     private readonly Mock<IRepository<DebitOrigin, Guid>> _debitOriginRepo;
-    private readonly FinanceDbContext _dbContext;
 
     public UpdateDebitOriginCommandHandlerTests()
     {
         _appModuleRepo = new Mock<IRepository<AppModule, Guid>>();
         _debitOriginRepo = new Mock<IRepository<DebitOrigin, Guid>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     private UpdateDebitOriginCommandHandler CreateHandler()
         => new(_dbContext, _appModuleRepo.Object, _debitOriginRepo.Object);

@@ -33,19 +33,24 @@ public class GetGeneralSummaryQueryHandler(
 
         var convertedIncomes = (await _currencyConverterService.ConvertCollection(currentIncomes!, pesosCurrencyId)).Sum(m => m);
 
-        var investments = (await _dispatcher.DispatchQueryAsync(new GetCurrentInvestmentsQuery())).Data.Items.Sum(e => e.Valued);
-        var dailyFunds = (await _dispatcher.DispatchQueryAsync(new GetCurrentFundsQuery() { DailyUse = true })).Data.Items.Sum(e => e.Value);
-        var notDailyFunds = (await _dispatcher.DispatchQueryAsync(new GetCurrentFundsQuery() { DailyUse = false })).Data.Items.Sum(e => e.Value);
+        var investmentItems = (await _dispatcher.DispatchQueryAsync(new GetCurrentInvestmentsQuery())).Data.Items;
+        var investmentsConverted = investmentItems.Sum(e => e.ValuedDefaultCurrency);
 
-        var totalFunds = dailyFunds + notDailyFunds + investments;
+        var dailyFundItems = (await _dispatcher.DispatchQueryAsync(new GetCurrentFundsQuery() { DailyUse = true })).Data.Items;
+        var dailyFundsConverted = dailyFundItems.Sum(e => e.QuoteCurrencyValue);
+
+        var notDailyFundItems = (await _dispatcher.DispatchQueryAsync(new GetCurrentFundsQuery() { DailyUse = false })).Data.Items;
+        var notDailyFundsConverted = notDailyFundItems.Sum(e => e.QuoteCurrencyValue);
+
+        var total = dailyFundsConverted + notDailyFundsConverted + investmentsConverted;
 
         var result = new TotalGeneralSummary(
         [
-            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Ingresos", Value = convertedIncomes },
-            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Inversiones", Value = investments },
-            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Fondos ($)", Value = dailyFunds },
-            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Fondos (U$D / Crypto)", Value = notDailyFunds },
-            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Dinero total", Value = totalFunds }
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Ingresos", Value = convertedIncomes, ConvertedValue = convertedIncomes },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Inversiones", Value = 0M, ConvertedValue = investmentsConverted },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Fondos ($)", Value = dailyFundsConverted, ConvertedValue = dailyFundsConverted },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Fondos (U$D / Crypto)", Value = 0M, ConvertedValue = notDailyFundsConverted },
+            new GeneralSummary() { Id = Guid.NewGuid().ToString(), Label = "Dinero total", Value = total, ConvertedValue = total }
         ]);
 
         return DataResult<TotalGeneralSummary>.Success(result);

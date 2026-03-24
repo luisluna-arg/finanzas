@@ -63,6 +63,9 @@ const urls = {
     get endpoint() {
       return new BackendUrl(`${getApiBaseUrl()}/currencies/`);
     },
+    getById(id: string) {
+      return new BackendUrl(`${getApiBaseUrl()}/currencies/${id}`);
+    },
   },
   currencyExchangeRates: {
     get endpoint() {

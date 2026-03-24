@@ -18,5 +18,5 @@ public abstract class QueryHandlerBaseTests : IDisposable
         _dbContext = new FinanceDbContext(options, null);
     }
 
-    public void Dispose() => _dbContext.Dispose();
+    public virtual void Dispose() => _dbContext.Dispose();
 }

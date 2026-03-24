@@ -1,19 +1,22 @@
 using CQRSDispatch;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Queries.Base;
-using Finance.Application.Repositories;
 using Finance.Domain.Models.Currencies;
 using Finance.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Queries.Currencies;
 
 public class GetCurrencyQuery : GetSingleByIdQuery<Currency?, Guid>;
 
-public class GetCurrencyQueryHandler(FinanceDbContext db, IRepository<Currency, Guid> repository)
+public class GetCurrencyQueryHandler(FinanceDbContext db)
     : BaseQueryHandler<GetCurrencyQuery, Currency?>(db)
 {
-    private readonly IRepository<Currency, Guid> _repository = repository;
-
     public override async Task<DataResult<Currency?>> ExecuteAsync(GetCurrencyQuery request, CancellationToken cancellationToken)
-        => DataResult<Currency?>.Success(await _repository.GetByIdAsync(request.Id, cancellationToken));
+    {
+        var currency = await DbContext.Currency
+            .Include(c => c.Symbols)
+            .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+        return DataResult<Currency?>.Success(currency);
+    }
 }

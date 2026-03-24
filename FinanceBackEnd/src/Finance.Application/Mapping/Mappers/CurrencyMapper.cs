@@ -12,3 +12,12 @@ public class CurrencyMapper : BaseMapper<Currency, CurrencyDto>, ICurrencyMapper
 }
 
 public interface ICurrencyMapper : IMapper<Currency, CurrencyDto>;
+
+public class CurrencySymbolMapper : BaseMapper<CurrencySymbol, CurrencySymbolDto>, ICurrencySymbolMapper
+{
+    public CurrencySymbolMapper(IMappingService mappingService) : base(mappingService)
+    {
+    }
+}
+
+public interface ICurrencySymbolMapper : IMapper<CurrencySymbol, CurrencySymbolDto>;

@@ -3,28 +3,14 @@ using Finance.Application.Commands.CreditCards;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.Models.Identities;
-using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.CreditCards;
 
-public class CreateCreditCardPermissionsCommandHandlerTests : IDisposable
+public class CreateCreditCardPermissionsCommandHandlerTests : QueryHandlerBaseTests
 {
-    private readonly FinanceDbContext _dbContext;
-
-    public CreateCreditCardPermissionsCommandHandlerTests()
-    {
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
-    }
-
-    public void Dispose() => _dbContext.Dispose();
 
     [Fact]
     public async Task CreatePermissions_CreditCardAndUserFoundByClaimId_ReturnsPermissions()

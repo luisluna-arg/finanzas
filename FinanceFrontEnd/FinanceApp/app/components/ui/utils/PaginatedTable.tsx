@@ -65,6 +65,7 @@ export interface Column<T extends Row = Row> {
         defaultValue?: unknown;
       }
     | boolean;
+  visible?: boolean;
   conditionalClass?: ConditionalClass[] | ConditionalClass;
   mapper?:
     | {
@@ -371,7 +372,7 @@ function PaginatedTable<T extends Row = Row>({
       <TableRow id={adminRowId} className={cn(`${name}-edit-row`)}>
         <TableCell></TableCell>
         {columns &&
-          columns.map((column: Column<T>, index: number) => {
+          visibleColumns.map((column: Column<T>, index: number) => {
             const columnId = column.key ?? column.id;
             if (column.editable) {
               return (
@@ -454,7 +455,7 @@ function PaginatedTable<T extends Row = Row>({
                   />
                 </TableCell>
               )}
-              {columns.map((column: Column<T>, index: number) => (
+              {visibleColumns.map((column: Column<T>, index: number) => (
                 <TableCell key={index} className={column.class}>
                   <ColumnValue columnSettings={column} record={record} />
                 </TableCell>
@@ -485,7 +486,8 @@ function PaginatedTable<T extends Row = Row>({
   };
 
   const adminEnabled = adminAddEnabled || adminDeletedEnabled;
-  const columnCount = columns.length + (adminEnabled ? 2 : 0);
+  const visibleColumns = columns.filter((c) => c.visible !== false);
+  const columnCount = visibleColumns.length + (adminEnabled ? 2 : 0);
 
   return (
     <div className="paginated-Table">
@@ -503,7 +505,7 @@ function PaginatedTable<T extends Row = Row>({
                   />
                 </TableHead>
               )}
-              {columns.map((column, index) => {
+              {visibleColumns.map((column, index) => {
                 return (
                   <TableHead
                     key={index}

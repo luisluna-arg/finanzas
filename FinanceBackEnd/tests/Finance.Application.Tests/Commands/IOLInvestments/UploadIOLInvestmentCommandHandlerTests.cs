@@ -5,35 +5,25 @@ using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Identities;
 using Finance.Domain.Models.IOLInvestments;
-using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.IOLInvestments;
 
-public class UploadIOLInvestmentCommandHandlerTests : IDisposable
+public class UploadIOLInvestmentCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepository;
     private readonly Mock<IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum>> _iolInvestmentAssetTypeRepository;
     private readonly Mock<IExcelHelper<IOLInvestment>> _excelHelper;
-    private readonly FinanceDbContext _dbContext;
 
     public UploadIOLInvestmentCommandHandlerTests()
     {
         _currencyRepository = new Mock<IRepository<Currency, Guid>>();
         _iolInvestmentAssetTypeRepository = new Mock<IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum>>();
         _excelHelper = new Mock<IExcelHelper<IOLInvestment>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     private UploadIOLInvestmentCommandHandler CreateHandler() =>
         new(_dbContext, _currencyRepository.Object,

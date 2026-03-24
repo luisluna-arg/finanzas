@@ -3,28 +3,14 @@ using Finance.Application.Commands.Subscriptions;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Identities;
 using Finance.Domain.Models.Subscriptions;
-using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.Subscriptions;
 
-public sealed class DeleteSubscriptionOwnerCommandHandlerTests : IDisposable
+public sealed class DeleteSubscriptionOwnerCommandHandlerTests : QueryHandlerBaseTests
 {
-    private readonly FinanceDbContext _dbContext;
-
-    public DeleteSubscriptionOwnerCommandHandlerTests()
-    {
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
-    }
-
-    public void Dispose() => _dbContext.Dispose();
 
     [Fact]
     public async Task DeleteOwner_MatchingPermissionsExist_DeletesAndReturnsSuccess()
