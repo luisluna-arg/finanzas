@@ -65,11 +65,12 @@ public class GetCurrentFundsQueryHandlerTests : QueryHandlerBaseTests
     }
 
     [Fact]
-    public async Task ReturnsFailure_WhenDefaultCurrencyNotFound()
+    public async Task ReturnsSuccess_WhenNoFunds()
     {
         var result = await CreateHandler().ExecuteAsync(new GetCurrentFundsQuery(), default);
 
-        Assert.False(result.IsSuccess);
+        Assert.True(result.IsSuccess);
+        Assert.Empty(result.Data.Items);
     }
 
     [Fact]
@@ -77,11 +78,10 @@ public class GetCurrentFundsQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var arsId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
-        var ars = new Currency { Id = arsId, Name = "Peso Argentino", ShortName = "ARS" };
+        var ars = (await _dbContext.Currency.FindAsync(arsId))!;
         var bank = new Bank { Id = Guid.NewGuid(), Name = "Banco Nacion" };
         var fund = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = ars, CurrencyId = arsId, Amount = 5000m, TimeStamp = DateTime.UtcNow, DailyUse = true };
 
-        await _dbContext.Currency.AddAsync(ars);
         await _dbContext.Bank.AddAsync(bank);
         await _dbContext.Fund.AddAsync(fund);
         await _dbContext.SaveChangesAsync();
@@ -100,18 +100,17 @@ public class GetCurrentFundsQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var arsId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
-        var usdId = Guid.NewGuid();
-        var ars = new Currency { Id = arsId, Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = usdId, Name = "Dollar", ShortName = "USD" };
+        var ars = (await _dbContext.Currency.FindAsync(arsId))!;
+        var usd = CurrencyFixture.Build();
 
         // base=ARS, quote=USD: 1 USD = 1100 ARS (sellRate)
         // fund holds USD → convert to ARS: source is quote → amount * sellRate
-        var rate = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrency = ars, BaseCurrencyId = arsId, QuoteCurrency = usd, QuoteCurrencyId = usdId, BuyRate = 1000m, SellRate = 1100m, TimeStamp = DateTime.UtcNow };
+        var rate = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrency = ars, BaseCurrencyId = arsId, QuoteCurrency = usd, QuoteCurrencyId = usd.Id, BuyRate = 1000m, SellRate = 1100m, TimeStamp = DateTime.UtcNow };
 
         var bank = new Bank { Id = Guid.NewGuid(), Name = "Brubank" };
-        var fund = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = usd, CurrencyId = usdId, Amount = 5m, TimeStamp = DateTime.UtcNow };
+        var fund = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = usd, CurrencyId = usd.Id, Amount = 5m, TimeStamp = DateTime.UtcNow };
 
-        await _dbContext.Currency.AddRangeAsync(ars, usd);
+        await _dbContext.Currency.AddAsync(usd);
         await _dbContext.CurrencyExchangeRate.AddAsync(rate);
         await _dbContext.Bank.AddAsync(bank);
         await _dbContext.Fund.AddAsync(fund);
@@ -132,14 +131,12 @@ public class GetCurrentFundsQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var arsId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
-        var usdId = Guid.NewGuid();
-        var ars = new Currency { Id = arsId, Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = usdId, Name = "Dollar", ShortName = "USD" };
+        var usd = CurrencyFixture.Build();
 
         var bank = new Bank { Id = Guid.NewGuid(), Name = "Brubank" };
-        var fund = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = usd, CurrencyId = usdId, Amount = 10m, TimeStamp = DateTime.UtcNow };
+        var fund = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = usd, CurrencyId = usd.Id, Amount = 10m, TimeStamp = DateTime.UtcNow };
 
-        await _dbContext.Currency.AddRangeAsync(ars, usd);
+        await _dbContext.Currency.AddAsync(usd);
         await _dbContext.Bank.AddAsync(bank);
         await _dbContext.Fund.AddAsync(fund);
         await _dbContext.SaveChangesAsync();
@@ -156,13 +153,12 @@ public class GetCurrentFundsQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var arsId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
-        var ars = new Currency { Id = arsId, Name = "Peso Argentino", ShortName = "ARS" };
+        var ars = (await _dbContext.Currency.FindAsync(arsId))!;
         var bank = new Bank { Id = Guid.NewGuid(), Name = "Galicia" };
 
         var older = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = ars, CurrencyId = arsId, Amount = 100m, TimeStamp = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) };
         var latest = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = ars, CurrencyId = arsId, Amount = 999m, TimeStamp = new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc) };
 
-        await _dbContext.Currency.AddAsync(ars);
         await _dbContext.Bank.AddAsync(bank);
         await _dbContext.Fund.AddRangeAsync(older, latest);
         await _dbContext.SaveChangesAsync();

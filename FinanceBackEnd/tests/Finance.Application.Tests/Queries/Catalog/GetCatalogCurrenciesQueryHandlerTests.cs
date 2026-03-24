@@ -1,6 +1,5 @@
 using Finance.Application.Queries.Catalog;
 using Finance.Application.Tests.Queries.Base;
-using Finance.Domain.Models.Currencies;
 
 namespace Finance.Application.Tests.Queries.Catalog;
 
@@ -10,8 +9,8 @@ public class GetCatalogCurrenciesQueryHandlerTests : QueryHandlerBaseTests
     public async Task GetCatalogCurrencies_ReturnsOnlyActiveCurrencies()
     {
         await _dbContext.Currency.AddRangeAsync(
-            new Currency { Id = Guid.NewGuid(), Name = "Peso", ShortName = "ARS", Deactivated = false },
-            new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD", Deactivated = true }
+            CurrencyFixture.Build(shortName: "JPY"),
+            CurrencyFixture.Build(shortName: "EUR", deactivated: true)
         );
         await _dbContext.SaveChangesAsync();
 
@@ -19,17 +18,18 @@ public class GetCatalogCurrenciesQueryHandlerTests : QueryHandlerBaseTests
         var result = await handler.ExecuteAsync(new GetCatalogCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        Assert.Single(result.Data);
-        Assert.All(result.Data, item => Assert.NotEqual("USD", item.Name));
+        var seeded = result.Data.Where(x => x.Name is "JPY" or "EUR").ToList();
+        Assert.Single(seeded);
+        Assert.All(result.Data, item => Assert.NotEqual("EUR", item.Name));
     }
 
     [Fact]
     public async Task GetCatalogCurrencies_ReturnsCurrenciesOrderedByShortName()
     {
         await _dbContext.Currency.AddRangeAsync(
-            new Currency { Id = Guid.NewGuid(), Name = "Euro", ShortName = "EUR", Deactivated = false },
-            new Currency { Id = Guid.NewGuid(), Name = "Peso", ShortName = "ARS", Deactivated = false },
-            new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD", Deactivated = false }
+            CurrencyFixture.Build(shortName: "GBP"),
+            CurrencyFixture.Build(shortName: "EUR"),
+            CurrencyFixture.Build(shortName: "JPY")
         );
         await _dbContext.SaveChangesAsync();
 
@@ -37,34 +37,36 @@ public class GetCatalogCurrenciesQueryHandlerTests : QueryHandlerBaseTests
         var result = await handler.ExecuteAsync(new GetCatalogCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal("ARS", result.Data[0].Name);
-        Assert.Equal("EUR", result.Data[1].Name);
-        Assert.Equal("USD", result.Data[2].Name);
+        var seeded = result.Data.Where(x => x.Name is "EUR" or "GBP" or "JPY").ToList();
+        Assert.Equal(3, seeded.Count);
+        Assert.Equal("EUR", seeded[0].Name);
+        Assert.Equal("GBP", seeded[1].Name);
+        Assert.Equal("JPY", seeded[2].Name);
     }
 
     [Fact]
     public async Task GetCatalogCurrencies_MapsShortNameToItemName()
     {
-        var id = Guid.NewGuid();
-        await _dbContext.Currency.AddAsync(new Currency { Id = id, Name = "Peso Argentino", ShortName = "ARS", Deactivated = false });
+        var currency = CurrencyFixture.Build(shortName: "EUR");
+        await _dbContext.Currency.AddAsync(currency);
         await _dbContext.SaveChangesAsync();
 
         var handler = new GetCatalogCurrenciesQueryHandler(_dbContext);
         var result = await handler.ExecuteAsync(new GetCatalogCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        var item = Assert.Single(result.Data);
-        Assert.Equal(id, item.Id);
-        Assert.Equal("ARS", item.Name);
+        var item = result.Data.Single(x => x.Id == currency.Id);
+        Assert.Equal("EUR", item.Name);
     }
 
     [Fact]
-    public async Task GetCatalogCurrencies_WhenNoCurrencies_ReturnsEmptyList()
+    public async Task GetCatalogCurrencies_ReturnsPreseededCurrencies()
     {
         var handler = new GetCatalogCurrenciesQueryHandler(_dbContext);
         var result = await handler.ExecuteAsync(new GetCatalogCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Data);
+        Assert.Contains(result.Data, x => x.Name == "ARS");
+        Assert.Contains(result.Data, x => x.Name == "USD");
     }
 }

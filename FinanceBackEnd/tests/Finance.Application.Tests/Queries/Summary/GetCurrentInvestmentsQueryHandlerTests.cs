@@ -101,11 +101,10 @@ public class GetCurrentInvestmentsQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var defaultCurrencyId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
-        var currency = new Currency { Id = defaultCurrencyId, Name = "Peso Argentino", ShortName = "ARS" };
+        var currency = (await _dbContext.Currency.FindAsync(defaultCurrencyId))!;
         var asset = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "AAPL", TypeId = IOLInvestmentAssetTypeEnum.Cedear, CurrencyId = defaultCurrencyId, Currency = currency };
         var investment = new IOLInvestment { Id = Guid.NewGuid(), Asset = asset, AssetId = asset.Id, TimeStamp = DateTime.UtcNow, Valued = new Money(100m) };
 
-        await _dbContext.Currency.AddAsync(currency);
         await _dbContext.IOLInvestmentAsset.AddAsync(asset);
         await _dbContext.IOLInvestment.AddAsync(investment);
         await _dbContext.SaveChangesAsync();
@@ -126,17 +125,14 @@ public class GetCurrentInvestmentsQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var defaultCurrencyId = Guid.Parse(CurrencyConstants.DefaultCurrencyId); // ARS
-        var arsId = defaultCurrencyId;
-        var usdId = Guid.NewGuid();
 
-        var ars = new Currency { Id = arsId, Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = usdId, Name = "Dollar", ShortName = "USD" };
-        var rate = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrencyId = arsId, QuoteCurrencyId = usdId, BuyRate = 1000m, SellRate = 1100m, TimeStamp = DateTime.UtcNow };
+        var usd = CurrencyFixture.Build();
+        var rate = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrencyId = defaultCurrencyId, QuoteCurrencyId = usd.Id, BuyRate = 1000m, SellRate = 1100m, TimeStamp = DateTime.UtcNow };
 
-        var asset = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "GLD", TypeId = IOLInvestmentAssetTypeEnum.Cedear, CurrencyId = usdId, Currency = usd };
+        var asset = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "GLD", TypeId = IOLInvestmentAssetTypeEnum.Cedear, CurrencyId = usd.Id, Currency = usd };
         var investment = new IOLInvestment { Id = Guid.NewGuid(), Asset = asset, AssetId = asset.Id, TimeStamp = DateTime.UtcNow, Valued = new Money(5m) };
 
-        await _dbContext.Currency.AddRangeAsync(ars, usd);
+        await _dbContext.Currency.AddAsync(usd);
         await _dbContext.IOLInvestmentAsset.AddAsync(asset);
         await _dbContext.IOLInvestment.AddAsync(investment);
         await _dbContext.SaveChangesAsync();
@@ -157,18 +153,17 @@ public class GetCurrentInvestmentsQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var arsId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
-        var usdId = Guid.NewGuid();
-        var ars = new Currency { Id = arsId, Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = usdId, Name = "Dollar", ShortName = "USD" };
-        var rate = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrencyId = arsId, QuoteCurrencyId = usdId, BuyRate = 1000m, SellRate = 1100m, TimeStamp = DateTime.UtcNow };
+        var ars = (await _dbContext.Currency.FindAsync(arsId))!;
+        var usd = CurrencyFixture.Build();
+        var rate = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrencyId = arsId, QuoteCurrencyId = usd.Id, BuyRate = 1000m, SellRate = 1100m, TimeStamp = DateTime.UtcNow };
 
         var ts = DateTime.UtcNow;
         var assetArs = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "AA", TypeId = IOLInvestmentAssetTypeEnum.Cedear, CurrencyId = arsId, Currency = ars };
-        var assetUsd = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "BB", TypeId = IOLInvestmentAssetTypeEnum.Cedear, CurrencyId = usdId, Currency = usd };
+        var assetUsd = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "BB", TypeId = IOLInvestmentAssetTypeEnum.Cedear, CurrencyId = usd.Id, Currency = usd };
         var inv1 = new IOLInvestment { Id = Guid.NewGuid(), Asset = assetArs, AssetId = assetArs.Id, TimeStamp = ts, Valued = new Money(3000m) };
         var inv2 = new IOLInvestment { Id = Guid.NewGuid(), Asset = assetUsd, AssetId = assetUsd.Id, TimeStamp = ts, Valued = new Money(5m) };
 
-        await _dbContext.Currency.AddRangeAsync(ars, usd);
+        await _dbContext.Currency.AddAsync(usd);
         await _dbContext.IOLInvestmentAsset.AddRangeAsync(assetArs, assetUsd);
         await _dbContext.IOLInvestment.AddRangeAsync(inv1, inv2);
         await _dbContext.SaveChangesAsync();

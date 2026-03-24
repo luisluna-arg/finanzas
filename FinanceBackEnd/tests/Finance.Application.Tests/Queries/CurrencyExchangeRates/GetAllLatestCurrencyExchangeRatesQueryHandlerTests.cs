@@ -13,8 +13,8 @@ public class GetAllLatestCurrencyExchangeRatesQueryHandlerTests : QueryHandlerBa
     public async Task ReturnsOnlyLatestPerPair()
     {
         var user = await CreateCurrentUserAsync();
-        var ars = new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
+        var ars = CurrencyFixture.Build(shortName: "ARS");
+        var usd = CurrencyFixture.Build(shortName: "USD");
 
         var older = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrency = ars, BaseCurrencyId = ars.Id, QuoteCurrency = usd, QuoteCurrencyId = usd.Id, BuyRate = 800m, SellRate = 810m, TimeStamp = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) };
         var latest = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrency = ars, BaseCurrencyId = ars.Id, QuoteCurrency = usd, QuoteCurrencyId = usd.Id, BuyRate = 900m, SellRate = 910m, TimeStamp = new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc) };
@@ -35,9 +35,9 @@ public class GetAllLatestCurrencyExchangeRatesQueryHandlerTests : QueryHandlerBa
     public async Task FiltersByCurrencyIds_MatchingBaseSide()
     {
         var user = await CreateCurrentUserAsync();
-        var ars = new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS" };
-        var brl = new Currency { Id = Guid.NewGuid(), Name = "Real", ShortName = "BRL" };
-        var eur = new Currency { Id = Guid.NewGuid(), Name = "Euro", ShortName = "EUR" };
+        var ars = CurrencyFixture.Build(shortName: "ARS");
+        var brl = CurrencyFixture.Build(shortName: "BRL");
+        var eur = CurrencyFixture.Build(shortName: "EUR");
 
         // arsEur: base=ars (in filter), quote=eur (not in filter) → included
         // brlEur: base=brl (not in filter), quote=eur (not in filter) → excluded
@@ -60,9 +60,9 @@ public class GetAllLatestCurrencyExchangeRatesQueryHandlerTests : QueryHandlerBa
     public async Task FiltersByCurrencyIds_MatchingQuoteSide()
     {
         var user = await CreateCurrentUserAsync();
-        var ars = new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
-        var brl = new Currency { Id = Guid.NewGuid(), Name = "Real", ShortName = "BRL" };
+        var ars = CurrencyFixture.Build(shortName: "ARS");
+        var usd = CurrencyFixture.Build(shortName: "USD");
+        var brl = CurrencyFixture.Build(shortName: "BRL");
 
         // arsUsd: base=ars, quote=usd (usd in filter set → matches via quote)
         // arsBrl: base=ars, quote=brl (neither ars nor brl in {usd.Id}) → excluded
@@ -85,8 +85,8 @@ public class GetAllLatestCurrencyExchangeRatesQueryHandlerTests : QueryHandlerBa
     public async Task ExcludesDeactivatedByDefault()
     {
         var user = await CreateCurrentUserAsync();
-        var ars = new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
+        var ars = CurrencyFixture.Build(shortName: "ARS");
+        var usd = CurrencyFixture.Build(shortName: "USD");
 
         var active = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrency = ars, BaseCurrencyId = ars.Id, QuoteCurrency = usd, QuoteCurrencyId = usd.Id, BuyRate = 900m, SellRate = 910m, TimeStamp = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), Deactivated = false };
         var deactivated = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrency = ars, BaseCurrencyId = ars.Id, QuoteCurrency = usd, QuoteCurrencyId = usd.Id, BuyRate = 950m, SellRate = 960m, TimeStamp = new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc), Deactivated = true };
@@ -107,9 +107,9 @@ public class GetAllLatestCurrencyExchangeRatesQueryHandlerTests : QueryHandlerBa
     public async Task NoCurrencyIds_ReturnsAllPairs()
     {
         var user = await CreateCurrentUserAsync();
-        var ars = new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
-        var brl = new Currency { Id = Guid.NewGuid(), Name = "Real", ShortName = "BRL" };
+        var ars = CurrencyFixture.Build(shortName: "ARS");
+        var usd = CurrencyFixture.Build(shortName: "USD");
+        var brl = CurrencyFixture.Build(shortName: "BRL");
 
         var arsUsd = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrency = ars, BaseCurrencyId = ars.Id, QuoteCurrency = usd, QuoteCurrencyId = usd.Id, BuyRate = 900m, SellRate = 910m, TimeStamp = DateTime.UtcNow };
         var arsBrl = new CurrencyExchangeRate { Id = Guid.NewGuid(), BaseCurrency = ars, BaseCurrencyId = ars.Id, QuoteCurrency = brl, QuoteCurrencyId = brl.Id, BuyRate = 5m, SellRate = 6m, TimeStamp = DateTime.UtcNow };

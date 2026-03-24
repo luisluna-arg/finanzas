@@ -9,63 +9,62 @@ public class GetAllCurrenciesQueryHandlerTests : QueryHandlerBaseTests
     [Fact]
     public async Task GetAllCurrencies_ReturnsOnlyActiveCurrencies()
     {
-        await _dbContext.Currency.AddRangeAsync(
-            new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS", Deactivated = false },
-            new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD", Deactivated = true }
-        );
+        var active = CurrencyFixture.Build();
+        var inactive = CurrencyFixture.Build(deactivated: true);
+        await _dbContext.Currency.AddRangeAsync(active, inactive);
         await _dbContext.SaveChangesAsync();
 
         var handler = new GetAllCurrenciesQueryHandler(_dbContext);
         var result = await handler.ExecuteAsync(new GetAllCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        Assert.Single(result.Data);
+        Assert.DoesNotContain(result.Data, c => c.Id == inactive.Id);
         Assert.All(result.Data, c => Assert.False(c.Deactivated));
     }
 
     [Fact]
     public async Task GetAllCurrencies_WhenIncludeDeactivated_ReturnsAll()
     {
-        await _dbContext.Currency.AddRangeAsync(
-            new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS", Deactivated = false },
-            new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD", Deactivated = true }
-        );
+        var active = CurrencyFixture.Build();
+        var inactive = CurrencyFixture.Build(deactivated: true);
+        await _dbContext.Currency.AddRangeAsync(active, inactive);
         await _dbContext.SaveChangesAsync();
 
         var handler = new GetAllCurrenciesQueryHandler(_dbContext);
         var result = await handler.ExecuteAsync(new GetAllCurrenciesQuery { IncludeDeactivated = true }, default);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(2, result.Data.Count);
+        Assert.Contains(result.Data, c => c.Id == active.Id);
+        Assert.Contains(result.Data, c => c.Id == inactive.Id);
     }
 
     [Fact]
     public async Task GetAllCurrencies_ReturnsCurrenciesOrderedByName()
     {
-        await _dbContext.Currency.AddRangeAsync(
-            new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD", Deactivated = false },
-            new Currency { Id = Guid.NewGuid(), Name = "Euro", ShortName = "EUR", Deactivated = false },
-            new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS", Deactivated = false }
-        );
+        var c1 = CurrencyFixture.Build(shortName: "ZZZ", name: "Zebra");
+        var c2 = CurrencyFixture.Build(shortName: "GBP", name: "British Pound");
+        var c3 = CurrencyFixture.Build(shortName: "JPY", name: "Japanese Yen");
+        await _dbContext.Currency.AddRangeAsync(c1, c2, c3);
         await _dbContext.SaveChangesAsync();
 
         var handler = new GetAllCurrenciesQueryHandler(_dbContext);
         var result = await handler.ExecuteAsync(new GetAllCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal("Dollar", result.Data[0].Name);
-        Assert.Equal("Euro", result.Data[1].Name);
-        Assert.Equal("Peso Argentino", result.Data[2].Name);
+        var seeded = result.Data.Where(x => x.Id == c1.Id || x.Id == c2.Id || x.Id == c3.Id).ToList();
+        Assert.Equal(3, seeded.Count);
+        Assert.Equal("British Pound", seeded[0].Name);
+        Assert.Equal("Japanese Yen", seeded[1].Name);
+        Assert.Equal("Zebra", seeded[2].Name);
     }
 
     [Fact]
     public async Task GetAllCurrencies_IncludesSymbols()
     {
-        var currencyId = Guid.NewGuid();
-        var currency = new Currency { Id = currencyId, Name = "Peso Argentino", ShortName = "ARS", Deactivated = false };
+        var currency = CurrencyFixture.Build();
         await _dbContext.Currency.AddAsync(currency);
         await _dbContext.CurrencySymbols.AddAsync(
-            new CurrencySymbol { Id = Guid.NewGuid(), CurrencyId = currencyId, Symbol = "$" }
+            new CurrencySymbol { Id = Guid.NewGuid(), CurrencyId = currency.Id, Symbol = "€" }
         );
         await _dbContext.SaveChangesAsync();
 
@@ -73,34 +72,34 @@ public class GetAllCurrenciesQueryHandlerTests : QueryHandlerBaseTests
         var result = await handler.ExecuteAsync(new GetAllCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        var item = Assert.Single(result.Data);
+        var item = result.Data.Single(x => x.Id == currency.Id);
         Assert.Single(item.Symbols);
-        Assert.Equal("$", item.Symbols.First().Symbol);
+        Assert.Equal("€", item.Symbols.First().Symbol);
     }
 
     [Fact]
     public async Task GetAllCurrencies_CurrencyWithNoSymbols_ReturnsEmptySymbolsCollection()
     {
-        await _dbContext.Currency.AddAsync(
-            new Currency { Id = Guid.NewGuid(), Name = "Euro", ShortName = "EUR", Deactivated = false }
-        );
+        var currency = CurrencyFixture.Build();
+        await _dbContext.Currency.AddAsync(currency);
         await _dbContext.SaveChangesAsync();
 
         var handler = new GetAllCurrenciesQueryHandler(_dbContext);
         var result = await handler.ExecuteAsync(new GetAllCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        var item = Assert.Single(result.Data);
+        var item = result.Data.Single(x => x.Id == currency.Id);
         Assert.Empty(item.Symbols);
     }
 
     [Fact]
-    public async Task GetAllCurrencies_WhenNoCurrencies_ReturnsEmptyList()
+    public async Task GetAllCurrencies_AlwaysContainsPreseededCurrencies()
     {
         var handler = new GetAllCurrenciesQueryHandler(_dbContext);
         var result = await handler.ExecuteAsync(new GetAllCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Data);
+        Assert.Contains(result.Data, c => c.ShortName == "ARS");
+        Assert.Contains(result.Data, c => c.ShortName == "USD");
     }
 }

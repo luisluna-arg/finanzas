@@ -17,9 +17,9 @@ public class DebitQueryHandlerTests : QueryHandlerBaseTests
         await _dbContext.SaveChangesAsync();
     }
 
-    private static DebitOrigin MakeOrigin(Guid? appModuleId = null, AppModuleType? type = null)
+    private DebitOrigin MakeOrigin(Guid? appModuleId = null, AppModuleType? type = null)
     {
-        type ??= new AppModuleType { Id = AppModuleTypeEnum.Debits };
+        type ??= _dbContext.AppModuleType.Find(AppModuleTypeEnum.Debits)!;
         var appModule = new AppModule { Id = appModuleId ?? Guid.NewGuid(), Name = "TestModule", Type = type };
         return new DebitOrigin { Id = Guid.NewGuid(), Name = "TestOrigin", AppModule = appModule, AppModuleId = appModule.Id };
     }
@@ -115,9 +115,8 @@ public class DebitQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var appModuleId = Guid.NewGuid();
-        var sharedType = new AppModuleType { Id = AppModuleTypeEnum.Debits };
-        var matchingOrigin = MakeOrigin(appModuleId, sharedType);
-        var otherOrigin = MakeOrigin(null, sharedType);
+        var matchingOrigin = MakeOrigin(appModuleId);
+        var otherOrigin = MakeOrigin();
 
         var matching = new Debit { Id = Guid.NewGuid(), Origin = matchingOrigin, OriginId = matchingOrigin.Id, Amount = 100m, TimeStamp = DateTime.UtcNow };
         var other = new Debit { Id = Guid.NewGuid(), Origin = otherOrigin, OriginId = otherOrigin.Id, Amount = 200m, TimeStamp = DateTime.UtcNow };
@@ -167,9 +166,8 @@ public class DebitQueryHandlerTests : QueryHandlerBaseTests
     {
         var user = await CreateCurrentUserAsync();
         var appModuleId = Guid.NewGuid();
-        var sharedType = new AppModuleType { Id = AppModuleTypeEnum.Debits };
-        var matchingOrigin = MakeOrigin(appModuleId, sharedType);
-        var otherOrigin = MakeOrigin(null, sharedType);
+        var matchingOrigin = MakeOrigin(appModuleId);
+        var otherOrigin = MakeOrigin();
 
         var matching = new Debit { Id = Guid.NewGuid(), Origin = matchingOrigin, OriginId = matchingOrigin.Id, Amount = 100m, TimeStamp = DateTime.UtcNow };
         var other = new Debit { Id = Guid.NewGuid(), Origin = otherOrigin, OriginId = otherOrigin.Id, Amount = 200m, TimeStamp = DateTime.UtcNow };
