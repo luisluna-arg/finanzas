@@ -137,7 +137,6 @@ function Movements() {
       class: 'text-end',
       mapper: (record: unknown) => {
         const r = record as Record<string, unknown>;
-        console.log(r);
         return parseFloat(Number(r.valuedConversion).toFixed(2));
       },
       conditionalClass: [
