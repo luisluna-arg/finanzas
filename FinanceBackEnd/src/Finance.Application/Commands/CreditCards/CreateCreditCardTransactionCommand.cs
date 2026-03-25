@@ -40,7 +40,25 @@ public class CreateCreditCardTransactionCommandHandler : BaseCommandHandler<Crea
             Deactivated = command.Deactivated
         };
 
-        await transactionRepository.AddAsync(newTransaction, cancellationToken);
+        if (command.CreditCardStatementId.HasValue)
+        {
+            await transactionRepository.AddAsync(newTransaction, cancellationToken);
+
+            var statementTx = new CreditCardStatementTransaction
+            {
+                StatementId = command.CreditCardStatementId.Value,
+                CreditCardTransactionId = newTransaction.Id,
+                PostedDate = newTransaction.Timestamp,
+                Amount = newTransaction.Amount,
+                Description = newTransaction.Concept
+            };
+            DbContext.Add(statementTx);
+            await DbContext.SaveChangesAsync(cancellationToken);
+        }
+        else
+        {
+            await transactionRepository.AddAsync(newTransaction, cancellationToken);
+        }
 
         return DataResult<CreditCardTransaction>.Success(newTransaction);
     }
@@ -50,6 +68,8 @@ public class CreateCreditCardTransactionCommand : ICommand
 {
     [Required]
     public Guid CreditCardId { get; set; }
+
+    public Guid? CreditCardStatementId { get; set; }
 
     [Required]
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;

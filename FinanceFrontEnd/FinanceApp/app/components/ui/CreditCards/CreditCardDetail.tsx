@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLoaderData, useNavigate } from 'react-router';
 import {
   Table,
   TableBody,
@@ -12,6 +13,14 @@ import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
 import { Label } from '@/components/ui/shadcn/label';
 import { Separator } from '@/components/ui/shadcn/separator';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from '@/components/ui/shadcn/carousel';
 import { toNumber, ValueLike } from '@/utils/common';
 import SafeLogger from '@/utils/SafeLogger';
 import {
@@ -23,6 +32,7 @@ import {
 } from '@/components/ui/utils/Modal';
 import urls from '@/utils/urls';
 import type { CreditCard, CreditCardStatement, CreditCardTransaction } from '@/types/creditCard';
+import EditStatementModal from './EditStatementModal';
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-';
@@ -42,38 +52,70 @@ function StatementPicker({
   currentIndex: number;
   onNavigate: (index: number) => void;
 }) {
+  const [api, setApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (!api) return;
+    api.scrollTo(currentIndex, true);
+  }, [api, currentIndex]);
+
   if (statements.length === 0) return null;
 
-  const current = statements[currentIndex];
-  const canGoPrev = currentIndex < statements.length - 1;
-  const canGoNext = currentIndex > 0;
+  const lastIndex = statements.length - 1;
 
   return (
-    <div className="flex items-center justify-center gap-4 mb-6">
+    <div className="flex items-center justify-center gap-2 mb-6 px-4">
       <Button
         variant="outline"
         size="sm"
-        disabled={!canGoPrev}
-        onClick={() => onNavigate(currentIndex + 1)}
+        disabled={currentIndex === 0}
+        onClick={() => onNavigate(0)}
       >
-        ← Anterior
+        Último
       </Button>
-      <div className="text-sm font-medium px-4 py-2 rounded-md border bg-muted min-w-[300px] text-center">
-        Cierre: {formatDate(current.closureDate)} — Vto: {formatDate(current.expiringDate)}
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={currentIndex === 0}
+        onClick={() => onNavigate(currentIndex - 1)}
+      >
+        ←
+      </Button>
+      <div className="flex-1 max-w-sm">
+        <Carousel
+          opts={{ align: 'center', loop: false }}
+          setApi={setApi}
+          className="w-full"
+        >
+          <CarouselContent>
+            {statements.map((s, i) => (
+              <CarouselItem key={s.id} onClick={() => onNavigate(i)} className="cursor-pointer">
+                <div className={`text-sm font-medium px-4 py-2 rounded-md border text-center transition-colors ${
+                  i === currentIndex ? 'bg-muted' : 'text-muted-foreground'
+                }`}>
+                  Cierre: {formatDate(s.closureDate)} — Vto: {formatDate(s.expiringDate)}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       </div>
       <Button
         variant="outline"
         size="sm"
-        disabled={!canGoNext}
-        onClick={() => onNavigate(currentIndex - 1)}
+        disabled={currentIndex === lastIndex}
+        onClick={() => onNavigate(currentIndex + 1)}
       >
-        Siguiente →
+        →
       </Button>
-      {currentIndex !== 0 && (
-        <Button variant="outline" size="sm" onClick={() => onNavigate(0)}>
-          Último
-        </Button>
-      )}
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={currentIndex === lastIndex}
+        onClick={() => onNavigate(lastIndex)}
+      >
+        Primero
+      </Button>
     </div>
   );
 }
@@ -216,12 +258,30 @@ function CreateStatementModal({
   );
 }
 
-function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => void }) {
+function CreditCardDetail() {
+  const { card, cards } = useLoaderData<{ card: CreditCard; cards: CreditCard[] }>();
+  const navigate = useNavigate();
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [statements, setStatements] = useState<CreditCardStatement[]>([]);
   const [statementIndex, setStatementIndex] = useState(0);
   const [transactions, setTransactions] = useState<CreditCardTransaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  useEffect(() => {
+    if (!carouselApi) return;
+    const currentIndex = cards.findIndex((c) => c.id === card.id);
+    carouselApi.scrollTo(currentIndex, true);
+    const onSelect = () => {
+      const idx = carouselApi.selectedScrollSnap();
+      if (cards[idx]?.id !== card.id) {
+        navigate(`/credit-cards/statement/${cards[idx].id}`);
+      }
+    };
+    carouselApi.on('select', onSelect);
+    return () => { carouselApi.off('select', onSelect); };
+  }, [carouselApi, card.id, cards, navigate]);
 
   const fetchStatements = useCallback(async () => {
     try {
@@ -251,26 +311,9 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
 
     setLoading(true);
     try {
-      let url: ReturnType<typeof urls.creditCardMovements.latest.with>;
-
-      if (statementIndex === 0) {
-        url = urls.creditCardMovements.latest.with({
-          CreditCardId: card.id,
-          Page: 1,
-          PageSize: 200,
-        });
-      } else {
-        const currentStatement = statements[statementIndex];
-        const prevStatement = statements[statementIndex + 1];
-        const params: Record<string, unknown> = {
-          CreditCardId: card.id,
-          To: currentStatement.closureDate,
-        };
-        if (prevStatement) {
-          params.From = prevStatement.closureDate;
-        }
-        url = urls.creditCardTransactions.endpoint.append('/all').with(params);
-      }
+      const currentStatement = statements[statementIndex];
+      const params: Record<string, unknown> = { StatementId: currentStatement.id };
+      const url = urls.creditCardTransactions.endpoint.append('/all').with(params);
 
       const res = await fetch(String(url));
       const data = await res.json();
@@ -292,12 +335,30 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
     <>
       <div className="row flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack}>
+          <Button variant="outline" size="sm" onClick={() => navigate('/credit-cards')}>
             ← Volver
           </Button>
-          <h1 className="text-base font-medium">
-            {card.name} — {card.bank?.name}
-          </h1>
+          <div className="flex items-center gap-2 px-8">
+            <Carousel
+              opts={{ align: 'center', loop: false }}
+              setApi={setCarouselApi}
+              className="w-64"
+            >
+              <CarouselContent>
+                {cards.map((c) => (
+                  <CarouselItem key={c.id}>
+                    <div className={`text-center text-sm font-medium px-2 py-1 rounded-md transition-colors ${
+                      c.id === card.id ? 'text-foreground' : 'text-muted-foreground'
+                    }`}>
+                      {c.bank?.name ?? '-'} — {c.name}
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -316,6 +377,16 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
           >
             Nuevo Resúmen
           </Button>
+          {statements.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-primary text-primary hover:bg-primary/10"
+              onClick={() => setShowEditModal(true)}
+            >
+              Editar Resúmen
+            </Button>
+          )}
         </div>
       </div>
       <Separator className="my-5" />
@@ -338,6 +409,19 @@ function CreditCardDetail({ card, onBack }: { card: CreditCard; onBack: () => vo
         creditCardId={card.id}
         onCreated={fetchStatements}
       />
+
+      {statements.length > 0 && (
+        <EditStatementModal
+          show={showEditModal}
+          onHide={() => setShowEditModal(false)}
+          statement={statements[statementIndex]}
+          transactions={transactions}
+          onSaved={() => {
+            fetchStatements();
+            fetchTransactions();
+          }}
+        />
+      )}
     </>
   );
 }

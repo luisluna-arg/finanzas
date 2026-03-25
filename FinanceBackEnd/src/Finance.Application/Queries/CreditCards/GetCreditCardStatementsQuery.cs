@@ -42,5 +42,5 @@ public class GetCreditCardStatementQueryHandler : BaseCollectionQueryHandler<Get
 
 public class GetCreditCardStatementsQuery : GetAllQuery<CreditCardStatement>
 {
-    public Guid? CreditCardId { get; private set; }
+    public Guid? CreditCardId { get; set; }
 }
