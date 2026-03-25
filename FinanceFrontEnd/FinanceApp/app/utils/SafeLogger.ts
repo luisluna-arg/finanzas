@@ -50,6 +50,10 @@ const SafeLogger = {
         // Always print errors so they are visible in server logs
         console.error(message, ...args.map(redact));
     },
+    debug: (message?: unknown, ...args: unknown[]) => {
+        if (!isDev) return;
+        console.warn(message, ...args.map(redact));
+    },
 };
 
 export default SafeLogger;

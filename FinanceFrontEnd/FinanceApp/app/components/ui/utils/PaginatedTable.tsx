@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { Settings as InputControlSettings } from '@/components/ui/utils/InputControl';
 import { Form } from '@/components/ui/utils/Form';
 import dates from '@/utils/dates';
@@ -102,6 +103,8 @@ export interface PaginatedTableProps<T extends Row = Row> {
   onAdd?: (data: unknown) => void;
   onDelete?: (data: unknown) => void;
   reloadData?: number;
+  title?: { text: React.ReactNode; class?: string } | null;
+  collapsible?: boolean | { defaultCollapsed?: boolean; summary?: (data: T[]) => React.ReactNode };
 }
 
 function PaginatedTable<T extends Row = Row>({
@@ -114,7 +117,12 @@ function PaginatedTable<T extends Row = Row>({
   onAdd,
   onDelete,
   reloadData,
+  title,
+  collapsible,
 }: PaginatedTableProps<T>) {
+  const isCollapsible = !!collapsible;
+  const defaultCollapsed = typeof collapsible === 'object' ? (collapsible.defaultCollapsed ?? false) : false;
+  const collapsedSummary = typeof collapsible === 'object' ? collapsible.summary : undefined;
   const [tableData, setTableData] = useState<Data<T>>({
     items: [],
     totalPages: 0,
@@ -128,6 +136,7 @@ function PaginatedTable<T extends Row = Row>({
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [loading, setLoading] = useState(!url ? false : true);
   const [reloadFlag, setReloadFlag] = useState(!url ? false : true);
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
   useEffect(() => {
     if (reloadData) setReloadFlag(true);
@@ -488,8 +497,9 @@ function PaginatedTable<T extends Row = Row>({
   const adminEnabled = adminAddEnabled || adminDeletedEnabled;
   const visibleColumns = columns.filter((c) => c.visible !== false);
   const columnCount = visibleColumns.length + (adminEnabled ? 2 : 0);
+  const currentItems = data?.items ?? tableData.items;
 
-  return (
+  const tableContent = (
     <div className="paginated-Table">
       <Form>
         <Table id={name}>
@@ -555,6 +565,38 @@ function PaginatedTable<T extends Row = Row>({
         title="Confirmar eliminación"
         text="¿Estás seguro de que deseas eliminar los elementos seleccionados?"
       />
+    </div>
+  );
+
+  if (!isCollapsible) return tableContent;
+
+  return (
+    <div>
+      {title && (
+        <div
+          className={`h-10 px-2 flex items-center justify-center font-medium cursor-pointer select-none relative ${title.class ?? ''}`}
+          onClick={() => setIsCollapsed((c) => !c)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') setIsCollapsed((c) => !c);
+          }}
+          role="button"
+          tabIndex={0}
+        >
+          {isCollapsed && collapsedSummary ? collapsedSummary(currentItems) : title.text}
+          <span className="absolute right-2">
+            {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          </span>
+        </div>
+      )}
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+          isCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+        }`}
+      >
+        <div className="overflow-hidden min-h-0">
+          {tableContent}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import SafeLogger from '@/utils/SafeLogger';
 import type { BackendUrl } from '@/utils/BackendUrl';
 import dates from '@/utils/dates';
@@ -53,6 +54,7 @@ interface FetchTableProps {
   hideIfEmpty?: boolean;
   onFetch?: (data: Row[]) => void;
   showTotals?: boolean;
+  collapsible?: boolean | { defaultCollapsed?: boolean; summary?: (data: Row[]) => React.ReactNode };
 }
 
 interface FetchTableRowProps {
@@ -71,10 +73,15 @@ const FetchTable: React.FC<FetchTableProps> = ({
   onFetch,
   showTotals = true,
   hideIfEmpty = false,
+  collapsible,
 }) => {
+  const isCollapsible = !!collapsible;
+  const defaultCollapsed = typeof collapsible === 'object' ? (collapsible.defaultCollapsed ?? false) : false;
+  const collapsedSummary = typeof collapsible === 'object' ? collapsible.summary : undefined;
   const [data, setData] = useState<Row[] | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
   // Sync with initialData prop changes when data is passed directly
   useEffect(() => {
@@ -210,10 +217,10 @@ const FetchTable: React.FC<FetchTableProps> = ({
     );
   };
 
-  const Content = () => (
+  const TableContent = () => (
     <Table>
       <TableHeader id={name} className={[...(classes ?? [])].join(' ')}>
-        {title && (
+        {!isCollapsible && title && (
           <TableRow>
             <TableHead colSpan={columns.length} className={title.class}>
               {title.text}
@@ -303,6 +310,39 @@ const FetchTable: React.FC<FetchTableProps> = ({
       )}
     </Table>
   );
+
+  const Content = () => {
+    if (isCollapsible) {
+      return (
+        <div>
+          {title && (
+            <div
+              className={`h-10 px-2 flex items-center justify-center font-medium cursor-pointer select-none relative ${title.class ?? ''}`}
+              onClick={() => setCollapsed((c) => !c)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setCollapsed((c) => !c); }}
+              role="button"
+              tabIndex={0}
+            >
+              {collapsed && collapsedSummary && data ? collapsedSummary(data) : title.text}
+              <span className="absolute right-2">
+                {collapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+              </span>
+            </div>
+          )}
+          <div
+            className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+              collapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+            }`}
+          >
+            <div className="overflow-hidden min-h-0">
+              <TableContent />
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return <TableContent />;
+  };
 
   return wrapper ? (
     <div className={wrapper.classes?.join(' ')}>
