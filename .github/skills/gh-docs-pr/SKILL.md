@@ -77,7 +77,27 @@ Closes #<issue-number>"
 
 Do NOT stage files outside the paths the user specified.
 
-### 5 — Publish the branch
+### 5 — Run lint before pushing
+
+If any of the changed files are frontend (TypeScript/TSX/JS under `FinanceFrontEnd/`), run lint from the relevant app directory and fix any errors before proceeding. Do **not** push if lint fails.
+
+```powershell
+# For FinanceApp changes:
+cd FinanceFrontEnd/FinanceApp; npm run lint
+
+# For FinanceFunds changes:
+cd FinanceFrontEnd/FinanceFunds; npm run lint
+```
+
+If `lint:fix` is available and there are auto-fixable errors, run it and amend the commit:
+
+```powershell
+npm run lint:fix
+git add <affected-files>
+git commit --amend --no-edit
+```
+
+### 6 — Publish the branch
 
 ```powershell
 git push -u origin docs/<short-slug>
