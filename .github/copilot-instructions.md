@@ -14,3 +14,5 @@
 ## Docs (load when relevant)
 - `.github/docs/local-dev-environment.md` — run modes, IPv6 gotcha, env files, start script
 - `.github/docs/finance-query-filters.md` — EF ownership filters, test identity seeding
+- `.github/docs/cqrs-pattern.md` — ICommand/IQuery interfaces, dispatcher methods, base classes, file/folder conventions
+- `.github/docs/unit-testing.md` — xUnit test conventions, base classes, EF query filter seeding, dispatcher mocking, known gotchas
