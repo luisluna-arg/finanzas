@@ -10,8 +10,6 @@ import {
   buildCurrencyRatesColumns,
   buildDebitColumns,
   buildExpensesColumns,
-  buildFundsColumns,
-  buildInvestmentsColumns,
   buildSummaryColumns,
   DEBIT_BACKGROUND_CLASSES,
   DEBIT_MODULES,
@@ -30,8 +28,6 @@ export default function Dashboard() {
   const tableContainer = 'w-auto mb-4 overflow-hidden';
 
   const summaryColumns = buildSummaryColumns(defaultCurrencySymbol);
-  const investmentsColumns = buildInvestmentsColumns(defaultCurrencySymbol);
-  const fundsColumns = buildFundsColumns(defaultCurrencySymbol);
   const expensesColumns = buildExpensesColumns(defaultCurrencySymbol);
   const debitColumns = buildDebitColumns();
   const currencyRatesColumns = buildCurrencyRatesColumns();
