@@ -52,11 +52,12 @@ export default function SummaryDetail({ onClose, tableClasses, tableContainer, d
                 url={urls.summary.currentFunds.with({ DailyUse: true })}
                 columns={fundsColumns}
                 classes={tableClasses}
-                collapsible={true}
-                collapsed={true}
-                collapsedSummary={(rows) => {
-                  const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'quoteCurrencyValue'), 0);
-                  return `Fondos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                collapsible={{
+                  defaultCollapsed: true,
+                  summary: (rows) => {
+                    const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'quoteCurrencyValue'), 0);
+                    return `Fondos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                  }
                 }}
               />
             </div>
@@ -69,11 +70,12 @@ export default function SummaryDetail({ onClose, tableClasses, tableContainer, d
                 url={urls.summary.currentFunds.with({ DailyUse: false })}
                 columns={fundsColumns}
                 classes={tableClasses}
-                collapsible={true}
-                collapsed={true}
-                collapsedSummary={(rows) => {
-                  const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'quoteCurrencyValue'), 0);
-                  return `Otros Fondos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                collapsible={{
+                  defaultCollapsed: true,
+                  summary: (rows) => {
+                    const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'quoteCurrencyValue'), 0);
+                    return `Otros Fondos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                  }
                 }}
               />
             </div>
@@ -86,11 +88,12 @@ export default function SummaryDetail({ onClose, tableClasses, tableContainer, d
                 url={urls.summary.currentInvestments}
                 columns={investmentsColumns as unknown[]}
                 classes={tableClasses}
-                collapsible={true}
-                collapsed={true}
-                collapsedSummary={(rows) => {
-                  const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'valuedDefaultCurrency'), 0);
-                  return `Fondos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                collapsible={{
+                  defaultCollapsed: true,
+                  summary: (rows) => {
+                    const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'valuedDefaultCurrency'), 0);
+                    return `Fondos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                  }
                 }}
               />
             </div>

@@ -94,10 +94,11 @@ export default function Dashboard() {
                         url={urls.summary.totalExpenses}
                         columns={expensesColumns}
                         classes={tableClasses}
-                        collapsible
-                        collapsedSummary={(rows) => {
-                          const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'value'), 0);
-                          return `Gastos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                        collapsible={{
+                          summary: (rows) => {
+                            const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'value'), 0);
+                            return `Gastos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                          }
                         }}
                       />
                     </div>
@@ -122,10 +123,11 @@ export default function Dashboard() {
                             classes={tableClasses}
                             hideIfEmpty={true}
                             wrapper={{ classes: tableContainer.split(' ') }}
-                            collapsible
-                            collapsedSummary={(rows) => {
-                              const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'amount'), 0);
-                              return `${DEBIT_TABLE_TITLES[appModuleId]}: ${moneyFormatter(total)}`;
+                            collapsible={{
+                              summary: (rows) => {
+                                const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'amount'), 0);
+                                return `${DEBIT_TABLE_TITLES[appModuleId]}: ${moneyFormatter(total)}`;
+                              }
                             }}
                           />
                         );
@@ -158,16 +160,17 @@ export default function Dashboard() {
                           classes={tableClasses}
                           hideIfEmpty={true}
                           wrapper={{ classes: tableContainer.split(' ') }}
-                          collapsible
-                          collapsedSummary={(rows) => {
-                            const totalPesos = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'amount'), 0);
-                            const totalDollars = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'amountDollars'), 0);
-                            const total = rows.reduce((acc, r) => {
-                              const amount = getSafeValueFrom(r, 'amount');
-                              const amountDollars = getSafeValueFrom(r, 'amountDollars');
-                              return acc + amount + dollarCalculator(amountDollars, latestCurrencyExchangeRates);
-                            }, 0);
-                            return `${data.name}: $${moneyFormatter(totalPesos)} | USD ${moneyFormatter(totalDollars)} | ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                          collapsible={{
+                            summary: (rows) => {
+                              const totalPesos = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'amount'), 0);
+                              const totalDollars = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'amountDollars'), 0);
+                              const total = rows.reduce((acc, r) => {
+                                const amount = getSafeValueFrom(r, 'amount');
+                                const amountDollars = getSafeValueFrom(r, 'amountDollars');
+                                return acc + amount + dollarCalculator(amountDollars, latestCurrencyExchangeRates);
+                              }, 0);
+                              return `${data.name}: $${moneyFormatter(totalPesos)} | USD ${moneyFormatter(totalDollars)} | ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                            }
                           }}
                         />
                       );

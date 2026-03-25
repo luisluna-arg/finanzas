@@ -54,9 +54,7 @@ interface FetchTableProps {
   hideIfEmpty?: boolean;
   onFetch?: (data: Row[]) => void;
   showTotals?: boolean;
-  collapsible?: boolean;
-  collapsed?: boolean;
-  collapsedSummary?: (data: Row[]) => React.ReactNode;
+  collapsible?: boolean | { defaultCollapsed?: boolean; summary?: (data: Row[]) => React.ReactNode };
 }
 
 interface FetchTableRowProps {
@@ -75,14 +73,15 @@ const FetchTable: React.FC<FetchTableProps> = ({
   onFetch,
   showTotals = true,
   hideIfEmpty = false,
-  collapsible = false,
-  collapsed: initialCollapsed = false,
-  collapsedSummary,
+  collapsible,
 }) => {
+  const isCollapsible = !!collapsible;
+  const defaultCollapsed = typeof collapsible === 'object' ? (collapsible.defaultCollapsed ?? false) : false;
+  const collapsedSummary = typeof collapsible === 'object' ? collapsible.summary : undefined;
   const [data, setData] = useState<Row[] | null>(initialData ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
   // Sync with initialData prop changes when data is passed directly
   useEffect(() => {
@@ -221,7 +220,7 @@ const FetchTable: React.FC<FetchTableProps> = ({
   const TableContent = () => (
     <Table>
       <TableHeader id={name} className={[...(classes ?? [])].join(' ')}>
-        {!collapsible && title && (
+        {!isCollapsible && title && (
           <TableRow>
             <TableHead colSpan={columns.length} className={title.class}>
               {title.text}
@@ -313,7 +312,7 @@ const FetchTable: React.FC<FetchTableProps> = ({
   );
 
   const Content = () => {
-    if (collapsible) {
+    if (isCollapsible) {
       return (
         <div>
           {title && (
