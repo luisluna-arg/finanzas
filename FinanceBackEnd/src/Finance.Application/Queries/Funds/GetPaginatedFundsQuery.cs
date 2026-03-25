@@ -65,8 +65,7 @@ public class GetPaginatedFundsQueryHandler : IQueryHandler<GetPaginatedFundsQuer
 
         var paginatedItems = await query
             .OrderByDescending(o => o.TimeStamp)
-            .ThenByDescending(o => o.CreatedAt)
-            .ThenBy(o => o.Id)
+            .ThenBy(o => o.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

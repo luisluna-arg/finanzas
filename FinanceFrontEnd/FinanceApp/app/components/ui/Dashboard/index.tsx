@@ -99,7 +99,8 @@ const dollarCalculator = function (r: ValueLike, creditCardConversion: unknown) 
 };
 
 export default function Dashboard() {
-  const { creditCards, latestCurrencyExchangeRates } = useLoaderData<typeof loader>();
+  const { creditCards, latestCurrencyExchangeRates, defaultCurrency } = useLoaderData<typeof loader>();
+  const defaultCurrencySymbol = defaultCurrency?.symbol ?? '$';
 
   const tableClasses: string[] = [];
   const tableContainer = 'w-auto mb-4 overflow-hidden';
@@ -159,13 +160,17 @@ export default function Dashboard() {
   const SummaryTableSettings: {
     columns: unknown[];
   } = {
-    columns: [new FetchTableColumn('label', 'Dato'), DecimalColumn('value', 'Monto', getSafeValue)],
+    columns: [
+      new FetchTableColumn('label', 'Dato'),
+      DecimalColumn('value', 'Monto', getSafeValue),
+      DecimalColumn('convertedValue', `Monto (${defaultCurrencySymbol})`, (v: unknown) => getSafeValueFrom(v, 'convertedValue'))
+    ]
   };
 
   const ExpensesTableSettings = {
     columns: [
       new FetchTableColumn('label', 'Gasto/Servicio'),
-      DecimalColumn('value', 'Monto ($)', getSafeValue),
+      DecimalColumn('value', `Monto (${defaultCurrencySymbol})`, getSafeValue),
     ],
   };
 
@@ -180,6 +185,10 @@ export default function Dashboard() {
       }),
       DecimalColumn('valued', 'Valorado', (v: unknown) => {
         const val = safeProp(v, 'valued');
+        return typeof val === 'number' ? val : getSafeValueFrom(v);
+      }),
+      DecimalColumn('valuedDefaultCurrency', `Valorado (${defaultCurrencySymbol})`, (v: unknown) => {
+        const val = safeProp(v, 'valuedDefaultCurrency');
         return typeof val === 'number' ? val : getSafeValueFrom(v);
       }),
     ],

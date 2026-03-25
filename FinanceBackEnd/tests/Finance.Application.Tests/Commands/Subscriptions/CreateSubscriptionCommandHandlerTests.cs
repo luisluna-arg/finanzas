@@ -3,33 +3,21 @@ using Finance.Application.Repositories;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Subscriptions;
-using Finance.Persistence;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.Subscriptions;
 
-public class CreateSubscriptionCommandHandlerTests : IDisposable
+public class CreateSubscriptionCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<Subscription, Guid>> _subscriptionRepo;
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepo;
-    private readonly FinanceDbContext _dbContext;
 
     public CreateSubscriptionCommandHandlerTests()
     {
         _subscriptionRepo = new Mock<IRepository<Subscription, Guid>>();
         _currencyRepo = new Mock<IRepository<Currency, Guid>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     private CreateSubscriptionCommandHandler CreateHandler() =>
         new(_dbContext, _subscriptionRepo.Object, _currencyRepo.Object);

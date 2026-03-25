@@ -5,35 +5,25 @@ using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Identities;
 using Finance.Domain.Models.IOLInvestments;
-using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.IOLInvestments;
 
-public class UploadIOLInvestmentCommandHandlerTests : IDisposable
+public class UploadIOLInvestmentCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepository;
     private readonly Mock<IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum>> _iolInvestmentAssetTypeRepository;
     private readonly Mock<IExcelHelper<IOLInvestment>> _excelHelper;
-    private readonly FinanceDbContext _dbContext;
 
     public UploadIOLInvestmentCommandHandlerTests()
     {
         _currencyRepository = new Mock<IRepository<Currency, Guid>>();
         _iolInvestmentAssetTypeRepository = new Mock<IRepository<IOLInvestmentAssetType, IOLInvestmentAssetTypeEnum>>();
         _excelHelper = new Mock<IExcelHelper<IOLInvestment>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     private UploadIOLInvestmentCommandHandler CreateHandler() =>
         new(_dbContext, _currencyRepository.Object,
@@ -58,8 +48,10 @@ public class UploadIOLInvestmentCommandHandlerTests : IDisposable
     [Fact]
     public async Task Upload_PassesTimezoneOffsetToHelper()
     {
-        var record = MakeRecord();
-        var currency = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
+        var assetType = _dbContext.IOLInvestmentAssetType.First(o => o.Id == IOLInvestmentAssetTypeEnum.Cedear);
+        var asset = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "AAPL", Description = string.Empty, TypeId = IOLInvestmentAssetTypeEnum.Cedear, Type = assetType, Currency = Currency.Default(symbols: [CurrencySymbol.Default(symbol: "USD")]) };
+        var record = new IOLInvestment { Id = Guid.NewGuid(), Asset = asset, TimeStamp = new DateTime(2025, 6, 1, 12, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow };
+        var currency = CurrencyFixture.Build();
         _excelHelper.Setup(h => h.Read(It.IsAny<IFormFile>(), (short?)-3))
             .Returns([record]);
 
@@ -95,7 +87,7 @@ public class UploadIOLInvestmentCommandHandlerTests : IDisposable
         var record = MakeRecord("AAPL");
         var user = await SeedUserAsync();
 
-        var existingCurrency = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
+        var existingCurrency = CurrencyFixture.Build();
         var existingAsset = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "AAPL", Description = string.Empty, TypeId = IOLInvestmentAssetTypeEnum.Cedear, CurrencyId = existingCurrency.Id };
         var existing = new IOLInvestment { Id = Guid.NewGuid(), Asset = existingAsset, AssetId = existingAsset.Id, TimeStamp = record.TimeStamp, CreatedAt = DateTime.UtcNow };
         _dbContext.Currency.Add(existingCurrency);
@@ -136,7 +128,7 @@ public class UploadIOLInvestmentCommandHandlerTests : IDisposable
     public async Task Upload_WhenNewRecord_AddsToRepository()
     {
         var record = MakeRecord("MSFT");
-        var currency = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
+        var currency = CurrencyFixture.Build();
 
         _excelHelper.Setup(h => h.Read(It.IsAny<IFormFile>(), It.IsAny<short?>()))
             .Returns([record]);
@@ -160,7 +152,7 @@ public class UploadIOLInvestmentCommandHandlerTests : IDisposable
     public async Task Upload_WhenAssetAlreadyExists_ReusesIt()
     {
         var user = await SeedUserAsync();
-        var existingCurrency = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
+        var existingCurrency = CurrencyFixture.Build();
         var existingAsset = new IOLInvestmentAsset { Id = Guid.NewGuid(), Symbol = "GOOGL", Description = string.Empty, TypeId = IOLInvestmentAssetTypeEnum.Cedear, CurrencyId = existingCurrency.Id };
         _dbContext.Currency.Add(existingCurrency);
         _dbContext.IOLInvestmentAsset.Add(existingAsset);
@@ -227,14 +219,16 @@ public class UploadIOLInvestmentCommandHandlerTests : IDisposable
         await _dbContext.SaveChangesAsync();
     }
 
-    private static IOLInvestment MakeRecord(string symbol = "AAPL", DateTime? timestamp = null)
+    private IOLInvestment MakeRecord(string symbol = "AAPL", DateTime? timestamp = null)
     {
+        var assetType = _dbContext.IOLInvestmentAssetType.First(o => o.Id == IOLInvestmentAssetTypeEnum.Cedear);
         var asset = new IOLInvestmentAsset
         {
             Id = Guid.NewGuid(),
             Symbol = symbol,
             Description = string.Empty,
-            Type = new IOLInvestmentAssetType { Id = IOLInvestmentAssetTypeEnum.Cedear, Name = "Cedear" },
+            Type = assetType,
+            TypeId = IOLInvestmentAssetTypeEnum.Cedear,
             Currency = Currency.Default(symbols: [CurrencySymbol.Default(symbol: "USD")]),
         };
         return new IOLInvestment

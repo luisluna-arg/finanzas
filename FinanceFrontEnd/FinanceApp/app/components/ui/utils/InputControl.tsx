@@ -98,6 +98,7 @@ const InputControl: React.FC<InputControlProps> = (props) => {
       return <BooleanInputControl {...props} />;
     case InputType.Dropdown:
       return <DropdownInput {...props} />;
+    case InputType.Text:
     default:
       return (
         <Input

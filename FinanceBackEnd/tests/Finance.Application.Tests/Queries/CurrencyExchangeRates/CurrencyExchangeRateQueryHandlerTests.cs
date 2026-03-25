@@ -14,9 +14,9 @@ public class CurrencyExchangeRateQueryHandlerTests : QueryHandlerBaseTests
     public async Task GetAllCurrencyExchangeRates_FiltersByPairAndTimestampAndDeactivated()
     {
         var user = await CreateCurrentUserAsync();
-        var ars = new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
-        var brl = new Currency { Id = Guid.NewGuid(), Name = "Real", ShortName = "BRL" };
+        var ars = CurrencyFixture.Build(shortName: "ARS");
+        var usd = CurrencyFixture.Build(shortName: "USD");
+        var brl = CurrencyFixture.Build(shortName: "BRL");
 
         var matching = new CurrencyExchangeRate
         {
@@ -62,8 +62,8 @@ public class CurrencyExchangeRateQueryHandlerTests : QueryHandlerBaseTests
     public async Task GetPaginatedCurrencyExchangeRates_ReturnsOrderedPageAndTotalCount()
     {
         var user = await CreateCurrentUserAsync();
-        var ars = new Currency { Id = Guid.NewGuid(), Name = "Peso Argentino", ShortName = "ARS" };
-        var usd = new Currency { Id = Guid.NewGuid(), Name = "Dollar", ShortName = "USD" };
+        var ars = CurrencyFixture.Build(shortName: "ARS");
+        var usd = CurrencyFixture.Build(shortName: "USD");
 
         var rates = new[]
         {

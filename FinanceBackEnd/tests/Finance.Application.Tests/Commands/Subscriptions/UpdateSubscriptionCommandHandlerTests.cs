@@ -1,35 +1,23 @@
 using Finance.Application.Repositories;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Subscriptions;
-using Finance.Persistence;
 using Finance.Domain.Enums;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Finance.Application.Commands.Subscriptions;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.Subscriptions;
 
-public class UpdateSubscriptionCommandHandlerTests : IDisposable
+public class UpdateSubscriptionCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<Subscription, Guid>> _subscriptionRepo;
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepo;
-    private readonly FinanceDbContext _dbContext;
 
     public UpdateSubscriptionCommandHandlerTests()
     {
         _subscriptionRepo = new Mock<IRepository<Subscription, Guid>>();
         _currencyRepo = new Mock<IRepository<Currency, Guid>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     [Fact]
     public async Task Update_HappyPath_UpdatesSubscriptionAndReturnsSuccess()

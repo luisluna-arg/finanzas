@@ -13,7 +13,9 @@ public class GetAllCurrenciesQueryHandler(FinanceDbContext db) : BaseCollectionQ
 {
     public override async Task<DataResult<List<Currency>>> ExecuteAsync(GetAllCurrenciesQuery request, CancellationToken cancellationToken)
     {
-        var query = DbContext.Currency.AsQueryable();
+        var query = DbContext.Currency
+            .Include(c => c.Symbols)
+            .AsQueryable();
 
         if (!request.IncludeDeactivated)
         {

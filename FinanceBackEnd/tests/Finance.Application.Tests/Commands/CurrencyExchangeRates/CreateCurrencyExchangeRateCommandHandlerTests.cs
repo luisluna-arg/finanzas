@@ -1,32 +1,20 @@
 using Finance.Application.Commands.CurrencyExchangeRates;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.Currencies;
-using Finance.Persistence;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.CurrencyExchangeRates;
 
-public class CreateCurrencyExchangeRateCommandHandlerTests : IDisposable
+public class CreateCurrencyExchangeRateCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<Currency, Guid>> _currencyRepo;
     private readonly Mock<IRepository<CurrencyExchangeRate, Guid>> _rateRepo;
-    private readonly FinanceDbContext _dbContext;
 
     public CreateCurrencyExchangeRateCommandHandlerTests()
     {
         _currencyRepo = new Mock<IRepository<Currency, Guid>>();
         _rateRepo = new Mock<IRepository<CurrencyExchangeRate, Guid>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     [Fact]
     public async Task Create_HappyPath_AddsRate()

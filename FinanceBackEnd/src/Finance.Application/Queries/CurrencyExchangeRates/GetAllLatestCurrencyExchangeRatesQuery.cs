@@ -9,17 +9,13 @@ namespace Finance.Application.Queries.CurrencyExchangeRates;
 
 public class GetAllLatestCurrencyExchangeRatesQuery : GetAllQuery<CurrencyExchangeRate>
 {
-    public GetAllLatestCurrencyExchangeRatesQuery(
-        Guid? baseCurrencyId = default,
-        Guid? quoteCurrencyId = default)
+    public GetAllLatestCurrencyExchangeRatesQuery(ICollection<Guid>? currencyIds = default)
         : base()
     {
-        BaseCurrencyId = baseCurrencyId;
-        QuoteCurrencyId = quoteCurrencyId;
+        CurrencyIds = currencyIds;
     }
 
-    public Guid? BaseCurrencyId { get; set; }
-    public Guid? QuoteCurrencyId { get; set; }
+    public ICollection<Guid>? CurrencyIds { get; set; }
 }
 
 public class GetAllLatestCurrencyExchangeRatesQueryHandler
@@ -35,24 +31,20 @@ public class GetAllLatestCurrencyExchangeRatesQueryHandler
             .Include(o => o.QuoteCurrency)
             .AsQueryable();
 
-        if (request.BaseCurrencyId.HasValue)
-            query = query.Where(o => o.BaseCurrencyId == request.BaseCurrencyId.Value);
-
-        if (request.QuoteCurrencyId.HasValue)
-            query = query.Where(o => o.QuoteCurrencyId == request.QuoteCurrencyId.Value);
+        if (request.CurrencyIds is { Count: > 0 })
+            query = query.Where(o => request.CurrencyIds.Contains(o.BaseCurrencyId) || request.CurrencyIds.Contains(o.QuoteCurrencyId));
 
         if (!request.IncludeDeactivated)
             query = query.Where(o => !o.Deactivated);
 
-        var groupResult = query.GroupBy(
-            child => new { child.BaseCurrencyId, child.QuoteCurrencyId },
-            (key, group) =>
-                group
-                    .OrderBy(o => o.BaseCurrency.Name)
-                    .ThenBy(o => o.QuoteCurrency.Name)
-                    .ThenByDescending(o => o.TimeStamp)
-                    .AsEnumerable());
+        var all = await query.ToListAsync(cancellationToken);
+        var result = all
+            .GroupBy(o => new { o.BaseCurrencyId, o.QuoteCurrencyId })
+            .Select(g => g.MaxBy(o => o.TimeStamp)!)
+            .OrderBy(o => o.BaseCurrency.Name)
+            .ThenBy(o => o.QuoteCurrency.Name)
+            .ToList();
 
-        return DataResult<List<CurrencyExchangeRate>>.Success(await groupResult.Select(o => o.First()).ToListAsync(cancellationToken));
+        return DataResult<List<CurrencyExchangeRate>>.Success(result);
     }
 }

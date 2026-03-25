@@ -1,14 +1,35 @@
 import { useState } from 'react';
+import { useLoaderData } from 'react-router';
 import urls from '@/utils/urls';
 import Uploader from '@/components/ui/utils/Uploader';
 import PaginatedTable, { Column } from '@/components/ui/utils/PaginatedTable';
 import { InputType } from '@/components/ui/utils/InputType';
+
+interface CurrencySymbol {
+  id: string;
+  symbol: string;
+}
+
+interface Currency {
+  id: string;
+  name: string;
+  shortName: string;
+  symbols: CurrencySymbol[];
+}
+
+interface LoaderData {
+  currencies: Currency[];
+}
+
 type InvestmentField = {
   symbol: string;
   description: string;
+  currencyId?: string;
 };
 
 function Movements() {
+  const { currencies } = useLoaderData<LoaderData>();
+  const currencyById = new Map(currencies.map((c) => [c.id, c]));
   const [reloadData, setReloadData] = useState<number>(0);
 
   const IOLInvestmentsUploadEndpoint = urls.iolInvestments.upload.with({
@@ -18,7 +39,7 @@ function Movements() {
 
   const onFetchInvestmentsTable = () => {};
 
-  const numericColumn = (columnId: string, label: string): Column => ({
+  const numericColumn = (columnId: string, label: string, visible: boolean): Column => ({
     id: columnId,
     label: label,
     placeholder,
@@ -27,6 +48,7 @@ function Movements() {
     },
     class: 'text-end',
     editable: true,
+    visible: visible,
     mapper: (record: unknown) => {
       const field = (record as Record<string, unknown>)[columnId];
       const num = typeof field === 'number' ? field : Number(String(field));
@@ -61,6 +83,7 @@ function Movements() {
       placeholder,
       type: InputType.DateTime,
       editable: true,
+      visible: true,
       datetime: {
         timeIntervals: 15,
         dateFormat: 'DD/MM/yyyy',
@@ -78,20 +101,55 @@ function Movements() {
       label: 'Activo',
       placeholder,
       editable: true,
+      visible: true,
       mapper: (field: unknown) => {
         const f = (field as Record<string, unknown>).asset as InvestmentField;
         return `${f?.symbol ?? ''} - ${f?.description ?? ''}`;
       },
     },
-    numericColumn('alarms', 'Alarmas'),
-    numericColumn('quantity', 'Cantidad'),
-    numericColumn('assets', 'Activos comp.'),
-    numericColumn('dailyVariation', 'Variación diaria'),
-    numericColumn('lastPrice', 'Último precio'),
-    numericColumn('averageBuyPrice', 'Precio prom. compra'),
-    numericColumn('averageReturnPercent', 'Rendimiento (%)'),
-    numericColumn('averageReturn', 'Rendimiento prom.'),
-    numericColumn('valued', 'Valorado'),
+    {
+      id: 'currencySymbol',
+      label: 'Moneda',
+      editable: false,
+      visible: true,
+      type: InputType.Text,
+      mapper: (record: unknown) => {
+        const asset = (record as Record<string, unknown>).asset as InvestmentField;
+        const currency = asset?.currencyId ? currencyById.get(asset.currencyId) : undefined;
+        return currency?.symbols?.[0]?.symbol ?? null;
+      },
+    },
+    numericColumn('alarms', 'Alarmas', false),
+    numericColumn('quantity', 'Cantidad', true),
+    numericColumn('assets', 'Activos comp.', false),
+    numericColumn('dailyVariation', 'Variación diaria', false),
+    numericColumn('lastPrice', 'Último precio', true),
+    numericColumn('averageBuyPrice', 'Precio prom. compra', true),
+    numericColumn('averageReturnPercent', 'Rendimiento (%)', true),
+    numericColumn('averageReturn', 'Rendimiento prom.', true),
+    numericColumn('valued', 'Valorado', true),
+    {
+      id: 'valuedConversion',
+      label: 'Valorado ($)',
+      visible: true,
+      editable: false,
+      header: { classes: ['text-end'] },
+      class: 'text-end',
+      mapper: (record: unknown) => {
+        const r = record as Record<string, unknown>;
+        return parseFloat(Number(r.valuedConversion).toFixed(2));
+      },
+      conditionalClass: [
+        {
+          class: 'text-success fw-bold',
+          eval: (record: unknown) => Number((record as Record<string, unknown>).valued) > 0,
+        },
+        {
+          class: 'text-danger fw-bold',
+          eval: (record: unknown) => Number((record as Record<string, unknown>).valued) < 0,
+        },
+      ],
+    },
   ];
 
   const enabled = Boolean(iolInvestmentsEndpoint);

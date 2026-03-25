@@ -7,36 +7,24 @@ using Finance.Application.Repositories;
 using Finance.Domain.Models.Debits;
 using Finance.Domain.Enums;
 using Finance.Domain.SpecialTypes;
-using Finance.Persistence;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.Debits;
 
-public class CreateDebitCommandHandlerTests : IDisposable
+public class CreateDebitCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<Debit, Guid>> _debitRepo;
     private readonly Mock<IRepository<DebitOrigin, Guid>> _originRepo;
     private readonly Mock<IDispatcher<FinanceDispatchContext>> _dispatcher;
-    private readonly FinanceDbContext _dbContext;
 
     public CreateDebitCommandHandlerTests()
     {
         _debitRepo = new Mock<IRepository<Debit, Guid>>();
         _originRepo = new Mock<IRepository<DebitOrigin, Guid>>();
         _dispatcher = new Mock<IDispatcher<FinanceDispatchContext>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     private CreateDebitCommandHandler CreateHandler()
         => new(_dbContext, _debitRepo.Object, _originRepo.Object, _dispatcher.Object);

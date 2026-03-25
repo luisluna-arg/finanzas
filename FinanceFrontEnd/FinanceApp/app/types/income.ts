@@ -5,6 +5,11 @@ export interface BankData {
   creditCards: unknown[];
 }
 
+export interface CurrencySymbol {
+  id: string;
+  symbol: string;
+}
+
 export interface CurrencyData {
   id: string;
   name: string;
@@ -14,7 +19,7 @@ export interface CurrencyData {
   quoteExchangeRates: unknown[];
   iolInvestmentAssets: unknown[];
   subscriptions: unknown[];
-  symbols: unknown[];
+  symbols: CurrencySymbol[];
 }
 
 export interface IncomeRecord {

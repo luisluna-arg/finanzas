@@ -5,4 +5,5 @@ export enum InputType {
   Decimal,
   Dropdown,
   Integer,
+  Text,
 }

@@ -1,5 +1,6 @@
 using Finance.Application.Dtos.Base;
 using Finance.Application.Dtos.IOLInvestmentAssets;
+using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Dtos.IOLInvestments;
 
@@ -18,5 +19,6 @@ public record IOLInvestmentDto : Dto<Guid>
     public decimal AverageBuyPrice { get; set; } = 0M;
     public decimal AverageReturnPercent { get; set; } = 0M;
     public decimal AverageReturn { get; set; } = 0M;
-    public decimal Valued { get; set; } = 0M;
+    public Money Valued { get; set; } = 0M;
+    public Money ValuedConversion { get; set; } = 0M;
 }

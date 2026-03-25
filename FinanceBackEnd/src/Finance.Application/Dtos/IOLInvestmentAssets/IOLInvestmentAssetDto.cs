@@ -7,6 +7,7 @@ namespace Finance.Application.Dtos.IOLInvestmentAssets;
 public record IOLInvestmentAssetDto : Dto<Guid>
 {
     public IOLInvestmentAssetTypeEnum TypeId { get; set; } = default;
+    public Guid CurrencyId { get; set; } = Guid.Empty;
     public string Symbol { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public IOLInvestmentAssetTypeDto Type { get; set; } = default!;

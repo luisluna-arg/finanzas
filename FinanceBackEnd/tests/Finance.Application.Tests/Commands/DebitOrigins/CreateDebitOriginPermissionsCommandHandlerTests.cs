@@ -3,28 +3,13 @@ using Finance.Application.Commands.DebitOrigins;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Debits;
 using Finance.Domain.Models.Identities;
-using Finance.Persistence;
 using FinanceBackEnd.Finance.Domain.Enums;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.DebitOrigins;
 
-public class CreateDebitOriginPermissionsCommandHandlerTests : IDisposable
+public class CreateDebitOriginPermissionsCommandHandlerTests : QueryHandlerBaseTests
 {
-    private readonly FinanceDbContext _dbContext;
-
-    public CreateDebitOriginPermissionsCommandHandlerTests()
-    {
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
-    }
-
-    public void Dispose() => _dbContext.Dispose();
 
     [Fact]
     public async Task CreatePermissions_OriginAndUserFoundByClaimId_ReturnsPermissions()

@@ -5,35 +5,23 @@ using Finance.Application.Repositories;
 using Finance.Domain.Enums;
 using Finance.Domain.Models.Debits;
 using Finance.Domain.SpecialTypes;
-using Finance.Persistence;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Finance.Application.Tests.Queries.Base;
 
 namespace Finance.Application.Tests.Commands.Debits;
 
-public class UpdateDebitCommandHandlerTests : IDisposable
+public class UpdateDebitCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<Debit, Guid>> _debitRepo;
     private readonly Mock<IRepository<DebitOrigin, Guid>> _originRepo;
     private readonly Mock<IDispatcher<FinanceDispatchContext>> _dispatcher;
-    private readonly FinanceDbContext _dbContext;
 
     public UpdateDebitCommandHandlerTests()
     {
         _debitRepo = new Mock<IRepository<Debit, Guid>>();
         _originRepo = new Mock<IRepository<DebitOrigin, Guid>>();
         _dispatcher = new Mock<IDispatcher<FinanceDispatchContext>>();
-
-        var options = new DbContextOptionsBuilder<FinanceDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-            .Options;
-
-        _dbContext = new FinanceDbContext(options, null);
     }
-
-    public void Dispose() => _dbContext.Dispose();
 
     private UpdateDebitCommandHandler CreateHandler()
         => new(_dbContext, _debitRepo.Object, _originRepo.Object, _dispatcher.Object);
