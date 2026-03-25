@@ -320,6 +320,9 @@ const FetchTable: React.FC<FetchTableProps> = ({
             <div
               className={`h-10 px-2 flex items-center justify-center font-medium cursor-pointer select-none relative ${title.class ?? ''}`}
               onClick={() => setCollapsed((c) => !c)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setCollapsed((c) => !c); }}
+              role="button"
+              tabIndex={0}
             >
               {collapsed && collapsedSummary && data ? collapsedSummary(data) : title.text}
               <span className="absolute right-2">

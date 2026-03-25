@@ -108,14 +108,18 @@ export const buildSummaryColumns = (symbol: string) => [
   DecimalColumn('convertedValue', `Monto (${symbol})`, (v: unknown) => getSafeValueFrom(v, 'convertedValue')),
 ];
 
-export const buildFundsColumns = (symbol: string) => {
-  const { totals: _t, type: _ty, ...montoCol } = DecimalColumn('value', 'Monto', getSafeValue);
-  return [
-    new FetchTableColumn('label', 'Origen'),
-    montoCol,
-    DecimalColumn('quoteCurrencyValue', `Monto (${symbol})`, (v: unknown) => getSafeValueFrom(v, 'quoteCurrencyValue')),
-  ];
-};
+export const buildFundsColumns = (symbol: string) => [
+  new FetchTableColumn('label', 'Origen'),
+  {
+    id: 'value',
+    label: 'Monto',
+    class: ['text-end'],
+    headerClass: ['text-end'],
+    mapper: getSafeValue,
+    formatter: moneyFormatter,
+  },
+  DecimalColumn('quoteCurrencyValue', `Monto (${symbol})`, (v: unknown) => getSafeValueFrom(v, 'quoteCurrencyValue')),
+];
 
 export const buildExpensesColumns = (symbol: string) => [
   new FetchTableColumn('label', 'Gasto/Servicio'),
