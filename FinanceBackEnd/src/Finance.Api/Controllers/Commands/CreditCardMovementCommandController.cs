@@ -19,6 +19,10 @@ public class CreditCardTransactionCommandController(IMappingService mapper, IDis
     public async Task<IActionResult> Create(CreateCreditCardTransactionCommand request)
         => await ExecuteAsync(request);
 
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateCreditCardTransactionCommand request)
+        => await ExecuteAsync(request);
+
     [HttpDelete]
     public async Task<IActionResult> Delete(DeleteCreditCardTransactionCommand request)
         => await ExecuteAsync(request);

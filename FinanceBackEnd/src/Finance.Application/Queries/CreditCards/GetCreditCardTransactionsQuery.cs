@@ -22,6 +22,16 @@ public class GetCreditCardTransactionsQueryHandler : BaseCollectionQueryHandler<
                 .ThenInclude(o => o.Bank)
             .AsQueryable();
 
+        if (request.StatementId.HasValue)
+        {
+            var transactionIds = await DbContext.CreditCardStatementTransaction
+                .Where(st => st.StatementId == request.StatementId.Value && st.CreditCardTransactionId != null)
+                .Select(st => st.CreditCardTransactionId!.Value)
+                .ToListAsync(cancellationToken);
+
+            query = query.Where(o => transactionIds.Contains(o.Id));
+        }
+
         if (request.CreditCardId.HasValue)
         {
             query = query.Where(o => o.CreditCardId == request.CreditCardId.Value);
@@ -42,8 +52,6 @@ public class GetCreditCardTransactionsQueryHandler : BaseCollectionQueryHandler<
             query = query.Where(o => !o.Deactivated);
         }
 
-        var data = await query.ToListAsync();
-
         return DataResult<List<CreditCardTransaction>>.Success(
             await query
                 .OrderByDescending(o => o.Timestamp)
@@ -57,6 +65,8 @@ public class GetCreditCardTransactionsQueryHandler : BaseCollectionQueryHandler<
 public class GetCreditCardTransactionsQuery : GetAllQuery<CreditCardTransaction>
 {
     public Guid? CreditCardId { get; set; }
+
+    public Guid? StatementId { get; set; }
 
     /// <summary>
     /// Gets or sets date to filter from. Format: YYYY-MM-DDTHH:mm:ss.sssZ.

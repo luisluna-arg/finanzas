@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useLoaderData } from 'react-router';
+import { useLoaderData, useNavigate } from 'react-router';
 import {
   Table,
   TableBody,
@@ -9,8 +8,6 @@ import {
   TableRow,
 } from '@/components/ui/shadcn/table';
 import { Separator } from '@/components/ui/shadcn/separator';
-import { cn } from '@/lib/utils';
-import CreditCardDetail from './CreditCardDetail';
 import type { CreditCard, CreditCardsData } from '@/types/creditCard';
 
 function CreditCardList({
@@ -66,16 +63,13 @@ function CreditCardList({
 
 function CreditCards() {
   const { creditCards } = useLoaderData<CreditCardsData>();
-  const [selectedCard, setSelectedCard] = useState<CreditCard | null>(null);
+  const navigate = useNavigate();
 
   return (
-    <div className={cn('py-10', 'px-40')}>
-      {selectedCard ? (
-        <CreditCardDetail card={selectedCard} onBack={() => setSelectedCard(null)} />
-      ) : (
-        <CreditCardList creditCards={creditCards ?? []} onSelectCard={setSelectedCard} />
-      )}
-    </div>
+    <CreditCardList
+      creditCards={creditCards ?? []}
+      onSelectCard={(card) => navigate(`/credit-cards/statement/${card.id}`)}
+    />
   );
 }
 

@@ -20,12 +20,14 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandler : BaseCol
         List<CreditCardTransaction> result;
         try
         {
-            // Get the latest statement IDs for each credit card (or specific card if requested)
-            var latestStatementIds = await DbContext.CreditCard
-                .Where(cc => !cc.Deactivated)
-                .Where(cc => !request.CreditCardId.HasValue || cc.Id == request.CreditCardId.Value)
-                .Select(cc => cc.CurrentStatementId)
-                .Where(statementId => statementId != null)
+            var statementsQuery = DbContext.CreditCardStatement
+                .Where(s => !s.Deactivated)
+                .Where(s => !request.CreditCardId.HasValue || s.CreditCardId == request.CreditCardId.Value)
+                .AsQueryable();
+
+            var latestStatementIds = await statementsQuery
+                .GroupBy(s => s.CreditCardId)
+                .Select(g => g.OrderByDescending(s => s.ClosureDate).First().Id)
                 .ToListAsync(cancellationToken);
 
             if (!latestStatementIds.Any())
