@@ -263,14 +263,8 @@ const FetchTable: React.FC<FetchTableProps> = ({
                 column.type !== undefined &&
                 [InputType.Decimal, InputType.Integer].includes(column.type as InputType);
 
-              if (!isNumericCol)
+              if (!isNumericCol || !column?.totals?.reducer)
                 return <TableCell key={cellKey} style={{ borderTop: '3px solid' }} />;
-
-              if (!column?.totals?.reducer) {
-                throw new Error(
-                  `Totals reducer for table "${name}"'s colum "${column.id}" undefined`
-                );
-              }
 
               const value = (data ?? []).reduce(
                 (acc, item) =>

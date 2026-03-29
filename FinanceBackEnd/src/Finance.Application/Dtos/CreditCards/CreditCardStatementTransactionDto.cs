@@ -1,4 +1,5 @@
 using Finance.Application.Dtos.Base;
+using Finance.Application.Dtos.Currencies;
 using Finance.Domain.SpecialTypes;
 
 namespace Finance.Application.Dtos.CreditCards;
@@ -12,6 +13,8 @@ public record CreditCardStatementTransactionDto : Dto<Guid>
     public DateTime PostedDate { get; set; }
     public Money Amount { get; set; } = 0;
     public string Description { get; set; } = string.Empty;
+    public Guid CurrencyId { get; set; }
+    public CurrencyDto? Currency { get; set; }
 
     public CreditCardStatementTransactionDto() : base()
     {

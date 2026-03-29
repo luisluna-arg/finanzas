@@ -66,7 +66,24 @@ public class GetCatalogCurrenciesQueryHandlerTests : QueryHandlerBaseTests
         var result = await handler.ExecuteAsync(new GetCatalogCurrenciesQuery(), default);
 
         Assert.True(result.IsSuccess);
-        Assert.Contains(result.Data, x => x.Name == "ARS");
+        Assert.Contains(result.Data, x => x.Name == "$");
         Assert.Contains(result.Data, x => x.Name == "USD");
+    }
+
+    [Fact]
+    public async Task GetCatalogCurrencies_WhenCurrencyHasSymbol_UsesSymbolAsName()
+    {
+        var currency = CurrencyFixture.Build(
+            shortName: "BRL",
+            symbols: [new Finance.Domain.Models.Currencies.CurrencySymbol { Symbol = "R$" }]);
+        await _dbContext.Currency.AddAsync(currency);
+        await _dbContext.SaveChangesAsync();
+
+        var handler = new GetCatalogCurrenciesQueryHandler(_dbContext);
+        var result = await handler.ExecuteAsync(new GetCatalogCurrenciesQuery(), default);
+
+        Assert.True(result.IsSuccess);
+        var item = result.Data.Single(x => x.Id == currency.Id);
+        Assert.Equal("R$", item.Name);
     }
 }

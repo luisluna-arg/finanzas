@@ -15,14 +15,13 @@ import {
   DEBIT_MODULES,
   DEBIT_TABLE_NAMES,
   DEBIT_TABLE_TITLES,
-  dollarCalculator,
   getSafeValueFrom,
   moneyFormatter,
 } from './dashboardHelpers';
 import SummaryDetail from './SummaryDetail';
 
 export default function Dashboard() {
-  const { creditCards, latestCurrencyExchangeRates, defaultCurrency } = useLoaderData<typeof loader>();
+  const { creditCards, defaultCurrency } = useLoaderData<typeof loader>();
   const defaultCurrencySymbol = defaultCurrency?.symbol ?? '$';
   const navigate = useNavigate();
   const isSummary = !!useMatch('/dashboard/summary');
@@ -34,7 +33,7 @@ export default function Dashboard() {
   const expensesColumns = buildExpensesColumns(defaultCurrencySymbol);
   const debitColumns = buildDebitColumns();
   const currencyRatesColumns = buildCurrencyRatesColumns();
-  const creditCardColumns = buildCreditCardColumns(latestCurrencyExchangeRates);
+  const creditCardColumns = buildCreditCardColumns();
 
   return (
     <>
@@ -162,14 +161,10 @@ export default function Dashboard() {
                           wrapper={{ classes: tableContainer.split(' ') }}
                           collapsible={{
                             summary: (rows) => {
-                              const totalPesos = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'amount'), 0);
-                              const totalDollars = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'amountDollars'), 0);
                               const total = rows.reduce((acc, r) => {
-                                const amount = getSafeValueFrom(r, 'amount');
-                                const amountDollars = getSafeValueFrom(r, 'amountDollars');
-                                return acc + amount + dollarCalculator(amountDollars, latestCurrencyExchangeRates);
+                                return acc + getSafeValueFrom(r, 'convertedAmount');
                               }, 0);
-                              return `${data.name}: $${moneyFormatter(totalPesos)} | USD ${moneyFormatter(totalDollars)} | ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                              return `${data.name}: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
                             }
                           }}
                         />

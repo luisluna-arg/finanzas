@@ -1,31 +1,38 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
+using Finance.Application.Auth;
 using Finance.Application.Dtos.Summary;
-using Finance.Persistence;
-using Microsoft.EntityFrameworkCore;
+using Finance.Application.Queries.CreditCards;
+using Finance.Application.Services;
+using Finance.Domain.Models.Interfaces;
+using Finance.Domain.SpecialTypes;
+using Finance.Persistence.Constants;
 
 namespace Finance.Application.Queries.Summary;
 
 public record GetCreditCardExpensesQuery : IQuery<Expense>;
 
-public class GetCreditCardExpensesQueryHandler(FinanceDbContext db) : IQueryHandler<GetCreditCardExpensesQuery, Expense>
+public class GetCreditCardExpensesQueryHandler(
+    IDispatcher<FinanceDispatchContext> dispatcher,
+    CurrencyConversionService currencyConverter)
+    : IQueryHandler<GetCreditCardExpensesQuery, Expense>
 {
-    private readonly FinanceDbContext _db = db;
+    private readonly IDispatcher<FinanceDispatchContext> _dispatcher = dispatcher;
+    private readonly CurrencyConversionService _currencyConverter = currencyConverter;
 
     public async Task<DataResult<Expense>> ExecuteAsync(GetCreditCardExpensesQuery request, CancellationToken cancellationToken)
     {
-        var total = 0;
-        var creditCards = _db.CreditCard.Include(o => o.Bank).Where(o => !o.Deactivated).ToArray();
-        foreach (var creditCard in creditCards)
-        {
-            var baseQuery = _db.CreditCardTransaction.Where(o => o.CreditCardId == creditCard.Id);
-            var count = await baseQuery.CountAsync(cancellationToken);
-            if (count > 0)
-            {
-                var timeStamp = await baseQuery.MaxAsync(o => o.Timestamp, cancellationToken);
-                total += await baseQuery.Where(o => o.Timestamp == timeStamp).SumAsync(o => o.Amount, cancellationToken);
-            }
-        }
+        var defaultCurrencyId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
+
+        var transactionsResult = await _dispatcher.DispatchQueryAsync(
+            new GetLatestCreditCardTransactionsFromStatementsQuery { IncludeDeactivated = false });
+
+        var holders = transactionsResult.Data
+            .Select(t => (IAmountHolder)new TransactionAmountHolder { CurrencyId = t.CurrencyId, Amount = t.Amount })
+            .ToList();
+
+        var convertedAmounts = await _currencyConverter.ConvertCollection(holders, defaultCurrencyId);
+        var total = convertedAmounts.Sum(m => (decimal)m);
 
         return DataResult<Expense>.Success(new Expense()
         {
@@ -33,5 +40,11 @@ public class GetCreditCardExpensesQueryHandler(FinanceDbContext db) : IQueryHand
             Label = "Tarjetas de crédito",
             Value = total
         });
+    }
+
+    private sealed class TransactionAmountHolder : IAmountHolder
+    {
+        public Guid CurrencyId { get; set; }
+        public Money Amount { get; set; }
     }
 }

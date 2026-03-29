@@ -12,7 +12,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     let creditCards = [];
     let latestCurrencyExchangeRates = null;
-    let defaultCurrency: { symbol: string } | null = null;
+    let defaultCurrency: { id: string; symbol: string } | null = null;
     try {
       if (!user.accessToken) {
         throw new Error('No access token available');
@@ -26,7 +26,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       creditCards = creditCardsResult;
       latestCurrencyExchangeRates = exchangeRatesResult;
       const symbol = (currencyResult as { defaultSymbol?: string } | undefined)?.defaultSymbol;
-      defaultCurrency = symbol ? { symbol } : null;
+      defaultCurrency = symbol ? { id: CURRENCY_IDS.ARS, symbol } : null;
     } catch (e) {
       serverLogger.error('[dashboard loader] Error fetching dashboard data', e);
     }

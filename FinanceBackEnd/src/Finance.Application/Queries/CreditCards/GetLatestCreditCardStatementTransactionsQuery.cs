@@ -52,6 +52,8 @@ public class GetLatestCreditCardStatementTransactionsQueryHandler : BaseCollecti
                 .Include(o => o.Statement)
                 .ThenInclude(o => o.CreditCard)
                 .ThenInclude(o => o.Bank)
+                .Include(o => o.Currency)
+                .ThenInclude(c => c.Symbols)
                 .Where(o => latestStatementIds.Contains(o.StatementId))
                 .AsQueryable();
 

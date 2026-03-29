@@ -85,6 +85,23 @@ export const dollarCalculator = (r: ValueLike, creditCardConversion: unknown) =>
   return toNumber(r) * toNumber(sellRate, 1);
 };
 
+export const convertToDefaultCurrency = (
+  amount: number,
+  currencyId: string,
+  defaultCurrencyId: string,
+  rates: unknown
+): number => {
+  if (!currencyId || currencyId === defaultCurrencyId) return amount;
+  const ratesList = Array.isArray(rates) ? rates : [];
+  const rate = ratesList.find(
+    (r) =>
+      safeProp(r, 'baseCurrencyId') === defaultCurrencyId &&
+      safeProp(r, 'quoteCurrencyId') === currencyId
+  );
+  if (!rate) return amount;
+  return amount * toNumber(safeProp(rate, 'sellRate') as ValueLike, 1);
+};
+
 export const DEBIT_MODULE_PESOS = '4c1ee918-e8f9-4bed-8301-b4126b56cfc0';
 export const DEBIT_MODULE_DOLLARS = '03cc66c7-921c-4e05-810e-9764cd365c1d';
 export const DEBIT_MODULES = [DEBIT_MODULE_PESOS, DEBIT_MODULE_DOLLARS];
@@ -154,7 +171,7 @@ export const buildCurrencyRatesColumns = () => [
   DecimalColumn('value', 'Venta', (v: unknown) => getSafeValueFrom(safeProp(v, 'sellRate'))),
 ];
 
-export const buildCreditCardColumns = (latestCurrencyExchangeRates: unknown) => [
+export const buildCreditCardColumns = () => [
   {
     id: 'timestamp',
     label: 'Fecha',
@@ -164,22 +181,27 @@ export const buildCreditCardColumns = (latestCurrencyExchangeRates: unknown) => 
     },
   },
   { id: 'concept', label: 'Concepto' },
-  DecimalColumn('amount', 'Monto', (v: unknown) => toNumber(safeProp(v, 'amount') as ValueLike, 0)),
-  DecimalColumn('amountDollars', 'Dólares', (v: unknown) => toNumber(safeProp(v, 'amountDollars') as ValueLike, 0)),
-  DecimalColumn(
-    'totalAmount',
-    'Total',
-    (v: unknown) => {
-      if (!v) return 0;
-      const amount = toNumber(safeProp(v, 'amount') as ValueLike, 0);
-      const amountDollars = toNumber(safeProp(v, 'amountDollars') as ValueLike, 0);
-      return amount + dollarCalculator(amountDollars, latestCurrencyExchangeRates);
+  {
+    id: 'currency',
+    label: 'Moneda',
+    mapper: (v: unknown) => {
+      const currency = safeProp(v, 'currency');
+      return (safeProp(currency, 'shortName') as string) ?? '';
     },
-    (acc: number, v: unknown) => {
-      if (!v) return acc;
-      const amount = toNumber(safeProp(v, 'amount') as ValueLike, 0);
-      const amountDollars = toNumber(safeProp(v, 'amountDollars') as ValueLike, 0);
-      return acc + amount + dollarCalculator(amountDollars, latestCurrencyExchangeRates);
-    }
+  },
+  {
+    id: 'amount',
+    label: 'Monto',
+    class: ['text-end'],
+    headerClass: ['text-end'],
+    type: InputType.Decimal,
+    mapper: (v: unknown) => toNumber(safeProp(v, 'amount') as ValueLike, 0),
+    formatter: moneyFormatter,
+  },
+  DecimalColumn(
+    'convertedAmount',
+    'Total',
+    (v: unknown) => toNumber(safeProp(v, 'convertedAmount') as ValueLike, 0),
+    (acc: number, v: unknown) => acc + toNumber(safeProp(v, 'convertedAmount') as ValueLike, 0)
   ),
 ];

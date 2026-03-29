@@ -25,6 +25,9 @@ export interface CreditCardTransaction {
   timestamp: string;
   concept: string;
   amount: number;
+  convertedAmount: number;
+  currencyId: string;
+  currency?: { id: string; name: string; shortName: string; defaultSymbol?: string };
   amountDollars?: number;
   reference?: string;
 }

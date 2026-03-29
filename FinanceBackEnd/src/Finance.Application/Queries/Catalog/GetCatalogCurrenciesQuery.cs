@@ -18,11 +18,15 @@ public class GetCatalogCurrenciesQueryHandler(FinanceDbContext db) : BaseCollect
 {
     public override async Task<DataResult<List<CatalogItemDto>>> ExecuteAsync(GetCatalogCurrenciesQuery request, CancellationToken cancellationToken)
     {
-        var items = await DbContext.Currency
+        var currencies = await DbContext.Currency
             .Where(c => !c.Deactivated)
             .OrderBy(c => c.ShortName)
-            .Select(c => new CatalogItemDto { Id = c.Id, Name = c.ShortName })
+            .Include(c => c.Symbols)
             .ToListAsync(cancellationToken);
+
+        var items = currencies
+            .Select(c => new CatalogItemDto { Id = c.Id, Name = c.Symbols.FirstOrDefault()?.Symbol ?? c.ShortName })
+            .ToList();
 
         return DataResult<List<CatalogItemDto>>.Success(items);
     }

@@ -1,4 +1,5 @@
 using Finance.Domain.Models.Base;
+using Finance.Domain.Models.Currencies;
 using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.Models.CreditCards;
@@ -12,6 +13,8 @@ public class CreditCardTransaction : CreditCardEntity
     public string Concept { get; set; } = string.Empty;
     public Money Amount { get; set; } = 0;
     public string? Reference { get; set; }
+    public Guid CurrencyId { get; set; }
+    public virtual Currency Currency { get; set; } = default!;
 }
 
 public enum CreditCardTransactionType

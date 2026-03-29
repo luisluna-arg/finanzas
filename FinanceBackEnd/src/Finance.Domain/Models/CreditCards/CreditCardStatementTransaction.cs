@@ -1,4 +1,5 @@
 using Finance.Domain.Models.Base;
+using Finance.Domain.Models.Currencies;
 using Finance.Domain.SpecialTypes;
 
 namespace Finance.Domain.Models.CreditCards;
@@ -10,4 +11,6 @@ public class CreditCardStatementTransaction : CreditCardStatementEntity
     public DateTime PostedDate { get; set; }
     public Money Amount { get; set; } = 0;
     public string Description { get; set; } = string.Empty;
+    public Guid CurrencyId { get; set; }
+    public virtual Currency Currency { get; set; } = default!;
 }

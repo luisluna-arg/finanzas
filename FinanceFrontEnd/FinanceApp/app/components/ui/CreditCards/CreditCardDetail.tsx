@@ -122,7 +122,7 @@ function StatementPicker({
 
 function TransactionsTable({ transactions }: { transactions: CreditCardTransaction[] }) {
   const totalAmount = transactions.reduce(
-    (acc, tx) => acc + toNumber(tx.amount as unknown as ValueLike, 0),
+    (acc, tx) => acc + toNumber(tx.convertedAmount as unknown as ValueLike, 0),
     0
   );
 
@@ -132,13 +132,14 @@ function TransactionsTable({ transactions }: { transactions: CreditCardTransacti
         <TableRow>
           <TableHead>Fecha</TableHead>
           <TableHead>Concepto</TableHead>
-          <TableHead className="text-right">Monto</TableHead>
+          <TableHead className="w-20">Moneda</TableHead>
+          <TableHead className="w-32 text-right">Monto</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {transactions.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={3} className="text-center text-muted-foreground">
+            <TableCell colSpan={4} className="text-center text-muted-foreground">
               No se encontraron movimientos
             </TableCell>
           </TableRow>
@@ -147,6 +148,7 @@ function TransactionsTable({ transactions }: { transactions: CreditCardTransacti
             <TableRow key={tx.id}>
               <TableCell>{formatDate(tx.timestamp)}</TableCell>
               <TableCell>{tx.concept}</TableCell>
+              <TableCell>{tx.currency?.defaultSymbol ?? tx.currency?.shortName}</TableCell>
               <TableCell className="text-right">{formatMoney(tx.amount)}</TableCell>
             </TableRow>
           ))
@@ -156,6 +158,7 @@ function TransactionsTable({ transactions }: { transactions: CreditCardTransacti
         <TableFooter>
           <TableRow>
             <TableCell className="font-medium">Total</TableCell>
+            <TableCell></TableCell>
             <TableCell></TableCell>
             <TableCell className="text-right font-medium">{formatMoney(totalAmount)}</TableCell>
           </TableRow>

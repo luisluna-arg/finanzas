@@ -47,6 +47,8 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandler : BaseCol
                 var transactionsQuery = DbContext.CreditCardTransaction
                     .Include(t => t.CreditCard)
                     .ThenInclude(cc => cc.Bank)
+                    .Include(t => t.Currency)
+                    .ThenInclude(c => c.Symbols)
                     .Where(t => latestTransactionIds.Contains(t.Id))
                     .AsQueryable();
 

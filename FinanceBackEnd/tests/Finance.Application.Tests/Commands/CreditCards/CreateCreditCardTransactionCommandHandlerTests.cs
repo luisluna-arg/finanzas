@@ -89,6 +89,67 @@ public class CreateCreditCardTransactionCommandHandlerTests : QueryHandlerBaseTe
     }
 
     [Fact]
+    public async Task Create_WithCurrencyId_SetsCurrencyIdOnTransaction()
+    {
+        var currencyId = Guid.NewGuid();
+        var creditCard = new CreditCard { Id = Guid.NewGuid(), Name = "Visa" };
+        var command = new CreateCreditCardTransactionCommand
+        {
+            CreditCardId = creditCard.Id,
+            Timestamp = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+            TransactionType = CreditCardTransactionType.Purchase,
+            Concept = "Test",
+            Amount = new Money(500m),
+            CurrencyId = currencyId,
+        };
+
+        _creditCardRepo
+            .Setup(r => r.GetByIdAsync(creditCard.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(creditCard);
+        _transactionRepo
+            .Setup(r => r.AddAsync(It.IsAny<CreditCardTransaction>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()))
+            .Returns(Task.CompletedTask);
+
+        var result = await CreateHandler().ExecuteAsync(command, default);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(currencyId, result.Data.CurrencyId);
+    }
+
+    [Fact]
+    public async Task Create_WithStatementIdAndCurrencyId_SetsCurrencyIdOnStatementTransaction()
+    {
+        var currencyId = Guid.NewGuid();
+        var creditCard = new CreditCard { Id = Guid.NewGuid(), Name = "Mastercard" };
+        var statementId = Guid.NewGuid();
+        var command = new CreateCreditCardTransactionCommand
+        {
+            CreditCardId = creditCard.Id,
+            CreditCardStatementId = statementId,
+            Timestamp = new DateTime(2025, 3, 5, 0, 0, 0, DateTimeKind.Utc),
+            TransactionType = CreditCardTransactionType.Purchase,
+            Concept = "Farmacia",
+            Amount = new Money(250m),
+            CurrencyId = currencyId,
+        };
+
+        _creditCardRepo
+            .Setup(r => r.GetByIdAsync(creditCard.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(creditCard);
+        _transactionRepo
+            .Setup(r => r.AddAsync(It.IsAny<CreditCardTransaction>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()))
+            .Callback<CreditCardTransaction, CancellationToken, bool>((tx, _, _) => tx.Id = Guid.NewGuid())
+            .Returns(Task.CompletedTask);
+
+        await CreateHandler().ExecuteAsync(command, default);
+
+        var statementTx = _dbContext.CreditCardStatementTransaction
+            .IgnoreQueryFilters()
+            .Single(st => st.StatementId == statementId);
+        Assert.Equal(currencyId, statementTx.CurrencyId);
+    }
+
+    [Fact]
     public async Task Create_WhenCreditCardNotFound_ThrowsException()
     {
         var command = new CreateCreditCardTransactionCommand
