@@ -69,7 +69,9 @@ For each risk found, report:
 Save the report as a Markdown file under:
 
 ```
-docs/security-audits/security-audit-frontend-YYYY-MM-DD.md
+docs/security-audits/security-audit-{scope}-YYYY-MM-DD.md
 ```
 
-Use today's date in the filename. If a file for today already exists, append a counter (e.g. `-2`).
+- Use today's date in the filename.
+- `{scope}` identifies what was reviewed. Use `frontend` for a general review or a more specific segment when the review is scoped (e.g. `frontend-financeapp-routes`, `frontend-financefunds-auth`).
+- If a file for today with the same scope already exists, append a counter (e.g. `-2`).
