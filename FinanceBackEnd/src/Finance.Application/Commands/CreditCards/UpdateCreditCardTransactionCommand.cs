@@ -21,6 +21,7 @@ public class UpdateCreditCardTransactionCommandHandler(
         record.Timestamp = command.Timestamp;
         record.Concept = command.Concept;
         record.Amount = command.Amount;
+        record.CurrencyId = command.CurrencyId;
         return Task.FromResult(record);
     }
 }
@@ -34,6 +35,8 @@ public class UpdateCreditCardTransactionCommand : BaseUpdateCommand<CreditCardTr
     public string Concept { get; set; } = string.Empty;
     [Required]
     public Money Amount { get; set; } = 0;
+
+    public Guid CurrencyId { get; set; }
 }
 
 public class UpdateCreditCardTransactionCommandValidator

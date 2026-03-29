@@ -46,6 +46,13 @@ public class CreditCardTransactionConfiguration : IEntityTypeConfiguration<Credi
             .OnDelete(DeleteBehavior.SetNull);
 
         builder
+            .HasOne(t => t.Currency)
+            .WithMany()
+            .HasForeignKey(t => t.CurrencyId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
             .HasIndex(t => new { t.CreditCardId, t.Timestamp });
     }
 }

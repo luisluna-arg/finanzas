@@ -38,6 +38,7 @@ public class GetCreditCardTransactionsQueryHandlerTests : QueryHandlerBaseTests
             Concept = concept,
             Amount = new Money(amount),
             Deactivated = deactivated,
+            CurrencyId = Guid.Parse("6d189135-7040-45a1-b713-b1aa6cad1720"),
         };
         await _dbContext.User.AddAsync(user);
         await _dbContext.Bank.AddAsync(bank);

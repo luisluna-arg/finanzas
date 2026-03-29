@@ -37,7 +37,8 @@ public class CreateCreditCardTransactionCommandHandler : BaseCommandHandler<Crea
             Concept = command.Concept,
             Amount = command.Amount,
             Reference = command.Reference,
-            Deactivated = command.Deactivated
+            Deactivated = command.Deactivated,
+            CurrencyId = command.CurrencyId
         };
 
         if (command.CreditCardStatementId.HasValue)
@@ -50,7 +51,8 @@ public class CreateCreditCardTransactionCommandHandler : BaseCommandHandler<Crea
                 CreditCardTransactionId = newTransaction.Id,
                 PostedDate = newTransaction.Timestamp,
                 Amount = newTransaction.Amount,
-                Description = newTransaction.Concept
+                Description = newTransaction.Concept,
+                CurrencyId = command.CurrencyId
             };
             DbContext.Add(statementTx);
             await DbContext.SaveChangesAsync(cancellationToken);
@@ -86,6 +88,8 @@ public class CreateCreditCardTransactionCommand : ICommand
 
     [StringLength(200)]
     public string? Reference { get; set; }
+
+    public Guid CurrencyId { get; set; }
 
     public bool Deactivated { get; set; } = false;
 }

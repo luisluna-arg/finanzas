@@ -45,6 +45,7 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandlerTests : Qu
             Concept = "Purchase",
             Amount = new Money(100m),
             Deactivated = txDeactivated,
+            CurrencyId = Guid.Parse("6d189135-7040-45a1-b713-b1aa6cad1720"),
         };
         var statementTx = new CreditCardStatementTransaction
         {
@@ -109,6 +110,7 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandlerTests : Qu
             TransactionType = CreditCardTransactionType.Purchase,
             Concept = "Newer purchase",
             Amount = new Money(200m),
+            CurrencyId = Guid.Parse("6d189135-7040-45a1-b713-b1aa6cad1720"),
         };
         _dbContext.CreditCardStatement.Add(newerStatement);
         _dbContext.CreditCardTransaction.Add(newerTx);

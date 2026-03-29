@@ -20,6 +20,8 @@ public class GetCreditCardTransactionsQueryHandler : BaseCollectionQueryHandler<
         var query = DbContext.CreditCardTransaction
             .Include(o => o.CreditCard)
                 .ThenInclude(o => o.Bank)
+            .Include(o => o.Currency)
+                .ThenInclude(c => c.Symbols)
             .AsQueryable();
 
         if (request.StatementId.HasValue)

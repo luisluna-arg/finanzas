@@ -21,11 +21,17 @@ import {
 import urls from '@/utils/urls';
 import type { CreditCardStatement, CreditCardTransaction } from '@/types/creditCard';
 
+interface Currency {
+  id: string;
+  name: string;
+}
+
 interface DraftTransaction {
   id?: string;
   timestamp: string;
   concept: string;
   amount: string;
+  currencyId: string;
   isDeleted: boolean;
   isModified: boolean;
 }
@@ -47,6 +53,16 @@ export default function EditStatementModal({
   const [expiringDate, setExpiringDate] = useState('');
   const [draftTxs, setDraftTxs] = useState<DraftTransaction[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
+
+  useEffect(() => {
+    fetch(String(urls.catalog.currencies.endpoint))
+      .then((r) => r.json())
+      .then((data: Currency[]) => setCurrencies(data))
+      .catch(() => {});
+  }, []);
+
+  const defaultCurrencyId = currencies[0]?.id ?? '';
 
   useEffect(() => {
     if (show) {
@@ -58,16 +74,17 @@ export default function EditStatementModal({
           timestamp: tx.timestamp.slice(0, 10),
           concept: tx.concept,
           amount: String(tx.amount),
+          currencyId: tx.currencyId ?? defaultCurrencyId,
           isDeleted: false,
           isModified: false,
         }))
       );
     }
-  }, [show, statement, transactions]);
+  }, [show, statement, transactions, currencies]);
 
   const updateTx = (
     index: number,
-    field: keyof Pick<DraftTransaction, 'timestamp' | 'concept' | 'amount'>,
+    field: keyof Pick<DraftTransaction, 'timestamp' | 'concept' | 'amount' | 'currencyId'>,
     value: string
   ) => {
     setDraftTxs((prev) =>
@@ -90,6 +107,7 @@ export default function EditStatementModal({
         timestamp: localDate,
         concept: '',
         amount: '0',
+        currencyId: defaultCurrencyId,
         isDeleted: false,
         isModified: false,
       },
@@ -135,6 +153,7 @@ export default function EditStatementModal({
             timestamp: new Date(tx.timestamp).toISOString(),
             concept: tx.concept,
             amount: Number(tx.amount),
+            currencyId: tx.currencyId,
             transactionType: 0,
           }),
         });
@@ -152,6 +171,7 @@ export default function EditStatementModal({
             timestamp: new Date(tx.timestamp).toISOString(),
             concept: tx.concept,
             amount: Number(tx.amount),
+            currencyId: tx.currencyId,
           }),
         });
         if (!res.ok) throw new Error(await res.text());
@@ -212,6 +232,7 @@ export default function EditStatementModal({
                   <TableRow>
                     <TableHead className="w-36">Fecha</TableHead>
                     <TableHead>Concepto</TableHead>
+                    <TableHead className="w-28">Moneda</TableHead>
                     <TableHead className="w-28 text-right">Monto</TableHead>
                     <TableHead className="w-10"></TableHead>
                   </TableRow>
@@ -219,7 +240,7 @@ export default function EditStatementModal({
                 <TableBody>
                   {visibleTxs.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                      <TableCell colSpan={5} className="text-center text-muted-foreground">
                         Sin movimientos
                       </TableCell>
                     </TableRow>
@@ -243,6 +264,17 @@ export default function EditStatementModal({
                               className="h-8 text-sm"
                               placeholder="Concepto"
                             />
+                          </TableCell>
+                          <TableCell>
+                            <select
+                              value={tx.currencyId}
+                              onChange={(e) => updateTx(realIndex, 'currencyId', e.target.value)}
+                              className="h-8 w-full text-sm rounded-md border border-input bg-background px-2"
+                            >
+                              {currencies.map((c) => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                              ))}
+                            </select>
                           </TableCell>
                           <TableCell>
                             <Input

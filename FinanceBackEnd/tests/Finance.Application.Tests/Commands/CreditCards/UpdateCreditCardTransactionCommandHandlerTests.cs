@@ -53,6 +53,37 @@ public class UpdateCreditCardTransactionCommandHandlerTests : QueryHandlerBaseTe
     }
 
     [Fact]
+    public async Task Update_WithNewCurrencyId_UpdatesCurrencyId()
+    {
+        var newCurrencyId = Guid.NewGuid();
+        var transaction = new CreditCardTransaction
+        {
+            Id = Guid.NewGuid(),
+            Timestamp = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            Concept = "Original",
+            Amount = new Money(100m),
+            CurrencyId = Guid.NewGuid(),
+        };
+        var command = new UpdateCreditCardTransactionCommand
+        {
+            Id = transaction.Id,
+            Timestamp = transaction.Timestamp,
+            Concept = transaction.Concept,
+            Amount = transaction.Amount,
+            CurrencyId = newCurrencyId,
+        };
+
+        _transactionRepo
+            .Setup(r => r.GetByIdAsync(transaction.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(transaction);
+
+        var result = await CreateHandler().ExecuteAsync(command, default);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(newCurrencyId, result.Data.CurrencyId);
+    }
+
+    [Fact]
     public async Task Update_WhenTransactionNotFound_ThrowsException()
     {
         var command = new UpdateCreditCardTransactionCommand

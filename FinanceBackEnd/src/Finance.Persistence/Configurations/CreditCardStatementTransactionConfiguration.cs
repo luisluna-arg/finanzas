@@ -37,6 +37,13 @@ public class CreditCardStatementTransactionConfiguration : IEntityTypeConfigurat
             .OnDelete(DeleteBehavior.SetNull);
 
         builder
+            .HasOne(st => st.Currency)
+            .WithMany()
+            .HasForeignKey(st => st.CurrencyId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
             .HasIndex(st => new { st.StatementId, st.PostedDate });
     }
 }
