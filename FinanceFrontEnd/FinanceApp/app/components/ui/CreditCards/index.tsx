@@ -23,6 +23,7 @@ function CreditCardList({
         <h1 className="text-base font-medium">Tarjetas de Crédito</h1>
       </div>
       <Separator className="my-5" />
+      {/* TODO: This should use the table component from ui/utils/Table, but it needs some adjustments to support this implementation. */}
       <Table>
         <TableHeader>
           <TableRow>
