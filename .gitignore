@@ -11,6 +11,7 @@
 
 /docs/*
 !/docs/architecture
+!/docs/security-audits
 
 **/node_modules/
 

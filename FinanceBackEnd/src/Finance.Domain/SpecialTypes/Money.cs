@@ -43,6 +43,7 @@ public struct Money : IComparable<Money>
 
     public static implicit operator decimal(Money conversionStruct) => Convert.ToDecimal(conversionStruct.value);
 
+    // TODO Money should not be implicitly convertible to integer types, as it can lead to data loss. 
     public static implicit operator short(Money conversionStruct) => Convert.ToInt16(conversionStruct.value);
 
     public static implicit operator int(Money conversionStruct) => Convert.ToInt32(conversionStruct.value);
