@@ -92,7 +92,7 @@ export default function SummaryDetail({ onClose, tableClasses, tableContainer, d
                   defaultCollapsed: true,
                   summary: (rows) => {
                     const total = rows.reduce((acc, r) => acc + getSafeValueFrom(r, 'valuedDefaultCurrency'), 0);
-                    return `Fondos: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                    return `Inversiones: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
                   }
                 }}
               />
