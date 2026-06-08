@@ -11,8 +11,6 @@
       "Bash(git commit:*)",
       "Bash(dotnet build *)",
       "Bash(dotnet test *)",
-      "dotnet build *",
-      "dotnet test *",
       "WebSearch"
     ]
   }
