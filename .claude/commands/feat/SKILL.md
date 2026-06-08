@@ -1,6 +1,6 @@
 ---
-name: gh-feature-pr
-description: "Create a GitHub feature issue, branch, commit, publish, and open a PR for staged or unstaged changes under one or more given paths, if no given paths then all the unstaged files should be used. Use when: shipping a new feature, creating a feature PR, committing changes, publishing a feature branch."
+name: feat
+description: "Create a GitHub feature issue, branch, commit, and publish a feature branch for staged or unstaged changes under one or more given paths, if no given paths then all the unstaged files should be used. Use when: shipping a new feature, committing changes, publishing a feature branch."
 argument-hint: "<path1> [path2 ...]  — one or more workspace-relative paths whose changes to include"
 ---
 
@@ -26,6 +26,8 @@ Multiple paths can be provided space-separated or as a list.
 ## Procedure
 
 ### 1 — Inspect changes
+
+**Paths:** $ARGUMENTS
 
 For each provided path run:
 
@@ -103,36 +105,11 @@ git commit --amend --no-edit
 git push -u origin feature/<short-slug>
 ```
 
-### 6 — Open the PR using the repo's PR template
-
-Read `.github/PULL_REQUEST_TEMPLATE.md` and populate every section with content derived from the diff analysis. Then run:
-
-```powershell
-$prBody = @'
-<populated PR template body>
-'@
-
-gh pr create `
-  --base main `
-  --head feature/<short-slug> `
-  --title "feat: <same title as issue>" `
-  --body $prBody
-```
-
-> **Important:** Always assign the PR body to a variable using a PowerShell here-string (`@' ... '@`) before passing it to `gh pr create`. Passing the body as an inline string with backtick line-continuation causes PowerShell to silently truncate the body at the first backtick inside the content (e.g. inline code fences).
-
-The PR body must follow the template structure from [.github/PULL_REQUEST_TEMPLATE.md](../../PULL_REQUEST_TEMPLATE.md):
-
-- **# Why** — what the feature is and why it was added
-- **## What is the solution?** — how the feature was implemented at a high level
-- **## What areas of the site does it impact?** — which modules/layers are affected
-- **## Test scenarios** — Gherkin scenarios covering the new functionality
-- **## Other Notes** — `Closes #<issue-number>`
-
 ## Output
 
 Report to the user:
 - Issue URL
 - Branch name
 - Commit SHA (from `git log -1 --oneline`)
-- PR URL
+
+Run `/pr` to open the pull request when ready.
