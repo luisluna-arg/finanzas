@@ -1,6 +1,6 @@
 ---
-name: gh-bug-fix-pr
-description: "Create a GitHub bug issue, branch, commit, publish, and open a PR for staged or unstaged changes under one or more given paths, if no given paths then all the unstaged files should be used. Use when: shipping a bug fix, creating a bug PR, committing changes, publishing a fix branch."
+name: bug
+description: "Create a GitHub bug issue, branch, commit, and publish a fix branch for staged or unstaged changes under one or more given paths, if no given paths then all the unstaged files should be used. Use when: shipping a bug fix, committing changes, publishing a fix branch."
 argument-hint: "<path1> [path2 ...]  — one or more workspace-relative paths whose changes to include"
 ---
 
@@ -26,6 +26,8 @@ Multiple paths can be provided space-separated or as a list.
 ## Procedure
 
 ### 1 — Inspect changes
+
+**Paths:** $ARGUMENTS
 
 For each provided path run:
 
@@ -103,36 +105,11 @@ git commit --amend --no-edit
 git push -u origin fix/<short-slug>
 ```
 
-### 6 — Open the PR using the repo's PR template
-
-Read `.github/PULL_REQUEST_TEMPLATE.md` and populate every section with content derived from the diff analysis. Then run:
-
-```powershell
-$prBody = @'
-<populated PR template body>
-'@
-
-gh pr create `
-  --base main `
-  --head fix/<short-slug> `
-  --title "fix: <same title as issue>" `
-  --body $prBody
-```
-
-> **Important:** Always assign the PR body to a variable using a PowerShell here-string (`@' ... '@`) before passing it to `gh pr create`. Passing the body as an inline string with backtick line-continuation causes PowerShell to silently truncate the body at the first backtick inside the content (e.g. inline code fences).
-
-The PR body must follow the template structure from [.github/PULL_REQUEST_TEMPLATE.md](../../PULL_REQUEST_TEMPLATE.md):
-
-- **# Why** — what the bug was
-- **## What is the solution?** — how the fix was implemented
-- **## What areas of the site does it impact?** — which modules/layers are affected
-- **## Test scenarios** — Gherkin scenarios covering the fix
-- **## Other Notes** — `Closes #<issue-number>`
-
 ## Output
 
 Report to the user:
 - Issue URL
 - Branch name
 - Commit SHA (from `git log -1 --oneline`)
-- PR URL
+
+Run `/pr` to open the pull request when ready.
