@@ -15,6 +15,7 @@ public class CreditCard : Entity<Guid>
     public virtual CreditCardIssuer? CreditCardIssuer { get; set; }
     public Guid? DefaultImportTemplateId { get; set; }
     public virtual CreditCardStatementImportTemplate? DefaultImportTemplate { get; set; }
+    public virtual ICollection<CreditCardStatementImportTemplate> ImportTemplates { get; set; } = [];
     public virtual ICollection<CreditCardTransaction> Transactions { get; set; } = [];
     public virtual ICollection<CreditCardStatement> Statements { get; set; } = [];
 

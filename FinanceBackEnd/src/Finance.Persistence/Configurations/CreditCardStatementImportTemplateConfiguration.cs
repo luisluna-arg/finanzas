@@ -23,6 +23,10 @@ public class CreditCardStatementImportTemplateConfiguration : IEntityTypeConfigu
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
+        builder.HasMany(t => t.CreditCards)
+            .WithMany(c => c.ImportTemplates)
+            .UsingEntity(j => j.ToTable("CreditCardImportTemplate"));
+
         builder.HasIndex(t => new { t.IsSystem, t.UserId });
     }
 }
