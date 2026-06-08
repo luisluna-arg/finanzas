@@ -118,6 +118,9 @@ const urls = {
     get endpoint() {
       return new BackendUrl(`${getApiBaseUrl()}/credit-card-statement-import-templates`);
     },
+    associate(templateId: string) {
+      return new BackendUrl(`${getApiBaseUrl()}/credit-card-statement-import-templates/${templateId}/associate`);
+    },
   },
   creditCardPayments: {
     get endpoint() {

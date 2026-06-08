@@ -1,5 +1,6 @@
 export interface StatementImportConfig {
   skipRows: number;
+  skipLastRows: number;
   dateColumn: number;
   dateFormat: string;
   conceptColumn: number;

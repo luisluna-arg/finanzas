@@ -19,6 +19,7 @@ import type { CatalogItem } from '@/types/catalog';
 
 const DEFAULT_CONFIG: StatementImportConfig = {
   skipRows: 1,
+  skipLastRows: 0,
   dateColumn: 0,
   dateFormat: 'd/M/yyyy',
   conceptColumn: 1,
@@ -32,11 +33,13 @@ const DEFAULT_CONFIG: StatementImportConfig = {
 function TemplateForm({
   initial,
   currencies,
+  creditCardId,
   onSave,
   onCancel,
 }: {
   initial?: CreditCardStatementImportTemplate | null;
   currencies: CatalogItem[];
+  creditCardId?: string;
   onSave: () => void;
   onCancel: () => void;
 }) {
@@ -65,7 +68,9 @@ function TemplateForm({
     try {
       const body = { name, isSystem, configJson: JSON.stringify(config) };
       const method = initial ? 'PUT' : 'POST';
-      const payload = initial ? { id: initial.id, ...body } : body;
+      const payload = initial
+        ? { id: initial.id, ...body }
+        : { ...body, creditCardId: creditCardId ?? null };
       const res = await fetch(String(urls.creditCardStatementImportTemplates.endpoint), {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -104,12 +109,21 @@ function TemplateForm({
       </p>
       <div className="grid grid-cols-3 gap-3">
         <div>
-          <Label className="block mb-1 text-sm">Filas a omitir</Label>
+          <Label className="block mb-1 text-sm">Filas a omitir (inicio)</Label>
           <Input
             type="number"
             min={0}
             value={config.skipRows}
             onChange={(e) => updateConfig('skipRows', Number(e.target.value))}
+          />
+        </div>
+        <div>
+          <Label className="block mb-1 text-sm">Filas a omitir (final)</Label>
+          <Input
+            type="number"
+            min={0}
+            value={config.skipLastRows}
+            onChange={(e) => updateConfig('skipLastRows', Number(e.target.value))}
           />
         </div>
         <div>
@@ -224,16 +238,27 @@ export default function ImportStatementModal({
   const [currencies, setCurrencies] = useState<CatalogItem[]>([]);
   const [showTemplateForm, setShowTemplateForm] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<CreditCardStatementImportTemplate | null>(null);
+  const [otherTemplates, setOtherTemplates] = useState<CreditCardStatementImportTemplate[]>([]);
 
   const loadTemplates = useCallback(async () => {
     try {
-      const res = await fetch(String(urls.creditCardStatementImportTemplates.endpoint));
-      const data = await res.json();
-      setTemplates(Array.isArray(data) ? data : (data.items ?? []));
+      const cardUrl = `${urls.creditCardStatementImportTemplates.endpoint}?creditCardId=${creditCardId}`;
+      const [cardRes, allRes] = await Promise.all([
+        fetch(cardUrl),
+        fetch(String(urls.creditCardStatementImportTemplates.endpoint)),
+      ]);
+      const cardData = await cardRes.json();
+      const allData = await allRes.json();
+      const cardTemplates: CreditCardStatementImportTemplate[] = Array.isArray(cardData) ? cardData : (cardData.items ?? []);
+      const allList: CreditCardStatementImportTemplate[] = Array.isArray(allData) ? allData : (allData.items ?? []);
+      const cardIds = new Set(cardTemplates.map((t) => t.id));
+      setTemplates(cardTemplates);
+      setOtherTemplates(allList.filter((t) => !t.isSystem && !cardIds.has(t.id)));
     } catch {
       setTemplates([]);
+      setOtherTemplates([]);
     }
-  }, []);
+  }, [creditCardId]);
 
   useEffect(() => {
     if (show && defaultTemplateId) {
@@ -249,6 +274,20 @@ export default function ImportStatementModal({
       .then((data: CatalogItem[]) => setCurrencies(data))
       .catch(() => {});
   }, [show, loadTemplates]);
+
+  const handleAssociateTemplate = async (templateId: string) => {
+    try {
+      await fetch(String(urls.creditCardStatementImportTemplates.associate(templateId)), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ creditCardId }),
+      });
+      await loadTemplates();
+      setSelectedTemplateId(templateId);
+    } catch (err) {
+      alert(`Error al asociar plantilla: ${err}`);
+    }
+  };
 
   const handleDeleteTemplate = async (id: string) => {
     if (!confirm('¿Eliminar esta plantilla?')) return;
@@ -369,6 +408,7 @@ export default function ImportStatementModal({
                   <TemplateForm
                     initial={editingTemplate}
                     currencies={currencies}
+                    creditCardId={creditCardId}
                     onSave={async () => { await loadTemplates(); setShowTemplateForm(false); setEditingTemplate(null); }}
                     onCancel={() => { setShowTemplateForm(false); setEditingTemplate(null); }}
                   />
@@ -430,6 +470,33 @@ export default function ImportStatementModal({
                 ))}
               </div>
             </div>
+
+            {otherTemplates.length > 0 && (
+              <div>
+                <p className="text-sm font-medium mb-2 text-muted-foreground">
+                  Otras plantillas disponibles
+                </p>
+                <div className="space-y-1">
+                  {otherTemplates.map((t) => (
+                    <div
+                      key={t.id}
+                      className="flex items-center justify-between px-3 py-2 rounded-md border text-sm bg-muted/20"
+                    >
+                      <span>{t.name}</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-6 px-2 text-xs"
+                        onClick={() => handleAssociateTemplate(t.id)}
+                      >
+                        Usar
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <Separator />
 
