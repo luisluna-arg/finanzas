@@ -20,4 +20,19 @@ public class CreditCardStatementImportTemplateCommandController(
         CreditCardStatementImportTemplateDto,
         CreateCreditCardStatementImportTemplateCommand,
         UpdateCreditCardStatementImportTemplateCommand,
-        DeleteCreditCardStatementImportTemplateCommand>(mapper, dispatcher);
+        DeleteCreditCardStatementImportTemplateCommand>(mapper, dispatcher)
+{
+    [HttpPost("{templateId}/associate")]
+    public async Task<IActionResult> Associate(Guid templateId, [FromBody] AssociateCreditCardImportTemplateBody body)
+    {
+        var command = new AssociateCreditCardImportTemplateCommand
+        {
+            TemplateId = templateId,
+            CreditCardId = body.CreditCardId,
+        };
+        await Dispatcher.DispatchCommandAsync(command);
+        return Ok();
+    }
+}
+
+public record AssociateCreditCardImportTemplateBody(Guid CreditCardId);

@@ -42,13 +42,23 @@ public class CreateCreditCardStatementImportTemplateCommandHandler
             }
         }
 
-        return new CreditCardStatementImportTemplate
+        var template = new CreditCardStatementImportTemplate
         {
             Name = command.Name,
             IsSystem = command.IsSystem,
             UserId = userId,
             ConfigJson = command.ConfigJson,
         };
+
+        if (command.CreditCardId.HasValue)
+        {
+            var creditCard = await _db.CreditCard
+                .FirstOrDefaultAsync(c => c.Id == command.CreditCardId.Value, cancellationToken);
+            if (creditCard != null)
+                template.CreditCards.Add(creditCard);
+        }
+
+        return template;
     }
 }
 
@@ -62,4 +72,6 @@ public class CreateCreditCardStatementImportTemplateCommand : BaseCreateCommand<
 
     [Required]
     public string ConfigJson { get; set; } = string.Empty;
+
+    public Guid? CreditCardId { get; set; }
 }

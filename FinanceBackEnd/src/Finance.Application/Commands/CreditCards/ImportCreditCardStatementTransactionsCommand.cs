@@ -73,6 +73,17 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
             await DbContext.SaveChangesAsync(cancellationToken);
         }
 
+        var templateForLink = await DbContext.CreditCardStatementImportTemplate
+            .IgnoreQueryFilters()
+            .Include(t => t.CreditCards)
+            .FirstAsync(t => t.Id == command.TemplateId, cancellationToken);
+
+        if (!templateForLink.CreditCards.Any(c => c.Id == statement.CreditCardId))
+        {
+            templateForLink.CreditCards.Add(statement.CreditCard!);
+            await DbContext.SaveChangesAsync(cancellationToken);
+        }
+
         return CommandResult.Success();
     }
 }
@@ -87,6 +98,7 @@ public class ImportCreditCardStatementTransactionsCommand : ICommand
 public class StatementImportConfig
 {
     public int SkipRows { get; set; } = 1;
+    public int SkipLastRows { get; set; } = 0;
     public int DateColumn { get; set; } = 0;
     public string DateFormat { get; set; } = "d/M/yyyy";
     public int ConceptColumn { get; set; } = 1;

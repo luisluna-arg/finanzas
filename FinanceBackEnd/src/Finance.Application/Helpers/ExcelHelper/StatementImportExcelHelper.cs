@@ -24,7 +24,8 @@ public class StatementImportExcelHelper
         var sheet = dataset.Tables[0];
         var rows = new List<StatementImportRow>();
 
-        for (int r = config.SkipRows; r < sheet.Rows.Count; r++)
+        var lastRow = sheet.Rows.Count - config.SkipLastRows;
+        for (int r = config.SkipRows; r < lastRow; r++)
         {
             var row = sheet.Rows[r];
             var dateRaw = row[config.DateColumn]?.ToString();

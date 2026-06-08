@@ -35,9 +35,16 @@ public class GetCreditCardStatementImportTemplatesQueryHandler : BaseCollectionQ
             .IgnoreQueryFilters()
             .AsQueryable();
 
-        query = user != null
-            ? query.Where(t => t.IsSystem || t.UserId == user.Id)
-            : query.Where(t => t.IsSystem);
+        if (request.CreditCardId.HasValue)
+        {
+            query = query.Where(t => t.IsSystem || t.CreditCards.Any(c => c.Id == request.CreditCardId.Value));
+        }
+        else
+        {
+            query = user != null
+                ? query.Where(t => t.IsSystem || t.UserId == user.Id)
+                : query.Where(t => t.IsSystem);
+        }
 
         var results = await query
             .OrderBy(t => t.IsSystem ? 0 : 1)
@@ -48,4 +55,7 @@ public class GetCreditCardStatementImportTemplatesQueryHandler : BaseCollectionQ
     }
 }
 
-public class GetCreditCardStatementImportTemplatesQuery : GetAllQuery<CreditCardStatementImportTemplate>;
+public class GetCreditCardStatementImportTemplatesQuery : GetAllQuery<CreditCardStatementImportTemplate>
+{
+    public Guid? CreditCardId { get; set; }
+}
