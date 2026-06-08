@@ -30,6 +30,7 @@ public class FinanceDbContext : DbContext
     public DbSet<CreditCardIssuer> CreditCardIssuer => Set<CreditCardIssuer>();
     public DbSet<CreditCard> CreditCard => Set<CreditCard>();
     public DbSet<CreditCardStatement> CreditCardStatement => Set<CreditCardStatement>();
+    public DbSet<CreditCardStatementImportTemplate> CreditCardStatementImportTemplate => Set<CreditCardStatementImportTemplate>();
     public DbSet<CreditCardStatementTransaction> CreditCardStatementTransaction => Set<CreditCardStatementTransaction>();
     public DbSet<CreditCardTransaction> CreditCardTransaction => Set<CreditCardTransaction>();
     public DbSet<CreditCardPayment> CreditCardPayment => Set<CreditCardPayment>();

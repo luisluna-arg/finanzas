@@ -85,6 +85,9 @@ const urls = {
     get get() {
       return new BackendUrl(`${getApiBaseUrl()}/credit-cards/`);
     },
+    defaultImportTemplate(cardId: string) {
+      return new BackendUrl(`${getApiBaseUrl()}/credit-cards/${cardId}/default-import-template`);
+    },
   },
   creditCardTransactions: {
     get endpoint() {
@@ -101,11 +104,19 @@ const urls = {
     get endpoint() {
       return new BackendUrl(`${getApiBaseUrl()}/credit-card-statements`);
     },
+    get import() {
+      return new BackendUrl(`${getApiBaseUrl()}/credit-card-statements/import`);
+    },
     get latest() {
       return new BackendUrl(`${getApiBaseUrl()}/credit-card-statements/latest`);
     },
     get paginated() {
       return new BackendUrl(`${getApiBaseUrl()}/credit-card-statements/paginated`);
+    },
+  },
+  creditCardStatementImportTemplates: {
+    get endpoint() {
+      return new BackendUrl(`${getApiBaseUrl()}/credit-card-statement-import-templates`);
     },
   },
   creditCardPayments: {

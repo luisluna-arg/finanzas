@@ -18,4 +18,18 @@ public class CreditCardStatementCommandController(IMappingService mapper, IDispa
     CreateCreditCardStatementCommand,
     UpdateCreditCardStatementCommand,
     DeleteCreditCardStatementCommand
-    >(mapper, dispatcher);
+    >(mapper, dispatcher)
+{
+    [HttpPost("import")]
+    public async Task<IActionResult> Import(IFormFile file, string templateId, string statementId)
+    {
+        var command = new ImportCreditCardStatementTransactionsCommand
+        {
+            File = file,
+            TemplateId = new Guid(templateId),
+            StatementId = new Guid(statementId),
+        };
+        await ExecuteAsync(command);
+        return Ok();
+    }
+}

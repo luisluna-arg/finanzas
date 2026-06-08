@@ -3,6 +3,7 @@ using System;
 using Finance.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Finance.Domain.Migrations
 {
     [DbContext(typeof(FinanceDbContext))]
-    partial class FinanceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260608054941_AddCreditCardStatementImportTemplate")]
+    partial class AddCreditCardStatementImportTemplate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -574,9 +577,6 @@ namespace Finance.Domain.Migrations
                     b.Property<bool>("Deactivated")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("DefaultImportTemplateId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -590,8 +590,6 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("CreditCardIssuerId");
 
                     b.HasIndex("CurrentStatementId");
-
-                    b.HasIndex("DefaultImportTemplateId");
 
                     b.HasIndex("BankId", "Name");
 
@@ -682,45 +680,6 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("CreditCardId", "ClosureDate");
 
                     b.ToTable("CreditCardStatement");
-                });
-
-            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementImportTemplate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ConfigJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deactivated")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSystem")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsSystem", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CreditCardStatementImportTemplate");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementAdjustment", b =>
@@ -1865,18 +1824,11 @@ namespace Finance.Domain.Migrations
                         .HasForeignKey("CurrentStatementId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardStatementImportTemplate", "DefaultImportTemplate")
-                        .WithMany()
-                        .HasForeignKey("DefaultImportTemplateId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Bank");
 
                     b.Navigation("CreditCardIssuer");
 
                     b.Navigation("CurrentStatement");
-
-                    b.Navigation("DefaultImportTemplate");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardPayment", b =>

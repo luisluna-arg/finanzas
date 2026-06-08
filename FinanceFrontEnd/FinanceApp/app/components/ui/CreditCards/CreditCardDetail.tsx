@@ -33,6 +33,7 @@ import {
 import urls from '@/utils/urls';
 import type { CreditCard, CreditCardStatement, CreditCardTransaction } from '@/types/creditCard';
 import EditStatementModal from './EditStatementModal';
+import ImportStatementModal from './ImportStatementModal';
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-';
@@ -271,6 +272,7 @@ function CreditCardDetail() {
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   useEffect(() => {
     if (!carouselApi) return;
@@ -380,6 +382,14 @@ function CreditCardDetail() {
           >
             Nuevo Resúmen
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary text-primary hover:bg-primary/10"
+            onClick={() => setShowImportModal(true)}
+          >
+            Importar Resúmen
+          </Button>
           {statements.length > 0 && (
             <Button
               variant="outline"
@@ -425,6 +435,17 @@ function CreditCardDetail() {
           }}
         />
       )}
+
+      <ImportStatementModal
+        show={showImportModal}
+        onHide={() => setShowImportModal(false)}
+        creditCardId={card.id}
+        defaultTemplateId={card.defaultImportTemplateId ?? null}
+        onImported={() => {
+          fetchStatements();
+          fetchTransactions();
+        }}
+      />
     </>
   );
 }
