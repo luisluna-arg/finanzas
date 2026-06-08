@@ -1,6 +1,7 @@
 /*
 **/.env
 **/.env.*
+!/.claude/
 !/.github/
 !/.scripts/
 !/FinanceFrontEnd/
@@ -8,6 +9,8 @@
 !/.infra/
 !/docs/
 /.infra/funds/dataprotection/**
+!CLAUDE.md
+!AGENTS.md
 
 /docs/*
 !/docs/architecture
