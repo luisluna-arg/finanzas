@@ -114,45 +114,52 @@ function StatementPicker({
   );
 }
 
-const TRANSACTION_COLUMNS = [
-  {
-    id: 'timestamp',
-    label: 'Fecha',
-    formatter: (v: unknown) => formatDate(String(v ?? '')),
-  },
-  {
-    id: 'concept',
-    label: 'Concepto',
-  },
-  {
-    id: 'currency',
-    label: 'Moneda',
-    headerClass: 'w-20',
-    mapper: (r: unknown) => {
-      const tx = r as CreditCardTransaction;
-      return tx.currency?.defaultSymbol ?? tx.currency?.shortName ?? '';
+function buildTransactionColumns(transactions: CreditCardTransaction[]) {
+  const seen = new Set<string>();
+  const currencies = transactions
+    .filter((tx) => { const unseen = !seen.has(tx.currencyId); seen.add(tx.currencyId); return unseen; })
+    .map((tx) => ({ id: tx.currencyId, currency: tx.currency }));
+
+  const currencyCols = currencies.flatMap(({ id: currencyId, currency }) => [
+    {
+      id: `currency_${currencyId}`,
+      label: 'Moneda',
+      headerClass: 'w-20',
+      mapper: (r: unknown) => {
+        const tx = r as CreditCardTransaction;
+        return tx.currencyId === currencyId
+          ? (tx.currency?.defaultSymbol ?? tx.currency?.shortName ?? '')
+          : '';
+      },
     },
-  },
-  {
-    id: 'amount',
-    label: 'Monto',
-    class: 'text-right',
-    headerClass: 'w-32 text-right',
-    type: InputType.Decimal,
-    mapper: (r: unknown) => r,
-    formatter: (v: unknown) => {
-      const tx = v as CreditCardTransaction;
-      const symbol = tx.currency?.defaultSymbol ?? tx.currency?.shortName ?? '';
-      const amount = formatMoney(tx.amount);
-      return symbol ? `${symbol} ${amount}` : amount;
+    {
+      id: `amount_${currencyId}`,
+      label: 'Monto',
+      class: 'text-right',
+      headerClass: 'w-32 text-right',
+      type: InputType.Decimal,
+      mapper: (r: unknown) => {
+        const tx = r as CreditCardTransaction;
+        return tx.currencyId === currencyId ? tx.amount : null;
+      },
+      formatter: (v: unknown) => (v != null ? formatMoney(v) : ''),
+      totals: {
+        reducer: (acc: unknown, row: unknown) =>
+          (acc as number) +
+          (( row as CreditCardTransaction).currencyId === currencyId
+            ? toNumber((row as CreditCardTransaction).amount as unknown as ValueLike, 0)
+            : 0),
+        formatter: (v: unknown) => formatMoney(v),
+      },
     },
-    totals: {
-      reducer: (acc: unknown, row: unknown) =>
-        (acc as number) + toNumber((row as CreditCardTransaction).convertedAmount as unknown as ValueLike, 0),
-      formatter: (v: unknown) => formatMoney(v),
-    },
-  },
-];
+  ]);
+
+  return [
+    { id: 'timestamp', label: 'Fecha', formatter: (v: unknown) => formatDate(String(v ?? '')) },
+    { id: 'concept', label: 'Concepto' },
+    ...currencyCols,
+  ];
+}
 
 function CreateStatementModal({
   show,
@@ -398,7 +405,7 @@ function CreditCardDetail() {
       {loading ? (
         <div className="text-center py-10 text-muted-foreground">Cargando...</div>
       ) : (
-        <FetchTable name="transactions" data={transactions as never[]} columns={TRANSACTION_COLUMNS} />
+        <FetchTable name="transactions" data={transactions as never[]} columns={buildTransactionColumns(transactions)} />
       )}
 
       <CreateStatementModal
