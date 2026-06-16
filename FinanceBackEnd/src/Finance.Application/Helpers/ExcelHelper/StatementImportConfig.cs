@@ -12,4 +12,6 @@ public class StatementImportConfig
     public string DecimalSeparator { get; set; } = ",";
     public string ThousandsSeparator { get; set; } = ".";
     public bool AmountNegate { get; set; } = false;
+    public int? InstallmentsColumn { get; set; }
+    public string? InstallmentsPattern { get; set; }
 }

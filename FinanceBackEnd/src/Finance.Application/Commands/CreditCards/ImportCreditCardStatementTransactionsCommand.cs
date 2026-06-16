@@ -22,8 +22,17 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
             .FirstOrDefaultAsync(t => t.Id == command.TemplateId, cancellationToken)
             ?? throw new Exception($"Import template not found: {command.TemplateId}");
 
-        var config = JsonSerializer.Deserialize<StatementImportConfig>(template.ConfigJson)
+        var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var config = JsonSerializer.Deserialize<StatementImportConfig>(template.ConfigJson, jsonOptions)
             ?? throw new Exception("Invalid template configuration");
+
+        if (config.DefaultCurrencyId == Guid.Empty)
+        {
+            using var doc = JsonDocument.Parse(template.ConfigJson);
+            if (doc.RootElement.TryGetProperty("config", out var configEl))
+                config = JsonSerializer.Deserialize<StatementImportConfig>(configEl.GetRawText(), jsonOptions)
+                    ?? config;
+        }
 
         var statement = await DbContext.CreditCardStatement
             .Include(s => s.CreditCard)

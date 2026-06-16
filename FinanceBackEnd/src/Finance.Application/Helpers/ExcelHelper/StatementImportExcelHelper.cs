@@ -38,10 +38,21 @@ public class StatementImportExcelHelper
             var amount = ParseDecimal(amountRaw, config.DecimalSeparator, config.ThousandsSeparator);
             if (config.AmountNegate) amount = -amount;
 
+            var concept = conceptRaw ?? string.Empty;
+            if (config.InstallmentsColumn.HasValue)
+            {
+                var installments = row[config.InstallmentsColumn.Value]?.ToString()?.Trim();
+                var isValid = !string.IsNullOrWhiteSpace(installments)
+                    && (config.InstallmentsPattern is null
+                        || System.Text.RegularExpressions.Regex.IsMatch(installments, config.InstallmentsPattern));
+                if (isValid)
+                    concept = $"{concept} ({installments})";
+            }
+
             rows.Add(new StatementImportRow
             {
                 Date = date,
-                Concept = conceptRaw ?? string.Empty,
+                Concept = concept,
                 Amount = amount,
             });
         }
