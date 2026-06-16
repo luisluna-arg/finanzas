@@ -434,6 +434,7 @@ function CreditCardDetail() {
         creditCardId={card.id}
         defaultTemplateId={card.defaultImportTemplateId ?? null}
         isAdmin={isAdmin}
+        statements={statements}
         onImported={() => {
           fetchStatements();
           fetchTransactions();

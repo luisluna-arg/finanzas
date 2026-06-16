@@ -73,6 +73,7 @@ const defaultProps = {
   onHide: vi.fn(),
   creditCardId: 'card-123',
   defaultTemplateId: null as string | null,
+  statements: [] as import('@/types/creditCard').CreditCardStatement[],
   onImported: vi.fn(),
 };
 

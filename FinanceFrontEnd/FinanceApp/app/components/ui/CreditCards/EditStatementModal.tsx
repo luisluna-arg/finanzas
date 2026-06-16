@@ -53,6 +53,7 @@ export default function EditStatementModal({
   const [expiringDate, setExpiringDate] = useState('');
   const [draftTxs, setDraftTxs] = useState<DraftTransaction[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
   useEffect(() => {
@@ -112,6 +113,25 @@ export default function EditStatementModal({
         isModified: false,
       },
     ]);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('¿Eliminar este resúmen? Se perderán todos sus movimientos.')) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(String(urls.creditCardStatements.endpoint), {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: statement.id }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      onSaved();
+      onHide();
+    } catch (err) {
+      alert(`Error al eliminar resúmen: ${err}`);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -309,13 +329,23 @@ export default function EditStatementModal({
           </div>
         </ModalBody>
         <ModalFooter>
-          <div className="flex justify-end space-x-2 mt-6">
-            <Button type="button" variant="outline" onClick={onHide}>
-              Cancelar
+          <div className="flex justify-between mt-6">
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleting || submitting}
+              onClick={handleDelete}
+            >
+              {deleting ? 'Eliminando...' : 'Eliminar resúmen'}
             </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? 'Guardando...' : 'Guardar'}
-            </Button>
+            <div className="flex space-x-2">
+              <Button type="button" variant="outline" onClick={onHide}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={submitting || deleting}>
+                {submitting ? 'Guardando...' : 'Guardar'}
+              </Button>
+            </div>
           </div>
         </ModalFooter>
       </form>

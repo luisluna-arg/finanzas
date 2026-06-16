@@ -18,6 +18,7 @@ import type {
   StatementImportConfig,
 } from '@/types/creditCardStatementImportTemplate';
 import type { CatalogItem } from '@/types/catalog';
+import type { CreditCardStatement } from '@/types/creditCard';
 
 type TemplateMode = 'select' | 'import-file' | 'create';
 
@@ -386,6 +387,7 @@ export default function ImportStatementModal({
   creditCardId,
   defaultTemplateId,
   isAdmin,
+  statements,
   onImported,
 }: {
   show: boolean;
@@ -393,6 +395,7 @@ export default function ImportStatementModal({
   creditCardId: string;
   defaultTemplateId: string | null;
   isAdmin?: boolean;
+  statements: CreditCardStatement[];
   onImported: () => void;
 }) {
   const [closureDate, setClosureDate] = useState('');
@@ -504,22 +507,32 @@ export default function ImportStatementModal({
 
     setSubmitting(true);
     try {
-      const stmtRes = await fetch(String(urls.creditCardStatements.endpoint), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          creditCardId,
-          closureDate: new Date(closureDate).toISOString(),
-          expiringDate: new Date(expiringDate).toISOString(),
-        }),
-      });
-      if (!stmtRes.ok) throw new Error(`Error creando resúmen: ${await stmtRes.text()}`);
-      const stmt = await stmtRes.json();
+      const existing = statements.find(
+        (s) => s.closureDate.slice(0, 10) === closureDate && s.expiringDate.slice(0, 10) === expiringDate
+      );
+
+      let stmtId: string;
+      if (existing) {
+        stmtId = existing.id;
+      } else {
+        const stmtRes = await fetch(String(urls.creditCardStatements.endpoint), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            creditCardId,
+            closureDate: new Date(closureDate).toISOString(),
+            expiringDate: new Date(expiringDate).toISOString(),
+          }),
+        });
+        if (!stmtRes.ok) throw new Error(`Error creando resúmen: ${await stmtRes.text()}`);
+        const stmt = await stmtRes.json();
+        stmtId = stmt.id;
+      }
 
       const form = new FormData();
       form.append('file', file);
       form.append('templateId', selectedTemplateId);
-      form.append('statementId', stmt.id);
+      form.append('statementId', stmtId);
 
       const importRes = await fetch(String(urls.creditCardStatements.import), {
         method: 'POST',
