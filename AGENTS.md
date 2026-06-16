@@ -88,6 +88,9 @@ npm run lint
 - Only add comments for: complex algorithms, non-obvious business rules, public API XML docs, workarounds. Never for obvious code.
 - Comments explain *why*, not *what* — the code shows what.
 - Never use `#pragma warning disable` — fix the underlying issue instead.
+- Always reuse existing UI components instead of falling back to raw HTML elements. Check imports already in the file, then look in these two locations before writing any markup:
+  - `app/components/ui/shadcn/` — `Button`, `Input`, `Label`, `Separator`, `Textarea`, `Table/*`, `Carousel/*`, `Pagination`
+  - `app/components/ui/utils/` — `Checkbox`, `Picker` (select/dropdown), `Uploader` (file upload with toast), `InputControl`, `Modal/*`, `ActionButton`, `BankCurrencySelector`, `Table` (simple data+columns), `FetchTable` (data or URL, empty state, totals, collapsible), `PaginatedTable` (paginated + CRUD)
 
 ### Backend: Folder Structure
 
