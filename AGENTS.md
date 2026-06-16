@@ -87,6 +87,7 @@ npm run lint
 - Write self-documenting code with clear names. Prefer refactoring unclear code into well-named methods over adding explanatory comments.
 - Only add comments for: complex algorithms, non-obvious business rules, public API XML docs, workarounds. Never for obvious code.
 - Comments explain *why*, not *what* — the code shows what.
+- Never use `#pragma warning disable` — fix the underlying issue instead.
 
 ### Backend: Folder Structure
 
