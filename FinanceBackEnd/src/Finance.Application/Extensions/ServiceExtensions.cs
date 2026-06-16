@@ -1,4 +1,6 @@
+using Finance.Application.Auth;
 using Finance.Application.Commands.Users;
+using Finance.Application.Specifications.CreditCards;
 using Finance.Application.Services;
 using Finance.Application.Services.Interfaces;
 using Finance.Domain.Models.Auth;
@@ -10,6 +12,18 @@ namespace Finance.Application.Extensions;
 
 public static class SagaServiceExtensions
 {
+    public static IServiceCollection AddApplicationSecurityServices(this IServiceCollection services)
+    {
+        services.RegisterScopedService<IsAdminUser>();
+        return services;
+    }
+
+    public static IServiceCollection AddSpecifications(this IServiceCollection services)
+    {
+        services.RegisterScopedService<CanSetSystemFlag>();
+        return services;
+    }
+
     public static IServiceCollection AddSagaServices(this IServiceCollection services)
     {
         services.RegisterScopedService<CurrencyConversionService>();
