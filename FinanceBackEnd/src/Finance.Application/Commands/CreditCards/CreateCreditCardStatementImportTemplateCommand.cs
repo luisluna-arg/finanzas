@@ -1,9 +1,11 @@
+using CQRSDispatch;
 using System.ComponentModel.DataAnnotations;
+using Finance.Application.Auth;
 using Finance.Application.Base.Handlers;
+using Finance.Application.Specifications.CreditCards;
 using Finance.Application.Repositories;
 using Finance.Domain.Models.CreditCards;
 using Finance.Persistence;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Application.Commands.CreditCards;
@@ -12,35 +14,37 @@ public class CreateCreditCardStatementImportTemplateCommandHandler
     : BaseCreateCommandHandler<CreateCreditCardStatementImportTemplateCommand, CreditCardStatementImportTemplate, Guid>
 {
     private readonly FinanceDbContext _db;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IsAdminUser _isAdminUser;
+    private readonly CanSetSystemFlag _canSetSystemFlag;
 
     public CreateCreditCardStatementImportTemplateCommandHandler(
         IRepository<CreditCardStatementImportTemplate, Guid> repository,
         FinanceDbContext db,
-        IHttpContextAccessor httpContextAccessor)
+        IsAdminUser isAdminUser,
+        CanSetSystemFlag canSetSystemFlag)
         : base(repository, db)
     {
         _db = db;
-        _httpContextAccessor = httpContextAccessor;
+        _isAdminUser = isAdminUser;
+        _canSetSystemFlag = canSetSystemFlag;
+    }
+
+    public override async Task<DataResult<CreditCardStatementImportTemplate>> ExecuteAsync(
+        CreateCreditCardStatementImportTemplateCommand command, CancellationToken cancellationToken = default)
+    {
+        if (command.IsSystem)
+        {
+            var check = await _canSetSystemFlag.IsSatisfiedAsync(cancellationToken);
+            if (!check.IsSuccess)
+                return DataResult<CreditCardStatementImportTemplate>.Failure(check.ErrorMessage!);
+        }
+        return await base.ExecuteAsync(command, cancellationToken);
     }
 
     protected override async Task<CreditCardStatementImportTemplate> BuildRecord(
         CreateCreditCardStatementImportTemplateCommand command, CancellationToken cancellationToken)
     {
-        Guid? userId = null;
-        if (!command.IsSystem)
-        {
-            var identitySourceId = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
-            if (!string.IsNullOrEmpty(identitySourceId))
-            {
-                var user = await _db.User
-                    .IgnoreQueryFilters()
-                    .AsNoTracking()
-                    .Include(u => u.Identities)
-                    .FirstOrDefaultAsync(u => u.Identities.Any(i => i.SourceId == identitySourceId), cancellationToken);
-                userId = user?.Id;
-            }
-        }
+        var (_, userId) = await _isAdminUser.IsSatisfiedAsync(cancellationToken);
 
         var template = new CreditCardStatementImportTemplate
         {
