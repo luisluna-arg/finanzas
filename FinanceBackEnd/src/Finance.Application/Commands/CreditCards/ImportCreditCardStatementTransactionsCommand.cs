@@ -58,9 +58,8 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
                 CurrencyId = config.DefaultCurrencyId,
             };
             DbContext.CreditCardTransaction.Add(tx);
-            await DbContext.SaveChangesAsync(cancellationToken);
 
-            var statementTx = new CreditCardStatementTransaction
+            DbContext.CreditCardStatementTransaction.Add(new CreditCardStatementTransaction
             {
                 StatementId = statement.Id,
                 CreditCardTransactionId = tx.Id,
@@ -68,10 +67,10 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
                 Amount = row.Amount,
                 Description = row.Concept,
                 CurrencyId = config.DefaultCurrencyId,
-            };
-            DbContext.CreditCardStatementTransaction.Add(statementTx);
-            await DbContext.SaveChangesAsync(cancellationToken);
+            });
         }
+
+        await DbContext.SaveChangesAsync(cancellationToken);
 
         var templateForLink = await DbContext.CreditCardStatementImportTemplate
             .IgnoreQueryFilters()
@@ -95,16 +94,3 @@ public class ImportCreditCardStatementTransactionsCommand : ICommand
     public Guid StatementId { get; set; }
 }
 
-public class StatementImportConfig
-{
-    public int SkipRows { get; set; } = 1;
-    public int SkipLastRows { get; set; } = 0;
-    public int DateColumn { get; set; } = 0;
-    public string DateFormat { get; set; } = "d/M/yyyy";
-    public int ConceptColumn { get; set; } = 1;
-    public int AmountColumn { get; set; } = 2;
-    public Guid DefaultCurrencyId { get; set; }
-    public string DecimalSeparator { get; set; } = ",";
-    public string ThousandsSeparator { get; set; } = ".";
-    public bool AmountNegate { get; set; } = false;
-}

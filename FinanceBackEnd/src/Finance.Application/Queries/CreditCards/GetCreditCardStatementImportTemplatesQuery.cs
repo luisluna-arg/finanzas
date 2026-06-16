@@ -23,13 +23,13 @@ public class GetCreditCardStatementImportTemplatesQueryHandler : BaseCollectionQ
     {
         var identitySourceId = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
 
-        var user = string.IsNullOrEmpty(identitySourceId)
-            ? null
-            : await DbContext.User
+        var user = !string.IsNullOrEmpty(identitySourceId)
+            ? await DbContext.User
                 .IgnoreQueryFilters()
                 .AsNoTracking()
                 .Include(u => u.Identities)
-                .FirstOrDefaultAsync(u => u.Identities.Any(i => i.SourceId == identitySourceId), cancellationToken);
+                .FirstOrDefaultAsync(u => u.Identities.Any(i => i.SourceId == identitySourceId), cancellationToken)
+            : null;
 
         var query = DbContext.CreditCardStatementImportTemplate
             .IgnoreQueryFilters()
