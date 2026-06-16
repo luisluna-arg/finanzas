@@ -1,14 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLoaderData, useNavigate } from 'react-router';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/shadcn/table';
+import FetchTable from '@/components/ui/utils/FetchTable';
+import { InputType } from '@/components/ui/utils/InputType';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
 import { Label } from '@/components/ui/shadcn/label';
@@ -121,53 +114,39 @@ function StatementPicker({
   );
 }
 
-function TransactionsTable({ transactions }: { transactions: CreditCardTransaction[] }) {
-  const totalAmount = transactions.reduce(
-    (acc, tx) => acc + toNumber(tx.convertedAmount as unknown as ValueLike, 0),
-    0
-  );
-
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Fecha</TableHead>
-          <TableHead>Concepto</TableHead>
-          <TableHead className="w-20">Moneda</TableHead>
-          <TableHead className="w-32 text-right">Monto</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {transactions.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={4} className="text-center text-muted-foreground">
-              No se encontraron movimientos
-            </TableCell>
-          </TableRow>
-        ) : (
-          transactions.map((tx) => (
-            <TableRow key={tx.id}>
-              <TableCell>{formatDate(tx.timestamp)}</TableCell>
-              <TableCell>{tx.concept}</TableCell>
-              <TableCell>{tx.currency?.defaultSymbol ?? tx.currency?.shortName}</TableCell>
-              <TableCell className="text-right">{formatMoney(tx.amount)}</TableCell>
-            </TableRow>
-          ))
-        )}
-      </TableBody>
-      {transactions.length > 0 && (
-        <TableFooter>
-          <TableRow>
-            <TableCell className="font-medium">Total</TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-            <TableCell className="text-right font-medium">{formatMoney(totalAmount)}</TableCell>
-          </TableRow>
-        </TableFooter>
-      )}
-    </Table>
-  );
-}
+const TRANSACTION_COLUMNS = [
+  {
+    id: 'timestamp',
+    label: 'Fecha',
+    formatter: (v: unknown) => formatDate(String(v ?? '')),
+  },
+  {
+    id: 'concept',
+    label: 'Concepto',
+  },
+  {
+    id: 'currency',
+    label: 'Moneda',
+    headerClass: 'w-20',
+    mapper: (r: unknown) => {
+      const tx = r as CreditCardTransaction;
+      return tx.currency?.defaultSymbol ?? tx.currency?.shortName ?? '';
+    },
+  },
+  {
+    id: 'amount',
+    label: 'Monto',
+    class: 'text-right',
+    headerClass: 'w-32 text-right',
+    type: InputType.Decimal,
+    formatter: (v: unknown) => formatMoney(v),
+    totals: {
+      reducer: (acc: unknown, row: unknown) =>
+        (acc as number) + toNumber((row as CreditCardTransaction).convertedAmount as unknown as ValueLike, 0),
+      formatter: (v: unknown) => formatMoney(v),
+    },
+  },
+];
 
 function CreateStatementModal({
   show,
@@ -413,7 +392,7 @@ function CreditCardDetail() {
       {loading ? (
         <div className="text-center py-10 text-muted-foreground">Cargando...</div>
       ) : (
-        <TransactionsTable transactions={transactions} />
+        <FetchTable name="transactions" data={transactions as never[]} columns={TRANSACTION_COLUMNS} />
       )}
 
       <CreateStatementModal
