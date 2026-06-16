@@ -11,11 +11,15 @@ import {
   ModalFooter,
 } from '@/components/ui/utils/Modal';
 import urls from '@/utils/urls';
+import { Checkbox } from '@/components/ui/utils/Checkbox';
+import Picker from '@/components/ui/utils/Picker';
 import type {
   CreditCardStatementImportTemplate,
   StatementImportConfig,
 } from '@/types/creditCardStatementImportTemplate';
 import type { CatalogItem } from '@/types/catalog';
+
+type TemplateMode = 'select' | 'import-file' | 'create';
 
 const DEFAULT_CONFIG: StatementImportConfig = {
   skipRows: 1,
@@ -28,7 +32,39 @@ const DEFAULT_CONFIG: StatementImportConfig = {
   decimalSeparator: ',',
   thousandsSeparator: '.',
   amountNegate: false,
+  installmentsColumn: undefined,
+  installmentsPattern: undefined,
 };
+
+function ModeSwitcher({
+  mode,
+  onChange,
+}: {
+  mode: TemplateMode;
+  onChange: (m: TemplateMode) => void;
+}) {
+  const tabs: { key: TemplateMode; label: string }[] = [
+    { key: 'select', label: 'Seleccionar' },
+    { key: 'import-file', label: 'Importar archivo' },
+    { key: 'create', label: 'Crear nueva' },
+  ];
+  return (
+    <div className="flex rounded-md border overflow-hidden">
+      {tabs.map(({ key, label }) => (
+        <Button
+          key={key}
+          type="button"
+          variant={mode === key ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => onChange(key)}
+          className="flex-1 rounded-none"
+        >
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+}
 
 function TemplateForm({
   initial,
@@ -42,7 +78,7 @@ function TemplateForm({
   currencies: CatalogItem[];
   creditCardId?: string;
   isAdmin?: boolean;
-  onSave: () => void;
+  onSave: (savedName: string) => void;
   onCancel: () => void;
 }) {
   const [name, setName] = useState(initial?.name ?? '');
@@ -79,7 +115,7 @@ function TemplateForm({
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error(await res.text());
-      onSave();
+      onSave(name);
     } catch (err) {
       alert(`Error al guardar plantilla: ${err}`);
     } finally {
@@ -88,7 +124,7 @@ function TemplateForm({
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-4 border rounded-md p-4 bg-muted/30">
+    <form onSubmit={handleSave} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label className="block mb-1">Nombre</Label>
@@ -96,14 +132,13 @@ function TemplateForm({
         </div>
         {isAdmin && (
           <div className="flex items-end gap-2">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
+            <Label className="flex items-center gap-2 text-sm cursor-pointer font-normal">
+              <Checkbox
                 checked={isSystem}
-                onChange={(e) => setIsSystem(e.target.checked)}
+                onCheckedChange={(checked) => setIsSystem(checked)}
               />
               Plantilla del sistema
-            </label>
+            </Label>
           </div>
         )}
       </div>
@@ -167,19 +202,15 @@ function TemplateForm({
         </div>
         <div>
           <Label className="block mb-1 text-sm">Moneda por defecto</Label>
-          <select
+          <Picker
+            id="currency-picker"
             value={config.defaultCurrencyId}
-            onChange={(e) => updateConfig('defaultCurrencyId', e.target.value)}
-            className="h-9 w-full text-sm rounded-md border border-input bg-background px-2"
-            required
-          >
-            <option value="">Seleccionar...</option>
-            {currencies.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            data={currencies}
+            mapper={{ id: 'id', label: 'name' }}
+            placeholder="Seleccionar..."
+            onChange={(e: { value: string | number }) => updateConfig('defaultCurrencyId', String(e.value))}
+            className="w-full"
+          />
         </div>
         <div>
           <Label className="block mb-1 text-sm">Sep. decimal</Label>
@@ -198,14 +229,38 @@ function TemplateForm({
           />
         </div>
         <div className="flex items-end pb-1">
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input
-              type="checkbox"
+          <Label className="flex items-center gap-2 text-sm cursor-pointer font-normal">
+            <Checkbox
               checked={config.amountNegate}
-              onChange={(e) => updateConfig('amountNegate', e.target.checked)}
+              onCheckedChange={(checked) => updateConfig('amountNegate', checked)}
             />
             Invertir signo
-          </label>
+          </Label>
+        </div>
+        <div>
+          <Label className="block mb-1 text-sm">Col. Cuotas (opcional)</Label>
+          <Input
+            type="number"
+            min={0}
+            placeholder="—"
+            value={config.installmentsColumn ?? ''}
+            onChange={(e) =>
+              updateConfig(
+                'installmentsColumn',
+                e.target.value === '' ? undefined : Number(e.target.value)
+              )
+            }
+          />
+        </div>
+        <div>
+          <Label className="block mb-1 text-sm">Patrón de cuotas (regex, opcional)</Label>
+          <Input
+            placeholder="ej. \d+/\d+"
+            value={config.installmentsPattern ?? ''}
+            onChange={(e) =>
+              updateConfig('installmentsPattern', e.target.value === '' ? undefined : e.target.value)
+            }
+          />
         </div>
       </div>
       <div className="flex justify-end gap-2">
@@ -213,10 +268,115 @@ function TemplateForm({
           Cancelar
         </Button>
         <Button type="submit" size="sm" disabled={saving}>
-          {saving ? 'Guardando...' : 'Guardar plantilla'}
+          {saving ? 'Guardando...' : initial ? 'Guardar cambios' : 'Guardar plantilla'}
         </Button>
       </div>
     </form>
+  );
+}
+
+function ImportTemplateFile({
+  creditCardId,
+  isAdmin,
+  onSaved,
+  onCancel,
+}: {
+  creditCardId: string;
+  isAdmin?: boolean;
+  onSaved: (savedName: string) => void;
+  onCancel: () => void;
+}) {
+  const [templateFile, setTemplateFile] = useState<File | null>(null);
+  const [templateName, setTemplateName] = useState('');
+  const [isSystem, setIsSystem] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] ?? null;
+    setTemplateFile(f);
+    if (f) {
+      try {
+        const parsed = JSON.parse(await f.text());
+        if (typeof parsed.name === 'string') setTemplateName(parsed.name);
+        else setTemplateName((prev) => prev || f.name.replace(/\.[^.]+$/, ''));
+        if (typeof parsed.isSystem === 'boolean') setIsSystem(parsed.isSystem);
+      } catch {
+        setTemplateName((prev) => prev || f.name.replace(/\.[^.]+$/, ''));
+      }
+    }
+  };
+
+  const handleSave = async () => {
+    if (!templateFile || !templateName) return;
+    setSaving(true);
+    try {
+      const text = await templateFile.text();
+      const parsed = JSON.parse(text);
+      let configJson: string;
+      if (typeof parsed.configJson === 'string') {
+        configJson = parsed.configJson;
+      } else if (parsed.configJson && typeof parsed.configJson === 'object') {
+        configJson = JSON.stringify(parsed.configJson);
+      } else if (parsed.config && typeof parsed.config === 'object') {
+        configJson = JSON.stringify(parsed.config);
+      } else {
+        configJson = JSON.stringify(parsed);
+      }
+      const res = await fetch(String(urls.creditCardStatementImportTemplates.endpoint), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: templateName, isSystem, configJson, creditCardId }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      onSaved(templateName);
+    } catch (err) {
+      alert(`Error al importar plantilla: ${err}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label className="block mb-1">Archivo de plantilla (.json)</Label>
+        <Input type="file" accept=".json" onChange={handleFileChange} />
+      </div>
+      {templateFile && (
+        <>
+          <div>
+            <Label className="block mb-1">Nombre</Label>
+            <Input
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              required
+            />
+          </div>
+          {isAdmin && (
+            <Label className="flex items-center gap-2 text-sm cursor-pointer font-normal">
+              <Checkbox
+                checked={isSystem}
+                onCheckedChange={(checked) => setIsSystem(checked)}
+              />
+              Plantilla del sistema
+            </Label>
+          )}
+        </>
+      )}
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline" size="sm" onClick={onCancel}>
+          Cancelar
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          disabled={!templateFile || !templateName || saving}
+          onClick={handleSave}
+        >
+          {saving ? 'Guardando...' : 'Guardar plantilla'}
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -242,7 +402,7 @@ export default function ImportStatementModal({
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [currencies, setCurrencies] = useState<CatalogItem[]>([]);
-  const [showTemplateForm, setShowTemplateForm] = useState(false);
+  const [templateMode, setTemplateMode] = useState<TemplateMode>('select');
   const [editingTemplate, setEditingTemplate] = useState<CreditCardStatementImportTemplate | null>(null);
   const [otherTemplates, setOtherTemplates] = useState<CreditCardStatementImportTemplate[]>([]);
 
@@ -255,31 +415,58 @@ export default function ImportStatementModal({
       ]);
       const cardData = await cardRes.json();
       const allData = await allRes.json();
-      const cardTemplates: CreditCardStatementImportTemplate[] = Array.isArray(cardData) ? cardData : (cardData.items ?? []);
-      const allList: CreditCardStatementImportTemplate[] = Array.isArray(allData) ? allData : (allData.items ?? []);
+      const cardTemplates: CreditCardStatementImportTemplate[] = Array.isArray(cardData)
+        ? cardData
+        : (cardData.items ?? []);
+      const allList: CreditCardStatementImportTemplate[] = Array.isArray(allData)
+        ? allData
+        : (allData.items ?? []);
       const cardIds = new Set(cardTemplates.map((t) => t.id));
       setTemplates(cardTemplates);
       setOtherTemplates(allList.filter((t) => !t.isSystem && !cardIds.has(t.id)));
+      return cardTemplates;
     } catch {
       setTemplates([]);
       setOtherTemplates([]);
+      return [];
     }
   }, [creditCardId]);
 
   useEffect(() => {
-    if (show && defaultTemplateId) {
-      setSelectedTemplateId(defaultTemplateId);
-    }
-  }, [show, defaultTemplateId]);
-
-  useEffect(() => {
     if (!show) return;
-    loadTemplates();
+    setTemplateMode('select');
+    setEditingTemplate(null);
+    loadTemplates().then((loaded) => {
+      setSelectedTemplateId((current) => {
+        if (current && loaded.some((t) => t.id === current)) return current;
+        if (defaultTemplateId && loaded.some((t) => t.id === defaultTemplateId)) return defaultTemplateId;
+        if (loaded.length === 1) return loaded[0].id;
+        return '';
+      });
+    });
     fetch(String(urls.catalog.currencies.endpoint))
       .then((r) => r.json())
       .then((data: CatalogItem[]) => setCurrencies(data))
       .catch(() => {});
-  }, [show, loadTemplates]);
+  }, [show, loadTemplates, defaultTemplateId]);
+
+  const handleTemplateSaved = async (savedName: string) => {
+    const reloaded = await loadTemplates();
+    const found = reloaded.find((t) => t.name === savedName);
+    if (found) setSelectedTemplateId(found.id);
+    setTemplateMode('select');
+    setEditingTemplate(null);
+  };
+
+  const handleSwitchMode = (mode: TemplateMode) => {
+    setTemplateMode(mode);
+    if (mode !== 'create') setEditingTemplate(null);
+  };
+
+  const handleEditTemplate = (t: CreditCardStatementImportTemplate) => {
+    setEditingTemplate(t);
+    setTemplateMode('create');
+  };
 
   const handleAssociateTemplate = async (templateId: string) => {
     try {
@@ -396,114 +583,122 @@ export default function ImportStatementModal({
 
             <Separator />
 
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-medium">Plantilla de importación</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => { setEditingTemplate(null); setShowTemplateForm(true); }}
-                >
-                  + Nueva plantilla
-                </Button>
-              </div>
+            <div className="space-y-3">
+              <p className="text-sm font-medium">Plantilla de importación</p>
+              <ModeSwitcher mode={templateMode} onChange={handleSwitchMode} />
 
-              {showTemplateForm && (
-                <div className="mb-4">
-                  <TemplateForm
-                    initial={editingTemplate}
-                    currencies={currencies}
-                    creditCardId={creditCardId}
-                    isAdmin={isAdmin}
-                    onSave={async () => { await loadTemplates(); setShowTemplateForm(false); setEditingTemplate(null); }}
-                    onCancel={() => { setShowTemplateForm(false); setEditingTemplate(null); }}
-                  />
+              {templateMode === 'select' && (
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    {templates.length === 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        No hay plantillas disponibles. Creá una nueva o importá un archivo.
+                      </p>
+                    )}
+                    {templates.map((t) => (
+                      <div
+                        key={t.id}
+                        role="button"
+                        tabIndex={0}
+                        className={`flex items-center justify-between px-3 py-2 rounded-md border cursor-pointer text-sm transition-colors ${
+                          selectedTemplateId === t.id
+                            ? 'border-primary bg-primary/10'
+                            : 'hover:bg-muted'
+                        }`}
+                        onClick={() => setSelectedTemplateId(t.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') setSelectedTemplateId(t.id);
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span>{t.name}</span>
+                          {t.isSystem && (
+                            <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                              Sistema
+                            </span>
+                          )}
+                        </div>
+                        {!t.isSystem && (
+                          <div className="flex gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 px-2 text-xs"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditTemplate(t);
+                              }}
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 px-2 text-xs text-destructive hover:text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteTemplate(t.id);
+                              }}
+                            >
+                              ×
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {otherTemplates.length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                        Otras plantillas disponibles
+                      </p>
+                      <div className="space-y-1">
+                        {otherTemplates.map((t) => (
+                          <div
+                            key={t.id}
+                            className="flex items-center justify-between px-3 py-2 rounded-md border text-sm bg-muted/20"
+                          >
+                            <span>{t.name}</span>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-6 px-2 text-xs"
+                              onClick={() => handleAssociateTemplate(t.id)}
+                            >
+                              Usar
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              <div className="space-y-1">
-                {templates.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    No hay plantillas disponibles. Creá una nueva.
-                  </p>
-                )}
-                {templates.map((t) => (
-                  <div
-                    key={t.id}
-                    role="button"
-                    tabIndex={0}
-                    className={`flex items-center justify-between px-3 py-2 rounded-md border cursor-pointer text-sm transition-colors ${
-                      selectedTemplateId === t.id
-                        ? 'border-primary bg-primary/10'
-                        : 'hover:bg-muted'
-                    }`}
-                    onClick={() => setSelectedTemplateId(t.id)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedTemplateId(t.id); }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>{t.name}</span>
-                      {t.isSystem && (
-                        <span className="text-xs bg-muted px-1.5 py-0.5 rounded">Sistema</span>
-                      )}
-                    </div>
-                    {!t.isSystem && (
-                      <div className="flex gap-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 px-2 text-xs"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingTemplate(t);
-                            setShowTemplateForm(true);
-                          }}
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 px-2 text-xs text-destructive hover:text-destructive"
-                          onClick={(e) => { e.stopPropagation(); handleDeleteTemplate(t.id); }}
-                        >
-                          ×
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
+              {templateMode === 'import-file' && (
+                <ImportTemplateFile
+                  creditCardId={creditCardId}
+                  isAdmin={isAdmin}
+                  onSaved={handleTemplateSaved}
+                  onCancel={() => setTemplateMode('select')}
+                />
+              )}
 
-            {otherTemplates.length > 0 && (
-              <div>
-                <p className="text-sm font-medium mb-2 text-muted-foreground">
-                  Otras plantillas disponibles
-                </p>
-                <div className="space-y-1">
-                  {otherTemplates.map((t) => (
-                    <div
-                      key={t.id}
-                      className="flex items-center justify-between px-3 py-2 rounded-md border text-sm bg-muted/20"
-                    >
-                      <span>{t.name}</span>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-6 px-2 text-xs"
-                        onClick={() => handleAssociateTemplate(t.id)}
-                      >
-                        Usar
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+              {templateMode === 'create' && (
+                <TemplateForm
+                  initial={editingTemplate}
+                  currencies={currencies}
+                  creditCardId={creditCardId}
+                  isAdmin={isAdmin}
+                  onSave={handleTemplateSaved}
+                  onCancel={() => handleSwitchMode('select')}
+                />
+              )}
+            </div>
 
             <Separator />
 

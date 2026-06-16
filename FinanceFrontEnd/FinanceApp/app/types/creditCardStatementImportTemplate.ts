@@ -9,6 +9,8 @@ export interface StatementImportConfig {
   decimalSeparator: string;
   thousandsSeparator: string;
   amountNegate: boolean;
+  installmentsColumn?: number;
+  installmentsPattern?: string;
 }
 
 export interface CreditCardStatementImportTemplate {
