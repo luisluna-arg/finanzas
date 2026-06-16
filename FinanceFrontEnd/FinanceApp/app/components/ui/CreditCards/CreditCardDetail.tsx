@@ -125,10 +125,19 @@ const TRANSACTION_COLUMNS = [
     label: 'Concepto',
   },
   {
+    id: 'currency',
+    label: 'Moneda',
+    headerClass: 'w-20',
+    mapper: (r: unknown) => {
+      const tx = r as CreditCardTransaction;
+      return tx.currency?.defaultSymbol ?? tx.currency?.shortName ?? '';
+    },
+  },
+  {
     id: 'amount',
     label: 'Monto',
     class: 'text-right',
-    headerClass: 'w-40 text-right',
+    headerClass: 'w-32 text-right',
     type: InputType.Decimal,
     mapper: (r: unknown) => r,
     formatter: (v: unknown) => {
