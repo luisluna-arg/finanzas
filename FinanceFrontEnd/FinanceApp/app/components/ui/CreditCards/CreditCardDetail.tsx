@@ -125,21 +125,18 @@ const TRANSACTION_COLUMNS = [
     label: 'Concepto',
   },
   {
-    id: 'currency',
-    label: 'Moneda',
-    headerClass: 'w-20',
-    mapper: (r: unknown) => {
-      const tx = r as CreditCardTransaction;
-      return tx.currency?.defaultSymbol ?? tx.currency?.shortName ?? '';
-    },
-  },
-  {
     id: 'amount',
     label: 'Monto',
     class: 'text-right',
-    headerClass: 'w-32 text-right',
+    headerClass: 'w-40 text-right',
     type: InputType.Decimal,
-    formatter: (v: unknown) => formatMoney(v),
+    mapper: (r: unknown) => r,
+    formatter: (v: unknown) => {
+      const tx = v as CreditCardTransaction;
+      const symbol = tx.currency?.defaultSymbol ?? tx.currency?.shortName ?? '';
+      const amount = formatMoney(tx.amount);
+      return symbol ? `${symbol} ${amount}` : amount;
+    },
     totals: {
       reducer: (acc: unknown, row: unknown) =>
         (acc as number) + toNumber((row as CreditCardTransaction).convertedAmount as unknown as ValueLike, 0),
