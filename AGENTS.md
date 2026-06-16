@@ -88,6 +88,20 @@ npm run lint
 - Only add comments for: complex algorithms, non-obvious business rules, public API XML docs, workarounds. Never for obvious code.
 - Comments explain *why*, not *what* — the code shows what.
 
+### Backend: Folder Structure
+
+Folders are organised **category first, then domain**: `Commands/CreditCards/`, `Specifications/CreditCards/`, `Queries/CreditCards/`, etc.
+
+Auth specifications (role/identity checks) live in `Auth/`. Business-rule specifications live in `Specifications/<Domain>/` and are registered via `AddSpecifications()` in `ServiceExtensions`.
+
+### Backend: Command Error Handling
+
+The desired pattern is the **envelope approach**: command handlers return `DataResult<TEntity>` (or `DataResult.Failure("reason")` for expected failures), and controllers unwrap the envelope and map to the appropriate HTTP status code.
+
+`CommandController` follows this correctly — it checks `result.IsSuccess` and returns `BadRequest(result.ErrorMessage)` on failure.
+
+`ApiBaseCUDCommandController` is a **known inconsistency**: it calls `DispatchCommandAsync` and always returns `Ok()`, ignoring the result. Until that controller is fixed, handlers behind it must `throw` to abort a request (use `UnauthorizedAccessException` for permission failures, `InvalidOperationException` for business rule violations). Do not silently swallow failures by adjusting the record and proceeding.
+
 ---
 
 ## Code Changes Protocol
@@ -95,6 +109,7 @@ npm run lint
 1. **Review before implementing** — search and read relevant files, understand existing patterns, identify impacts, ask if requirements are ambiguous.
 2. **Propose before doing** — present your findings and proposed approach before making changes; wait for confirmation.
 3. **Exception** — implement directly only when explicitly told to ("just do it"), when the change is trivial (typo, formatting), or when you have already reviewed and proposed in the same conversation.
+4. **Document new patterns** — when exploration reveals a pattern not yet in this file (architectural convention, error handling approach, naming rule, etc.), confirm with the user whether it is the desired pattern before adopting it, then add it here.
 
 ---
 
