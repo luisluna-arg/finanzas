@@ -8,7 +8,8 @@ using FluentValidation;
 
 namespace Finance.Application.Base.Handlers;
 
-public abstract class BaseCreateCommand<TEntity> : ICommand;
+public abstract class BaseCreateCommand<TEntity> : ICommand<DataResult<TEntity>>
+    where TEntity : class;
 
 public abstract class BaseCreateCommandHandler<TCommand, TEntity, TId>(
     IRepository<TEntity, TId> repository,
@@ -32,6 +33,7 @@ public abstract class BaseCreateCommandHandler<TCommand, TEntity, TId>(
 }
 
 public abstract class BaseCreateCommandValidator<TCommand, TEntity> : AbstractValidator<TCommand>
+    where TEntity : class
     where TCommand : BaseCreateCommand<TEntity>
 {
     protected BaseCreateCommandValidator()

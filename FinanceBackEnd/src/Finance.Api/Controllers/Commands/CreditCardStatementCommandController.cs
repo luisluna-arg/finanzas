@@ -1,3 +1,4 @@
+using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Api.Controllers.Base;
 using Finance.Application.Auth;
@@ -20,8 +21,16 @@ public class CreditCardStatementCommandController(IMappingService mapper, IDispa
     DeleteCreditCardStatementCommand
     >(mapper, dispatcher)
 {
+    public override async Task<IActionResult> Create(CreateCreditCardStatementCommand command)
+    {
+        var result = await Dispatcher.DispatchAsync<DataResult<CreditCardStatement>>(command);
+        if (!result.IsSuccess)
+            return BadRequest(result.ErrorMessage);
+        return Ok(MappingService.Map<CreditCardStatementDto>(result.Data!));
+    }
+
     [HttpPost("import")]
-    public async Task<IActionResult> Import(IFormFile file, string templateId, string statementId)
+    public async Task<IActionResult> Import(IFormFile file, [FromForm] string templateId, [FromForm] string statementId)
     {
         var command = new ImportCreditCardStatementTransactionsCommand
         {
@@ -29,7 +38,6 @@ public class CreditCardStatementCommandController(IMappingService mapper, IDispa
             TemplateId = new Guid(templateId),
             StatementId = new Guid(statementId),
         };
-        await ExecuteAsync(command);
-        return Ok();
+        return await ExecuteAsync(command);
     }
 }
