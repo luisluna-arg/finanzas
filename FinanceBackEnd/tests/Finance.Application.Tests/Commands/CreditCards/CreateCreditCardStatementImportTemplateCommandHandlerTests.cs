@@ -1,5 +1,7 @@
+using Finance.Application.Auth;
 using Finance.Application.Commands.CreditCards;
 using Finance.Application.Repositories;
+using Finance.Application.Specifications.CreditCards;
 using Finance.Application.Tests.Queries.Base;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.CreditCards;
@@ -21,8 +23,11 @@ public class CreateCreditCardStatementImportTemplateCommandHandlerTests : QueryH
         _httpContextAccessor = new Mock<IHttpContextAccessor>();
     }
 
-    private CreateCreditCardStatementImportTemplateCommandHandler CreateHandler() =>
-        new(_repository.Object, _dbContext, _httpContextAccessor.Object);
+    private CreateCreditCardStatementImportTemplateCommandHandler CreateHandler()
+    {
+        var isAdmin = new IsAdminUser(_httpContextAccessor.Object, _dbContext);
+        return new(_repository.Object, _dbContext, isAdmin, new CanSetSystemFlag(isAdmin));
+    }
 
     private void SetupIdentity(string? name)
     {

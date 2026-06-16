@@ -1,7 +1,10 @@
+using Finance.Application.Auth;
 using Finance.Application.Commands.CreditCards;
 using Finance.Application.Repositories;
+using Finance.Application.Specifications.CreditCards;
 using Finance.Application.Tests.Queries.Base;
 using Finance.Domain.Models.CreditCards;
+using Microsoft.AspNetCore.Http;
 
 namespace Finance.Application.Tests.Commands.CreditCards;
 
@@ -14,8 +17,11 @@ public class UpdateCreditCardStatementImportTemplateCommandHandlerTests : QueryH
         _repository = new Mock<IRepository<CreditCardStatementImportTemplate, Guid>>();
     }
 
-    private UpdateCreditCardStatementImportTemplateCommandHandler CreateHandler() =>
-        new(_repository.Object, _dbContext);
+    private UpdateCreditCardStatementImportTemplateCommandHandler CreateHandler()
+    {
+        var isAdmin = new IsAdminUser(Mock.Of<IHttpContextAccessor>(), _dbContext);
+        return new(_repository.Object, _dbContext, new CanSetSystemFlag(isAdmin));
+    }
 
     [Fact]
     public async Task Update_WhenTemplateExists_UpdatesFieldsAndReturnsSuccess()
