@@ -34,12 +34,14 @@ function TemplateForm({
   initial,
   currencies,
   creditCardId,
+  isAdmin,
   onSave,
   onCancel,
 }: {
   initial?: CreditCardStatementImportTemplate | null;
   currencies: CatalogItem[];
   creditCardId?: string;
+  isAdmin?: boolean;
   onSave: () => void;
   onCancel: () => void;
 }) {
@@ -92,16 +94,18 @@ function TemplateForm({
           <Label className="block mb-1">Nombre</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
-        <div className="flex items-end gap-2">
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isSystem}
-              onChange={(e) => setIsSystem(e.target.checked)}
-            />
-            Plantilla del sistema
-          </label>
-        </div>
+        {isAdmin && (
+          <div className="flex items-end gap-2">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isSystem}
+                onChange={(e) => setIsSystem(e.target.checked)}
+              />
+              Plantilla del sistema
+            </label>
+          </div>
+        )}
       </div>
       <Separator />
       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
@@ -221,12 +225,14 @@ export default function ImportStatementModal({
   onHide,
   creditCardId,
   defaultTemplateId,
+  isAdmin,
   onImported,
 }: {
   show: boolean;
   onHide: () => void;
   creditCardId: string;
   defaultTemplateId: string | null;
+  isAdmin?: boolean;
   onImported: () => void;
 }) {
   const [closureDate, setClosureDate] = useState('');
@@ -409,6 +415,7 @@ export default function ImportStatementModal({
                     initial={editingTemplate}
                     currencies={currencies}
                     creditCardId={creditCardId}
+                    isAdmin={isAdmin}
                     onSave={async () => { await loadTemplates(); setShowTemplateForm(false); setEditingTemplate(null); }}
                     onCancel={() => { setShowTemplateForm(false); setEditingTemplate(null); }}
                   />

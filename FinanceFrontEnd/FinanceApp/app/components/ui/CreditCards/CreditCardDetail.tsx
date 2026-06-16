@@ -263,7 +263,7 @@ function CreateStatementModal({
 }
 
 function CreditCardDetail() {
-  const { card, cards } = useLoaderData<{ card: CreditCard; cards: CreditCard[] }>();
+  const { card, cards, isAdmin } = useLoaderData<{ card: CreditCard; cards: CreditCard[]; isAdmin: boolean }>();
   const navigate = useNavigate();
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [statements, setStatements] = useState<CreditCardStatement[]>([]);
@@ -441,6 +441,7 @@ function CreditCardDetail() {
         onHide={() => setShowImportModal(false)}
         creditCardId={card.id}
         defaultTemplateId={card.defaultImportTemplateId ?? null}
+        isAdmin={isAdmin}
         onImported={() => {
           fetchStatements();
           fetchTransactions();

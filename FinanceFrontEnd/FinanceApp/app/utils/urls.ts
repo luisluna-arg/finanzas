@@ -258,6 +258,11 @@ const urls = {
       return new BackendUrl(`${getApiBaseUrl()}/subscriptions/paginated`);
     },
   },
+  session: {
+    get me() {
+      return new BackendUrl(`${getApiBaseUrl()}/session/me`);
+    },
+  },
 };
 
 export default urls;
