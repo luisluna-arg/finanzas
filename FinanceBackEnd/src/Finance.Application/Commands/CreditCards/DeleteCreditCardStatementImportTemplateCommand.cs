@@ -9,7 +9,7 @@ public sealed class DeleteCreditCardStatementImportTemplateCommand : BaseDeleteC
 
 public sealed class DeleteCreditCardStatementImportTemplateCommandHandler(
     IEntityService<CreditCardStatementImportTemplate, Guid> service)
-    : BaseDeleteCommandHandler<CreditCardStatementImportTemplate, Guid>(service);
+    : BaseDeleteCommandHandler<DeleteCreditCardStatementImportTemplateCommand, CreditCardStatementImportTemplate, Guid>(service);
 
 public sealed class DeleteCreditCardStatementImportTemplateCommandValidator(
     IRepository<CreditCardStatementImportTemplate, Guid> repository)

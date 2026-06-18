@@ -8,7 +8,7 @@ namespace Finance.Application.Commands.CreditCards;
 public sealed class DeleteCreditCardStatementCommand : BaseDeleteCommand<Guid>;
 
 public sealed class DeleteCreditCardStatementCommandHandler(IEntityService<CreditCardStatement, Guid> service)
-    : BaseDeleteCommandHandler<CreditCardStatement, Guid>(service);
+    : BaseDeleteCommandHandler<DeleteCreditCardStatementCommand, CreditCardStatement, Guid>(service);
 
 public sealed class DeleteCreditCardStatementCommandValidator(IRepository<CreditCardStatement, Guid> repository)
     : BaseDeleteCommandValidator<DeleteCreditCardStatementCommand, CreditCardStatement, Guid>(repository);
