@@ -30,7 +30,8 @@ import ImportStatementModal from './ImportStatementModal';
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('es-AR');
+  const [year, month, day] = dateStr.slice(0, 10).split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString();
 };
 
 const formatMoney = (value: unknown) => {

@@ -122,7 +122,7 @@ export default function EditStatementModal({
       const res = await fetch(String(urls.creditCardStatements.endpoint), {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: statement.id }),
+        body: JSON.stringify({ ids: [statement.id] }),
       });
       if (!res.ok) throw new Error(await res.text());
       onSaved();
