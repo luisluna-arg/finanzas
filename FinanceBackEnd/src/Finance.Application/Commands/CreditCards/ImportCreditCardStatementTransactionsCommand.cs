@@ -7,6 +7,7 @@ using Finance.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Finance.Application.Commands.CreditCards;
 
@@ -22,17 +23,13 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
             .FirstOrDefaultAsync(t => t.Id == command.TemplateId, cancellationToken)
             ?? throw new Exception($"Import template not found: {command.TemplateId}");
 
-        var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+        };
         var config = JsonSerializer.Deserialize<StatementImportConfig>(template.ConfigJson, jsonOptions)
             ?? throw new Exception("Invalid template configuration");
-
-        if (config.DefaultCurrencyId == Guid.Empty)
-        {
-            using var doc = JsonDocument.Parse(template.ConfigJson);
-            if (doc.RootElement.TryGetProperty("config", out var configEl))
-                config = JsonSerializer.Deserialize<StatementImportConfig>(configEl.GetRawText(), jsonOptions)
-                    ?? config;
-        }
 
         var statement = await DbContext.CreditCardStatement
             .Include(s => s.CreditCard)
@@ -44,7 +41,7 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
         if (rows.Length == 0) return CommandResult.Failure("No rows found in the uploaded file.");
 
         var existingTxs = await DbContext.CreditCardTransaction
-            .Where(t => t.CreditCardId == statement.CreditCardId)
+            .Where(t => t.CreditCardId == statement.CreditCardId && !t.Deactivated)
             .Select(t => new { t.Timestamp, t.Concept, Amount = (decimal)t.Amount })
             .ToArrayAsync(cancellationToken);
 
@@ -64,7 +61,7 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
                 TransactionType = CreditCardTransactionType.Purchase,
                 Concept = row.Concept,
                 Amount = row.Amount,
-                CurrencyId = config.DefaultCurrencyId,
+                CurrencyId = row.CurrencyId,
             };
             DbContext.CreditCardTransaction.Add(tx);
 
@@ -75,7 +72,7 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
                 PostedDate = row.Date,
                 Amount = row.Amount,
                 Description = row.Concept,
-                CurrencyId = config.DefaultCurrencyId,
+                CurrencyId = row.CurrencyId,
             });
         }
 

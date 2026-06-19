@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
 
@@ -21,40 +22,56 @@ public class StatementImportExcelHelper
 
         var dataset = reader.AsDataSet();
         var sheet = dataset.Tables[0];
-        var rows = new List<StatementImportRow>();
 
+        var dateCol = config.Columns.FirstOrDefault(c => c.Type == ColumnType.Date);
+        var conceptCol = config.Columns.FirstOrDefault(c => c.Type == ColumnType.Concept);
+        var installmentCol = config.Columns.FirstOrDefault(c => c.Type == ColumnType.Installment);
+        var amountCols = config.Columns.Where(c => c.Type == ColumnType.Amount).ToList();
+
+        var rows = new List<StatementImportRow>();
         var lastRow = sheet.Rows.Count - config.SkipLastRows;
+
         for (int r = config.SkipRows; r < lastRow; r++)
         {
             var row = sheet.Rows[r];
-            var dateRaw = row[config.DateColumn]?.ToString();
-            var conceptRaw = row[config.ConceptColumn]?.ToString();
-            var amountRaw = row[config.AmountColumn]?.ToString();
+
+            var dateRaw = dateCol != null ? row[dateCol.Index]?.ToString() : null;
+            var conceptRaw = conceptCol != null ? row[conceptCol.Index]?.ToString() : null;
 
             if (string.IsNullOrWhiteSpace(dateRaw) && string.IsNullOrWhiteSpace(conceptRaw))
                 continue;
 
-            var date = ParseDate(dateRaw, config.DateFormat);
-            var amount = ParseDecimal(amountRaw, config.DecimalSeparator, config.ThousandsSeparator);
-            if (config.AmountNegate) amount = -amount;
-
+            var date = ParseDate(dateRaw, dateCol?.DateFormat ?? "d/M/yyyy");
             var concept = conceptRaw ?? string.Empty;
-            if (config.InstallmentsColumn.HasValue)
+
+            if (installmentCol != null)
             {
-                var installments = row[config.InstallmentsColumn.Value]?.ToString()?.Trim();
+                var installments = row[installmentCol.Index]?.ToString()?.Trim();
                 var isValid = !string.IsNullOrWhiteSpace(installments)
-                    && (config.InstallmentsPattern is null
-                        || System.Text.RegularExpressions.Regex.IsMatch(installments, config.InstallmentsPattern));
+                    && (installmentCol.InstallmentsPattern is null
+                        || Regex.IsMatch(installments, installmentCol.InstallmentsPattern));
                 if (isValid)
                     concept = $"{concept} ({installments})";
             }
 
-            rows.Add(new StatementImportRow
+            foreach (var amountCol in amountCols)
             {
-                Date = date,
-                Concept = concept,
-                Amount = amount,
-            });
+                var amountRaw = row[amountCol.Index]?.ToString();
+                if (string.IsNullOrWhiteSpace(amountRaw)) continue;
+
+                var amount = ParseDecimal(amountRaw, config.DecimalSeparator, config.ThousandsSeparator);
+                if (amount == 0) continue;
+
+                if (config.AmountNegate) amount = -amount;
+
+                rows.Add(new StatementImportRow
+                {
+                    Date = date,
+                    Concept = concept,
+                    Amount = amount,
+                    CurrencyId = amountCol.CurrencyId ?? Guid.Empty,
+                });
+            }
         }
 
         return rows;
@@ -69,7 +86,6 @@ public class StatementImportExcelHelper
             System.Globalization.DateTimeStyles.None, out var parsed))
             return DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
 
-        // Fallback: try common formats
         if (DateTime.TryParse(raw, out var fallback))
             return DateTime.SpecifyKind(fallback, DateTimeKind.Utc);
 
@@ -100,4 +116,5 @@ public record StatementImportRow
     public DateTime Date { get; init; }
     public string Concept { get; init; } = string.Empty;
     public decimal Amount { get; init; }
+    public Guid CurrencyId { get; init; }
 }

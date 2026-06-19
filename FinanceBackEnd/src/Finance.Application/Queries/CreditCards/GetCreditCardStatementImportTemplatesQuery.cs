@@ -33,6 +33,7 @@ public class GetCreditCardStatementImportTemplatesQueryHandler : BaseCollectionQ
 
         var query = DbContext.CreditCardStatementImportTemplate
             .IgnoreQueryFilters()
+            .Where(t => !t.Deactivated)
             .AsQueryable();
 
         if (request.CreditCardId.HasValue)

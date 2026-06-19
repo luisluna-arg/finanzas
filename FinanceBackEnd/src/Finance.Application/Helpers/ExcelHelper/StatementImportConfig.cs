@@ -4,14 +4,27 @@ public class StatementImportConfig
 {
     public int SkipRows { get; set; } = 1;
     public int SkipLastRows { get; set; } = 0;
-    public int DateColumn { get; set; } = 0;
-    public string DateFormat { get; set; } = "d/M/yyyy";
-    public int ConceptColumn { get; set; } = 1;
-    public int AmountColumn { get; set; } = 2;
-    public Guid DefaultCurrencyId { get; set; }
     public string DecimalSeparator { get; set; } = ",";
     public string ThousandsSeparator { get; set; } = ".";
     public bool AmountNegate { get; set; } = false;
-    public int? InstallmentsColumn { get; set; }
+    public List<ColumnConfig> Columns { get; set; } = [];
+}
+
+public class ColumnConfig
+{
+    public int Index { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public ColumnType Type { get; set; }
+    public string? DateFormat { get; set; }
+    public Guid? CurrencyId { get; set; }
     public string? InstallmentsPattern { get; set; }
+}
+
+public enum ColumnType
+{
+    Text,
+    Date,
+    Concept,
+    Installment,
+    Amount
 }
