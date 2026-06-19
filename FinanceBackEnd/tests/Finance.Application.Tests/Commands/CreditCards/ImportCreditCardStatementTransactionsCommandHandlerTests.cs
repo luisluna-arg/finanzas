@@ -72,13 +72,14 @@ public class ImportCreditCardStatementTransactionsCommandHandlerTests : QueryHan
         var config = new StatementImportConfig
         {
             SkipRows = 1,
-            DateColumn = 0,
-            DateFormat = "d/M/yyyy",
-            ConceptColumn = 1,
-            AmountColumn = 2,
-            DefaultCurrencyId = Guid.Parse(CurrencyConstants.PesoId),
             DecimalSeparator = ",",
             ThousandsSeparator = ".",
+            Columns =
+            [
+                new() { Index = 0, Name = "Fecha", Type = ColumnType.Date, DateFormat = "d/M/yyyy" },
+                new() { Index = 1, Name = "Concepto", Type = ColumnType.Concept },
+                new() { Index = 2, Name = "Monto", Type = ColumnType.Amount, CurrencyId = Guid.Parse(CurrencyConstants.PesoId) },
+            ],
         };
         var template = new CreditCardStatementImportTemplate
         {

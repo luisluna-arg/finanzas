@@ -11,16 +11,20 @@ public class StatementImportExcelHelperTests
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
     }
 
+    private static readonly Guid TestCurrencyId = Guid.NewGuid();
+
     private static StatementImportConfig DefaultConfig() => new()
     {
         SkipRows = 1,
-        DateColumn = 0,
-        DateFormat = "d/M/yyyy",
-        ConceptColumn = 1,
-        AmountColumn = 2,
         DecimalSeparator = ",",
         ThousandsSeparator = ".",
         AmountNegate = false,
+        Columns =
+        [
+            new() { Index = 0, Name = "Fecha", Type = ColumnType.Date, DateFormat = "d/M/yyyy" },
+            new() { Index = 1, Name = "Concepto", Type = ColumnType.Concept },
+            new() { Index = 2, Name = "Monto", Type = ColumnType.Amount, CurrencyId = TestCurrencyId },
+        ],
     };
 
     private static IFormFile BuildCsvFile(string content, string fileName = "test.csv")
