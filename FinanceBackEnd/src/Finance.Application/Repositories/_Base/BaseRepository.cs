@@ -113,7 +113,7 @@ public abstract class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
 
     public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool persist = true)
     {
-        dbSet.Remove(entity);
+        entity.Deactivated = true;
         if (persist) await dbContext.SaveChangesAsync(cancellationToken);
     }
 
