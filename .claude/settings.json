@@ -4,6 +4,7 @@
       "Read",
       "Write",
       "Edit",
+      "Bash(cd *)",
       "Bash(uv run:*)",
       "Bash(git checkout:*)",
       "Bash(git branch:*)",
