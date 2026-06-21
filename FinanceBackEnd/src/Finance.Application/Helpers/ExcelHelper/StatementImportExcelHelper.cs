@@ -41,7 +41,7 @@ public class StatementImportExcelHelper
             if (string.IsNullOrWhiteSpace(dateRaw) && string.IsNullOrWhiteSpace(conceptRaw))
                 continue;
 
-            var date = ParseDate(dateRaw, dateCol?.DateFormat ?? "d/M/yyyy");
+            var date = ParseDate(dateRaw, dateCol?.DateFormat ?? "d/M/yyyy", config.UtcOffsetHours);
             var concept = conceptRaw ?? string.Empty;
 
             if (installmentCol != null)
@@ -77,14 +77,14 @@ public class StatementImportExcelHelper
         return rows;
     }
 
-    private static DateTime ParseDate(string? raw, string format)
+    private static DateTime ParseDate(string? raw, string format, double utcOffsetHours)
     {
         if (string.IsNullOrWhiteSpace(raw)) return DateTime.UtcNow;
 
         if (DateTime.TryParseExact(raw, format,
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None, out var parsed))
-            return DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
+            return new DateTimeOffset(parsed, TimeSpan.FromHours(utcOffsetHours)).UtcDateTime;
 
         if (DateTime.TryParse(raw, out var fallback))
             return DateTime.SpecifyKind(fallback, DateTimeKind.Utc);
