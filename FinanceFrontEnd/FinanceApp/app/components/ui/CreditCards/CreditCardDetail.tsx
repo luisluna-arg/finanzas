@@ -115,7 +115,7 @@ function StatementPicker({
   );
 }
 
-function buildTransactionColumns(transactions: CreditCardTransaction[]) {
+function buildTransactionColumns(transactions: CreditCardTransaction[], defaultCurrencySymbol: string) {
   const seen = new Set<string>();
   const currencies = transactions
     .filter((tx) => { const unseen = !seen.has(tx.currencyId); seen.add(tx.currencyId); return unseen; })
@@ -159,6 +159,20 @@ function buildTransactionColumns(transactions: CreditCardTransaction[]) {
     { id: 'timestamp', label: 'Fecha', formatter: (v: unknown) => formatDate(String(v ?? '')) },
     { id: 'concept', label: 'Concepto' },
     ...currencyCols,
+    {
+      id: 'convertedAmount',
+      label: `Total (${defaultCurrencySymbol})`,
+      class: 'text-right',
+      headerClass: 'w-36 text-right',
+      type: InputType.Decimal,
+      mapper: (r: unknown) => toNumber((r as CreditCardTransaction).convertedAmount as unknown as ValueLike, 0),
+      formatter: (v: unknown) => formatMoney(v),
+      totals: {
+        reducer: (acc: unknown, row: unknown) =>
+          (acc as number) + toNumber((row as CreditCardTransaction).convertedAmount as unknown as ValueLike, 0),
+        formatter: (v: unknown) => `${defaultCurrencySymbol}${formatMoney(v)}`,
+      },
+    },
   ];
 }
 
@@ -256,7 +270,8 @@ function CreateStatementModal({
 }
 
 function CreditCardDetail() {
-  const { card, cards, isAdmin } = useLoaderData<{ card: CreditCard; cards: CreditCard[]; isAdmin: boolean }>();
+  const { card, cards, isAdmin, defaultCurrency } = useLoaderData<{ card: CreditCard; cards: CreditCard[]; isAdmin: boolean; defaultCurrency: { id: string; symbol: string } | null }>();
+  const defaultCurrencySymbol = defaultCurrency?.symbol ?? '$';
   const navigate = useNavigate();
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [statements, setStatements] = useState<CreditCardStatement[]>([]);
@@ -406,7 +421,7 @@ function CreditCardDetail() {
       {loading ? (
         <div className="text-center py-10 text-muted-foreground">Cargando...</div>
       ) : (
-        <FetchTable name="transactions" data={transactions as never[]} columns={buildTransactionColumns(transactions)} />
+        <FetchTable name="transactions" data={transactions as never[]} columns={buildTransactionColumns(transactions, defaultCurrencySymbol)} />
       )}
 
       <CreateStatementModal
