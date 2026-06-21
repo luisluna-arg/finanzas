@@ -43,7 +43,7 @@ module.exports = {
         commonjs: true,
         es6: true,
     },
-    ignorePatterns: ["!**/.server", "!**/.client", "app/components/ui/shadcn/**"],
+    ignorePatterns: ["!**/.server", "!**/.client", "app/components/ui/shadcn/**", "build/**"],
 
     // Base config
     extends: ["eslint:recommended"],

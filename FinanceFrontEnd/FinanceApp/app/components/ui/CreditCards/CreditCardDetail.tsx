@@ -119,9 +119,9 @@ function buildTransactionColumns(transactions: CreditCardTransaction[], defaultC
   const seen = new Set<string>();
   const currencies = transactions
     .filter((tx) => { const unseen = !seen.has(tx.currencyId); seen.add(tx.currencyId); return unseen; })
-    .map((tx) => ({ id: tx.currencyId, currency: tx.currency }));
+    .map((tx) => ({ id: tx.currencyId }));
 
-  const currencyCols = currencies.flatMap(({ id: currencyId, currency }) => [
+  const currencyCols = currencies.flatMap(({ id: currencyId }) => [
     {
       id: `currency_${currencyId}`,
       label: 'Moneda',
