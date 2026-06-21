@@ -36,9 +36,28 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
             .FirstOrDefaultAsync(s => s.Id == command.StatementId, cancellationToken)
             ?? throw new Exception($"Statement not found: {command.StatementId}");
 
-        var helper = new StatementImportExcelHelper();
-        var rows = helper.Read(command.File, config).ToArray();
-        if (rows.Length == 0) return CommandResult.Failure("No rows found in the uploaded file.");
+        var extension = Path.GetExtension(command.File.FileName).ToLowerInvariant();
+        IEnumerable<StatementImportRow> rawRows = extension == ".pdf" || config.SourceType == SourceType.Pdf
+            ? new StatementImportPdfHelper().Read(command.File, config)
+            : new StatementImportExcelHelper().Read(command.File, config);
+
+        var rows = rawRows.ToArray();
+        if (rows.Length == 0)
+        {
+            if (extension == ".pdf" || config.SourceType == SourceType.Pdf)
+            {
+                var diag = new StatementImportPdfHelper().Diagnose(command.File);
+                var sample = diag.Pages
+                    .Skip(config.SkipPages)
+                    .Take(1)
+                    .SelectMany(p => p.Lines.Take(15))
+                    .Select(l => $"[{string.Join(", ", l.Words.Select(w => $"{w.Text}@x{w.XCenter:F2}"))}]");
+                return CommandResult.Failure(
+                    $"No rows found. Pages={diag.PageCount}, skipPages={config.SkipPages}. " +
+                    $"First lines of page {config.SkipPages + 1}: {string.Join(" | ", sample)}");
+            }
+            return CommandResult.Failure("No rows found in the uploaded file.");
+        }
 
         var existingTxs = await DbContext.CreditCardTransaction
             .Where(t => t.CreditCardId == statement.CreditCardId && !t.Deactivated)

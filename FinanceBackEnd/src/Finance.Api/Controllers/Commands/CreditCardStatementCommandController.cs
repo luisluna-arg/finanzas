@@ -6,6 +6,7 @@ using Finance.Application.Commands.CreditCards;
 using Finance.Application.Dtos.CreditCards;
 using Finance.Application.Mapping;
 using Finance.Domain.Models.CreditCards;
+using Finance.Helpers.ExcelHelper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finance.Api.Controllers.Commands;
@@ -39,5 +40,12 @@ public class CreditCardStatementCommandController(IMappingService mapper, IDispa
             StatementId = new Guid(statementId),
         };
         return await ExecuteAsync(command);
+    }
+
+    [HttpPost("pdf-diagnose")]
+    public IActionResult PdfDiagnose(IFormFile file)
+    {
+        var result = new StatementImportPdfHelper().Diagnose(file);
+        return Ok(result);
     }
 }
