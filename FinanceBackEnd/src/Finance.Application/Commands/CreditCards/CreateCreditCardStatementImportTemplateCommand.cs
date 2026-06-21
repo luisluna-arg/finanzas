@@ -50,7 +50,7 @@ public class CreateCreditCardStatementImportTemplateCommandHandler
         {
             Name = command.Name,
             IsSystem = command.IsSystem,
-            UserId = userId,
+            UserId = command.IsSystem ? null : userId,
             ConfigJson = command.ConfigJson,
         };
 

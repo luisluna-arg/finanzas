@@ -3,6 +3,7 @@ using Finance.Application.Commands.CreditCards;
 using Finance.Application.Repositories;
 using Finance.Application.Specifications.CreditCards;
 using Finance.Application.Tests.Queries.Base;
+using Finance.Domain.Enums;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.Models.Identities;
@@ -29,6 +30,25 @@ public class CreateCreditCardStatementImportTemplateCommandHandlerTests : QueryH
         return new(_repository.Object, _dbContext, isAdmin, new CanSetSystemFlag(isAdmin));
     }
 
+    private async Task SetupAdminAsync()
+    {
+        var sourceId = Guid.NewGuid().ToString();
+        var adminRole = await _dbContext.Role.FindAsync(RoleEnum.Admin)
+                        ?? new Role { Id = RoleEnum.Admin, Name = "Admin" };
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Username = "admin",
+            FirstName = "A",
+            LastName = "B",
+            Identities = [new Identity { SourceId = sourceId }],
+            Roles = [adminRole],
+        };
+        await _dbContext.User.AddAsync(user);
+        await _dbContext.SaveChangesAsync();
+        SetupIdentity(sourceId);
+    }
+
     private void SetupIdentity(string? name)
     {
         var identity = new Mock<IIdentity>();
@@ -43,6 +63,8 @@ public class CreateCreditCardStatementImportTemplateCommandHandlerTests : QueryH
     [Fact]
     public async Task Create_WithIsSystemTrue_CreatesTemplateWithNullUserId()
     {
+        await SetupAdminAsync();
+
         var command = new CreateCreditCardStatementImportTemplateCommand
         {
             Name = "System Template",
@@ -130,6 +152,8 @@ public class CreateCreditCardStatementImportTemplateCommandHandlerTests : QueryH
     [Fact]
     public async Task Create_SetsConfigJsonFromCommand()
     {
+        await SetupAdminAsync();
+
         var configJson = "{\"skipRows\":2}";
         var command = new CreateCreditCardStatementImportTemplateCommand
         {

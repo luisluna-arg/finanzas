@@ -3,29 +3,64 @@ using Finance.Application.Commands.CreditCards;
 using Finance.Application.Repositories;
 using Finance.Application.Specifications.CreditCards;
 using Finance.Application.Tests.Queries.Base;
+using Finance.Domain.Enums;
+using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.CreditCards;
+using Finance.Domain.Models.Identities;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Finance.Application.Tests.Commands.CreditCards;
 
 public class UpdateCreditCardStatementImportTemplateCommandHandlerTests : QueryHandlerBaseTests
 {
     private readonly Mock<IRepository<CreditCardStatementImportTemplate, Guid>> _repository;
+    private readonly Mock<IHttpContextAccessor> _httpContextAccessor;
 
     public UpdateCreditCardStatementImportTemplateCommandHandlerTests()
     {
         _repository = new Mock<IRepository<CreditCardStatementImportTemplate, Guid>>();
+        _httpContextAccessor = new Mock<IHttpContextAccessor>();
     }
 
     private UpdateCreditCardStatementImportTemplateCommandHandler CreateHandler()
     {
-        var isAdmin = new IsAdminUser(Mock.Of<IHttpContextAccessor>(), _dbContext);
+        var isAdmin = new IsAdminUser(_httpContextAccessor.Object, _dbContext);
         return new(_repository.Object, _dbContext, new CanSetSystemFlag(isAdmin));
+    }
+
+    private async Task SetupAdminAsync()
+    {
+        var sourceId = Guid.NewGuid().ToString();
+        var adminRole = await _dbContext.Role.FindAsync(RoleEnum.Admin)
+                        ?? new Role { Id = RoleEnum.Admin, Name = "Admin" };
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Username = "admin",
+            FirstName = "A",
+            LastName = "B",
+            Identities = [new Identity { SourceId = sourceId }],
+            Roles = [adminRole],
+        };
+        await _dbContext.User.AddAsync(user);
+        await _dbContext.SaveChangesAsync();
+
+        var identity = new Mock<IIdentity>();
+        identity.Setup(i => i.Name).Returns(sourceId);
+        var principal = new Mock<ClaimsPrincipal>();
+        principal.Setup(p => p.Identity).Returns(identity.Object);
+        var ctx = new Mock<HttpContext>();
+        ctx.Setup(c => c.User).Returns(principal.Object);
+        _httpContextAccessor.Setup(a => a.HttpContext).Returns(ctx.Object);
     }
 
     [Fact]
     public async Task Update_WhenTemplateExists_UpdatesFieldsAndReturnsSuccess()
     {
+        await SetupAdminAsync();
+
         var existing = new CreditCardStatementImportTemplate
         {
             Id = Guid.NewGuid(),
