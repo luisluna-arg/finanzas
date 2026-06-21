@@ -13,9 +13,7 @@ jobs:
     deployment:
         name: Deployment
         runs-on: ubuntu-latest
-        if: >-
-            (github.event_name == 'push' && contains(join(github.event.commits.*.modified, ','), 'FinanceBackEnd/Finance.Migrations/')) ||
-            (github.event_name == 'pull_request' && contains(join(github.event.pull_request.changed_files, ','), 'FinanceBackEnd/Finance.Migrations/'))
+        if: false
         steps:
             - name: Check Supabase DB availability
               run: |
