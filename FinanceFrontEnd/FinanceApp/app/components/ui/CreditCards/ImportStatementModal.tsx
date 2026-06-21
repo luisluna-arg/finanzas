@@ -717,12 +717,12 @@ export default function ImportStatementModal({
 
             <div>
               <Label htmlFor="import-file" className="block mb-2">
-                Archivo (.xls, .xlsx, .csv)
+                Archivo (.xls, .xlsx, .csv, .pdf)
               </Label>
               <Input
                 id="import-file"
                 type="file"
-                accept=".xls,.xlsx,.csv"
+                accept=".xls,.xlsx,.csv,.pdf"
                 required
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               />
