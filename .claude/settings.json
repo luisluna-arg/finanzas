@@ -9,6 +9,7 @@
       "Bash(git add:*)",
       "Bash(git branch:*)",
       "Bash(git checkout:*)",
+      "Bash(git commit *)",
       "Bash(uv run:*)",
       "Edit",
       "PowerShell(cd *)",
@@ -19,15 +20,14 @@
       "PowerShell(git add:*)",
       "PowerShell(git branch:*)",
       "PowerShell(git checkout:*)",
+      "PowerShell(git commit *)",
       "PowerShell(uv run:*)",
       "Read",
       "WebSearch",
       "Write"
     ],
     "ask": [
-      "Bash(git commit*)",
       "Bash(git push*)",
-      "PowerShell(git commit*)",
       "PowerShell(git push*)"
     ]
   }
