@@ -164,7 +164,7 @@ export default function Dashboard() {
                               const total = rows.reduce((acc, r) => {
                                 return acc + getSafeValueFrom(r, 'convertedAmount');
                               }, 0);
-                              return `${data.name}: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
+                              return `${data.name} ${data.bank?.name}: ${defaultCurrencySymbol}${moneyFormatter(total)}`;
                             }
                           }}
                         />
