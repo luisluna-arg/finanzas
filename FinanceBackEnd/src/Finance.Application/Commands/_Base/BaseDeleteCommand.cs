@@ -12,13 +12,14 @@ public class BaseDeleteCommand<TId> : ICommand
     public TId[] Ids { get; set; } = [];
 }
 
-public class BaseDeleteCommandHandler<TEntity, TId>(IEntityService<TEntity, TId> service)
-    : ICommandHandler<BaseDeleteCommand<TId>>
+public class BaseDeleteCommandHandler<TCommand, TEntity, TId>(IEntityService<TEntity, TId> service)
+    : ICommandHandler<TCommand>
+    where TCommand : BaseDeleteCommand<TId>
     where TEntity : Entity<TId>
 {
     protected IEntityService<TEntity, TId> Service { get => service; }
 
-    public virtual async Task<CommandResult> ExecuteAsync(BaseDeleteCommand<TId> command, CancellationToken cancellationToken = default)
+    public virtual async Task<CommandResult> ExecuteAsync(TCommand command, CancellationToken cancellationToken = default)
     {
         await Service.DeleteAsync(command.Ids, cancellationToken);
         return CommandResult.Success();

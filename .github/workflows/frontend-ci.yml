@@ -22,12 +22,12 @@ jobs:
       - name: Install dependencies (FinanceApp)
         working-directory: FinanceFrontEnd/FinanceApp
         run: |
-          npm ci
+          npm install
 
       - name: Install dependencies (FinanceFunds)
         working-directory: FinanceFrontEnd/FinanceFunds
         run: |
-          npm ci
+          npm install
 
       - name: Focused no-console lint (FinanceApp)
         working-directory: FinanceFrontEnd/FinanceApp

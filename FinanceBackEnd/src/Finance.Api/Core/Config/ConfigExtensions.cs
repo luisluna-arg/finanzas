@@ -35,6 +35,10 @@ public static class ConfigExtensions
 
         services.AddEntityServices();
 
+        services.AddApplicationSecurityServices();
+
+        services.AddSpecifications();
+
         services.AddSagaServices();
 
         services.AddScoped<IExcelHelper<IOLInvestment>, IOLInvestmentExcelHelper>();

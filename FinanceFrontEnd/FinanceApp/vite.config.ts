@@ -3,8 +3,8 @@ import { reactRouter } from '@react-router/dev/vite';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-export default defineConfig({
-  plugins: [reactRouter(), tsconfigPaths()],
+export default defineConfig(({ mode }) => ({
+  plugins: mode === 'test' ? [tsconfigPaths()] : [reactRouter(), tsconfigPaths()],
   server: {
     port: parseInt(process.env.PORT || '5100'),
   },
@@ -14,7 +14,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    // Force Vite to pre-bundle these CJS packages so named exports resolve in the browser
     include: [
       '@opentelemetry/resources',
       '@opentelemetry/sdk-trace-web',
@@ -27,4 +26,13 @@ export default defineConfig({
       '@opentelemetry/api',
     ],
   },
-});
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./tests/setup.ts'],
+    include: ['tests/**/*.{test,spec}.{ts,tsx}'],
+    alias: {
+      '@': path.resolve(__dirname, './app'),
+    },
+  },
+}));

@@ -9,6 +9,7 @@ export interface CreditCard {
   recordCount: number;
   creditCardStatement?: CreditCardStatement;
   deactivated: boolean;
+  defaultImportTemplateId?: string | null;
 }
 
 export interface CreditCardStatement {

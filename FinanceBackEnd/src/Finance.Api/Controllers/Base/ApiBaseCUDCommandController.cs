@@ -23,7 +23,7 @@ public abstract class ApiBaseCUDCommandController<
     where TDeleteCommand : ICommand
 {
     [HttpPost]
-    public async Task<IActionResult> Create(TCreateCommand command)
+    public virtual async Task<IActionResult> Create(TCreateCommand command)
         => await ExecuteAsync(command);
 
     [HttpPut]

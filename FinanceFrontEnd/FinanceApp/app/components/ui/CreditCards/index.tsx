@@ -10,6 +10,11 @@ import {
 import { Separator } from '@/components/ui/shadcn/separator';
 import type { CreditCard, CreditCardsData } from '@/types/creditCard';
 
+const formatDate = (dateStr: string) => {
+  const [y, m, d] = dateStr.slice(0, 10).split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString();
+};
+
 function CreditCardList({
   creditCards,
   onSelectCard,
@@ -50,7 +55,7 @@ function CreditCardList({
                 <TableCell>{card.bank?.name ?? '-'}</TableCell>
                 <TableCell className="text-right">
                   {card.creditCardStatement
-                    ? new Date(card.creditCardStatement.closureDate).toLocaleDateString('es-AR')
+                    ? formatDate(card.creditCardStatement.closureDate)
                     : '-'}
                 </TableCell>
               </TableRow>

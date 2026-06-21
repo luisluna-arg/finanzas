@@ -22,6 +22,21 @@ namespace Finance.Domain.Migrations
 
             NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
 
+            modelBuilder.Entity("CreditCardCreditCardStatementImportTemplate", b =>
+                {
+                    b.Property<Guid>("CreditCardsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ImportTemplatesId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CreditCardsId", "ImportTemplatesId");
+
+                    b.HasIndex("ImportTemplatesId");
+
+                    b.ToTable("CreditCardImportTemplate", (string)null);
+                });
+
             modelBuilder.Entity("Finance.Domain.Models.AppModules.AppModule", b =>
                 {
                     b.Property<Guid>("Id")
@@ -574,6 +589,9 @@ namespace Finance.Domain.Migrations
                     b.Property<bool>("Deactivated")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid?>("DefaultImportTemplateId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -587,6 +605,8 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("CreditCardIssuerId");
 
                     b.HasIndex("CurrentStatementId");
+
+                    b.HasIndex("DefaultImportTemplateId");
 
                     b.HasIndex("BankId", "Name");
 
@@ -707,6 +727,45 @@ namespace Finance.Domain.Migrations
                     b.HasIndex("StatementId", "CreatedAt");
 
                     b.ToTable("CreditCardStatementAdjustment");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementImportTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConfigJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("IsSystem", "UserId");
+
+                    b.ToTable("CreditCardStatementImportTemplate");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementTransaction", b =>
@@ -1555,6 +1614,21 @@ namespace Finance.Domain.Migrations
                     b.ToTable("UserRole");
                 });
 
+            modelBuilder.Entity("CreditCardCreditCardStatementImportTemplate", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCard", null)
+                        .WithMany()
+                        .HasForeignKey("CreditCardsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardStatementImportTemplate", null)
+                        .WithMany()
+                        .HasForeignKey("ImportTemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Finance.Domain.Models.AppModules.AppModule", b =>
                 {
                     b.HasOne("Finance.Domain.Models.Currencies.Currency", "Currency")
@@ -1782,11 +1856,18 @@ namespace Finance.Domain.Migrations
                         .HasForeignKey("CurrentStatementId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Finance.Domain.Models.CreditCards.CreditCardStatementImportTemplate", "DefaultImportTemplate")
+                        .WithMany()
+                        .HasForeignKey("DefaultImportTemplateId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Bank");
 
                     b.Navigation("CreditCardIssuer");
 
                     b.Navigation("CurrentStatement");
+
+                    b.Navigation("DefaultImportTemplate");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardPayment", b =>
@@ -1820,6 +1901,16 @@ namespace Finance.Domain.Migrations
                         .IsRequired();
 
                     b.Navigation("Statement");
+                });
+
+            modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementImportTemplate", b =>
+                {
+                    b.HasOne("Finance.Domain.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Finance.Domain.Models.CreditCards.CreditCardStatementTransaction", b =>

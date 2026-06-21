@@ -1,14 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLoaderData, useNavigate } from 'react-router';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/shadcn/table';
+import FetchTable from '@/components/ui/utils/FetchTable';
+import { InputType } from '@/components/ui/utils/InputType';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
 import { Label } from '@/components/ui/shadcn/label';
@@ -33,10 +26,12 @@ import {
 import urls from '@/utils/urls';
 import type { CreditCard, CreditCardStatement, CreditCardTransaction } from '@/types/creditCard';
 import EditStatementModal from './EditStatementModal';
+import ImportStatementModal from './ImportStatementModal';
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('es-AR');
+  const [year, month, day] = dateStr.slice(0, 10).split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString();
 };
 
 const formatMoney = (value: unknown) => {
@@ -120,52 +115,65 @@ function StatementPicker({
   );
 }
 
-function TransactionsTable({ transactions }: { transactions: CreditCardTransaction[] }) {
-  const totalAmount = transactions.reduce(
-    (acc, tx) => acc + toNumber(tx.convertedAmount as unknown as ValueLike, 0),
-    0
-  );
+function buildTransactionColumns(transactions: CreditCardTransaction[], defaultCurrencySymbol: string) {
+  const seen = new Set<string>();
+  const currencies = transactions
+    .filter((tx) => { const unseen = !seen.has(tx.currencyId); seen.add(tx.currencyId); return unseen; })
+    .map((tx) => ({ id: tx.currencyId }));
 
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Fecha</TableHead>
-          <TableHead>Concepto</TableHead>
-          <TableHead className="w-20">Moneda</TableHead>
-          <TableHead className="w-32 text-right">Monto</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {transactions.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={4} className="text-center text-muted-foreground">
-              No se encontraron movimientos
-            </TableCell>
-          </TableRow>
-        ) : (
-          transactions.map((tx) => (
-            <TableRow key={tx.id}>
-              <TableCell>{formatDate(tx.timestamp)}</TableCell>
-              <TableCell>{tx.concept}</TableCell>
-              <TableCell>{tx.currency?.defaultSymbol ?? tx.currency?.shortName}</TableCell>
-              <TableCell className="text-right">{formatMoney(tx.amount)}</TableCell>
-            </TableRow>
-          ))
-        )}
-      </TableBody>
-      {transactions.length > 0 && (
-        <TableFooter>
-          <TableRow>
-            <TableCell className="font-medium">Total</TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-            <TableCell className="text-right font-medium">{formatMoney(totalAmount)}</TableCell>
-          </TableRow>
-        </TableFooter>
-      )}
-    </Table>
-  );
+  const currencyCols = currencies.flatMap(({ id: currencyId }) => [
+    {
+      id: `currency_${currencyId}`,
+      label: 'Moneda',
+      headerClass: 'w-20',
+      mapper: (r: unknown) => {
+        const tx = r as CreditCardTransaction;
+        return tx.currencyId === currencyId
+          ? (tx.currency?.defaultSymbol ?? tx.currency?.shortName ?? '')
+          : '';
+      },
+    },
+    {
+      id: `amount_${currencyId}`,
+      label: 'Monto',
+      class: 'text-right',
+      headerClass: 'w-32 text-right',
+      type: InputType.Decimal,
+      mapper: (r: unknown) => {
+        const tx = r as CreditCardTransaction;
+        return tx.currencyId === currencyId ? tx.amount : null;
+      },
+      formatter: (v: unknown) => (v != null ? formatMoney(v) : ''),
+      totals: {
+        reducer: (acc: unknown, row: unknown) =>
+          (acc as number) +
+          (( row as CreditCardTransaction).currencyId === currencyId
+            ? toNumber((row as CreditCardTransaction).amount as unknown as ValueLike, 0)
+            : 0),
+        formatter: (v: unknown) => formatMoney(v),
+      },
+    },
+  ]);
+
+  return [
+    { id: 'timestamp', label: 'Fecha', formatter: (v: unknown) => formatDate(String(v ?? '')) },
+    { id: 'concept', label: 'Concepto' },
+    ...currencyCols,
+    {
+      id: 'convertedAmount',
+      label: `Total (${defaultCurrencySymbol})`,
+      class: 'text-right',
+      headerClass: 'w-36 text-right',
+      type: InputType.Decimal,
+      mapper: (r: unknown) => toNumber((r as CreditCardTransaction).convertedAmount as unknown as ValueLike, 0),
+      formatter: (v: unknown) => formatMoney(v),
+      totals: {
+        reducer: (acc: unknown, row: unknown) =>
+          (acc as number) + toNumber((row as CreditCardTransaction).convertedAmount as unknown as ValueLike, 0),
+        formatter: (v: unknown) => `${defaultCurrencySymbol}${formatMoney(v)}`,
+      },
+    },
+  ];
 }
 
 function CreateStatementModal({
@@ -262,7 +270,8 @@ function CreateStatementModal({
 }
 
 function CreditCardDetail() {
-  const { card, cards } = useLoaderData<{ card: CreditCard; cards: CreditCard[] }>();
+  const { card, cards, isAdmin, defaultCurrency } = useLoaderData<{ card: CreditCard; cards: CreditCard[]; isAdmin: boolean; defaultCurrency: { id: string; symbol: string } | null }>();
+  const defaultCurrencySymbol = defaultCurrency?.symbol ?? '$';
   const navigate = useNavigate();
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [statements, setStatements] = useState<CreditCardStatement[]>([]);
@@ -271,6 +280,7 @@ function CreditCardDetail() {
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   useEffect(() => {
     if (!carouselApi) return;
@@ -380,6 +390,14 @@ function CreditCardDetail() {
           >
             Nuevo Resúmen
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary text-primary hover:bg-primary/10"
+            onClick={() => setShowImportModal(true)}
+          >
+            Importar Resúmen
+          </Button>
           {statements.length > 0 && (
             <Button
               variant="outline"
@@ -403,7 +421,7 @@ function CreditCardDetail() {
       {loading ? (
         <div className="text-center py-10 text-muted-foreground">Cargando...</div>
       ) : (
-        <TransactionsTable transactions={transactions} />
+        <FetchTable name="transactions" data={transactions as never[]} columns={buildTransactionColumns(transactions, defaultCurrencySymbol)} />
       )}
 
       <CreateStatementModal
@@ -425,6 +443,19 @@ function CreditCardDetail() {
           }}
         />
       )}
+
+      <ImportStatementModal
+        show={showImportModal}
+        onHide={() => setShowImportModal(false)}
+        creditCardId={card.id}
+        defaultTemplateId={card.defaultImportTemplateId ?? null}
+        isAdmin={isAdmin}
+        statements={statements}
+        onImported={() => {
+          fetchStatements();
+          fetchTransactions();
+        }}
+      />
     </>
   );
 }

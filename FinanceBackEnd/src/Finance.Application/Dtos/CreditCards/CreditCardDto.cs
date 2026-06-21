@@ -12,4 +12,5 @@ public record CreditCardDto : Dto<Guid>
     public CreditCardStatementDto CreditCardStatement { get; set; } = default!;
     public int RecordCount { get; set; } = 0;
     public string Name { get; set; } = string.Empty;
+    public Guid? DefaultImportTemplateId { get; set; }
 }

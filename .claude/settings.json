@@ -1,17 +1,34 @@
 {
   "permissions": {
     "allow": [
-      "Read",
-      "Write",
-      "Edit",
-      "Bash(uv run:*)",
-      "Bash(git checkout:*)",
-      "Bash(git branch:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
+      "Bash(cd *)",
       "Bash(dotnet build *)",
+      "Bash(dotnet ef migrations add *)",
+      "Bash(dotnet ef migrations remove *)",
       "Bash(dotnet test *)",
-      "WebSearch"
+      "Bash(git add:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit *)",
+      "Bash(uv run:*)",
+      "Edit",
+      "PowerShell(cd *)",
+      "PowerShell(dotnet build *)",
+      "PowerShell(dotnet ef migrations add *)",
+      "PowerShell(dotnet ef migrations remove *)",
+      "PowerShell(dotnet test *)",
+      "PowerShell(git add:*)",
+      "PowerShell(git branch:*)",
+      "PowerShell(git checkout:*)",
+      "PowerShell(git commit *)",
+      "PowerShell(uv run:*)",
+      "Read",
+      "WebSearch",
+      "Write"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "PowerShell(git push*)"
     ]
   }
 }

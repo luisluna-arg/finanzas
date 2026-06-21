@@ -19,7 +19,9 @@ public abstract class ApiBaseCommandController<TEntity, TId, TDto>(IMappingServi
 {
     protected async override Task<IActionResult> ExecuteAsync(ICommand command)
     {
-        await Dispatcher.DispatchCommandAsync(command);
+        var result = await Dispatcher.DispatchCommandAsync(command);
+        if (!result.IsSuccess)
+            return BadRequest(result.ErrorMessage);
         return Ok();
     }
 

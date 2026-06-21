@@ -37,6 +37,13 @@ public class CreditCardConfiguration : IEntityTypeConfiguration<CreditCard>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
+            .HasOne(c => c.DefaultImportTemplate)
+            .WithMany()
+            .HasForeignKey(c => c.DefaultImportTemplateId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder
             .HasIndex(c => new { c.BankId, c.Name });
     }
 }

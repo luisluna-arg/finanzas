@@ -14,6 +14,7 @@ import { CurrencyExchangeRatesQuery } from "./queries/CurrencyExchangeRatesQuery
 import { DebitsQuery } from "./queries/DebitsQuery";
 import { PaginatedDebitsQuery } from "./queries/PaginatedDebitsQuery";
 import { PaginatedSubscriptionsQuery } from "./queries/PaginatedSubscriptionsQuery";
+import { SessionQuery } from "./queries/SessionQuery";
 
 const httpsAgent = new Agent({ rejectUnauthorized: false });
 
@@ -33,6 +34,7 @@ export class BackendClient {
     private CurrenciesQuery: CurrenciesQuery;
     private FrequenciesQuery: FrequenciesQuery;
     private CurrencyExchangeRatesQuery: CurrencyExchangeRatesQuery;
+    private SessionQuery: SessionQuery;
 
     constructor(accessToken: string) {
         this.HttpsAgent = httpsAgent;
@@ -71,6 +73,7 @@ export class BackendClient {
             httpsAgent,
             this.AccessToken
         );
+        this.SessionQuery = new SessionQuery(httpsAgent, this.AccessToken);
     }
 
     public GetBanksQuery = (): BanksQuery => this.BanksQuery;
@@ -88,6 +91,7 @@ export class BackendClient {
     public GetFrequenciesQuery = (): FrequenciesQuery => this.FrequenciesQuery;
     public GetCurrencyExchangeRatesQuery = (): CurrencyExchangeRatesQuery =>
         this.CurrencyExchangeRatesQuery;
+    public GetSessionQuery = (): SessionQuery => this.SessionQuery;
 
     async get<TFilter>(endpoint: string, filters?: TFilter) {
         try {
