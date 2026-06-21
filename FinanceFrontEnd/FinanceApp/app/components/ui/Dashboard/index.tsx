@@ -140,7 +140,7 @@ export default function Dashboard() {
                       const url = urls.creditCardMovements.latest.with({
                         CreditCardId: data.id,
                         Page: 1,
-                        PageSize: 10,
+                        PageSize: 1000,
                       });
                       const idx =
                         _index < backgroundClasses.length
