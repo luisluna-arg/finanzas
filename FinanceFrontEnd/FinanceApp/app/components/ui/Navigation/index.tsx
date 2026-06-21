@@ -24,13 +24,13 @@ const NavLink = ({ text, link }: { text: string; link: string }) => {
 
 export default function Navigation() {
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
-        // Check localStorage and current document state for dark mode
-        const storedTheme = localStorage.getItem('theme');
-        const isDark = storedTheme === 'dark' || document.documentElement.classList.contains('dark');
+        const isDark = localStorage.getItem('theme') === 'dark';
         setIsDarkMode(isDark);
-    }, []);
+        document.documentElement.classList.toggle('dark', isDark);
+    }, [location.pathname]);
 
     const toggleDarkMode = () => {
         const newDarkMode = !isDarkMode;
