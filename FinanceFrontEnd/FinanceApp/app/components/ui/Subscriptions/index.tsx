@@ -440,6 +440,7 @@ function Subscriptions() {
       />
 
       <SubscriptionModal
+        key={editingSubscription?.id ?? 'new'}
         show={showModal}
         onHide={() => {
           setShowModal(false);
