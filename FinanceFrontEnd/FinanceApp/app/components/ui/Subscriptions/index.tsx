@@ -278,7 +278,7 @@ function Subscriptions() {
 
     const payload = editingSubscription
       ? {
-          subscriptionId: editingSubscription.id,
+          id: editingSubscription.id,
           name: data.name,
           price: data.price,
           frequency: data.frequency,
