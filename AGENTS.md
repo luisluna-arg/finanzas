@@ -87,6 +87,7 @@ npm run lint
 - Write self-documenting code with clear names. Prefer refactoring unclear code into well-named methods over adding explanatory comments.
 - Only add comments for: complex algorithms, non-obvious business rules, public API XML docs, workarounds. Never for obvious code.
 - Comments explain *why*, not *what* — the code shows what.
+- No narrative comments — do not narrate the steps the code takes (`// First, get the latest statement`, `// Now get the transactions`). Delete them; the code is the narration.
 - Never use `#pragma warning disable` — fix the underlying issue instead.
 - Always reuse existing UI components instead of falling back to raw HTML elements. Check imports already in the file, then look in these two locations before writing any markup:
   - `app/components/ui/shadcn/` — `Button`, `Input`, `Label`, `Separator`, `Textarea`, `Table/*`, `Carousel/*`, `Pagination`

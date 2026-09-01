@@ -25,25 +25,30 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandler : BaseCol
                 .Where(s => !request.CreditCardId.HasValue || s.CreditCardId == request.CreditCardId.Value)
                 .AsQueryable();
 
-            var latestStatementIds = await statementsQuery
-                .GroupBy(s => s.CreditCardId)
-                .Select(g => g.OrderByDescending(s => s.ClosureDate).First().Id)
+            var statements = await statementsQuery
+                .Select(s => new { s.Id, s.CreditCardId, s.ClosureDate, s.ExpiringDate })
                 .ToListAsync(cancellationToken);
 
-            if (!latestStatementIds.Any())
+            var today = DateTime.UtcNow.Date;
+            var latestStatementIds = statements
+                .GroupBy(s => s.CreditCardId)
+                .Select(g => g.OrderByDescending(s => s.ClosureDate).First())
+                .Where(s => request.IncludeExpiredStatements || s.ExpiringDate.Date >= today)
+                .Select(s => s.Id)
+                .ToList();
+
+            if (latestStatementIds.Count == 0)
             {
-                result = new List<CreditCardTransaction>();
+                result = new();
             }
             else
             {
-                // Get transaction IDs that belong to those latest statements
                 var latestTransactionIds = await DbContext.CreditCardStatementTransaction
                     .Where(st => latestStatementIds.Contains(st.StatementId))
                     .Where(st => st.CreditCardTransactionId != null)
                     .Select(st => st.CreditCardTransactionId!.Value)
                     .ToListAsync(cancellationToken);
 
-                // Now get the actual transactions with proper includes
                 var transactionsQuery = DbContext.CreditCardTransaction
                     .Include(t => t.CreditCard)
                     .ThenInclude(cc => cc.Bank)
@@ -57,7 +62,6 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandler : BaseCol
                     transactionsQuery = transactionsQuery.Where(t => !t.Deactivated);
                 }
 
-                // Apply pagination if requested
                 if (request.PageSize.HasValue && request.PageSize > 0)
                 {
                     var page = request.Page ?? 1;
@@ -93,4 +97,5 @@ public class GetLatestCreditCardTransactionsFromStatementsQuery : GetAllQuery<Cr
     public Guid? CreditCardId { get; set; }
     public int? Page { get; set; }
     public int? PageSize { get; set; }
+    public bool IncludeExpiredStatements { get; set; }
 }
