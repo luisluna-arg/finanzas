@@ -141,6 +141,7 @@ export default function Dashboard() {
                         CreditCardId: data.id,
                         Page: 1,
                         PageSize: 1000,
+                        IncludeExpiredStatements: false,
                       });
                       const idx =
                         _index < backgroundClasses.length
