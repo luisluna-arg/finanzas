@@ -16,7 +16,8 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandlerTests : Qu
     private async Task<(CreditCard card, CreditCardStatement statement, CreditCardTransaction tx)> SeedAsync(
         DateTime closureDate,
         bool statementDeactivated = false,
-        bool txDeactivated = false)
+        bool txDeactivated = false,
+        DateTime? expiringDate = null)
     {
         var user = new User
         {
@@ -33,7 +34,7 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandlerTests : Qu
             Id = Guid.NewGuid(),
             CreditCardId = card.Id,
             ClosureDate = closureDate,
-            ExpiringDate = closureDate.AddDays(15),
+            ExpiringDate = expiringDate ?? DateTime.UtcNow.Date.AddMonths(1),
             Deactivated = statementDeactivated,
         };
         var tx = new CreditCardTransaction
@@ -100,7 +101,7 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandlerTests : Qu
             Id = Guid.NewGuid(),
             CreditCardId = card.Id,
             ClosureDate = newerClosureDate,
-            ExpiringDate = newerClosureDate.AddDays(15),
+            ExpiringDate = DateTime.UtcNow.Date.AddMonths(1),
         };
         var newerTx = new CreditCardTransaction
         {
@@ -161,5 +162,93 @@ public class GetLatestCreditCardTransactionsFromStatementsQueryHandlerTests : Qu
         Assert.True(result.IsSuccess);
         Assert.Contains(result.Data, t => t.Id == activeTx.Id);
         Assert.DoesNotContain(result.Data, t => t.Id == deactivatedTx.Id);
+    }
+
+    [Fact]
+    public async Task Execute_WhenLatestStatementHasExpired_ReturnsNoTransactions()
+    {
+        var closureDate = DateTime.UtcNow.Date.AddMonths(-2);
+        var (card, _, tx) = await SeedAsync(closureDate, expiringDate: DateTime.UtcNow.Date.AddDays(-1));
+
+        var result = await CreateHandler().ExecuteAsync(
+            new GetLatestCreditCardTransactionsFromStatementsQuery { CreditCardId = card.Id }, default);
+
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(result.Data, t => t.Id == tx.Id);
+    }
+
+    [Fact]
+    public async Task Execute_WhenLatestStatementExpiresToday_ReturnsItsTransactions()
+    {
+        var closureDate = DateTime.UtcNow.Date.AddMonths(-1);
+        var (card, _, tx) = await SeedAsync(closureDate, expiringDate: DateTime.UtcNow.Date);
+
+        var result = await CreateHandler().ExecuteAsync(
+            new GetLatestCreditCardTransactionsFromStatementsQuery { CreditCardId = card.Id }, default);
+
+        Assert.True(result.IsSuccess);
+        Assert.Contains(result.Data, t => t.Id == tx.Id);
+    }
+
+    [Fact]
+    public async Task Execute_WhenLatestStatementExpired_AndIncludeExpiredStatements_ReturnsItsTransactions()
+    {
+        var closureDate = DateTime.UtcNow.Date.AddMonths(-2);
+        var (card, _, tx) = await SeedAsync(closureDate, expiringDate: DateTime.UtcNow.Date.AddDays(-1));
+
+        var result = await CreateHandler().ExecuteAsync(
+            new GetLatestCreditCardTransactionsFromStatementsQuery
+            {
+                CreditCardId = card.Id,
+                IncludeExpiredStatements = true,
+            }, default);
+
+        Assert.True(result.IsSuccess);
+        Assert.Contains(result.Data, t => t.Id == tx.Id);
+    }
+
+    [Fact]
+    public async Task Execute_WhenLatestStatementExpired_DoesNotFallBackToOlderNonExpiredStatement()
+    {
+        var olderClosureDate = DateTime.UtcNow.Date.AddMonths(-2);
+        var (card, _, olderTx) = await SeedAsync(
+            olderClosureDate, expiringDate: DateTime.UtcNow.Date.AddMonths(1));
+
+        var newerStatement = new CreditCardStatement
+        {
+            Id = Guid.NewGuid(),
+            CreditCardId = card.Id,
+            ClosureDate = DateTime.UtcNow.Date.AddDays(-20),
+            ExpiringDate = DateTime.UtcNow.Date.AddDays(-1),
+        };
+        var newerTx = new CreditCardTransaction
+        {
+            Id = Guid.NewGuid(),
+            CreditCardId = card.Id,
+            Timestamp = DateTime.UtcNow.Date.AddDays(-25),
+            TransactionType = CreditCardTransactionType.Purchase,
+            Concept = "Newer purchase",
+            Amount = new Money(200m),
+            CurrencyId = Guid.Parse("6d189135-7040-45a1-b713-b1aa6cad1720"),
+        };
+        _dbContext.CreditCardStatement.Add(newerStatement);
+        _dbContext.CreditCardTransaction.Add(newerTx);
+        _dbContext.CreditCardStatementTransaction.Add(new CreditCardStatementTransaction
+        {
+            Id = Guid.NewGuid(),
+            StatementId = newerStatement.Id,
+            CreditCardTransactionId = newerTx.Id,
+            PostedDate = newerTx.Timestamp,
+            Amount = newerTx.Amount,
+            Description = newerTx.Concept,
+        });
+        await _dbContext.SaveChangesAsync();
+
+        var result = await CreateHandler().ExecuteAsync(
+            new GetLatestCreditCardTransactionsFromStatementsQuery { CreditCardId = card.Id }, default);
+
+        Assert.True(result.IsSuccess);
+        Assert.DoesNotContain(result.Data, t => t.Id == newerTx.Id);
+        Assert.DoesNotContain(result.Data, t => t.Id == olderTx.Id);
     }
 }
