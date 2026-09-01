@@ -25,7 +25,11 @@ public class GetCreditCardExpensesQueryHandler(
         var defaultCurrencyId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
 
         var transactionsResult = await _dispatcher.DispatchQueryAsync(
-            new GetLatestCreditCardTransactionsFromStatementsQuery { IncludeDeactivated = false });
+            new GetLatestCreditCardTransactionsFromStatementsQuery
+            {
+                IncludeDeactivated = false,
+                IncludeExpiredStatements = true,
+            });
 
         var holders = transactionsResult.Data
             .Select(t => (IAmountHolder)new TransactionAmountHolder { CurrencyId = t.CurrencyId, Amount = t.Amount })
