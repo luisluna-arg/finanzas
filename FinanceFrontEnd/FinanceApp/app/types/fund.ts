@@ -9,7 +9,6 @@ export interface FundRecord {
   amount: number;
   bankId: string;
   currencyId: string;
-  dailyUse: boolean;
   bank: BankData;
   currency: CurrencyData;
 }

@@ -22,7 +22,6 @@ export interface CreateFundRequest {
   currencyId: string;
   timeStamp: string;
   amount: number;
-  dailyUse?: boolean;
 }
 
 /**
