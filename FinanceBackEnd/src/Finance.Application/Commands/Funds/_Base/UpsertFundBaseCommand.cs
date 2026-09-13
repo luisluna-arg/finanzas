@@ -13,7 +13,6 @@ public abstract class UpsertFundBaseCommand : IContextAwareCommand<FinanceDispat
     public virtual Guid CurrencyId { get; set; }
     public DateTime TimeStamp { get; set; }
     public Money Amount { get; set; }
-    public bool? DailyUse { get; set; }
     internal FinanceDispatchContext Context { get; private set; } = new();
     public void SetContext(FinanceDispatchContext context) => Context = context;
 }

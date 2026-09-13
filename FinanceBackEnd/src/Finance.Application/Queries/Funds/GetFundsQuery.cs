@@ -70,7 +70,11 @@ public class GetFundsQueryHandler : BaseCollectionQueryHandler<GetFundsQuery, Fu
 
         if (request.DailyUse.HasValue)
         {
-            query = query.Where(o => o.DailyUse == request.DailyUse.Value);
+            var dailyUse = request.DailyUse.Value;
+            // Bypasses BankCurrency's own ownership filter, which is independent of Fund's.
+            query = query.Where(o => DbContext.BankCurrency
+                .IgnoreQueryFilters()
+                .Any(bc => bc.BankId == o.BankId && bc.CurrencyId == o.CurrencyId && bc.DailyUse == dailyUse));
         }
 
         return DataResult<List<Fund>>.Success(await query.ToListAsync(cancellationToken));

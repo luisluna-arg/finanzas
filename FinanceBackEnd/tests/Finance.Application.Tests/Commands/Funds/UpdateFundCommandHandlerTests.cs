@@ -45,7 +45,6 @@ public class UpdateFundCommandHandlerTests : IDisposable
             CurrencyId = Guid.NewGuid(),
             Amount = 10m,
             TimeStamp = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-            DailyUse = false,
         };
         var command = new UpdateFundCommand
         {
@@ -54,7 +53,6 @@ public class UpdateFundCommandHandlerTests : IDisposable
             CurrencyId = currency.Id,
             Amount = 55m,
             TimeStamp = new DateTime(2025, 2, 2, 0, 0, 0, DateTimeKind.Utc),
-            DailyUse = true,
         };
 
         _fundRepo.Setup(r => r.GetByIdAsync(fund.Id, It.IsAny<CancellationToken>())).ReturnsAsync(fund);
@@ -70,7 +68,6 @@ public class UpdateFundCommandHandlerTests : IDisposable
         Assert.Equal(currency, result.Data.Currency);
         Assert.Equal(55m, (decimal)result.Data.Amount);
         Assert.Equal(command.TimeStamp, result.Data.TimeStamp);
-        Assert.True(result.Data.DailyUse);
 
         _fundRepo.Verify(r => r.UpdateAsync(fund, It.IsAny<CancellationToken>(), It.IsAny<bool>()), Times.Once);
     }

@@ -1,5 +1,6 @@
 using Finance.Domain.Models.AppModules;
 using Finance.Domain.Models.Auth;
+using Finance.Domain.Models.BankCurrencies;
 using Finance.Domain.Models.Banks;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.Models.Currencies;
@@ -27,6 +28,8 @@ public class FinanceDbContext : DbContext
     public DbSet<AppModule> AppModule => Set<AppModule>();
     public DbSet<AppModuleType> AppModuleType => Set<AppModuleType>();
     public DbSet<Bank> Bank => Set<Bank>();
+    public DbSet<BankCurrency> BankCurrency => Set<BankCurrency>();
+    public DbSet<BankCurrencyPermissions> BankCurrencyPermissions => Set<BankCurrencyPermissions>();
     public DbSet<CreditCardIssuer> CreditCardIssuer => Set<CreditCardIssuer>();
     public DbSet<CreditCard> CreditCard => Set<CreditCard>();
     public DbSet<CreditCardStatement> CreditCardStatement => Set<CreditCardStatement>();

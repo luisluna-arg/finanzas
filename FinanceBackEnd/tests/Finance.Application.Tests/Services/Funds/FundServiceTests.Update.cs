@@ -13,7 +13,7 @@ public partial class FundServiceTests : IDisposable
     public async Task Update_WhenDispatchSucceeds_ReturnsSuccess()
     {
         var fund = new Fund { Id = Guid.NewGuid() };
-        var request = new UpdateFundRequest(fund.Id, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(150m), true);
+        var request = new UpdateFundRequest(fund.Id, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(150m));
 
         _dispatcher
             .Setup(d => d.DispatchAsync<DataResult<Fund>>(It.IsAny<UpdateFundCommand>(), It.IsAny<HttpRequest?>()))
@@ -33,7 +33,7 @@ public partial class FundServiceTests : IDisposable
         var currencyId = Guid.NewGuid();
         var timeStamp = DateTime.UtcNow;
         var amount = new Money(500m);
-        var request = new UpdateFundRequest(fundId, bankId, currencyId, timeStamp, amount, true);
+        var request = new UpdateFundRequest(fundId, bankId, currencyId, timeStamp, amount);
 
         _dispatcher
             .Setup(d => d.DispatchAsync<DataResult<Fund>>(It.IsAny<UpdateFundCommand>(), It.IsAny<HttpRequest?>()))
@@ -47,8 +47,7 @@ public partial class FundServiceTests : IDisposable
                 c.BankId == bankId &&
                 c.CurrencyId == currencyId &&
                 c.TimeStamp == timeStamp &&
-                c.Amount == amount &&
-                c.DailyUse == true),
+                c.Amount == amount),
             It.IsAny<HttpRequest?>()),
             Times.Once);
     }
@@ -56,7 +55,7 @@ public partial class FundServiceTests : IDisposable
     [Fact]
     public async Task Update_WhenDispatchFails_ReturnsFailure()
     {
-        var request = new UpdateFundRequest(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(100m), false);
+        var request = new UpdateFundRequest(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(100m));
 
         _dispatcher
             .Setup(d => d.DispatchAsync<DataResult<Fund>>(It.IsAny<UpdateFundCommand>(), It.IsAny<HttpRequest?>()))
