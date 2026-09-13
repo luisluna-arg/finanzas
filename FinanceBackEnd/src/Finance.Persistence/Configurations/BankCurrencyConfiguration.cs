@@ -1,15 +1,14 @@
-using Finance.Domain.Models.Funds;
-using Finance.Persistence.Configurations.Base;
+using Finance.Domain.Models.BankCurrencies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Finance.Persistence.Configurations;
 
-public class FundConfiguration : AuditedEntityConfiguration<Fund, Guid>
+public class BankCurrencyConfiguration : IEntityTypeConfiguration<BankCurrency>
 {
-    public override void Configure(EntityTypeBuilder<Fund> builder)
+    public void Configure(EntityTypeBuilder<BankCurrency> builder)
     {
-        base.Configure(builder);
+        builder.HasKey(o => new { o.BankId, o.CurrencyId });
 
         builder
             .HasOne(o => o.Bank)
@@ -21,12 +20,6 @@ public class FundConfiguration : AuditedEntityConfiguration<Fund, Guid>
             .HasOne(o => o.Currency)
             .WithMany()
             .HasForeignKey(o => o.CurrencyId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder
-            .HasOne(o => o.BankCurrency)
-            .WithMany()
-            .HasForeignKey(o => new { o.BankId, o.CurrencyId })
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

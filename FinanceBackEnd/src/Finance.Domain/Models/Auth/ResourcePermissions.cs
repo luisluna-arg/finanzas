@@ -1,3 +1,4 @@
+using Finance.Domain.Models.BankCurrencies;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.Models.Currencies;
@@ -18,6 +19,21 @@ public abstract class ResourcePermissions<TResource, TResourceId>() : AuditedEnt
     public TResourceId ResourceId { get; set; } = default!;
     public Guid UserId { get; set; } = default!;
     public TResource Resource { get; set; } = default!;
+    public User User { get; set; } = default!;
+    public ICollection<PermissionLevelEnum> PermissionLevels { get; set; } = [];
+}
+
+/// <summary>
+/// BankCurrency's primary key is the composite (BankId, CurrencyId), so it can't fit the scalar
+/// TResourceId shape of <see cref="ResourcePermissions{TResource,TResourceId}"/> — this is a bespoke
+/// equivalent for that entity.
+/// </summary>
+public class BankCurrencyPermissions : AuditedEntity<Guid>
+{
+    public Guid BankId { get; set; }
+    public Guid CurrencyId { get; set; }
+    public Guid UserId { get; set; } = default!;
+    public BankCurrency BankCurrency { get; set; } = default!;
     public User User { get; set; } = default!;
     public ICollection<PermissionLevelEnum> PermissionLevels { get; set; } = [];
 }

@@ -24,7 +24,10 @@ public class GetLatestFundQueryHandler(FinanceDbContext db, IRepository<Fund, Gu
 
         if (request.DailyUse.HasValue)
         {
-            query = query.Where(o => o.DailyUse == request.DailyUse.Value);
+            var dailyUse = request.DailyUse.Value;
+            query = query.Where(o => DbContext.BankCurrency
+                .IgnoreQueryFilters()
+                .Any(bc => bc.BankId == o.BankId && bc.CurrencyId == o.CurrencyId && bc.DailyUse == dailyUse));
         }
 
         return DataResult<Fund?>.Success(await query

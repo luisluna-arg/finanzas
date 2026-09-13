@@ -3,6 +3,7 @@ using Finance.Application.Queries.Funds;
 using Finance.Application.Queries.Movements;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.AppModules;
+using Finance.Domain.Models.BankCurrencies;
 using Finance.Domain.Models.Banks;
 using Finance.Domain.Models.Currencies;
 using Finance.Domain.Models.Funds;
@@ -34,16 +35,21 @@ public class FundQueryHandlerTests : QueryHandlerBaseTests
             TimeStamp = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc),
             CreatedAt = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc),
             Amount = 100m,
-            DailyUse = true,
             Deactivated = false,
         };
 
+        await _dbContext.BankCurrency.AddRangeAsync(
+            new BankCurrency { BankId = bank1.Id, CurrencyId = currency1.Id, DailyUse = true },
+            new BankCurrency { BankId = bank2.Id, CurrencyId = currency1.Id, DailyUse = true },
+            new BankCurrency { BankId = bank1.Id, CurrencyId = currency2.Id, DailyUse = true }
+        );
+
         await _dbContext.Fund.AddRangeAsync(
             matching,
-            new Fund { Id = Guid.NewGuid(), Bank = bank1, BankId = bank1.Id, Currency = currency1, CurrencyId = currency1.Id, TimeStamp = new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow, Amount = 10m, DailyUse = false, Deactivated = false },
-            new Fund { Id = Guid.NewGuid(), Bank = bank2, BankId = bank2.Id, Currency = currency1, CurrencyId = currency1.Id, TimeStamp = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow, Amount = 20m, DailyUse = true, Deactivated = false },
-            new Fund { Id = Guid.NewGuid(), Bank = bank1, BankId = bank1.Id, Currency = currency2, CurrencyId = currency2.Id, TimeStamp = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow, Amount = 30m, DailyUse = true, Deactivated = false },
-            new Fund { Id = Guid.NewGuid(), Bank = bank1, BankId = bank1.Id, Currency = currency1, CurrencyId = currency1.Id, TimeStamp = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow, Amount = 40m, DailyUse = true, Deactivated = true }
+            new Fund { Id = Guid.NewGuid(), Bank = bank1, BankId = bank1.Id, Currency = currency1, CurrencyId = currency1.Id, TimeStamp = new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow, Amount = 10m, Deactivated = false },
+            new Fund { Id = Guid.NewGuid(), Bank = bank2, BankId = bank2.Id, Currency = currency1, CurrencyId = currency1.Id, TimeStamp = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow, Amount = 20m, Deactivated = false },
+            new Fund { Id = Guid.NewGuid(), Bank = bank1, BankId = bank1.Id, Currency = currency2, CurrencyId = currency2.Id, TimeStamp = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow, Amount = 30m, Deactivated = false },
+            new Fund { Id = Guid.NewGuid(), Bank = bank1, BankId = bank1.Id, Currency = currency1, CurrencyId = currency1.Id, TimeStamp = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc), CreatedAt = DateTime.UtcNow, Amount = 40m, Deactivated = true }
         );
         await _dbContext.SaveChangesAsync();
 
@@ -75,10 +81,15 @@ public class FundQueryHandlerTests : QueryHandlerBaseTests
         var user = await CreateCurrentUserAsync();
         var bank = new Bank { Id = Guid.NewGuid(), Name = "Bank 1" };
         var currency = new Currency { Id = Guid.NewGuid(), Name = "Peso", ShortName = "ARS" };
-        var older = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = currency, CurrencyId = currency.Id, TimeStamp = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), Amount = 10m, DailyUse = true };
-        var latest = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = currency, CurrencyId = currency.Id, TimeStamp = new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc), CreatedAt = new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc), Amount = 20m, DailyUse = true };
-        var otherBank = new Fund { Id = Guid.NewGuid(), Bank = new Bank { Id = Guid.NewGuid(), Name = "Bank 2" }, BankId = Guid.NewGuid(), Currency = currency, CurrencyId = currency.Id, TimeStamp = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc), CreatedAt = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc), Amount = 30m, DailyUse = true };
+        var otherBankEntity = new Bank { Id = Guid.NewGuid(), Name = "Bank 2" };
+        var older = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = currency, CurrencyId = currency.Id, TimeStamp = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), Amount = 10m };
+        var latest = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = currency, CurrencyId = currency.Id, TimeStamp = new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc), CreatedAt = new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc), Amount = 20m };
+        var otherBank = new Fund { Id = Guid.NewGuid(), Bank = otherBankEntity, BankId = otherBankEntity.Id, Currency = currency, CurrencyId = currency.Id, TimeStamp = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc), CreatedAt = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc), Amount = 30m };
 
+        await _dbContext.BankCurrency.AddRangeAsync(
+            new BankCurrency { BankId = bank.Id, CurrencyId = currency.Id, DailyUse = true },
+            new BankCurrency { BankId = otherBankEntity.Id, CurrencyId = currency.Id, DailyUse = true }
+        );
         await _dbContext.Fund.AddRangeAsync(older, latest, otherBank);
         await _dbContext.SaveChangesAsync();
 

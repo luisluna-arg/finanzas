@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Finance.Domain.Models.Auth;
+using Finance.Domain.Models.BankCurrencies;
 using Finance.Domain.Models.Base;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.Models.Currencies;
@@ -33,6 +34,20 @@ public static class ModelBuilderExtensions
         ApplyEntityOwnershipFilter<Subscription, Guid, SubscriptionPermissions>(modelBuilder, context);
         ApplyCurrencyConversionFilter(modelBuilder, context);
         ApplyCreditCardRelatedEntitiesFilter(modelBuilder, context);
+        ApplyBankCurrencyOwnershipFilter(modelBuilder, context);
+    }
+
+    /// <summary>
+    /// Registers ownership query filters for <see cref="BankCurrency"/>. Its composite (BankId, CurrencyId)
+    /// key doesn't fit <see cref="ApplyEntityOwnershipFilter{TEntity,TId,TResourcePermissions}"/>, which
+    /// requires a scalar <c>Id</c>, so the join is written out by hand here instead.
+    /// </summary>
+    private static void ApplyBankCurrencyOwnershipFilter(ModelBuilder modelBuilder, FinanceDbContext context)
+    {
+        modelBuilder.Entity<BankCurrency>().HasQueryFilter(bc => context.Set<BankCurrencyPermissions>()
+            .Any(p => p.BankId == bc.BankId && p.CurrencyId == bc.CurrencyId && p.User.Identities.Any(i => i.SourceId == context.CurrentUserId)));
+
+        modelBuilder.Entity<BankCurrencyPermissions>().HasQueryFilter(p => p.User.Identities.Any(i => i.SourceId == context.CurrentUserId));
     }
 
     /// <summary>

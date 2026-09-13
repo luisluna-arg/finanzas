@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using CQRSDispatch;
+using Finance.Application.Commands.BankCurrencies;
 using Finance.Application.Commands.Base;
 using Finance.Application.Commands.Funds.Base;
 using Finance.Application.Repositories;
@@ -34,11 +35,13 @@ public class UpdateFundCommandHandler(
         var bank = await _bankRepository.GetByIdAsync(command.BankId, cancellationToken);
         if (bank == null) throw new Exception("Bank not found");
 
+        var bankCurrency = await BankCurrencyProvisioning.EnsureExistsAsync(DbContext, command.BankId, command.CurrencyId, command.Context.UserInfo.Id, cancellationToken);
+
         fund.Currency = currency;
         fund.Bank = bank;
+        fund.BankCurrency = bankCurrency;
         fund.Amount = command.Amount;
         fund.TimeStamp = command.TimeStamp;
-        fund.DailyUse = command.DailyUse ?? false;
 
         await _fundRepository.UpdateAsync(fund, cancellationToken);
 

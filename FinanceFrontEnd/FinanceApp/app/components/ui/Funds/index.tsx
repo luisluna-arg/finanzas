@@ -128,22 +128,6 @@ const Funds: React.FC = () => {
       mapper: valueMapper,
       conditionalClass: valueConditionalClass,
     },
-    {
-      id: 'dailyUse',
-      label: 'Use diario',
-      placeholder: 'Use diario',
-      type: InputType.Boolean,
-      header: {
-        classes: '',
-        style: {
-          width: '80px',
-        },
-      },
-      class: 'text-center',
-      editable: {
-        defaultValue: false,
-      },
-    },
   ];
 
   const paginatedData = Array.isArray(data)

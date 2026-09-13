@@ -13,7 +13,7 @@ public partial class FundServiceTests : IDisposable
     public async Task Create_WhenDispatchSucceeds_ReturnsSuccess()
     {
         var fund = new Fund { Id = Guid.NewGuid() };
-        var request = new CreateFundRequest(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(100m), true);
+        var request = new CreateFundRequest(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(100m));
 
         _dispatcher
             .Setup(d => d.DispatchAsync<DataResult<Fund>>(It.IsAny<CreateFundCommand>(), It.IsAny<HttpRequest?>()))
@@ -32,7 +32,7 @@ public partial class FundServiceTests : IDisposable
         var currencyId = Guid.NewGuid();
         var timeStamp = DateTime.UtcNow;
         var amount = new Money(250m);
-        var request = new CreateFundRequest(bankId, currencyId, timeStamp, amount, false);
+        var request = new CreateFundRequest(bankId, currencyId, timeStamp, amount);
 
         _dispatcher
             .Setup(d => d.DispatchAsync<DataResult<Fund>>(It.IsAny<CreateFundCommand>(), It.IsAny<HttpRequest?>()))
@@ -45,8 +45,7 @@ public partial class FundServiceTests : IDisposable
                 c.BankId == bankId &&
                 c.CurrencyId == currencyId &&
                 c.TimeStamp == timeStamp &&
-                c.Amount == amount &&
-                c.DailyUse == false),
+                c.Amount == amount),
             It.IsAny<HttpRequest?>()),
             Times.Once);
     }
@@ -54,7 +53,7 @@ public partial class FundServiceTests : IDisposable
     [Fact]
     public async Task Create_WhenDispatchFails_ReturnsFailure()
     {
-        var request = new CreateFundRequest(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(100m), true);
+        var request = new CreateFundRequest(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(100m));
 
         _dispatcher
             .Setup(d => d.DispatchAsync<DataResult<Fund>>(It.IsAny<CreateFundCommand>(), It.IsAny<HttpRequest?>()))
@@ -69,7 +68,7 @@ public partial class FundServiceTests : IDisposable
     [Fact]
     public async Task Create_WhenDispatchThrows_ReturnsFailure()
     {
-        var request = new CreateFundRequest(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(100m), true);
+        var request = new CreateFundRequest(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, new Money(100m));
 
         _dispatcher
             .Setup(d => d.DispatchAsync<DataResult<Fund>>(It.IsAny<CreateFundCommand>(), It.IsAny<HttpRequest?>()))

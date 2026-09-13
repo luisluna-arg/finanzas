@@ -80,7 +80,7 @@ public class GetCurrentFundsQueryHandlerTests : QueryHandlerBaseTests
         var arsId = Guid.Parse(CurrencyConstants.DefaultCurrencyId);
         var ars = (await _dbContext.Currency.FindAsync(arsId))!;
         var bank = new Bank { Id = Guid.NewGuid(), Name = "Banco Nacion" };
-        var fund = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = ars, CurrencyId = arsId, Amount = 5000m, TimeStamp = DateTime.UtcNow, DailyUse = true };
+        var fund = new Fund { Id = Guid.NewGuid(), Bank = bank, BankId = bank.Id, Currency = ars, CurrencyId = arsId, Amount = 5000m, TimeStamp = DateTime.UtcNow };
 
         await _dbContext.Bank.AddAsync(bank);
         await _dbContext.Fund.AddAsync(fund);

@@ -47,7 +47,6 @@ public class CreateFundCommandHandlerTests : IDisposable
             CurrencyId = currency.Id,
             TimeStamp = new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc),
             Amount = 100m,
-            DailyUse = true,
         };
 
         _bankRepo.Setup(r => r.GetByIdAsync(bank.Id, It.IsAny<CancellationToken>())).ReturnsAsync(bank);
@@ -63,7 +62,6 @@ public class CreateFundCommandHandlerTests : IDisposable
         Assert.Equal(bank, result.Data.Bank);
         Assert.Equal(currency, result.Data.Currency);
         Assert.Equal(100m, (decimal)result.Data.Amount);
-        Assert.True(result.Data.DailyUse);
 
         _fundRepo.Verify(r => r.AddAsync(It.IsAny<Fund>(), It.IsAny<CancellationToken>(), It.IsAny<bool>()), Times.Once);
     }

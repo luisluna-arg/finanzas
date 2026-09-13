@@ -35,7 +35,6 @@ public class FundService(
                     CurrencyId = request.CurrencyId,
                     TimeStamp = request.TimeStamp,
                     Amount = request.Amount,
-                    DailyUse = request.DailyUse,
                 },
                 httpRequest);
 
@@ -64,7 +63,6 @@ public class FundService(
                 CurrencyId = request.CurrencyId,
                 TimeStamp = request.TimeStamp,
                 Amount = request.Amount,
-                DailyUse = request.DailyUse,
             },
             httpRequest);
 

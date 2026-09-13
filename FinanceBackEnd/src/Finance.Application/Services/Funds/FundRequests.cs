@@ -6,15 +6,13 @@ public sealed record CreateFundRequest(
     Guid BankId,
     Guid CurrencyId,
     DateTime TimeStamp,
-    Money Amount,
-    bool DailyUse);
+    Money Amount);
 
 public sealed record UpdateFundRequest(
     Guid Id,
     Guid BankId,
     Guid CurrencyId,
     DateTime TimeStamp,
-    Money Amount,
-    bool DailyUse);
+    Money Amount);
 
 public sealed record DeleteFundRequest(Guid[] Ids);

@@ -1,14 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Modal,
-  Button,
-  Select,
-  Group,
-  Stack,
-  NumberInput,
-  Checkbox,
-  LoadingOverlay,
-} from '@mantine/core';
+import { Modal, Button, Select, Group, Stack, NumberInput, LoadingOverlay } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import BankService from '@/services/BankService';
@@ -32,7 +23,6 @@ interface FormValues {
   currencyId: string;
   timeStamp: Date;
   amount: number;
-  dailyUse: boolean;
 }
 
 export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFundModalProps) {
@@ -54,7 +44,6 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
       currencyId: '',
       timeStamp: new Date(),
       amount: 0,
-      dailyUse: true,
     },
     validate: {
       bankId: (value: string) => (!value ? 'Bank is required' : null),
@@ -200,7 +189,6 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
         currencyId: values.currencyId,
         timeStamp: values.timeStamp.toISOString(),
         amount: values.amount,
-        dailyUse: values.dailyUse,
       };
 
       // Send the request
@@ -303,8 +291,6 @@ export default function CreateFundModal({ opened, onClose, onSuccess }: CreateFu
             valueFormat="YYYY-MM-DD"
             {...form.getInputProps('timeStamp')}
           />
-
-          <Checkbox label="Daily use" {...form.getInputProps('dailyUse', { type: 'checkbox' })} />
 
           <Group justify="flex-end" mt="md">
             <Button variant="outline" onClick={onClose} type="button">

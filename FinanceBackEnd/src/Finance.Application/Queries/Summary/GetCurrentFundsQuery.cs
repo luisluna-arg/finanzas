@@ -34,7 +34,10 @@ public class GetCurrentFundsQueryHandler(FinanceDbContext db, ICurrencyConversio
 
         if (request.DailyUse.HasValue)
         {
-            fundsQuery = fundsQuery.Where(o => o.DailyUse == request.DailyUse.Value);
+            var dailyUse = request.DailyUse.Value;
+            fundsQuery = fundsQuery.Where(o => _db.BankCurrency
+                .IgnoreQueryFilters()
+                .Any(bc => bc.BankId == o.BankId && bc.CurrencyId == o.CurrencyId && bc.DailyUse == dailyUse));
         }
 
         var defaultCurrency = await _db.Currency
