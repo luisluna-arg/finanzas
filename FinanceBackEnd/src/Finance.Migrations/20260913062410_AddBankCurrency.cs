@@ -101,7 +101,7 @@ namespace Finance.Domain.Migrations
             migrationBuilder.Sql(@"
                 INSERT INTO ""BankCurrency"" (""BankId"", ""CurrencyId"", ""DailyUse"", ""CreatedAt"", ""UpdatedAt"", ""Deactivated"")
                 SELECT DISTINCT ON (f.""BankId"", f.""CurrencyId"")
-                    f.""BankId"", f.""CurrencyId"", f.""DailyUse"", now(), NULL, false
+                    f.""BankId"", f.""CurrencyId"", f.""DailyUse"", now(), NULL::timestamptz, false
                 FROM ""Fund"" f
                 ORDER BY f.""BankId"", f.""CurrencyId"", f.""TimeStamp"" DESC;
             ");
@@ -110,7 +110,7 @@ namespace Finance.Domain.Migrations
             // already owns a Fund entry for it.
             migrationBuilder.Sql(@"
                 INSERT INTO ""BankCurrencyPermissions"" (""Id"", ""BankId"", ""CurrencyId"", ""UserId"", ""PermissionLevels"", ""Deactivated"", ""CreatedAt"", ""UpdatedAt"")
-                SELECT DISTINCT gen_random_uuid(), f.""BankId"", f.""CurrencyId"", fp.""UserId"", ARRAY[3], false, now(), NULL
+                SELECT DISTINCT gen_random_uuid(), f.""BankId"", f.""CurrencyId"", fp.""UserId"", ARRAY[3], false, now(), NULL::timestamptz
                 FROM ""Fund"" f
                 JOIN ""FundPermissions"" fp ON fp.""ResourceId"" = f.""Id""
                 ON CONFLICT (""BankId"", ""CurrencyId"", ""UserId"") DO NOTHING;
