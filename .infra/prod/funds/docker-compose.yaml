@@ -7,7 +7,6 @@ services:
       context: ../../../FinanceFrontEnd/FinanceFunds
       dockerfile: Dockerfile
       args:
-        NODE_ENV: production
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
         VITE_AUTH0_REDIRECT_URI: ${VITE_AUTH0_REDIRECT_URI}
