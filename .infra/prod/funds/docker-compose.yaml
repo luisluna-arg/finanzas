@@ -4,7 +4,7 @@ services:
   frontend:
     container_name: finance-funds-frontend
     build:
-      context: ../../FinanceFrontEnd/FinanceFunds
+      context: ../../../FinanceFrontEnd/FinanceFunds
       dockerfile: Dockerfile
       args:
         NODE_ENV: production
