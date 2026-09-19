@@ -1,0 +1,146 @@
+name: "Web App: Deploy to Cloud Server"
+
+on:
+  workflow_dispatch:
+  # Automatic deployment disabled — re-enable by uncommenting below.
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'src/**'
+  #     - '.infra/prod/**'
+  #     - '.github/workflows/deployment.yaml'
+
+jobs:
+  prepare-secrets:
+    name: Prepare and Upload Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare secrets files
+        run: |
+          set -e
+          mkdir -p /tmp/funds/deploy-secrets
+          cat > /tmp/funds/deploy-secrets/env-file << 'ENVEOF'
+          ${{ secrets.ENV_FILE }}
+          ENVEOF
+
+      - name: Copy secrets to server
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "/tmp/funds/deploy-secrets/"
+          target: "/tmp"
+          strip_components: 1
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: prepare-secrets
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+
+            mkdir -p /var/www/finance-funds
+
+            if [ ! -d "/var/www/finance-funds/.git" ]; then
+              git clone -b ${{ github.ref_name }} https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git /var/www/finance-funds
+            else
+              cd /var/www/finance-funds
+              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
+              git fetch origin
+              git checkout ${{ github.ref_name }}
+              git reset --hard origin/${{ github.ref_name }}
+            fi
+
+            # Copy env file from uploaded secrets (strip Windows CRLF line endings)
+            # into both stacks — shared reads its DB/Redis/Auth0 vars, funds
+            # reads its VITE_* build args, and both need APP_DOMAIN.
+            sed 's/\r$//' /tmp/funds/deploy-secrets/env-file > /var/www/finance-funds/.infra/prod/shared/.env
+            cp /var/www/finance-funds/.infra/prod/shared/.env /var/www/finance-funds/.infra/prod/funds/.env
+
+            # Clean up secrets
+            rm -rf /tmp/funds/deploy-secrets
+
+            docker image prune -af
+
+            # Shared stack first (postgres, redis, backend) — creates the
+            # shared_network that the funds frontend joins below.
+            cd /var/www/finance-funds/.infra/prod/shared
+            docker compose down
+            docker compose build
+            docker compose up -d
+
+            # Funds frontend
+            cd /var/www/finance-funds/.infra/prod/funds
+            docker compose down
+            docker compose build
+            docker compose up -d
+
+            # Write deploy timestamp for verify jobs to detect stale checks
+            date +%s > /tmp/finance-funds-deploy-ts
+
+  verify:
+    name: "Verify: ${{ matrix.service }}"
+    runs-on: ubuntu-latest
+    needs: deploy
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: postgres
+            dir: shared
+          - service: redis
+            dir: shared
+          - service: backend
+            dir: shared
+          - service: frontend
+            dir: funds
+    steps:
+      - name: Check container health
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd /var/www/finance-funds/.infra/prod/${{ matrix.dir }}
+
+            SERVICE="${{ matrix.service }}"
+            MAX_WAIT=120
+            INTERVAL=5
+            ELAPSED=0
+
+            echo "Waiting for $SERVICE to be healthy..."
+            while true; do
+              CONTAINER_ID=$(docker compose ps -q "$SERVICE" 2>/dev/null || true)
+              STATUS=$(docker compose ps --format '{{.Service}} {{.State}}' 2>/dev/null | awk -v svc="$SERVICE" '$1==svc {print $2}')
+              HEALTH=$([ -n "$CONTAINER_ID" ] && docker inspect --format '{{.State.Health.Status}}' "$CONTAINER_ID" 2>/dev/null || echo "none")
+              if [ "$STATUS" = "running" ] && [ "$HEALTH" = "healthy" ]; then
+                echo "$SERVICE is running and healthy."
+                break
+              fi
+              ELAPSED=$((ELAPSED + INTERVAL))
+              if [ $ELAPSED -ge $MAX_WAIT ]; then
+                echo "ERROR: $SERVICE did not reach healthy state after ${MAX_WAIT}s (state: ${STATUS:-not found}, health: ${HEALTH})"
+                echo "--- Last 50 log lines ---"
+                docker compose logs --tail=50 "$SERVICE" || true
+                exit 1
+              fi
+              echo "$SERVICE state: '${STATUS:-not found}', health: '${HEALTH}', waiting..."
+              sleep $INTERVAL
+            done
+
+            echo "--- Last 20 log lines ---"
+            docker compose logs --tail=20 "$SERVICE"
