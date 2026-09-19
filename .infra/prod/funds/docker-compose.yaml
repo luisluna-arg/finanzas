@@ -4,10 +4,9 @@ services:
   frontend:
     container_name: finance-funds-frontend
     build:
-      context: ../../FinanceFrontEnd/FinanceFunds
+      context: ../../../FinanceFrontEnd/FinanceFunds
       dockerfile: Dockerfile
       args:
-        NODE_ENV: production
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
         VITE_AUTH0_REDIRECT_URI: ${VITE_AUTH0_REDIRECT_URI}
@@ -16,6 +15,7 @@ services:
         VITE_ALLOW_INSECURE_API: ${VITE_ALLOW_INSECURE_API}
     environment:
       - PORT=3000
+      - APP_DOMAIN=${APP_DOMAIN}
     restart: unless-stopped
     logging:
       driver: json-file

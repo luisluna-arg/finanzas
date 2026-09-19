@@ -1,15 +1,7 @@
-name: "Web App: Deploy to Cloud Server"
+name: "Funds: Redeploy Shared Stack Only"
 
 on:
   workflow_dispatch:
-  # Automatic deployment disabled — re-enable by uncommenting below.
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'src/**'
-  #     - '.infra/prod/**'
-  #     - '.github/workflows/deployment.yaml'
 
 jobs:
   prepare-secrets:
@@ -62,20 +54,13 @@ jobs:
               git reset --hard origin/${{ github.ref_name }}
             fi
 
-            # Copy env file from uploaded secrets (strip Windows CRLF line endings)
-            # into both stacks — shared reads its DB/Redis/Auth0 vars, funds
-            # reads its VITE_* build args, and both need APP_DOMAIN. Funds'
-            # copy is written here so the deploy-funds job doesn't need the
-            # secrets file again.
+            # Only touches the shared .env — does not rebuild/restart funds
+            # (frontend).
             sed 's/\r$//' /tmp/funds/deploy-secrets/env-file > /var/www/finance-funds/.infra/prod/shared/.env
-            cp /var/www/finance-funds/.infra/prod/shared/.env /var/www/finance-funds/.infra/prod/funds/.env
-
-            # Clean up secrets
             rm -rf /tmp/funds/deploy-secrets
 
             docker image prune -af
 
-            # Creates the shared_network that the funds frontend joins.
             cd /var/www/finance-funds/.infra/prod/shared
             docker compose down
             docker compose build
@@ -98,60 +83,21 @@ jobs:
 
             # The "migrate" service builds from the Dockerfile's "migrate"
             # target, which reuses the backend's already-restored SDK build
-            # stage (see FinanceBackEnd/src/Finance.Api/Dockerfile) — building
-            # it here mostly just hits cache from deploy-shared's build.
-            # "docker compose run" waits for postgres's healthcheck via
-            # depends_on before starting, same as the backend service does.
+            # stage — building it here mostly just hits cache from
+            # deploy-shared's build. "docker compose run" waits for
+            # postgres's healthcheck via depends_on before starting.
             cd /var/www/finance-funds/.infra/prod/shared
             docker compose build migrate
-            # No --startup-project: Finance.Api doesn't reference
-            # Finance.Migrations, so EF would build Finance.Api as the host
-            # and then fail to find Finance.Migrations.dll next to it.
-            # Finance.Migrations carries its own IDesignTimeDbContextFactory
-            # (FinanceDbContextFactory), so it works as its own startup
-            # project too — same as Scripts/UpdateDatabase.ps1 already does.
             docker compose run --rm migrate database update --project src/Finance.Migrations --context FinanceDbContext
-
-  deploy-funds:
-    name: "Deploy: funds (frontend)"
-    runs-on: ubuntu-latest
-    needs: migrate-database
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            set -e
-
-            # Repo checkout and .env are already in place from deploy-shared.
-            cd /var/www/finance-funds/.infra/prod/funds
-            docker compose down
-            docker compose build
-            docker compose up -d
-
-            # Write deploy timestamp for verify jobs to detect stale checks
-            date +%s > /tmp/finance-funds-deploy-ts
 
   verify:
     name: "Verify: ${{ matrix.service }}"
     runs-on: ubuntu-latest
-    needs: [deploy-shared, migrate-database, deploy-funds]
+    needs: migrate-database
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - service: postgres
-            dir: shared
-          - service: redis
-            dir: shared
-          - service: backend
-            dir: shared
-          - service: frontend
-            dir: funds
+        service: [postgres, redis, backend]
     steps:
       - name: Check container health
         uses: appleboy/ssh-action@v1.2.5
@@ -162,7 +108,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            cd /var/www/finance-funds/.infra/prod/${{ matrix.dir }}
+            cd /var/www/finance-funds/.infra/prod/shared
 
             SERVICE="${{ matrix.service }}"
             MAX_WAIT=120

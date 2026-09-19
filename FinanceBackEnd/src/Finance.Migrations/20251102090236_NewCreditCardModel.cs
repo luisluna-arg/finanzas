@@ -434,7 +434,7 @@ namespace Finance.Domain.Migrations
                     0 as ""MinimumDue"", 
                     false as ""Deactivated""
                 FROM temp_credit_card_movements tcm
-                ORDER BY tcm.""CreditCardId"", DATE_TRUNC('month', tcm.""TimeStamp"");
+                ORDER BY tcm.""CreditCardId"", ""ClosureDate"";
 
                 -- Create corresponding CreditCardStatementTransaction entries
                 -- Assign each transaction to its corresponding monthly statement
