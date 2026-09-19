@@ -1,5 +1,6 @@
 using Finance.Application.Commands.CreditCards;
 using Finance.Application.Repositories;
+using Finance.Application.Services.CreditCards;
 using Finance.Application.Tests.Queries.Base;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.SpecialTypes;
@@ -19,7 +20,7 @@ public class CreateCreditCardTransactionCommandHandlerTests : QueryHandlerBaseTe
     }
 
     private CreateCreditCardTransactionCommandHandler CreateHandler() =>
-        new(_dbContext, _creditCardRepo.Object, _transactionRepo.Object);
+        new(_dbContext, _creditCardRepo.Object, _transactionRepo.Object, new CreditCardPaymentPlanResolver(_dbContext));
 
     [Fact]
     public async Task Create_WithoutStatementId_AddsTransactionAndReturnsSuccess()

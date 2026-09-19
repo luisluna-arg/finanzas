@@ -26,7 +26,7 @@ interface Currency {
   name: string;
 }
 
-interface DraftTransaction {
+export interface DraftTransaction {
   id?: string;
   timestamp: string;
   concept: string;
@@ -39,16 +39,29 @@ interface DraftTransaction {
 export default function EditStatementModal({
   show,
   onHide,
+  mode = 'edit',
   statement,
   transactions,
+  creditCardId,
+  initialClosureDate,
+  initialExpiringDate,
+  initialDraftTxs,
   onSaved,
 }: {
   show: boolean;
   onHide: () => void;
-  statement: CreditCardStatement;
-  transactions: CreditCardTransaction[];
+  mode?: 'edit' | 'draft';
+  statement?: CreditCardStatement;
+  transactions?: CreditCardTransaction[];
+  creditCardId?: string;
+  initialClosureDate?: string;
+  initialExpiringDate?: string;
+  initialDraftTxs?: DraftTransaction[];
   onSaved: () => void;
 }) {
+  const isDraft = mode === 'draft';
+  const effectiveCreditCardId = isDraft ? (creditCardId ?? '') : (statement?.creditCardId ?? '');
+
   const [closureDate, setClosureDate] = useState('');
   const [expiringDate, setExpiringDate] = useState('');
   const [draftTxs, setDraftTxs] = useState<DraftTransaction[]>([]);
@@ -66,22 +79,30 @@ export default function EditStatementModal({
   const defaultCurrencyId = currencies[0]?.id ?? '';
 
   useEffect(() => {
-    if (show) {
-      setClosureDate(statement.closureDate.slice(0, 10));
-      setExpiringDate(statement.expiringDate.slice(0, 10));
-      setDraftTxs(
-        transactions.map((tx) => ({
-          id: tx.id,
-          timestamp: tx.timestamp.slice(0, 10),
-          concept: tx.concept,
-          amount: String(tx.amount),
-          currencyId: tx.currencyId ?? defaultCurrencyId,
-          isDeleted: false,
-          isModified: false,
-        }))
-      );
+    if (!show) return;
+
+    if (isDraft) {
+      setClosureDate((initialClosureDate ?? '').slice(0, 10));
+      setExpiringDate((initialExpiringDate ?? '').slice(0, 10));
+      setDraftTxs(initialDraftTxs ?? []);
+      return;
     }
-  }, [show, statement, transactions, currencies]);
+
+    if (!statement) return;
+    setClosureDate(statement.closureDate.slice(0, 10));
+    setExpiringDate(statement.expiringDate.slice(0, 10));
+    setDraftTxs(
+      (transactions ?? []).map((tx) => ({
+        id: tx.id,
+        timestamp: tx.timestamp.slice(0, 10),
+        concept: tx.concept,
+        amount: String(tx.amount),
+        currencyId: tx.currencyId ?? defaultCurrencyId,
+        isDeleted: false,
+        isModified: false,
+      }))
+    );
+  }, [show, isDraft, statement, transactions, currencies, initialClosureDate, initialExpiringDate, initialDraftTxs]);
 
   const updateTx = (
     index: number,
@@ -116,6 +137,7 @@ export default function EditStatementModal({
   };
 
   const handleDelete = async () => {
+    if (!statement) return;
     if (!confirm('¿Eliminar este resúmen? Se perderán todos sus movimientos.')) return;
     setDeleting(true);
     try {
@@ -134,69 +156,108 @@ export default function EditStatementModal({
     }
   };
 
+  const handleSaveDraft = async () => {
+    const stmtRes = await fetch(String(urls.creditCardStatements.endpoint), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        creditCardId: effectiveCreditCardId,
+        closureDate: new Date(closureDate).toISOString(),
+        expiringDate: new Date(expiringDate).toISOString(),
+      }),
+    });
+    if (!stmtRes.ok) throw new Error(await stmtRes.text());
+    const newStatement = await stmtRes.json();
+
+    for (const tx of draftTxs.filter((t) => !t.isDeleted)) {
+      const res = await fetch(String(urls.creditCardTransactions.endpoint), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          creditCardId: effectiveCreditCardId,
+          creditCardStatementId: newStatement.id,
+          timestamp: new Date(tx.timestamp).toISOString(),
+          concept: tx.concept,
+          amount: Number(tx.amount),
+          currencyId: tx.currencyId,
+          transactionType: 0,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!statement) return;
+    const origClosure = statement.closureDate.slice(0, 10);
+    const origExpiring = statement.expiringDate.slice(0, 10);
+    if (closureDate !== origClosure || expiringDate !== origExpiring) {
+      const res = await fetch(String(urls.creditCardStatements.endpoint), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: statement.id,
+          creditCardId: statement.creditCardId,
+          closureDate: new Date(closureDate).toISOString(),
+          expiringDate: new Date(expiringDate).toISOString(),
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+    }
+
+    for (const tx of draftTxs.filter((t) => t.isDeleted && t.id !== undefined)) {
+      const res = await fetch(String(urls.creditCardTransactions.endpoint), {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: tx.id }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+    }
+
+    for (const tx of draftTxs.filter((t) => !t.isDeleted && t.id === undefined)) {
+      const res = await fetch(String(urls.creditCardTransactions.endpoint), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          creditCardId: statement.creditCardId,
+          creditCardStatementId: statement.id,
+          timestamp: new Date(tx.timestamp).toISOString(),
+          concept: tx.concept,
+          amount: Number(tx.amount),
+          currencyId: tx.currencyId,
+          transactionType: 0,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+    }
+
+    for (const tx of draftTxs.filter(
+      (t) => !t.isDeleted && t.id !== undefined && t.isModified
+    )) {
+      const res = await fetch(String(urls.creditCardTransactions.endpoint), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: tx.id,
+          timestamp: new Date(tx.timestamp).toISOString(),
+          concept: tx.concept,
+          amount: Number(tx.amount),
+          currencyId: tx.currencyId,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const origClosure = statement.closureDate.slice(0, 10);
-      const origExpiring = statement.expiringDate.slice(0, 10);
-      if (closureDate !== origClosure || expiringDate !== origExpiring) {
-        const res = await fetch(String(urls.creditCardStatements.endpoint), {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: statement.id,
-            creditCardId: statement.creditCardId,
-            closureDate: new Date(closureDate).toISOString(),
-            expiringDate: new Date(expiringDate).toISOString(),
-          }),
-        });
-        if (!res.ok) throw new Error(await res.text());
+      if (isDraft) {
+        await handleSaveDraft();
+      } else {
+        await handleSaveEdit();
       }
-
-      for (const tx of draftTxs.filter((t) => t.isDeleted && t.id !== undefined)) {
-        const res = await fetch(String(urls.creditCardTransactions.endpoint), {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: tx.id }),
-        });
-        if (!res.ok) throw new Error(await res.text());
-      }
-
-      for (const tx of draftTxs.filter((t) => !t.isDeleted && t.id === undefined)) {
-        const res = await fetch(String(urls.creditCardTransactions.endpoint), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            creditCardId: statement.creditCardId,
-            creditCardStatementId: statement.id,
-            timestamp: new Date(tx.timestamp).toISOString(),
-            concept: tx.concept,
-            amount: Number(tx.amount),
-            currencyId: tx.currencyId,
-            transactionType: 0,
-          }),
-        });
-        if (!res.ok) throw new Error(await res.text());
-      }
-
-      for (const tx of draftTxs.filter(
-        (t) => !t.isDeleted && t.id !== undefined && t.isModified
-      )) {
-        const res = await fetch(String(urls.creditCardTransactions.endpoint), {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: tx.id,
-            timestamp: new Date(tx.timestamp).toISOString(),
-            concept: tx.concept,
-            amount: Number(tx.amount),
-            currencyId: tx.currencyId,
-          }),
-        });
-        if (!res.ok) throw new Error(await res.text());
-      }
-
       onSaved();
       onHide();
     } catch (err) {
@@ -213,7 +274,9 @@ export default function EditStatementModal({
       <form onSubmit={handleSave}>
         <ModalHeader closeButton>
           <ModalTitle>
-            <h3 className="text-lg font-medium">Editar Resúmen</h3>
+            <h3 className="text-lg font-medium">
+              {isDraft ? 'Generar Próximo Resúmen' : 'Editar Resúmen'}
+            </h3>
           </ModalTitle>
         </ModalHeader>
         <ModalBody>
@@ -330,14 +393,18 @@ export default function EditStatementModal({
         </ModalBody>
         <ModalFooter>
           <div className="flex justify-between mt-6">
-            <Button
-              type="button"
-              variant="destructive"
-              disabled={deleting || submitting}
-              onClick={handleDelete}
-            >
-              {deleting ? 'Eliminando...' : 'Eliminar resúmen'}
-            </Button>
+            {isDraft ? (
+              <div />
+            ) : (
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={deleting || submitting}
+                onClick={handleDelete}
+              >
+                {deleting ? 'Eliminando...' : 'Eliminar resúmen'}
+              </Button>
+            )}
             <div className="flex space-x-2">
               <Button type="button" variant="outline" onClick={onHide}>
                 Cancelar

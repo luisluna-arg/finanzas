@@ -20,4 +20,5 @@ export interface CreditCardStatementImportTemplate {
   userId: string | null;
   configJson: string;
   deactivated: boolean;
+  installmentPatternId?: string | null;
 }

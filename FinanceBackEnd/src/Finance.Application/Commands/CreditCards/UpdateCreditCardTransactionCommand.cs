@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Finance.Application.Base.Handlers;
 using Finance.Application.Repositories;
+using Finance.Application.Services.CreditCards;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
@@ -9,20 +10,32 @@ namespace Finance.Application.Commands.CreditCards;
 
 public class UpdateCreditCardTransactionCommandHandler(
     IRepository<CreditCardTransaction, Guid> transactionRepository,
-    FinanceDbContext db)
+    FinanceDbContext db,
+    CreditCardPaymentPlanResolver paymentPlanResolver)
     : BaseUpdateCommandHandler<CreditCardTransaction, Guid, UpdateCreditCardTransactionCommand>(
         transactionRepository, db)
 {
-    protected override Task<CreditCardTransaction> UpdateRecord(
+    protected override async Task<CreditCardTransaction> UpdateRecord(
         UpdateCreditCardTransactionCommand command,
         CreditCardTransaction record,
         CancellationToken cancellationToken)
     {
+        var conceptOrCurrencyChanged = record.Concept != command.Concept || record.CurrencyId != command.CurrencyId;
+
         record.Timestamp = command.Timestamp;
         record.Concept = command.Concept;
         record.Amount = command.Amount;
         record.CurrencyId = command.CurrencyId;
-        return Task.FromResult(record);
+
+        if (conceptOrCurrencyChanged)
+        {
+            var (paymentPlanId, installmentNumber) = await paymentPlanResolver.ResolvePlanAsync(
+                record.CreditCardId, command.CurrencyId, command.Concept, record.TransactionType, null, cancellationToken, record.Id);
+            record.PaymentPlanId = paymentPlanId;
+            record.InstallmentNumber = installmentNumber;
+        }
+
+        return record;
     }
 }
 

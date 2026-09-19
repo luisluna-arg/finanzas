@@ -15,6 +15,9 @@ public class CreditCardTransaction : CreditCardEntity
     public string? Reference { get; set; }
     public Guid CurrencyId { get; set; }
     public virtual Currency Currency { get; set; } = default!;
+    public Guid? PaymentPlanId { get; set; }
+    public virtual CreditCardPaymentPlan? PaymentPlan { get; set; }
+    public int InstallmentNumber { get; set; } = 1;
 }
 
 public enum CreditCardTransactionType

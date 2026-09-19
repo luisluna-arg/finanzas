@@ -35,6 +35,7 @@ public class UpdateCreditCardStatementImportTemplateCommandHandler(
         record.Name = command.Name;
         record.ConfigJson = command.ConfigJson;
         record.IsSystem = command.IsSystem;
+        record.InstallmentPatternId = command.InstallmentPatternId;
         return Task.FromResult(record);
     }
 }
@@ -50,4 +51,6 @@ public class UpdateCreditCardStatementImportTemplateCommand
 
     [Required]
     public string ConfigJson { get; set; } = string.Empty;
+
+    public Guid? InstallmentPatternId { get; set; }
 }

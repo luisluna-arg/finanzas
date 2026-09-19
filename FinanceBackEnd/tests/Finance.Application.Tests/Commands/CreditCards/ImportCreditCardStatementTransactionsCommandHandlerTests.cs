@@ -1,4 +1,5 @@
 using Finance.Application.Commands.CreditCards;
+using Finance.Application.Services.CreditCards;
 using Finance.Application.Tests.Queries.Base;
 using Finance.Helpers.ExcelHelper;
 using Finance.Domain.Models.Auth;
@@ -22,7 +23,7 @@ public class ImportCreditCardStatementTransactionsCommandHandlerTests : QueryHan
     }
 
     private ImportCreditCardStatementTransactionsCommandHandler CreateHandler() =>
-        new(_dbContext);
+        new(_dbContext, new CreditCardPaymentPlanResolver(_dbContext));
 
     private static IFormFile BuildCsvFile(string content, string fileName = "test.csv")
     {

@@ -2,6 +2,7 @@ using Finance.Application.Auth;
 using Finance.Application.Commands.Users;
 using Finance.Application.Specifications.CreditCards;
 using Finance.Application.Services;
+using Finance.Application.Services.CreditCards;
 using Finance.Application.Services.Interfaces;
 using Finance.Domain.Models.Auth;
 using Finance.Domain.Models.Interfaces;
@@ -44,6 +45,7 @@ public static class SagaServiceExtensions
         services.RegisterScopedService<DebitService>();
         services.RegisterScopedService<DebitOriginService>();
         services.RegisterScopedService<CreditCardService>();
+        services.RegisterScopedService<CreditCardPaymentPlanResolver>();
         services.RegisterScopedService<MovementService>();
         services.RegisterScopedService<IOLInvestmentService>();
         services.RegisterScopedService<IOLInvestmentAssetService>();

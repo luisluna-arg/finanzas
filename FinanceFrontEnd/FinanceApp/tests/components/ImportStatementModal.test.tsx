@@ -15,7 +15,11 @@ vi.mock('@/components/ui/utils/Modal', () => ({
 
 vi.mock('@/utils/urls', () => ({
   default: {
-    creditCardStatementImportTemplates: { endpoint: '/api/templates' },
+    creditCardStatementImportTemplates: {
+      endpoint: '/api/templates',
+      associate: (id: string) => `/api/templates/${id}/associate`,
+    },
+    creditCardInstallmentPatterns: { endpoint: '/api/patterns' },
     creditCardStatements: {
       endpoint: '/api/statements',
       import: '/api/statements/import',
@@ -37,12 +41,24 @@ const mockCurrencies = [
   { id: 'cur-usd', name: 'USD' },
 ];
 
+const mockPatterns = [
+  { id: 'pat-1', name: 'Parens N/M', regexPattern: '(N/M)', isSystem: true },
+];
+
 function buildFetchMock() {
   return vi.fn().mockImplementation((url: string) => {
     if (url.startsWith('/api/templates')) {
       return Promise.resolve({
         ok: true,
+        text: () => Promise.resolve(''),
         json: () => Promise.resolve(mockTemplates),
+      });
+    }
+    if (url === '/api/patterns') {
+      return Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve(''),
+        json: () => Promise.resolve(mockPatterns),
       });
     }
     if (url === '/api/catalog/currencies') {
@@ -64,7 +80,7 @@ function buildFetchMock() {
     if (typeof url === 'string' && url.includes('default-import-template')) {
       return Promise.resolve({ ok: true });
     }
-    return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+    return Promise.resolve({ ok: true, text: () => Promise.resolve(''), json: () => Promise.resolve([]) });
   });
 }
 
@@ -88,6 +104,11 @@ function getForm() {
   return screen.getByTestId('modal').querySelector('form')!;
 }
 
+async function openCreateTab() {
+  await waitFor(() => screen.getByText('My Template'));
+  await userEvent.click(screen.getByRole('button', { name: 'Crear nueva' }));
+}
+
 describe('ImportStatementModal', () => {
   it('does not render when show is false', () => {
     render(<ImportStatementModal {...defaultProps} show={false} />);
@@ -100,11 +121,12 @@ describe('ImportStatementModal', () => {
     expect(screen.getByText('Importar Resúmen desde archivo')).toBeDefined();
   });
 
-  it('fetches templates and currencies on open', async () => {
+  it('fetches templates, currencies, and patterns on open', async () => {
     render(<ImportStatementModal {...defaultProps} />);
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/api/templates'));
       expect(global.fetch).toHaveBeenCalledWith('/api/catalog/currencies');
+      expect(global.fetch).toHaveBeenCalledWith('/api/patterns');
     });
   });
 
@@ -135,24 +157,19 @@ describe('ImportStatementModal', () => {
     ).toContain('border-primary');
   });
 
-  it('shows new template form when clicking Nueva plantilla', async () => {
+  it('shows template form when clicking the Crear nueva tab', async () => {
     render(<ImportStatementModal {...defaultProps} />);
-    await waitFor(() => screen.getByText('+ Nueva plantilla'));
-
-    await userEvent.click(screen.getByText('+ Nueva plantilla'));
+    await openCreateTab();
 
     expect(screen.getByPlaceholderText('d/M/yyyy')).toBeDefined();
   });
 
-  it('hides template form when clicking Cancelar inside the form', async () => {
+  it('switches back to the template list when clicking the Seleccionar tab', async () => {
     render(<ImportStatementModal {...defaultProps} />);
-    await waitFor(() => screen.getByText('+ Nueva plantilla'));
-
-    await userEvent.click(screen.getByText('+ Nueva plantilla'));
+    await openCreateTab();
     expect(screen.getByPlaceholderText('d/M/yyyy')).toBeDefined();
 
-    const cancelButtons = screen.getAllByRole('button', { name: 'Cancelar' });
-    await userEvent.click(cancelButtons[0]);
+    await userEvent.click(screen.getByRole('button', { name: 'Seleccionar' }));
     expect(screen.queryByPlaceholderText('d/M/yyyy')).toBeNull();
   });
 
@@ -183,7 +200,7 @@ describe('ImportStatementModal', () => {
     fireEvent.change(screen.getByLabelText('Fecha de Vencimiento'), {
       target: { value: '2025-07-10' },
     });
-    const fileInput = screen.getByLabelText('Archivo (.xls, .xlsx, .csv)');
+    const fileInput = screen.getByLabelText('Archivo (.xls, .xlsx, .csv, .pdf)');
     const file = new File(['col1,col2'], 'test.csv', { type: 'text/csv' });
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -203,7 +220,7 @@ describe('ImportStatementModal', () => {
       target: { value: '2025-07-10' },
     });
     const file = new File(['Date,Concept,Amount'], 'test.csv', { type: 'text/csv' });
-    fireEvent.change(screen.getByLabelText('Archivo (.xls, .xlsx, .csv)'), {
+    fireEvent.change(screen.getByLabelText('Archivo (.xls, .xlsx, .csv, .pdf)'), {
       target: { files: [file] },
     });
     await userEvent.click(screen.getByText('My Template').closest('[role="button"]')!);
@@ -237,7 +254,7 @@ describe('ImportStatementModal', () => {
       target: { value: '2025-07-10' },
     });
     const file = new File(['Date,Concept'], 'test.csv', { type: 'text/csv' });
-    fireEvent.change(screen.getByLabelText('Archivo (.xls, .xlsx, .csv)'), {
+    fireEvent.change(screen.getByLabelText('Archivo (.xls, .xlsx, .csv, .pdf)'), {
       target: { files: [file] },
     });
     await userEvent.click(screen.getByText('My Template').closest('[role="button"]')!);
@@ -272,6 +289,89 @@ describe('ImportStatementModal', () => {
         '/api/templates',
         expect.objectContaining({ method: 'DELETE' })
       );
+    });
+  });
+
+  describe('installment pattern picker', () => {
+    it('lists existing patterns in the picker once loaded', async () => {
+      render(<ImportStatementModal {...defaultProps} />);
+      await openCreateTab();
+
+      await waitFor(() => {
+        expect(screen.getByText('Parens N/M')).toBeDefined();
+      });
+    });
+
+    it('shows the inline new-pattern form when clicking + Nuevo patrón', async () => {
+      render(<ImportStatementModal {...defaultProps} />);
+      await openCreateTab();
+
+      await userEvent.click(screen.getByRole('button', { name: '+ Nuevo patrón' }));
+
+      expect(screen.getByRole('button', { name: 'Guardar patrón' })).toBeDefined();
+    });
+
+    it('hides the inline new-pattern form when clicking it again (Cancelar)', async () => {
+      render(<ImportStatementModal {...defaultProps} />);
+      await openCreateTab();
+
+      const toggle = screen.getByRole('button', { name: '+ Nuevo patrón' });
+      await userEvent.click(toggle);
+      expect(screen.getByRole('button', { name: 'Guardar patrón' })).toBeDefined();
+
+      await userEvent.click(toggle);
+      expect(screen.queryByRole('button', { name: 'Guardar patrón' })).toBeNull();
+    });
+
+    it('disables the save-pattern button until name and regex are filled', async () => {
+      render(<ImportStatementModal {...defaultProps} />);
+      await openCreateTab();
+      await userEvent.click(screen.getByRole('button', { name: '+ Nuevo patrón' }));
+
+      const saveButton = screen.getByRole('button', { name: 'Guardar patrón' });
+      expect(saveButton).toBeDisabled();
+
+      const regexInput = screen.getByPlaceholderText(String.raw`^(?<base>.*?)\s*\((?<n>\d+)/(?<m>\d+)\)\s*$`);
+      await userEvent.type(regexInput, '(N/M)');
+      expect(saveButton).toBeDisabled();
+    });
+
+    it('POSTs a new pattern and selects it on save', async () => {
+      global.fetch = vi.fn().mockImplementation((url: string, opts?: RequestInit) => {
+        if (url === '/api/patterns' && opts?.method === 'POST') {
+          return Promise.resolve({
+            ok: true,
+            text: () => Promise.resolve(''),
+            json: () =>
+              Promise.resolve({ id: 'pat-new', name: 'Cuota N de M', regexPattern: 'x', isSystem: false }),
+          });
+        }
+        return buildFetchMock()(url);
+      });
+
+      render(<ImportStatementModal {...defaultProps} />);
+      await openCreateTab();
+      await userEvent.click(screen.getByRole('button', { name: '+ Nuevo patrón' }));
+
+      await userEvent.type(screen.getByLabelText('Nombre'), 'Cuota N de M');
+      await userEvent.type(
+        screen.getByPlaceholderText(String.raw`^(?<base>.*?)\s*\((?<n>\d+)/(?<m>\d+)\)\s*$`),
+        'x'
+      );
+
+      await userEvent.click(screen.getByRole('button', { name: 'Guardar patrón' }));
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/patterns',
+          expect.objectContaining({ method: 'POST' })
+        );
+      });
+
+      // Inline form closes and the new pattern becomes selected/visible in the picker.
+      await waitFor(() => {
+        expect(screen.queryByRole('button', { name: 'Guardar patrón' })).toBeNull();
+      });
     });
   });
 });

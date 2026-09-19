@@ -38,6 +38,8 @@ public class FinanceDbContext : DbContext
     public DbSet<CreditCardTransaction> CreditCardTransaction => Set<CreditCardTransaction>();
     public DbSet<CreditCardPayment> CreditCardPayment => Set<CreditCardPayment>();
     public DbSet<CreditCardStatementAdjustment> CreditCardStatementAdjustment => Set<CreditCardStatementAdjustment>();
+    public DbSet<CreditCardPaymentPlan> CreditCardPaymentPlan => Set<CreditCardPaymentPlan>();
+    public DbSet<CreditCardInstallmentPattern> CreditCardInstallmentPattern => Set<CreditCardInstallmentPattern>();
     public DbSet<Currency> Currency => Set<Currency>();
     public DbSet<CurrencyConversion> CurrencyConversion => Set<CurrencyConversion>();
     public DbSet<CurrencyExchangeRate> CurrencyExchangeRate => Set<CurrencyExchangeRate>();

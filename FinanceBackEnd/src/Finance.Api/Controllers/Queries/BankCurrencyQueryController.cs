@@ -16,7 +16,7 @@ public class BankCurrencyQueryController(IMappingService mapper, IDispatcher<Fin
     public async Task<IActionResult> Get([FromQuery] GetBankCurrenciesQuery request)
     {
         var result = await dispatcher.DispatchQueryAsync(request);
-        return Ok(mapper.Map<ICollection<BankCurrencyDto>>(result.Data));
+        return Ok(mapper.Map<BankCurrencyDto>(result.Data));
     }
 
     [HttpGet("{bankId}/{currencyId}")]

@@ -113,6 +113,9 @@ const urls = {
     get paginated() {
       return new BackendUrl(`${getApiBaseUrl()}/credit-card-statements/paginated`);
     },
+    get nextDraft() {
+      return new BackendUrl(`${getApiBaseUrl()}/credit-card-statements/next-draft`);
+    },
   },
   creditCardStatementImportTemplates: {
     get endpoint() {
@@ -120,6 +123,11 @@ const urls = {
     },
     associate(templateId: string) {
       return new BackendUrl(`${getApiBaseUrl()}/credit-card-statement-import-templates/${templateId}/associate`);
+    },
+  },
+  creditCardInstallmentPatterns: {
+    get endpoint() {
+      return new BackendUrl(`${getApiBaseUrl()}/credit-card-installment-patterns`);
     },
   },
   creditCardPayments: {

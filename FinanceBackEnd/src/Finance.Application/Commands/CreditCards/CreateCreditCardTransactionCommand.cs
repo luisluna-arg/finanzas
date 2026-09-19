@@ -3,6 +3,7 @@ using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Commands.Base;
 using Finance.Application.Repositories;
+using Finance.Application.Services.CreditCards;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.SpecialTypes;
 using Finance.Persistence;
@@ -13,21 +14,27 @@ public class CreateCreditCardTransactionCommandHandler : BaseCommandHandler<Crea
 {
     private readonly IRepository<CreditCardTransaction, Guid> transactionRepository;
     private readonly IRepository<CreditCard, Guid> creditCardRepository;
+    private readonly CreditCardPaymentPlanResolver paymentPlanResolver;
 
     public CreateCreditCardTransactionCommandHandler(
         FinanceDbContext db,
         IRepository<CreditCard, Guid> creditCardRepository,
-        IRepository<CreditCardTransaction, Guid> transactionRepository)
+        IRepository<CreditCardTransaction, Guid> transactionRepository,
+        CreditCardPaymentPlanResolver paymentPlanResolver)
         : base(db)
     {
         this.creditCardRepository = creditCardRepository;
         this.transactionRepository = transactionRepository;
+        this.paymentPlanResolver = paymentPlanResolver;
     }
 
     public override async Task<DataResult<CreditCardTransaction>> ExecuteAsync(CreateCreditCardTransactionCommand command, CancellationToken cancellationToken)
     {
         var creditCard = await creditCardRepository.GetByIdAsync(command.CreditCardId, cancellationToken);
         if (creditCard == null) throw new Exception("Credit card not found");
+
+        var (paymentPlanId, installmentNumber) = await paymentPlanResolver.ResolvePlanAsync(
+            command.CreditCardId, command.CurrencyId, command.Concept, command.TransactionType, null, cancellationToken);
 
         var newTransaction = new CreditCardTransaction()
         {
@@ -38,7 +45,9 @@ public class CreateCreditCardTransactionCommandHandler : BaseCommandHandler<Crea
             Amount = command.Amount,
             Reference = command.Reference,
             Deactivated = command.Deactivated,
-            CurrencyId = command.CurrencyId
+            CurrencyId = command.CurrencyId,
+            PaymentPlanId = paymentPlanId,
+            InstallmentNumber = installmentNumber,
         };
 
         if (command.CreditCardStatementId.HasValue)

@@ -52,6 +52,7 @@ public class CreateCreditCardStatementImportTemplateCommandHandler
             IsSystem = command.IsSystem,
             UserId = command.IsSystem ? null : userId,
             ConfigJson = command.ConfigJson,
+            InstallmentPatternId = command.InstallmentPatternId,
         };
 
         if (command.CreditCardId.HasValue)
@@ -78,4 +79,6 @@ public class CreateCreditCardStatementImportTemplateCommand : BaseCreateCommand<
     public string ConfigJson { get; set; } = string.Empty;
 
     public Guid? CreditCardId { get; set; }
+
+    public Guid? InstallmentPatternId { get; set; }
 }

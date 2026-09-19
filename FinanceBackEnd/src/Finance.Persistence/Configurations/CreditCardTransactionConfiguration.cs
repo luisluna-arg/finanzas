@@ -33,6 +33,19 @@ public class CreditCardTransactionConfiguration : IEntityTypeConfiguration<Credi
             .HasMaxLength(200);
 
         builder
+            .Property(t => t.InstallmentNumber)
+            .IsRequired();
+
+        builder
+            .HasOne(t => t.PaymentPlan)
+            .WithMany(p => p.Transactions)
+            .HasForeignKey(t => t.PaymentPlanId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder
+            .HasIndex(t => new { t.PaymentPlanId, t.InstallmentNumber });
+
+        builder
             .HasOne(t => t.CreditCard)
             .WithMany(c => c.Transactions)
             .HasForeignKey(t => t.CreditCardId)

@@ -1,6 +1,7 @@
 using CQRSDispatch;
 using CQRSDispatch.Interfaces;
 using Finance.Application.Commands.Base;
+using Finance.Application.Services.CreditCards;
 using Finance.Domain.Models.CreditCards;
 using Finance.Helpers.ExcelHelper;
 using Finance.Persistence;
@@ -13,7 +14,12 @@ namespace Finance.Application.Commands.CreditCards;
 
 public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponselessHandler<ImportCreditCardStatementTransactionsCommand>
 {
-    public ImportCreditCardStatementTransactionsCommandHandler(FinanceDbContext db) : base(db) { }
+    private readonly CreditCardPaymentPlanResolver _paymentPlanResolver;
+
+    public ImportCreditCardStatementTransactionsCommandHandler(FinanceDbContext db, CreditCardPaymentPlanResolver paymentPlanResolver) : base(db)
+    {
+        _paymentPlanResolver = paymentPlanResolver;
+    }
 
     public override async Task<CommandResult> ExecuteAsync(
         ImportCreditCardStatementTransactionsCommand command, CancellationToken cancellationToken)
@@ -73,6 +79,10 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
             if (existingSet.Contains((row.Date.Date, row.Concept, row.Amount)))
                 continue;
 
+            var (paymentPlanId, installmentNumber) = await _paymentPlanResolver.ResolvePlanAsync(
+                statement.CreditCardId, row.CurrencyId, row.Concept, CreditCardTransactionType.Purchase,
+                command.TemplateId, cancellationToken);
+
             var tx = new CreditCardTransaction
             {
                 CreditCardId = statement.CreditCardId,
@@ -81,6 +91,8 @@ public class ImportCreditCardStatementTransactionsCommandHandler : BaseResponsel
                 Concept = row.Concept,
                 Amount = row.Amount,
                 CurrencyId = row.CurrencyId,
+                PaymentPlanId = paymentPlanId,
+                InstallmentNumber = installmentNumber,
             };
             DbContext.CreditCardTransaction.Add(tx);
 

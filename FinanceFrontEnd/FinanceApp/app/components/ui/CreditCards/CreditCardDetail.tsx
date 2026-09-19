@@ -27,6 +27,7 @@ import urls from '@/utils/urls';
 import type { CreditCard, CreditCardStatement, CreditCardTransaction } from '@/types/creditCard';
 import EditStatementModal from './EditStatementModal';
 import ImportStatementModal from './ImportStatementModal';
+import GenerateNextStatementModal, { type GeneratedStatementDraft } from './GenerateNextStatementModal';
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '-';
@@ -281,6 +282,8 @@ function CreditCardDetail() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [generatedDraft, setGeneratedDraft] = useState<GeneratedStatementDraft | null>(null);
 
   useEffect(() => {
     if (!carouselApi) return;
@@ -378,7 +381,8 @@ function CreditCardDetail() {
             variant="outline"
             size="sm"
             className="border-primary text-primary hover:bg-primary/10"
-            onClick={() => alert('No implementado')}
+            disabled={statements.length === 0}
+            onClick={() => setShowGenerateModal(true)}
           >
             Generar Último
           </Button>
@@ -456,6 +460,33 @@ function CreditCardDetail() {
           fetchTransactions();
         }}
       />
+
+      <GenerateNextStatementModal
+        show={showGenerateModal}
+        onHide={() => setShowGenerateModal(false)}
+        creditCardId={card.id}
+        onContinue={(draft) => {
+          setGeneratedDraft(draft);
+          setShowGenerateModal(false);
+        }}
+      />
+
+      {generatedDraft && (
+        <EditStatementModal
+          show={!!generatedDraft}
+          onHide={() => setGeneratedDraft(null)}
+          mode="draft"
+          creditCardId={card.id}
+          initialClosureDate={generatedDraft.closureDate}
+          initialExpiringDate={generatedDraft.expiringDate}
+          initialDraftTxs={generatedDraft.draftTxs}
+          onSaved={() => {
+            setGeneratedDraft(null);
+            fetchStatements();
+            fetchTransactions();
+          }}
+        />
+      )}
     </>
   );
 }
