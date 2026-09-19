@@ -35,12 +35,12 @@ jobs:
           target: "/tmp"
           strip_components: 1
 
-  deploy-shared:
-    name: "Deploy: shared (postgres, redis, backend)"
+  checkout:
+    name: Checkout repo on server
     runs-on: ubuntu-latest
     needs: prepare-secrets
     steps:
-      - name: Deploy via SSH
+      - name: Sync repo via SSH
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -62,16 +62,26 @@ jobs:
               git reset --hard origin/${{ github.ref_name }}
             fi
 
-            # Copy env file from uploaded secrets (strip Windows CRLF line endings)
-            # into both stacks — shared reads its DB/Redis/Auth0 vars, funds
-            # reads its VITE_* build args, and both need APP_DOMAIN. Funds'
-            # copy is written here so the deploy-funds job doesn't need the
-            # secrets file again.
-            sed 's/\r$//' /tmp/funds/deploy-secrets/env-file > /var/www/finance-funds/.infra/prod/shared/.env
-            cp /var/www/finance-funds/.infra/prod/shared/.env /var/www/finance-funds/.infra/prod/funds/.env
+  deploy-shared:
+    name: "Deploy: shared (postgres, redis, backend)"
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
 
-            # Clean up secrets
-            rm -rf /tmp/funds/deploy-secrets
+            # Copy env file from uploaded secrets (strip Windows CRLF line
+            # endings). Runs in parallel with deploy-funds, which reads the
+            # same secrets file independently — cleanup-secrets removes it
+            # once both are done, so neither job deletes it here.
+            sed 's/\r$//' /tmp/funds/deploy-secrets/env-file > /var/www/finance-funds/.infra/prod/shared/.env
 
             docker image prune -af
 
@@ -115,7 +125,7 @@ jobs:
   deploy-funds:
     name: "Deploy: funds (frontend)"
     runs-on: ubuntu-latest
-    needs: migrate-database
+    needs: checkout
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.5
@@ -127,7 +137,10 @@ jobs:
           script: |
             set -e
 
-            # Repo checkout and .env are already in place from deploy-shared.
+            # Runs in parallel with deploy-shared — reads the secrets file
+            # independently rather than relying on deploy-shared's copy.
+            sed 's/\r$//' /tmp/funds/deploy-secrets/env-file > /var/www/finance-funds/.infra/prod/funds/.env
+
             cd /var/www/finance-funds/.infra/prod/funds
             docker compose down
             docker compose build
@@ -136,10 +149,26 @@ jobs:
             # Write deploy timestamp for verify jobs to detect stale checks
             date +%s > /tmp/finance-funds-deploy-ts
 
+  cleanup-secrets:
+    name: Clean up uploaded secrets
+    runs-on: ubuntu-latest
+    needs: [deploy-shared, deploy-funds]
+    steps:
+      - name: Remove secrets file via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            rm -rf /tmp/funds/deploy-secrets
+
   verify:
     name: "Verify: ${{ matrix.service }}"
     runs-on: ubuntu-latest
-    needs: [deploy-shared, migrate-database, deploy-funds]
+    needs: [migrate-database, deploy-funds]
     strategy:
       fail-fast: false
       matrix:
