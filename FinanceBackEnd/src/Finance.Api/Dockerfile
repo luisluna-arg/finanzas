@@ -47,6 +47,14 @@ COPY . .
 RUN dotnet restore "FinanceBackEnd.sln"
 RUN dotnet publish "src/Finance.Api/Finance.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
+# Reuses the restored SDK build stage to run EF Core migrations at deploy
+# time, instead of the runtime-only final image (which has no SDK) or a
+# fresh SDK container that would need to restore packages from scratch.
+FROM build AS migrate
+RUN dotnet tool install --global dotnet-ef --version 9.0.5
+ENV PATH="${PATH}:/root/.dotnet/tools"
+ENTRYPOINT ["dotnet", "ef"]
+
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .

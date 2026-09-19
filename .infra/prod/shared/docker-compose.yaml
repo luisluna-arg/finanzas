@@ -38,11 +38,26 @@ services:
       timeout: 5s
       retries: 10
 
+  migrate:
+    build:
+      context: ../../../FinanceBackEnd
+      dockerfile: src/Finance.Api/Dockerfile
+      target: migrate
+    profiles:
+      - tools
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - default
+
   backend:
     container_name: finance-shared-backend
     build:
       context: ../../../FinanceBackEnd
-      dockerfile: Finance.Api/Dockerfile
+      dockerfile: src/Finance.Api/Dockerfile
       args:
         AdminUser__DefaultFirstName: ${AdminUser__DefaultFirstName}
         AdminUser__DefaultLastName: ${AdminUser__DefaultLastName}
