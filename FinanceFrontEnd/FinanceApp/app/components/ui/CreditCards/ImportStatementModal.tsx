@@ -18,7 +18,7 @@ import type {
   StatementImportConfig,
 } from '@/types/creditCardStatementImportTemplate';
 import type { CatalogItem } from '@/types/catalog';
-import type { CreditCardStatement } from '@/types/creditCard';
+import type { CreditCardInstallmentPattern, CreditCardStatement } from '@/types/creditCard';
 
 type TemplateMode = 'select' | 'import-file' | 'create';
 
@@ -70,20 +70,27 @@ function ModeSwitcher({
 function TemplateForm({
   initial,
   currencies,
+  patterns,
   creditCardId,
   isAdmin,
   onSave,
   onCancel,
+  onPatternCreated,
 }: {
   initial?: CreditCardStatementImportTemplate | null;
   currencies: CatalogItem[];
+  patterns: CreditCardInstallmentPattern[];
   creditCardId?: string;
   isAdmin?: boolean;
   onSave: (savedName: string) => void;
   onCancel: () => void;
+  onPatternCreated: (pattern: CreditCardInstallmentPattern) => void;
 }) {
   const [name, setName] = useState(initial?.name ?? '');
   const [isSystem, setIsSystem] = useState(initial?.isSystem ?? false);
+  const [installmentPatternId, setInstallmentPatternId] = useState(
+    initial?.installmentPatternId ?? ''
+  );
   const [config, setConfig] = useState<StatementImportConfig>(() => {
     if (initial?.configJson) {
       try {
@@ -95,17 +102,55 @@ function TemplateForm({
     return { ...DEFAULT_CONFIG };
   });
   const [saving, setSaving] = useState(false);
+  const [showNewPattern, setShowNewPattern] = useState(false);
+  const [newPatternName, setNewPatternName] = useState('');
+  const [newPatternRegex, setNewPatternRegex] = useState('');
+  const [newPatternIsSystem, setNewPatternIsSystem] = useState(false);
+  const [savingPattern, setSavingPattern] = useState(false);
 
   const updateConfig = <K extends keyof StatementImportConfig>(
     key: K,
     value: StatementImportConfig[K]
   ) => setConfig((prev) => ({ ...prev, [key]: value }));
 
+  const handleSaveNewPattern = async () => {
+    if (!newPatternName || !newPatternRegex) return;
+    setSavingPattern(true);
+    try {
+      const res = await fetch(String(urls.creditCardInstallmentPatterns.endpoint), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newPatternName,
+          regexPattern: newPatternRegex,
+          isSystem: newPatternIsSystem,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const created: CreditCardInstallmentPattern = await res.json();
+      onPatternCreated(created);
+      setInstallmentPatternId(created.id);
+      setShowNewPattern(false);
+      setNewPatternName('');
+      setNewPatternRegex('');
+      setNewPatternIsSystem(false);
+    } catch (err) {
+      alert(`Error al guardar patrón de cuotas: ${err}`);
+    } finally {
+      setSavingPattern(false);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const body = { name, isSystem, configJson: JSON.stringify(config) };
+      const body = {
+        name,
+        isSystem,
+        configJson: JSON.stringify(config),
+        installmentPatternId: installmentPatternId || null,
+      };
       const method = initial ? 'PUT' : 'POST';
       const payload = initial
         ? { id: initial.id, ...body }
@@ -264,6 +309,69 @@ function TemplateForm({
           />
         </div>
       </div>
+      <Separator />
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        Plan de pagos (detección de cuotas en el concepto)
+      </p>
+      <div className="grid grid-cols-2 gap-3 items-end">
+        <div>
+          <Label className="block mb-1 text-sm">Patrón de plan de pagos</Label>
+          <Picker
+            id="installment-pattern-picker"
+            value={installmentPatternId}
+            data={patterns}
+            mapper={{ id: 'id', label: 'name' }}
+            placeholder="Sin detección de cuotas"
+            onChange={(e: { value: string | number }) => setInstallmentPatternId(String(e.value))}
+            className="w-full"
+          />
+        </div>
+        <div>
+          <Button type="button" variant="outline" size="sm" onClick={() => setShowNewPattern((v) => !v)}>
+            {showNewPattern ? 'Cancelar' : '+ Nuevo patrón'}
+          </Button>
+        </div>
+      </div>
+      {showNewPattern && (
+        <div className="grid grid-cols-2 gap-3 p-3 border rounded-md">
+          <div>
+            <Label htmlFor="new-pattern-name" className="block mb-1 text-sm">Nombre</Label>
+            <Input
+              id="new-pattern-name"
+              value={newPatternName}
+              onChange={(e) => setNewPatternName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="new-pattern-regex" className="block mb-1 text-sm">Regex (grupos base/n/m)</Label>
+            <Input
+              id="new-pattern-regex"
+              placeholder={String.raw`^(?<base>.*?)\s*\((?<n>\d+)/(?<m>\d+)\)\s*$`}
+              value={newPatternRegex}
+              onChange={(e) => setNewPatternRegex(e.target.value)}
+            />
+          </div>
+          {isAdmin && (
+            <Label className="flex items-center gap-2 text-sm cursor-pointer font-normal">
+              <Checkbox
+                checked={newPatternIsSystem}
+                onCheckedChange={(checked) => setNewPatternIsSystem(checked)}
+              />
+              Patrón del sistema
+            </Label>
+          )}
+          <div className="flex justify-end col-span-2">
+            <Button
+              type="button"
+              size="sm"
+              disabled={!newPatternName || !newPatternRegex || savingPattern}
+              onClick={handleSaveNewPattern}
+            >
+              {savingPattern ? 'Guardando...' : 'Guardar patrón'}
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" size="sm" onClick={onCancel}>
           Cancelar
@@ -405,6 +513,7 @@ export default function ImportStatementModal({
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [currencies, setCurrencies] = useState<CatalogItem[]>([]);
+  const [patterns, setPatterns] = useState<CreditCardInstallmentPattern[]>([]);
   const [templateMode, setTemplateMode] = useState<TemplateMode>('select');
   const [editingTemplate, setEditingTemplate] = useState<CreditCardStatementImportTemplate | null>(null);
   const [otherTemplates, setOtherTemplates] = useState<CreditCardStatementImportTemplate[]>([]);
@@ -450,6 +559,10 @@ export default function ImportStatementModal({
     fetch(String(urls.catalog.currencies.endpoint))
       .then((r) => r.json())
       .then((data: CatalogItem[]) => setCurrencies(data))
+      .catch(() => {});
+    fetch(String(urls.creditCardInstallmentPatterns.endpoint))
+      .then((r) => r.json())
+      .then((data: CreditCardInstallmentPattern[]) => setPatterns(Array.isArray(data) ? data : []))
       .catch(() => {});
   }, [show, loadTemplates, defaultTemplateId]);
 
@@ -705,10 +818,12 @@ export default function ImportStatementModal({
                 <TemplateForm
                   initial={editingTemplate}
                   currencies={currencies}
+                  patterns={patterns}
                   creditCardId={creditCardId}
                   isAdmin={isAdmin}
                   onSave={handleTemplateSaved}
                   onCancel={() => handleSwitchMode('select')}
+                  onPatternCreated={(p) => setPatterns((prev) => [...prev, p])}
                 />
               )}
             </div>
