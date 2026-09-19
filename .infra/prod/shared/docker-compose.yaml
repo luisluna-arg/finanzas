@@ -42,7 +42,7 @@ services:
     container_name: finance-shared-backend
     build:
       context: ../../../FinanceBackEnd
-      dockerfile: Finance.Api/Dockerfile
+      dockerfile: src/Finance.Api/Dockerfile
       args:
         AdminUser__DefaultFirstName: ${AdminUser__DefaultFirstName}
         AdminUser__DefaultLastName: ${AdminUser__DefaultLastName}
