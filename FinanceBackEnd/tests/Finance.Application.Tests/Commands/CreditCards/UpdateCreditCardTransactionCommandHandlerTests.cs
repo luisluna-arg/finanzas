@@ -1,5 +1,6 @@
 using Finance.Application.Commands.CreditCards;
 using Finance.Application.Repositories;
+using Finance.Application.Services.CreditCards;
 using Finance.Application.Tests.Queries.Base;
 using Finance.Domain.Models.CreditCards;
 using Finance.Domain.SpecialTypes;
@@ -16,7 +17,7 @@ public class UpdateCreditCardTransactionCommandHandlerTests : QueryHandlerBaseTe
     }
 
     private UpdateCreditCardTransactionCommandHandler CreateHandler() =>
-        new(_transactionRepo.Object, _dbContext);
+        new(_transactionRepo.Object, _dbContext, new CreditCardPaymentPlanResolver(_dbContext));
 
     [Fact]
     public async Task Update_HappyPath_UpdatesFieldsAndReturnsSuccess()
