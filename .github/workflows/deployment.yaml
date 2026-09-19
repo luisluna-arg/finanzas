@@ -104,7 +104,13 @@ jobs:
             # depends_on before starting, same as the backend service does.
             cd /var/www/finance-funds/.infra/prod/shared
             docker compose build migrate
-            docker compose run --rm migrate database update --project src/Finance.Migrations --startup-project src/Finance.Api --context FinanceDbContext
+            # No --startup-project: Finance.Api doesn't reference
+            # Finance.Migrations, so EF would build Finance.Api as the host
+            # and then fail to find Finance.Migrations.dll next to it.
+            # Finance.Migrations carries its own IDesignTimeDbContextFactory
+            # (FinanceDbContextFactory), so it works as its own startup
+            # project too — same as Scripts/UpdateDatabase.ps1 already does.
+            docker compose run --rm migrate database update --project src/Finance.Migrations --context FinanceDbContext
 
   deploy-funds:
     name: "Deploy: funds (frontend)"
