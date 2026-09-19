@@ -10,4 +10,5 @@ public record CreditCardStatementImportTemplateDto : Dto<Guid>
     public bool IsSystem { get; set; }
     public Guid? UserId { get; set; }
     public string ConfigJson { get; set; } = string.Empty;
+    public Guid? InstallmentPatternId { get; set; }
 }
