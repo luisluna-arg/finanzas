@@ -1,0 +1,96 @@
+name: finance-shared
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "10"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: finance-shared-postgres
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: finance-shared-redis
+    restart: unless-stopped
+    logging: *default-logging
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    container_name: finance-shared-backend
+    build:
+      context: ../../../FinanceBackEnd
+      dockerfile: Finance.Api/Dockerfile
+      args:
+        AdminUser__DefaultFirstName: ${AdminUser__DefaultFirstName}
+        AdminUser__DefaultLastName: ${AdminUser__DefaultLastName}
+        AdminUser__DefaultUsername: ${AdminUser__DefaultUsername}
+        AdminUser__EnableSeeding: ${AdminUser__EnableSeeding}
+        AdminUser__UserId: ${AdminUser__UserId}
+        ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+        Auth0__Application__ClientId: ${Auth0__Application__ClientId}
+        Auth0__Audience: ${Auth0__Audience}
+        Auth0__Domain: ${Auth0__Domain}
+        Auth0__ManagementApi__ClientId: ${Auth0__ManagementApi__ClientId}
+        Auth0__RedirectUri: ${Auth0__RedirectUri}
+        Urls__Http: ${Urls__Http}
+    env_file:
+      - .env
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./dataprotection:/root/.aspnet/DataProtection-Keys
+    networks:
+      - default
+      - traefik_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_network"
+      - "traefik.http.routers.finance-api.rule=Host(`api.${APP_DOMAIN}`)"
+      - "traefik.http.routers.finance-api.entrypoints=websecure"
+      - "traefik.http.routers.finance-api.tls.certresolver=le-resolver"
+      - "traefik.http.services.finance-api.loadbalancer.server.port=80"
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  default:
+    name: shared_network
+    driver: bridge
+  traefik_network:
+    external: true

@@ -1,40 +1,43 @@
-services:
-  backend:
-    build:
-      context: ../../FinanceBackEnd
-      dockerfile: Finance.Api/Dockerfile
-      args:
-        AdminUser__DefaultFirstName: ${AdminUser__DefaultFirstName}
-        AdminUser__DefaultLastName: ${AdminUser__DefaultLastName}
-        AdminUser__DefaultUsername: ${AdminUser__DefaultUsername}
-        AdminUser__EnableSeeding: ${AdminUser__EnableSeeding}
-        AdminUser__UserId: ${AdminUser__UserId}
-        ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
-        Auth0__Application__ClientId: ${Auth0__Application__ClientId}
-        Auth0__Application__ClientSecret: ${Auth0__Application__ClientSecret}
-        Auth0__Audience: ${Auth0__Audience}
-        Auth0__Domain: ${Auth0__Domain}
-        Auth0__ManagementApi__ClientId: ${Auth0__ManagementApi__ClientId}
-        Auth0__ManagementApi__ClientSecret: ${Auth0__ManagementApi__ClientSecret}
-        Auth0__RedirectUri: ${Auth0__RedirectUri}
-        ConnectionStrings__PostgresDb: ${ConnectionStrings__PostgresDb}
-        Urls__Http: ${Urls__Http}
-    ports:
-      - "5000:80"
-    restart: unless-stopped
-    volumes:
-      - ./dataprotection:/root/.aspnet/DataProtection-Keys
+name: finance-funds
 
+services:
   frontend:
+    container_name: finance-funds-frontend
     build:
       context: ../../FinanceFrontEnd/FinanceFunds
       dockerfile: Dockerfile
       args:
+        NODE_ENV: production
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
         VITE_AUTH0_REDIRECT_URI: ${VITE_AUTH0_REDIRECT_URI}
-        API_URL: ${API_URL}
+        VITE_API_URL: https://api.${APP_DOMAIN}
         VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
-    ports:
-      - "5200:3000"
+        VITE_ALLOW_INSECURE_API: ${VITE_ALLOW_INSECURE_API}
+    environment:
+      - PORT=3000
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "10"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_network"
+      - "traefik.http.routers.finance-funds.rule=Host(`${APP_DOMAIN}`) || Host(`www.${APP_DOMAIN}`)"
+      - "traefik.http.routers.finance-funds.entrypoints=websecure"
+      - "traefik.http.routers.finance-funds.tls.certresolver=le-resolver"
+      - "traefik.http.services.finance-funds.loadbalancer.server.port=3000"
+
+networks:
+  traefik_network:
+    external: true
