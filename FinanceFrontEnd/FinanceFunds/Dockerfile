@@ -21,7 +21,7 @@ ENV NODE_ENV=$NODE_ENV \
     VITE_AUTH0_AUDIENCE=$VITE_AUTH0_AUDIENCE
 
 RUN echo "Starting install..." && \
-    npm install && \
+    npm install --ignore-scripts && \
     echo "Install done."
 
 RUN echo "Starting build..." && \
