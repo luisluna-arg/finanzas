@@ -27,4 +27,11 @@ public class CreditCardStatementQueryController(IMappingService mapper, IDispatc
     [Route("latest")]
     public async Task<IActionResult> Latest([FromQuery] GetLatestCreditCardStatementsQuery request)
         => await ExecuteAsync(request);
+
+    [HttpGet("next-draft")]
+    public async Task<IActionResult> NextDraft([FromQuery] GetNextCreditCardStatementDraftQuery request)
+    {
+        var result = await Dispatcher.DispatchQueryAsync(request);
+        return result.IsSuccess ? Ok(result.Data) : BadRequest(result.ErrorMessage);
+    }
 }
