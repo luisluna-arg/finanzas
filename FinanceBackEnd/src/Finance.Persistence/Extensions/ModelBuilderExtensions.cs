@@ -81,6 +81,7 @@ public static class ModelBuilderExtensions
 
         ApplyCreditCardEntityFilter<CreditCardStatement>(context, modelBuilder);
         ApplyCreditCardEntityFilter<CreditCardTransaction>(context, modelBuilder);
+        ApplyCreditCardEntityFilter<CreditCardPaymentPlan>(context, modelBuilder);
 
         ApplyCreditCardStatementEntityFilter<CreditCardStatementTransaction>(context, modelBuilder);
         ApplyCreditCardStatementEntityFilter<CreditCardPayment>(context, modelBuilder);

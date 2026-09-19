@@ -18,6 +18,7 @@ public class CreditCard : Entity<Guid>
     public virtual ICollection<CreditCardStatementImportTemplate> ImportTemplates { get; set; } = [];
     public virtual ICollection<CreditCardTransaction> Transactions { get; set; } = [];
     public virtual ICollection<CreditCardStatement> Statements { get; set; } = [];
+    public virtual ICollection<CreditCardPaymentPlan> PaymentPlans { get; set; } = [];
 
     public CreditCard()
     {

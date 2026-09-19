@@ -11,4 +11,6 @@ public class CreditCardStatementImportTemplate : AuditedEntity<Guid>
     public virtual User? User { get; set; }
     public string ConfigJson { get; set; } = string.Empty;
     public virtual ICollection<CreditCard> CreditCards { get; set; } = [];
+    public Guid? InstallmentPatternId { get; set; }
+    public virtual CreditCardInstallmentPattern? InstallmentPattern { get; set; }
 }
