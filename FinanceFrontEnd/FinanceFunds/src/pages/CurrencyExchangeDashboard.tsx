@@ -1,4 +1,5 @@
-import { useAuth } from '@/auth';
+import type { LoaderFunctionArgs } from 'react-router';
+import { useLoaderData } from 'react-router';
 import {
   Title,
   Text,
@@ -6,7 +7,6 @@ import {
   Group,
   Stack,
   ThemeIcon,
-  Paper,
   Box,
   Table,
   Divider,
@@ -19,15 +19,27 @@ import { IconCurrencyDollar, IconPlus } from '@tabler/icons-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import SafeLogger from '@/utils/SafeLogger';
 import CurrencyExchangeRateService from '@/services/CurrencyExchangeRateService';
+import { ApiClient } from '@/services/ApiClient';
+import { requireAuth } from '@/services/auth/session.server';
 import type { CurrencyExchangeRate } from '@/services/types/CurrencyExchangeRateTypes';
 import CreateExchangeRateModal from '@/components/CreateExchangeRateModal';
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const authUser = await requireAuth(request);
+  const client = new ApiClient(authUser.accessToken);
+  const initial = await CurrencyExchangeRateService.getLatestExchangeRates({}, true, client); // bypasses the browser cache
+
+  return { initial };
+};
+
 const CurrencyExchangeDashboard = () => {
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [exchangeRates, setExchangeRates] = useState<CurrencyExchangeRate[]>([]);
+  const { initial } = useLoaderData<typeof loader>();
+  const [loading, setLoading] = useState(false);
+  const [exchangeRates, setExchangeRates] = useState<CurrencyExchangeRate[]>(initial || []);
   const [error, setError] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 768
+  );
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Memoized card configuration to avoid recreation
@@ -59,6 +71,20 @@ const CurrencyExchangeDashboard = () => {
       minute: '2-digit',
     }).format(new Date(timestamp));
   }, []);
+
+  // Sorted by date only (most recent day first), then by currency pair name
+  const sortedExchangeRates = useMemo(() => {
+    return [...exchangeRates].sort((a, b) => {
+      const dateA = a.timeStamp.slice(0, 10); // YYYY-MM-DD, ignores time-of-day
+      const dateB = b.timeStamp.slice(0, 10);
+      if (dateA !== dateB) return dateB.localeCompare(dateA);
+
+      const baseCompare = a.baseCurrency.shortName.localeCompare(b.baseCurrency.shortName);
+      if (baseCompare !== 0) return baseCompare;
+
+      return a.quoteCurrency.shortName.localeCompare(b.quoteCurrency.shortName);
+    });
+  }, [exchangeRates]);
 
   // Effect for media query - passive resize listener
   useEffect(() => {
@@ -98,11 +124,6 @@ const CurrencyExchangeDashboard = () => {
     }
   }, []);
 
-  // Initial data fetch
-  useEffect(() => {
-    fetchExchangeRates();
-  }, [fetchExchangeRates]);
-
   // Handle modal success
   const handleExchangeRateCreated = useCallback(() => {
     // Reload exchange rates after creating a new one without showing loader
@@ -113,7 +134,7 @@ const CurrencyExchangeDashboard = () => {
   const renderMobileExchangeRateCards = useCallback(() => {
     return (
       <Stack gap="md">
-        {exchangeRates.map(rate => (
+        {sortedExchangeRates.map(rate => (
           <Card key={rate.id} padding="md" radius="md" withBorder>
             <Stack gap="xs">
               <Group justify="space-between">
@@ -132,7 +153,7 @@ const CurrencyExchangeDashboard = () => {
                   Buy Rate:
                 </Text>
                 <Text fw={500} c="green">
-                  {formatRate(rate.buyRate.value)}
+                  {formatRate(rate.buyRate)}
                 </Text>
               </Group>
 
@@ -141,7 +162,7 @@ const CurrencyExchangeDashboard = () => {
                   Sell Rate:
                 </Text>
                 <Text fw={500} c="red">
-                  {formatRate(rate.sellRate.value)}
+                  {formatRate(rate.sellRate)}
                 </Text>
               </Group>
 
@@ -163,7 +184,7 @@ const CurrencyExchangeDashboard = () => {
         )}
       </Stack>
     );
-  }, [exchangeRates, formatRate, formatTimestamp, loading]);
+  }, [sortedExchangeRates, formatRate, formatTimestamp, loading]);
 
   // Render function for desktop table
   const renderDesktopTable = useCallback(() => {
@@ -179,7 +200,7 @@ const CurrencyExchangeDashboard = () => {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {exchangeRates.map(rate => (
+            {sortedExchangeRates.map(rate => (
               <Table.Tr key={rate.id}>
                 <Table.Td>
                   <Group gap="xs">
@@ -193,12 +214,12 @@ const CurrencyExchangeDashboard = () => {
                 </Table.Td>
                 <Table.Td>
                   <Text fw={500} c="green">
-                    {formatRate(rate.buyRate.value)}
+                    {formatRate(rate.buyRate)}
                   </Text>
                 </Table.Td>
                 <Table.Td>
                   <Text fw={500} c="red">
-                    {formatRate(rate.sellRate.value)}
+                    {formatRate(rate.sellRate)}
                   </Text>
                 </Table.Td>
                 <Table.Td>
@@ -217,7 +238,7 @@ const CurrencyExchangeDashboard = () => {
         )}
       </ScrollArea>
     );
-  }, [exchangeRates, formatRate, formatTimestamp, loading]);
+  }, [sortedExchangeRates, exchangeRates.length, formatRate, formatTimestamp, loading]);
 
   // Memoize the content based on loading, error, and display mode
   const content = useMemo(() => {
@@ -243,13 +264,6 @@ const CurrencyExchangeDashboard = () => {
   return (
     <Box w="100%">
       <Stack gap="md">
-        <Paper withBorder p="md" radius="md">
-          <Stack gap="xs">
-            <Title order={2}>Welcome, {user?.name}!</Title>
-            {user?.email && <Text c="dimmed">Email: {user.email}</Text>}
-          </Stack>
-        </Paper>
-
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Group gap="sm">
             <ThemeIcon color={exchangeRateCard.color} variant="light" size="lg" radius="md">

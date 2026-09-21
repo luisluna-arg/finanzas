@@ -1,78 +1,50 @@
-// Base API client for making HTTP requests
+// Base API client for making HTTP requests.
+//
+// Dual-mode: in the browser it always calls same-origin `/api/proxy?path=...`
+// (no token attached — the proxy route resolves it server-side from the session
+// cookie), so the default singleton export below is safe to share across a tab.
+// On the server it calls the backend directly with an explicit per-request
+// access token, since a shared module-level token would leak between
+// concurrent requests from different users.
 import SafeLogger from '@/utils/SafeLogger';
 
-// Acquire configured API URL. In development, allow a localhost fallback for convenience.
-const rawApiUrl = import.meta.env.VITE_API_URL;
-const allowInsecure = Boolean(import.meta.env.VITE_ALLOW_INSECURE_API === 'true');
-let API_BASE_URL: string | undefined = rawApiUrl;
+const isServer = typeof window === 'undefined';
 
-// Debug logging
-SafeLogger.log('Environment Debug:', {
-  VITE_API_URL: import.meta.env.VITE_API_URL,
-  VITE_ALLOW_INSECURE_API: import.meta.env.VITE_ALLOW_INSECURE_API,
-  DEV: import.meta.env.DEV,
-  allowInsecure: allowInsecure,
-});
-
-if (!API_BASE_URL) {
-  if (import.meta.env.DEV) {
-    // In dev only, allow explicit localhost so dev servers work without env vars
-    API_BASE_URL = 'http://localhost:5000';
-  } else {
-    // In non-dev (staging/production) do not allow an implicit fallback
-    throw new Error(
-      'Missing required environment variable VITE_API_URL. Set the API base URL and ensure it uses HTTPS in production.'
-    );
-  }
-}
-
-// Ensure HTTPS is used in non-development environments unless explicitly allowed
-// Allow localhost URLs in any environment for local development
-const isLocalhost = API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1');
-const shouldEnforceHttps = !import.meta.env.DEV && !allowInsecure && !isLocalhost;
-
-if (shouldEnforceHttps) {
-  try {
-    const parsed = new URL(API_BASE_URL);
-    if (parsed.protocol !== 'https:') {
-      throw new Error(
-        `Insecure API base URL protocol '${parsed.protocol}'. Production requires HTTPS or set VITE_ALLOW_INSECURE_API=true to override.`
-      );
-    }
-  } catch (err) {
-    // Re-throw with clearer message
-    throw new Error(
-      `Invalid VITE_API_URL '${API_BASE_URL}'. Ensure it is a valid HTTPS URL. ${err instanceof Error ? err.message : ''}`
-    );
-  }
-}
-
-// Remove trailing slashes to avoid double slash issues in URL construction
-const BASE_URL = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
-
-// Only log the resolved API URL in development; avoid logging production endpoints
-if (import.meta.env.DEV) {
-  SafeLogger.info('API URL:', BASE_URL);
-}
-
-// Common headers
 const COMMON_HEADERS = {
   'Content-Type': 'application/json',
 };
 
-// Token provider function type
-type TokenProvider = () => Promise<string>;
+function resolveServerBaseUrl(): string {
+  const rawApiUrl = process.env.API_URL;
+  const allowInsecure = process.env.ALLOW_INSECURE_API === 'true';
+  let apiBaseUrl = rawApiUrl;
 
-let tokenProvider: TokenProvider | null = null;
+  if (!apiBaseUrl) {
+    if (process.env.NODE_ENV !== 'production') {
+      apiBaseUrl = 'http://localhost:5000';
+    } else {
+      throw new Error(
+        'Missing required environment variable API_URL. Set the API base URL and ensure it uses HTTPS in production.'
+      );
+    }
+  }
 
-/**
- * Set the function that provides the Auth0 access token
- */
-export function setTokenProvider(provider: TokenProvider) {
-  tokenProvider = provider;
+  const isLocalhost = apiBaseUrl.includes('localhost') || apiBaseUrl.includes('127.0.0.1');
+  const shouldEnforceHttps =
+    process.env.NODE_ENV === 'production' && !allowInsecure && !isLocalhost;
+
+  if (shouldEnforceHttps) {
+    const parsed = new URL(apiBaseUrl);
+    if (parsed.protocol !== 'https:') {
+      throw new Error(
+        `Insecure API base URL protocol '${parsed.protocol}'. Production requires HTTPS or set ALLOW_INSECURE_API=true to override.`
+      );
+    }
+  }
+
+  return apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
 }
 
-// Error processing
 async function processErrorResponse(response: Response): Promise<string> {
   try {
     const errorResponse = await response.json();
@@ -87,212 +59,67 @@ async function processErrorResponse(response: Response): Promise<string> {
   }
 }
 
-// Helper to get headers with Authorization
-async function getAuthHeaders() {
-  if (!tokenProvider) {
-    throw new Error('Token provider not set. Please call setTokenProvider in your app startup.');
-  }
-  const token = await tokenProvider();
-  return {
-    ...COMMON_HEADERS,
-    Authorization: `Bearer ${token}`,
-  };
-}
-
-/**
- * Base API client for making HTTP requests
- */
 class ApiClient {
-  /**
-   * Make a GET request to the API
-   *
-   * @param endpoint - The API endpoint to request
-   * @param queryParams - Optional query parameters
-   * @returns Promise with the response data
-   */
+  constructor(private readonly accessToken?: string) {}
+
   async get<T>(
     endpoint: string,
     queryParams?: Record<string, string | number | boolean | null | undefined>
   ): Promise<T> {
     const url = this.buildUrl(endpoint, queryParams);
-
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: await getAuthHeaders(),
-        // Add cache control for better performance
-        cache: 'default',
-      });
-
-      if (!response.ok) {
-        const errorMessage = await processErrorResponse(response);
-        throw new Error(
-          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`
-        );
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        // Use SafeLogger to redact sensitive values in dev and avoid raw console in code
-        const { default: SafeLogger } = await import('@/utils/SafeLogger');
-        SafeLogger.error(`API request error for ${url}:`, error);
-      }
-      throw error;
-    }
+    return this.request<T>(url, { method: 'GET', headers: this.getHeaders() });
   }
 
-  /**
-   * Make a POST request to the API
-   *
-   * @param endpoint - The API endpoint to request
-   * @param data - The data to send in the request body
-   * @returns Promise with the response data
-   */
   async post<T>(endpoint: string, data?: unknown): Promise<T> {
-    // Ensure endpoint doesn't start with a slash to avoid double slashes
-    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const url = `${BASE_URL}/${normalizedEndpoint}`;
-
-    try {
-      SafeLogger.info(`Sending POST request to ${url} with data:`, data);
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: await getAuthHeaders(),
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorMessage = await processErrorResponse(response);
-        throw new Error(
-          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`
-        );
-      }
-
-      const responseData = await response.json();
-
-      SafeLogger.info(`Received response from ${url}:`, responseData);
-
-      return responseData;
-    } catch (error) {
-      SafeLogger.error(`API request error for ${url}:`, error);
-      throw error;
-    }
+    const url = this.buildUrl(endpoint);
+    return this.request<T>(url, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data),
+    });
   }
 
-  /**
-   * Make a PUT request to the API
-   *
-   * @param endpoint - The API endpoint to request
-   * @param data - The data to send in the request body
-   * @returns Promise with the response data
-   */
   async put<T>(endpoint: string, data?: unknown): Promise<T> {
-    // Ensure endpoint doesn't start with a slash to avoid double slashes
-    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const url = `${BASE_URL}/${normalizedEndpoint}`;
-
-    try {
-      SafeLogger.info(`Sending PUT request to ${url} with data:`, data);
-
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: await getAuthHeaders(),
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorMessage = await processErrorResponse(response);
-        throw new Error(
-          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`
-        );
-      }
-
-      const responseData = await response.json();
-
-      SafeLogger.info(`Received response from ${url}:`, responseData);
-
-      return responseData;
-    } catch (error) {
-      SafeLogger.error(`API request error for ${url}:`, error);
-      throw error;
-    }
+    const url = this.buildUrl(endpoint);
+    return this.request<T>(url, {
+      method: 'PUT',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data),
+    });
   }
 
-  /**
-   * Make a DELETE request to the API
-   *
-   * @param endpoint - The API endpoint to request
-   * @param data - Optional data to send in the request body
-   * @returns Promise with the response data
-   */
   async delete<T = void>(endpoint: string, data?: unknown): Promise<T> {
-    // Ensure endpoint doesn't start with a slash to avoid double slashes
-    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const url = `${BASE_URL}/${normalizedEndpoint}`;
-
-    try {
-      SafeLogger.info(
-        `Sending DELETE request to ${url}`,
-        data ? `with data: ${JSON.stringify(data)}` : ''
-      );
-
-      const deleteOptions: RequestInit = {
-        method: 'DELETE',
-        headers: await getAuthHeaders(),
-      };
-      if (data !== undefined) deleteOptions.body = JSON.stringify(data as unknown);
-
-      const response = await fetch(url, deleteOptions);
-
-      if (!response.ok) {
-        const errorMessage = await processErrorResponse(response);
-        throw new Error(
-          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`
-        );
-      }
-
-      // Handle empty responses
-      const text = await response.text();
-      if (text) {
-        const responseData = JSON.parse(text);
-        SafeLogger.info(`Received response from ${url}:`, responseData);
-        return responseData;
-      }
-
-      return undefined as T;
-    } catch (error) {
-      SafeLogger.error(`API request error for ${url}:`, error);
-      throw error;
-    }
+    const url = this.buildUrl(endpoint);
+    const options: RequestInit = { method: 'DELETE', headers: this.getHeaders() };
+    if (data !== undefined) options.body = JSON.stringify(data);
+    return this.request<T>(url, options, true);
   }
 
-  /**
-   * Make a PATCH request to the API
-   *
-   * @param endpoint - The API endpoint to request
-   * @param data - Optional data to send in the request body
-   * @returns Promise with the response data
-   */
   async patch<T = void>(endpoint: string, data?: unknown): Promise<T> {
-    // Ensure endpoint doesn't start with a slash to avoid double slashes
-    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const url = `${BASE_URL}/${normalizedEndpoint}`;
+    const url = this.buildUrl(endpoint);
+    const options: RequestInit = { method: 'PATCH', headers: this.getHeaders() };
+    if (data !== undefined) options.body = JSON.stringify(data);
+    return this.request<T>(url, options, true);
+  }
 
+  private getHeaders(): HeadersInit {
+    if (isServer) {
+      if (!this.accessToken) {
+        throw new Error('ApiClient used server-side without an access token.');
+      }
+      return { ...COMMON_HEADERS, Authorization: `Bearer ${this.accessToken}` };
+    }
+    // Browser mode: no Authorization header — /api/proxy attaches it from the session cookie.
+    return COMMON_HEADERS;
+  }
+
+  private async request<T>(
+    url: string,
+    options: RequestInit,
+    allowEmptyResponse = false
+  ): Promise<T> {
     try {
-      SafeLogger.info(
-        `Sending PATCH request to ${url}`,
-        data ? `with data: ${JSON.stringify(data)}` : ''
-      );
-
-      const patchOptions: RequestInit = {
-        method: 'PATCH',
-        headers: await getAuthHeaders(),
-      };
-      if (data !== undefined) patchOptions.body = JSON.stringify(data as unknown);
-
-      const response = await fetch(url, patchOptions);
+      const response = await fetch(url, options);
 
       if (!response.ok) {
         const errorMessage = await processErrorResponse(response);
@@ -301,50 +128,45 @@ class ApiClient {
         );
       }
 
-      // Handle empty responses
-      const text = await response.text();
-      if (text) {
-        const responseData = JSON.parse(text);
-        SafeLogger.info(`Received response from ${url}:`, responseData);
-        return responseData;
+      if (allowEmptyResponse) {
+        const text = await response.text();
+        return (text ? JSON.parse(text) : undefined) as T;
       }
 
-      return undefined as T;
+      return (await response.json()) as T;
     } catch (error) {
       SafeLogger.error(`API request error for ${url}:`, error);
       throw error;
     }
   }
 
-  /**
-   * Build a URL with query parameters
-   *
-   * @param endpoint - The API endpoint
-   * @param params - Query parameters to add to the URL
-   * @returns The formatted URL
-   */
   private buildUrl(
     endpoint: string,
     params?: Record<string, string | number | boolean | null | undefined>
   ): string {
-    // Ensure endpoint doesn't start with a slash to avoid double slashes
-    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-    // Avoid creating a URL object for simple cases
-    if (!params || Object.keys(params).length === 0) {
-      return `${BASE_URL}/${normalizedEndpoint}`;
+    if (isServer) {
+      const url = new URL(`${resolveServerBaseUrl()}${normalizedEndpoint}`);
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) url.searchParams.append(key, value.toString());
+        });
+      }
+      return url.toString();
     }
 
-    const url = new URL(`${BASE_URL}/${normalizedEndpoint}`);
-
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        url.searchParams.append(key, value.toString());
-      }
-    });
-
-    return url.toString();
+    // Browser mode: route through the same-origin proxy, which forwards `path`
+    // (and any other query params) to the real backend with the session's token.
+    const proxyParams = new URLSearchParams({ path: normalizedEndpoint });
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) proxyParams.append(key, value.toString());
+      });
+    }
+    return `/api/proxy?${proxyParams.toString()}`;
   }
 }
 
+export { ApiClient };
 export default new ApiClient();

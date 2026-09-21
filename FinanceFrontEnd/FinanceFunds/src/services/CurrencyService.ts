@@ -1,4 +1,4 @@
-import ApiClient from './ApiClient';
+import apiClient, { ApiClient } from './ApiClient';
 import type { CurrenciesResponse } from './types/CurrencyTypes';
 import type { Currency } from './types/CurrencyTypes';
 import SafeLogger from '@/utils/SafeLogger';
@@ -28,12 +28,16 @@ class CurrencyService {
    * @param forceRefresh - Whether to bypass cache and force a fresh API call
    * @returns Promise with the CurrenciesResponse
    */
-  async getAllCurrencies(forceRefresh = false): Promise<CurrenciesResponse> {
+  async getAllCurrencies(
+    forceRefresh = false,
+    client: ApiClient = apiClient
+  ): Promise<CurrenciesResponse> {
+    const useCache = client === apiClient;
     const now = Date.now();
     const { data, timestamps } = CurrencyService.cache;
 
-    // Check cache validity
     if (
+      useCache &&
       !forceRefresh &&
       data.has(CURRENCIES_CACHE_KEY) &&
       timestamps.has(CURRENCIES_CACHE_KEY) &&
@@ -43,24 +47,24 @@ class CurrencyService {
     }
 
     try {
-      const response = await ApiClient.get<CurrenciesResponse>('/api/currencies');
+      const response = await client.get<CurrenciesResponse>('/api/currencies');
 
-      // Set response in cache
-      data.set(CURRENCIES_CACHE_KEY, response);
-      timestamps.set(CURRENCIES_CACHE_KEY, now);
+      if (useCache) {
+        data.set(CURRENCIES_CACHE_KEY, response);
+        timestamps.set(CURRENCIES_CACHE_KEY, now);
 
-      // Cache individual currencies as well
-      if (Array.isArray(response)) {
-        response.forEach(currency => {
-          data.set(`currency_${currency.id}`, currency);
-          timestamps.set(`currency_${currency.id}`, now);
-        });
+        if (Array.isArray(response)) {
+          response.forEach(currency => {
+            data.set(`currency_${currency.id}`, currency);
+            timestamps.set(`currency_${currency.id}`, now);
+          });
+        }
       }
 
       return response;
     } catch (error) {
       // If we have stale data, return it rather than failing completely
-      if (data.has(CURRENCIES_CACHE_KEY)) {
+      if (useCache && data.has(CURRENCIES_CACHE_KEY)) {
         SafeLogger.warn('Returning stale currency data due to API error');
         return data.get(CURRENCIES_CACHE_KEY) as CurrenciesResponse;
       }
@@ -77,15 +81,20 @@ class CurrencyService {
    * @param forceRefresh - Whether to bypass cache and force a fresh API call
    * @returns Promise with the Currency
    */
-  async getCurrency(id: string, forceRefresh = false): Promise<Currency> {
+  async getCurrency(
+    id: string,
+    forceRefresh = false,
+    client: ApiClient = apiClient
+  ): Promise<Currency> {
     if (!id) throw new Error('Currency ID is required');
 
+    const useCache = client === apiClient;
     const now = Date.now();
     const { data, timestamps } = CurrencyService.cache;
     const currencyCacheKey = `currency_${id}`;
 
-    // Check cache validity
     if (
+      useCache &&
       !forceRefresh &&
       data.has(currencyCacheKey) &&
       timestamps.has(currencyCacheKey) &&
@@ -98,7 +107,7 @@ class CurrencyService {
       // Try to get from getAllCurrencies first to avoid extra API call
       if (!forceRefresh) {
         try {
-          const allCurrencies = await this.getAllCurrencies(false);
+          const allCurrencies = await this.getAllCurrencies(false, client);
           const foundCurrency = Array.isArray(allCurrencies)
             ? allCurrencies.find((c: Currency) => c.id === id)
             : undefined;
@@ -109,16 +118,17 @@ class CurrencyService {
       }
 
       // Direct API call if needed
-      const currency = await ApiClient.get<Currency>(`api/currencies/${id}`);
+      const currency = await client.get<Currency>(`api/currencies/${id}`);
 
-      // Update cache
-      data.set(currencyCacheKey, currency);
-      timestamps.set(currencyCacheKey, now);
+      if (useCache) {
+        data.set(currencyCacheKey, currency);
+        timestamps.set(currencyCacheKey, now);
+      }
 
       return currency;
     } catch (error) {
       // If we have stale data, return it rather than failing completely
-      if (data.has(currencyCacheKey)) {
+      if (useCache && data.has(currencyCacheKey)) {
         SafeLogger.warn(`Returning stale data for currency ${id} due to API error`);
         return data.get(currencyCacheKey) as Currency;
       }

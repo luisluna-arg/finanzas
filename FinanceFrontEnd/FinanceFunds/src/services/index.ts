@@ -1,6 +1,6 @@
-import ApiClient from './ApiClient';
+import apiClient, { ApiClient } from './ApiClient';
 import FundService from './FundService';
 import CurrencyService from './CurrencyService';
 import CurrencyExchangeRateService from './CurrencyExchangeRateService';
 
-export { ApiClient, FundService, CurrencyService, CurrencyExchangeRateService };
+export { apiClient, ApiClient, FundService, CurrencyService, CurrencyExchangeRateService };

@@ -1,4 +1,5 @@
-import { useAuth } from '@/auth';
+import type { LoaderFunctionArgs } from 'react-router';
+import { useLoaderData } from 'react-router';
 import {
   Title,
   Text,
@@ -6,7 +7,6 @@ import {
   Group,
   Stack,
   ThemeIcon,
-  Paper,
   Box,
   Table,
   Divider,
@@ -18,17 +18,29 @@ import {
 import { IconReceipt2, IconBuildingBank, IconPlus } from '@tabler/icons-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import FundService from '@/services/FundService';
+import { ApiClient } from '@/services/ApiClient';
+import { requireAuth } from '@/services/auth/session.server';
 import SafeLogger from '@/utils/SafeLogger';
 import type { Fund } from '@/services/types/FundTypes';
 import CreateFundModal from '@/components/CreateFundModal';
 import { getMaxDecimals } from '@/constants/currencies';
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const authUser = await requireAuth(request);
+  const client = new ApiClient(authUser.accessToken);
+  const initial = await FundService.getAllFunds(true, client); // bypasses the browser cache
+
+  return { initial };
+};
+
 const FundsDashboard = () => {
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [funds, setFunds] = useState<Fund[]>([]);
+  const { initial } = useLoaderData<typeof loader>();
+  const [loading, setLoading] = useState(false);
+  const [funds, setFunds] = useState<Fund[]>(initial.items || []);
   const [error, setError] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 768
+  );
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Memoized card configuration to avoid recreation
@@ -113,11 +125,6 @@ const FundsDashboard = () => {
       }, 0);
     }
   }, []);
-
-  // Initial data fetch
-  useEffect(() => {
-    fetchFunds();
-  }, [fetchFunds]);
 
   // Handle modal success
   const handleFundCreated = useCallback(() => {
@@ -281,13 +288,6 @@ const FundsDashboard = () => {
   return (
     <Box w="100%">
       <Stack gap="md">
-        <Paper withBorder p="md" radius="md">
-          <Stack gap="xs">
-            <Title order={2}>Welcome, {user?.name}!</Title>
-            {user?.email && <Text c="dimmed">Email: {user.email}</Text>}
-          </Stack>
-        </Paper>
-
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Group gap="sm">
             <ThemeIcon color={fundCard.color} variant="light" size="lg" radius="md">

@@ -6,16 +6,17 @@ services:
     build:
       context: ../../../FinanceFrontEnd/FinanceFunds
       dockerfile: Dockerfile
-      args:
-        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
-        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
-        VITE_AUTH0_REDIRECT_URI: ${VITE_AUTH0_REDIRECT_URI}
-        VITE_API_URL: https://api.${APP_DOMAIN}
-        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
-        VITE_ALLOW_INSECURE_API: ${VITE_ALLOW_INSECURE_API}
+    env_file:
+      - .env
     environment:
+      # Auth0 config and secrets (AUTH0_*, USER_SESSION_SECRET) come from .env;
+      # BASE_URL, API_URL and REDIS_URL are set here because they depend on
+      # APP_DOMAIN / internal service names, which .env doesn't know about.
       - PORT=3000
       - APP_DOMAIN=${APP_DOMAIN}
+      - BASE_URL=https://${APP_DOMAIN}
+      - API_URL=http://finance-shared-backend:80
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@finance-shared-redis:6379
     restart: unless-stopped
     logging:
       driver: json-file
@@ -30,6 +31,7 @@ services:
       start_period: 15s
     networks:
       - traefik_network
+      - shared_network
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_network"
@@ -40,4 +42,8 @@ services:
 
 networks:
   traefik_network:
+    external: true
+  # Lets this container reach finance-shared-redis and finance-shared-backend
+  # directly by service name, instead of the public api.${APP_DOMAIN} hostname.
+  shared_network:
     external: true

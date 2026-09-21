@@ -1,4 +1,4 @@
-import ApiClient from './ApiClient';
+import apiClient, { ApiClient } from './ApiClient';
 import type { Bank, BanksResponse } from './types/BankTypes';
 import SafeLogger from '@/utils/SafeLogger';
 
@@ -27,12 +27,15 @@ class BankService {
    * @param forceRefresh - Whether to bypass cache and force a fresh API call
    * @returns Promise with the BanksResponse
    */
-  async getAllBanks(forceRefresh = false): Promise<BanksResponse> {
+  async getAllBanks(forceRefresh = false, client: ApiClient = apiClient): Promise<BanksResponse> {
+    // The cache is only safe for the default (browser) client — a request-scoped
+    // server client always bypasses it (see ApiClient.ts).
+    const useCache = client === apiClient;
     const now = Date.now();
     const { data, timestamps } = BankService.cache;
 
-    // Check cache validity
     if (
+      useCache &&
       !forceRefresh &&
       data.has(BANKS_CACHE_KEY) &&
       timestamps.has(BANKS_CACHE_KEY) &&
@@ -42,24 +45,24 @@ class BankService {
     }
 
     try {
-      const response = await ApiClient.get<BanksResponse>('/api/banks');
+      const response = await client.get<BanksResponse>('/api/banks');
 
-      // Set response in cache
-      data.set(BANKS_CACHE_KEY, response);
-      timestamps.set(BANKS_CACHE_KEY, now);
+      if (useCache) {
+        data.set(BANKS_CACHE_KEY, response);
+        timestamps.set(BANKS_CACHE_KEY, now);
 
-      // Cache individual banks as well
-      if (Array.isArray(response)) {
-        response.forEach(bank => {
-          data.set(`bank_${bank.id}`, bank);
-          timestamps.set(`bank_${bank.id}`, now);
-        });
+        if (Array.isArray(response)) {
+          response.forEach(bank => {
+            data.set(`bank_${bank.id}`, bank);
+            timestamps.set(`bank_${bank.id}`, now);
+          });
+        }
       }
 
       return response;
     } catch (error) {
       // If we have stale data, return it rather than failing completely
-      if (data.has(BANKS_CACHE_KEY)) {
+      if (useCache && data.has(BANKS_CACHE_KEY)) {
         SafeLogger.warn('Returning stale bank data due to API error');
         return data.get(BANKS_CACHE_KEY) as BanksResponse;
       }
@@ -76,15 +79,16 @@ class BankService {
    * @param forceRefresh - Whether to bypass cache and force a fresh API call
    * @returns Promise with the Bank
    */
-  async getBank(id: string, forceRefresh = false): Promise<Bank> {
+  async getBank(id: string, forceRefresh = false, client: ApiClient = apiClient): Promise<Bank> {
     if (!id) throw new Error('Bank ID is required');
 
+    const useCache = client === apiClient;
     const now = Date.now();
     const { data, timestamps } = BankService.cache;
     const bankCacheKey = `bank_${id}`;
 
-    // Check cache validity
     if (
+      useCache &&
       !forceRefresh &&
       data.has(bankCacheKey) &&
       timestamps.has(bankCacheKey) &&
@@ -97,7 +101,7 @@ class BankService {
       // Try to get from getAllBanks first to avoid extra API call
       if (!forceRefresh) {
         try {
-          const allBanks = await this.getAllBanks(false);
+          const allBanks = await this.getAllBanks(false, client);
           const foundBank = Array.isArray(allBanks)
             ? allBanks.find((b: Bank) => b.id === id)
             : undefined;
@@ -108,16 +112,17 @@ class BankService {
       }
 
       // Direct API call if needed
-      const bank = await ApiClient.get<Bank>(`/api/banks/${id}`);
+      const bank = await client.get<Bank>(`/api/banks/${id}`);
 
-      // Update cache
-      data.set(bankCacheKey, bank);
-      timestamps.set(bankCacheKey, now);
+      if (useCache) {
+        data.set(bankCacheKey, bank);
+        timestamps.set(bankCacheKey, now);
+      }
 
       return bank;
     } catch (error) {
       // If we have stale data, return it rather than failing completely
-      if (data.has(bankCacheKey)) {
+      if (useCache && data.has(bankCacheKey)) {
         SafeLogger.warn(`Returning stale data for bank ${id} due to API error`);
         return data.get(bankCacheKey) as Bank;
       }

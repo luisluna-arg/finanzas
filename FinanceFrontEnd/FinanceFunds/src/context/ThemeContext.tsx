@@ -3,14 +3,17 @@ import type { ReactNode } from 'react';
 import { ThemeContext } from './ThemeContextInstance';
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Get initial color scheme from localStorage or use system preference
+  // Get initial color scheme from localStorage or use system preference.
+  // Guarded for SSR, where window/localStorage don't exist — defaults to 'light'
+  // on the server and is corrected on the client during hydration.
   const getInitialColorScheme = (): 'light' | 'dark' => {
+    if (typeof window === 'undefined') return 'light';
+
     const savedScheme = localStorage.getItem('colorScheme');
     if (savedScheme === 'light' || savedScheme === 'dark') {
       return savedScheme;
     }
 
-    // Check system preference
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark';
     }
