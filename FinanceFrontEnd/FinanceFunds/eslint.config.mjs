@@ -53,10 +53,11 @@ export default tseslint.config(
   {
     ignores: [
       'node_modules/**',
-      'dist/**', 
+      'dist/**',
       'build/**',
       'public/**',
       'vite.config.ts',
+      'server.js',
       '*.d.ts',
       '.eslintrc.cjs'
     ],
