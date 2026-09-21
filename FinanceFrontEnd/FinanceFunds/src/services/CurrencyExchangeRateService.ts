@@ -1,4 +1,4 @@
-import ApiClient from './ApiClient';
+import apiClient, { ApiClient } from './ApiClient';
 import type {
   CurrencyExchangeRate,
   CurrencyExchangeRatesResponse,
@@ -34,12 +34,16 @@ class CurrencyExchangeRateService {
    * @param forceRefresh - Whether to bypass cache and force a fresh API call
    * @returns Promise with the CurrencyExchangeRatesResponse
    */
-  async getAllExchangeRates(forceRefresh = false): Promise<CurrencyExchangeRatesResponse> {
+  async getAllExchangeRates(
+    forceRefresh = false,
+    client: ApiClient = apiClient
+  ): Promise<CurrencyExchangeRatesResponse> {
+    const useCache = client === apiClient;
     const now = Date.now();
     const { data, timestamps } = CurrencyExchangeRateService.cache;
 
-    // Check cache validity
     if (
+      useCache &&
       !forceRefresh &&
       data.has(EXCHANGE_RATES_CACHE_KEY) &&
       timestamps.has(EXCHANGE_RATES_CACHE_KEY) &&
@@ -49,26 +53,26 @@ class CurrencyExchangeRateService {
     }
 
     try {
-      const response = await ApiClient.get<CurrencyExchangeRatesResponse>(
+      const response = await client.get<CurrencyExchangeRatesResponse>(
         '/api/currencies/exchange-rates'
       );
 
-      // Set response in cache
-      data.set(EXCHANGE_RATES_CACHE_KEY, response);
-      timestamps.set(EXCHANGE_RATES_CACHE_KEY, now);
+      if (useCache) {
+        data.set(EXCHANGE_RATES_CACHE_KEY, response);
+        timestamps.set(EXCHANGE_RATES_CACHE_KEY, now);
 
-      // Cache individual exchange rates as well
-      if (Array.isArray(response)) {
-        response.forEach(rate => {
-          data.set(`exchange_rate_${rate.id}`, rate);
-          timestamps.set(`exchange_rate_${rate.id}`, now);
-        });
+        if (Array.isArray(response)) {
+          response.forEach(rate => {
+            data.set(`exchange_rate_${rate.id}`, rate);
+            timestamps.set(`exchange_rate_${rate.id}`, now);
+          });
+        }
       }
 
       return response;
     } catch (error) {
       // If we have stale data, return it rather than failing completely
-      if (data.has(EXCHANGE_RATES_CACHE_KEY)) {
+      if (useCache && data.has(EXCHANGE_RATES_CACHE_KEY)) {
         SafeLogger.warn('Returning stale exchange rates data due to API error');
         return data.get(EXCHANGE_RATES_CACHE_KEY) as CurrencyExchangeRatesResponse;
       }
@@ -87,14 +91,16 @@ class CurrencyExchangeRateService {
    */
   async getLatestExchangeRates(
     query: GetCurrencyExchangeRatesQuery = {},
-    forceRefresh = false
+    forceRefresh = false,
+    client: ApiClient = apiClient
   ): Promise<CurrencyExchangeRatesResponse> {
+    const useCache = client === apiClient;
     const now = Date.now();
     const { data, timestamps } = CurrencyExchangeRateService.cache;
     const cacheKey = `${LATEST_EXCHANGE_RATES_CACHE_KEY}_${JSON.stringify(query)}`;
 
-    // Check cache validity
     if (
+      useCache &&
       !forceRefresh &&
       data.has(cacheKey) &&
       timestamps.has(cacheKey) &&
@@ -111,16 +117,17 @@ class CurrencyExchangeRateService {
         searchParams.append('baseCurrencyShortName', query.baseCurrencyShortName);
 
       const url = `/api/currencies/exchange-rates/latest${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-      const response = await ApiClient.get<CurrencyExchangeRatesResponse>(url);
+      const response = await client.get<CurrencyExchangeRatesResponse>(url);
 
-      // Set response in cache
-      data.set(cacheKey, response);
-      timestamps.set(cacheKey, now);
+      if (useCache) {
+        data.set(cacheKey, response);
+        timestamps.set(cacheKey, now);
+      }
 
       return response;
     } catch (error) {
       // If we have stale data, return it rather than failing completely
-      if (data.has(cacheKey)) {
+      if (useCache && data.has(cacheKey)) {
         SafeLogger.warn('Returning stale latest exchange rates data due to API error');
         return data.get(cacheKey) as CurrencyExchangeRatesResponse;
       }
@@ -137,15 +144,20 @@ class CurrencyExchangeRateService {
    * @param forceRefresh - Whether to bypass cache and force a fresh API call
    * @returns Promise with the CurrencyExchangeRate
    */
-  async getExchangeRate(id: string, forceRefresh = false): Promise<CurrencyExchangeRate> {
+  async getExchangeRate(
+    id: string,
+    forceRefresh = false,
+    client: ApiClient = apiClient
+  ): Promise<CurrencyExchangeRate> {
     if (!id) throw new Error('Exchange rate ID is required');
 
+    const useCache = client === apiClient;
     const now = Date.now();
     const { data, timestamps } = CurrencyExchangeRateService.cache;
     const cacheKey = `exchange_rate_${id}`;
 
-    // Check cache validity
     if (
+      useCache &&
       !forceRefresh &&
       data.has(cacheKey) &&
       timestamps.has(cacheKey) &&
@@ -155,18 +167,19 @@ class CurrencyExchangeRateService {
     }
 
     try {
-      const exchangeRate = await ApiClient.get<CurrencyExchangeRate>(
+      const exchangeRate = await client.get<CurrencyExchangeRate>(
         `/api/currencies/exchange-rates/${id}`
       );
 
-      // Update cache
-      data.set(cacheKey, exchangeRate);
-      timestamps.set(cacheKey, now);
+      if (useCache) {
+        data.set(cacheKey, exchangeRate);
+        timestamps.set(cacheKey, now);
+      }
 
       return exchangeRate;
     } catch (error) {
       // If we have stale data, return it rather than failing completely
-      if (data.has(cacheKey)) {
+      if (useCache && data.has(cacheKey)) {
         SafeLogger.warn(`Returning stale data for exchange rate ${id} due to API error`);
         return data.get(cacheKey) as CurrencyExchangeRate;
       }
@@ -183,10 +196,11 @@ class CurrencyExchangeRateService {
    * @returns Promise with the created CurrencyExchangeRate
    */
   async createExchangeRate(
-    command: CreateCurrencyExchangeRateCommand
+    command: CreateCurrencyExchangeRateCommand,
+    client: ApiClient = apiClient
   ): Promise<CurrencyExchangeRate> {
     try {
-      const response = await ApiClient.post<CurrencyExchangeRate>(
+      const response = await client.post<CurrencyExchangeRate>(
         '/api/currencies/exchange-rates',
         command
       );
@@ -208,10 +222,11 @@ class CurrencyExchangeRateService {
    * @returns Promise with the updated CurrencyExchangeRate
    */
   async updateExchangeRate(
-    command: UpdateCurrencyExchangeRateCommand
+    command: UpdateCurrencyExchangeRateCommand,
+    client: ApiClient = apiClient
   ): Promise<CurrencyExchangeRate> {
     try {
-      const response = await ApiClient.put<CurrencyExchangeRate>(
+      const response = await client.put<CurrencyExchangeRate>(
         '/api/currencies/exchange-rates',
         command
       );
@@ -232,11 +247,11 @@ class CurrencyExchangeRateService {
    * @param id - The exchange rate ID to delete
    * @returns Promise void
    */
-  async deleteExchangeRate(id: string): Promise<void> {
+  async deleteExchangeRate(id: string, client: ApiClient = apiClient): Promise<void> {
     if (!id) throw new Error('Exchange rate ID is required');
 
     try {
-      await ApiClient.delete(`/api/currencies/exchange-rates`, { id });
+      await client.delete(`/api/currencies/exchange-rates`, { id });
 
       // Invalidate relevant caches
       this.invalidateCache(id);
@@ -252,11 +267,11 @@ class CurrencyExchangeRateService {
    * @param id - The exchange rate ID to activate
    * @returns Promise void
    */
-  async activateExchangeRate(id: string): Promise<void> {
+  async activateExchangeRate(id: string, client: ApiClient = apiClient): Promise<void> {
     if (!id) throw new Error('Exchange rate ID is required');
 
     try {
-      await ApiClient.patch(`/api/currencies/exchange-rates/activate/${id}`);
+      await client.patch(`/api/currencies/exchange-rates/activate/${id}`);
 
       // Invalidate relevant caches
       this.invalidateCache(id);
@@ -272,11 +287,11 @@ class CurrencyExchangeRateService {
    * @param id - The exchange rate ID to deactivate
    * @returns Promise void
    */
-  async deactivateExchangeRate(id: string): Promise<void> {
+  async deactivateExchangeRate(id: string, client: ApiClient = apiClient): Promise<void> {
     if (!id) throw new Error('Exchange rate ID is required');
 
     try {
-      await ApiClient.patch(`/api/currencies/exchange-rates/deactivate/${id}`);
+      await client.patch(`/api/currencies/exchange-rates/deactivate/${id}`);
 
       // Invalidate relevant caches
       this.invalidateCache(id);
