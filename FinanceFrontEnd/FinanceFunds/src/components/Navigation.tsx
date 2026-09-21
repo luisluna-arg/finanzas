@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/auth';
-import { LoginButton, LogoutButton } from './index';
+import { Link } from 'react-router';
+import { LogoutButton } from './index';
 import { ThemeToggle } from './ThemeToggle';
 import {
   Group,
@@ -18,10 +17,11 @@ import {
 } from '@mantine/core';
 
 export const Navigation = () => {
-  const { isAuthenticated, isLoading } = useAuth();
   const theme = useMantineTheme();
   const { colorScheme } = useMantineColorScheme();
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 768
+  );
   const [menuOpened, setMenuOpened] = useState(false);
 
   // Effect for media query
@@ -50,7 +50,7 @@ export const Navigation = () => {
   const AuthButtons = () => (
     <Group className="nav-auth" gap="md">
       <ThemeToggle />
-      {!isLoading && (isAuthenticated ? <LogoutButton /> : <LoginButton />)}
+      <LogoutButton />
     </Group>
   );
 
