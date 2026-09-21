@@ -45,8 +45,9 @@ const SafeLogger = {
     if (!isDev) return;
     console.warn(message, ...args.map(a => redact(a)));
   },
+  // Errors always surface, in every environment — silencing them in production
+  // makes real failures (e.g. an auth callback error) invisible in server logs.
   error: (message?: unknown, ...args: unknown[]) => {
-    if (!isDev) return;
     console.error(message, ...args.map(a => redact(a)));
   },
 };
