@@ -8,6 +8,7 @@
     },
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ES2023"],
+    "types": ["@react-router/node", "vite/client"],
     "module": "ESNext",
     "skipLibCheck": true,
 
