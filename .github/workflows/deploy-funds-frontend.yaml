@@ -6,7 +6,7 @@ on:
 jobs:
   prepare-secrets:
     name: Prepare and Upload Secrets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Prepare secrets files
         run: |
@@ -29,7 +29,7 @@ jobs:
 
   deploy-funds:
     name: "Deploy: funds (frontend only)"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: prepare-secrets
     steps:
       - name: Deploy via SSH
@@ -65,7 +65,7 @@ jobs:
 
   verify:
     name: "Verify: frontend"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: deploy-funds
     steps:
       - name: Check container health

@@ -14,7 +14,7 @@ on:
 jobs:
   prepare-secrets:
     name: Prepare and Upload Secrets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Prepare secrets files
         run: |
@@ -37,7 +37,7 @@ jobs:
 
   checkout:
     name: Checkout repo on server
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: prepare-secrets
     steps:
       - name: Sync repo via SSH
@@ -64,7 +64,7 @@ jobs:
 
   deploy-shared:
     name: "Deploy: shared (postgres, redis, backend)"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: checkout
     steps:
       - name: Deploy via SSH
@@ -93,7 +93,7 @@ jobs:
 
   migrate-database:
     name: "Migrate: database"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: deploy-shared
     steps:
       - name: Run EF Core migrations via SSH
@@ -124,7 +124,7 @@ jobs:
 
   deploy-funds:
     name: "Deploy: funds (frontend)"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: checkout
     steps:
       - name: Deploy via SSH
@@ -151,7 +151,7 @@ jobs:
 
   cleanup-secrets:
     name: Clean up uploaded secrets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [deploy-shared, deploy-funds]
     steps:
       - name: Remove secrets file via SSH
@@ -167,7 +167,7 @@ jobs:
 
   verify:
     name: "Verify: ${{ matrix.service }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [migrate-database, deploy-funds]
     strategy:
       fail-fast: false
