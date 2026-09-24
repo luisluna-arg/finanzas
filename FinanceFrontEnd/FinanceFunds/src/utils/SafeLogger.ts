@@ -9,6 +9,19 @@ const isDev: boolean = Boolean(import.meta.env.DEV);
 function redact(obj: unknown): unknown {
   try {
     if (!obj || typeof obj !== 'object') return obj;
+
+    // Error's own message/stack/name aren't enumerable, so Object.keys(error)
+    // is [] and the loop below would silently turn every logged error into
+    // an empty {}. Pull them out explicitly first.
+    if (obj instanceof Error) {
+      return {
+        name: obj.name,
+        message: obj.message,
+        stack: obj.stack,
+        ...(obj.cause !== undefined ? { cause: redact(obj.cause) } : {}),
+      };
+    }
+
     const asRecord = obj as Record<string, unknown>;
     const clone: Record<string, unknown> | unknown[] = Array.isArray(asRecord) ? [] : {};
     for (const k of Object.keys(asRecord)) {

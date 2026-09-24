@@ -10,16 +10,23 @@
 #   .\get-prod-container-logs.ps1 -Service postgres -Tail 500
 #   .\get-prod-container-logs.ps1 -Service backend -Follow
 #   .\get-prod-container-logs.ps1 -Service backend -Since 30m
-#   .\get-prod-container-logs.ps1 -Service frontend -RemoteDir "/var/www/finance-funds/.infra/prod/funds"
+#   .\get-prod-container-logs.ps1 -Service frontend -Stack funds
+#   .\get-prod-container-logs.ps1 -ListServices
+#   .\get-prod-container-logs.ps1 -ListServices -Stack funds
 
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $true, ParameterSetName = "Logs")]
     [string]$Service,
     [int]$Tail = 200,
     [switch]$Follow,
     [string]$Since,
-    [string]$RemoteDir = "/var/www/finance-funds/.infra/prod/shared"
+    [ValidateSet("shared", "funds")]
+    [string]$Stack = "shared",
+    [Parameter(Mandatory = $true, ParameterSetName = "ListServices")]
+    [switch]$ListServices
 )
+
+$RemoteDir = "/var/www/finance-funds/.infra/prod/$Stack"
 
 function Get-OrPromptEnvVar {
     param(
@@ -51,25 +58,33 @@ $sshHost = Get-OrPromptEnvVar -Name "SSH_HOST" -Prompt "SSH host (IP or domain)"
 $sshUser = Get-OrPromptEnvVar -Name "SSH_USER" -Prompt "SSH user"
 $sshPort = Get-OrPromptEnvVar -Name "SSH_PORT" -Prompt "SSH port" -Default "22"
 
-$logsArgs = @("--tail=$Tail", "--timestamps")
-if ($Follow) {
-    $logsArgs += "-f"
-}
-if ($Since) {
-    $logsArgs += "--since=$Since"
-}
-$logsArgs += $Service
+if ($ListServices) {
+    $remoteCommand = "cd $RemoteDir && docker compose ps --services"
 
-$remoteCommand = "cd $RemoteDir && docker compose logs $($logsArgs -join ' ')"
+    Write-Host "Listing services in '$RemoteDir' on ${sshUser}@${sshHost}:${sshPort} ..."
 
-Write-Host "Fetching logs for '$Service' on ${sshUser}@${sshHost}:${sshPort} ..."
-
-if ($Follow) {
-    # -t allocates a pty so Ctrl+C locally stops the remote `docker compose
-    # logs -f` instead of leaving it running detached on the server.
-    ssh -t -p $sshPort "$sshUser@$sshHost" $remoteCommand
-} else {
     ssh -p $sshPort "$sshUser@$sshHost" $remoteCommand
+} else {
+    $logsArgs = @("--tail=$Tail", "--timestamps")
+    if ($Follow) {
+        $logsArgs += "-f"
+    }
+    if ($Since) {
+        $logsArgs += "--since=$Since"
+    }
+    $logsArgs += $Service
+
+    $remoteCommand = "cd $RemoteDir && docker compose logs $($logsArgs -join ' ')"
+
+    Write-Host "Fetching logs for '$Service' on ${sshUser}@${sshHost}:${sshPort} ..."
+
+    if ($Follow) {
+        # -t allocates a pty so Ctrl+C locally stops the remote `docker compose
+        # logs -f` instead of leaving it running detached on the server.
+        ssh -t -p $sshPort "$sshUser@$sshHost" $remoteCommand
+    } else {
+        ssh -p $sshPort "$sshUser@$sshHost" $remoteCommand
+    }
 }
 
 $exitCode = $LASTEXITCODE
