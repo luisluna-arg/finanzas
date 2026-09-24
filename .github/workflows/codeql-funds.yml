@@ -8,7 +8,7 @@ on:
 jobs:
   analyze-funds:
     name: Analyze Funds (JS/TS)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read

@@ -10,7 +10,7 @@ on:
 
 jobs:
     validate:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
         # Run this job only for staging/preview branches or manual dispatch
         if: |
             startsWith(github.ref, 'refs/heads/preview/') || github.ref == 'refs/heads/staging' || github.event_name == 'workflow_dispatch'
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         environment: staging
         steps:
             - name: Checkout
