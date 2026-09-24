@@ -45,6 +45,16 @@ function resolveServerBaseUrl(): string {
   return apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
 }
 
+class ApiRequestError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiRequestError';
+    this.status = status;
+  }
+}
+
 async function processErrorResponse(response: Response): Promise<string> {
   try {
     const errorResponse = await response.json();
@@ -60,7 +70,11 @@ async function processErrorResponse(response: Response): Promise<string> {
 }
 
 class ApiClient {
-  constructor(private readonly accessToken?: string) {}
+  private readonly accessToken?: string;
+
+  constructor(accessToken?: string) {
+    this.accessToken = accessToken;
+  }
 
   async get<T>(
     endpoint: string,
@@ -123,8 +137,9 @@ class ApiClient {
 
       if (!response.ok) {
         const errorMessage = await processErrorResponse(response);
-        throw new Error(
-          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`
+        throw new ApiRequestError(
+          `API request failed: ${response.status} ${response.statusText} - ${errorMessage}`,
+          response.status
         );
       }
 
@@ -168,5 +183,5 @@ class ApiClient {
   }
 }
 
-export { ApiClient };
+export { ApiClient, ApiRequestError };
 export default new ApiClient();
