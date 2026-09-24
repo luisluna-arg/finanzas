@@ -35,10 +35,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_network"
-      - "traefik.http.routers.finance-funds.rule=Host(`${APP_DOMAIN}`) || Host(`www.${APP_DOMAIN}`)"
+      - "traefik.http.routers.finance-funds.rule=Host(`${APP_DOMAIN}`)"
       - "traefik.http.routers.finance-funds.entrypoints=websecure"
       - "traefik.http.routers.finance-funds.tls.certresolver=le-resolver"
       - "traefik.http.services.finance-funds.loadbalancer.server.port=3000"
+      # BASE_URL/REDIRECT_URI only ever point at the bare domain (see auth.constants.ts),
+      # so the Auth0 state cookie set on www doesn't come back on the callback host.
+      # Redirect www to bare domain instead of serving the app on both.
+      - "traefik.http.routers.finance-funds-www.rule=Host(`www.${APP_DOMAIN}`)"
+      - "traefik.http.routers.finance-funds-www.entrypoints=websecure"
+      - "traefik.http.routers.finance-funds-www.tls.certresolver=le-resolver"
+      - "traefik.http.routers.finance-funds-www.middlewares=finance-funds-www-redirect"
+      - "traefik.http.middlewares.finance-funds-www-redirect.redirectregex.regex=^https://www\\.(.+)"
+      - "traefik.http.middlewares.finance-funds-www-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.finance-funds-www-redirect.redirectregex.permanent=true"
 
 networks:
   traefik_network:
